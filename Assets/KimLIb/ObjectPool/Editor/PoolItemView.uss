@@ -1,0 +1,52 @@
+.pool-item {
+    flex-direction: row;
+    flex-basis: 35px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    border-color: rgb(159, 159, 159);
+    border-width: 1px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: all 0.5s ease-in;
+}
+.pool-item.active
+{
+    border-color: rgb(232, 232, 232);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.del-btn
+{
+    background-color: rgba(147, 18, 18, 1);
+    padding: 4px 8px;
+    transition: all 0.3s ease-in;
+}
+.del-btn:hover
+{
+    background-color: rgb(205, 35, 35);
+}
+
+.name-label
+{
+    font-size: 14px;
+    -unity-font-style: bold;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    flex-basis: 10px;
+    flex-grow: 1;
+}
+
+.warning-label
+{
+    background-color: rgba(173, 134, 0, 1);
+    padding: 3px 5px;
+    border-radius: 2px;
+    margin-right: 5px;
+    display: none;
+}
+
+.warning-label.active
+{
+    display: flex;
+}

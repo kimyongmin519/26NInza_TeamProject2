@@ -1,0 +1,16 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/GGMLib/ObjectPool/Editor/ObjectPoolEditor.uss?fileID=7433441132597879392&amp;guid=cd6b40f6a6ed06949ad60e7eb870c67a&amp;type=3#ObjectPoolEditor"/>
+    <ui:VisualElement name="container" style="flex-grow: 1;">
+        <ui:VisualElement name="top-bar">
+            <ui:Button text="Create new Item" name="create-btn"/>
+        </ui:VisualElement>
+        <GGMLib.ObjectPool.Editor.MySplitView name="my-split-view" fixed-pane-initial-dimension="250">
+            <ui:VisualElement name="left-panel" style="flex-grow: 1;">
+                <ui:ScrollView name="item-view" style="flex-grow: 1;"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="right-panel" style="flex-grow: 1;">
+                <ui:VisualElement name="inspector-view" style="flex-grow: 1;"/>
+            </ui:VisualElement>
+        </GGMLib.ObjectPool.Editor.MySplitView>
+    </ui:VisualElement>
+</ui:UXML>

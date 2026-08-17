@@ -1,0 +1,8 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/GGMLib/ObjectPool/Editor/PoolItemView.uss?fileID=7433441132597879392&amp;guid=e24884d0e5191df46b62b937777b76da&amp;type=3#PoolItemView"/>
+    <ui:VisualElement name="pool-item" class="pool-item">
+        <ui:Label text="Empty" name="warning-label" class="warning-label" />
+        <ui:Label text="Test text" name="item-name" class="name-label" enable-rich-text="false"/>
+        <ui:Button text="X" name="delete-btn" class="del-btn"/>
+    </ui:VisualElement>
+</ui:UXML>

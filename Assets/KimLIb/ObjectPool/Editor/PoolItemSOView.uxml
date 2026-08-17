@@ -1,0 +1,10 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement name="container" style="flex-grow: 1;">
+        <ui:VisualElement name="name-row" style="flex-direction: row;">
+            <ui:TextField label="Item Name" placeholder-text="풀링 이름을 입력" name="item-name" binding-path="itemName" style="flex-grow: 1;"/>
+            <ui:Button text="변경" name="change-btn"/>
+        </ui:VisualElement>
+        <uie:ObjectField label="Prefab" name="prefab-field" binding-path="prefab" type="UnityEngine.GameObject, UnityEngine.CoreModule" allow-scene-objects="false"/>
+        <ui:IntegerField label="Init Count" name="count-field" binding-path="initCount"/>
+    </ui:VisualElement>
+</ui:UXML>
