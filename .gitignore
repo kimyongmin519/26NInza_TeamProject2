@@ -173,3 +173,8 @@ x86/
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Unity Package Manager configuration must be shared with the project.
+!/Packages/
+!/Packages/manifest.json
+!/Packages/packages-lock.json
