@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Member.KYM.Scripts.RobotArm
+namespace Member.KYM.Scripts.Players.RobotArm
 {
     public interface IReflectableProjectile : IGrabbable
     {

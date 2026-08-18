@@ -1,10 +1,11 @@
 using System;
 using UnityEngine;
 
-namespace Member.KYM.Scripts.RobotArm
+namespace Member.KYM.Scripts.Players.RobotArm
 {
     public class ReflectableProjectile2D : GrabbableRigidbody2D, IReflectableProjectile
     {
+        [SerializeField] private float testSpeed;
         [field: SerializeField] public GameObject Owner { get; private set; }
 
         public event Action<GameObject, Vector2> Reflected;
@@ -15,13 +16,18 @@ namespace Member.KYM.Scripts.RobotArm
             Reflected?.Invoke(newOwner, velocity);
         }
 
-        public override void Throw(Vector2 velocity, GameObject newOwner)
+        public override void Throw(ThrowData throwData)
         {
-            if (!IsHeld)
+            /*if (!IsHeld)
                 return;
 
-            base.Throw(velocity, newOwner);
-            Reflect(newOwner, velocity);
+            RestorePhysicsState();
+
+            Owner = throwData.Owner;
+            Rigidbody.linearVelocity = throwData.Direction * testSpeed;
+
+            projectile.SetOwner(context.Owner);
+            projectile.ApplyData(projectileData);*/
         }
     }
 }

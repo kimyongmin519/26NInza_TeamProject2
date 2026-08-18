@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Member.KYM.Scripts.RobotArm
+namespace Member.KYM.Scripts.Players.RobotArm
 {
     [RequireComponent(typeof(Rigidbody2D))]
     public class GrabbableRigidbody2D : MonoBehaviour, IGrabbable
@@ -12,7 +12,7 @@ namespace Member.KYM.Scripts.RobotArm
         public Transform GrabTransform => transform;
         public bool IsHeld => _isHeld;
 
-        protected Rigidbody2D Body { get; private set; }
+        protected Rigidbody2D Rigidbody { get; private set; }
         protected GameObject Grabber { get; private set; }
 
         private Collider2D[] _colliders;
@@ -25,7 +25,7 @@ namespace Member.KYM.Scripts.RobotArm
 
         protected virtual void Awake()
         {
-            Body = GetComponent<Rigidbody2D>();
+            Rigidbody = GetComponent<Rigidbody2D>();
             _colliders = GetComponentsInChildren<Collider2D>(true);
             _colliderEnabledStates = new bool[_colliders.Length];
         }
@@ -38,15 +38,15 @@ namespace Member.KYM.Scripts.RobotArm
             _isHeld = true;
             Grabber = grabber;
             _originalParent = transform.parent;
-            _originalBodyType = Body.bodyType;
-            _originalConstraints = Body.constraints;
-            _originalGravityScale = Body.gravityScale;
+            _originalBodyType = Rigidbody.bodyType;
+            _originalConstraints = Rigidbody.constraints;
+            _originalGravityScale = Rigidbody.gravityScale;
 
-            Body.linearVelocity = Vector2.zero;
-            Body.angularVelocity = 0f;
-            Body.bodyType = RigidbodyType2D.Kinematic;
-            Body.gravityScale = 0f;
-            Body.constraints = RigidbodyConstraints2D.FreezeRotation;
+            Rigidbody.linearVelocity = Vector2.zero;
+            Rigidbody.angularVelocity = 0f;
+            Rigidbody.bodyType = RigidbodyType2D.Kinematic;
+            Rigidbody.gravityScale = 0f;
+            Rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             SetCollidersEnabled(false);
 
@@ -67,27 +67,28 @@ namespace Member.KYM.Scripts.RobotArm
             OnReleased();
         }
 
-        public virtual void Throw(Vector2 velocity, GameObject newOwner)
+        public virtual void Throw(ThrowData throwData)
         {
             if (!_isHeld)
                 return;
 
             RestorePhysicsState();
-            Body.linearVelocity = velocity;
-            OnThrown(newOwner, velocity);
+            Rigidbody.linearVelocity = throwData.Direction * throwData.ArmThrowSpeed;
+
+            OnThrown(throwData);
         }
 
         protected virtual void OnGrabbed() { }
         protected virtual void OnReleased() { }
-        protected virtual void OnThrown(GameObject newOwner, Vector2 velocity) { }
+        protected virtual void OnThrown(ThrowData throwData) { }
 
         private void RestorePhysicsState()
         {
             transform.SetParent(_originalParent, true);
 
-            Body.bodyType = _originalBodyType;
-            Body.constraints = _originalConstraints;
-            Body.gravityScale = _originalGravityScale;
+            Rigidbody.bodyType = _originalBodyType;
+            Rigidbody.constraints = _originalConstraints;
+            Rigidbody.gravityScale = _originalGravityScale;
 
             SetCollidersEnabled(true);
             _isHeld = false;

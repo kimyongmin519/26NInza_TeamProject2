@@ -25,6 +25,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "AttackCancle",
+                    "type": "Button",
+                    "id": "d4b121de-4be0-4362-b3cf-5b2801ea4c9a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Interact",
                     "type": "Button",
                     "id": "852140f2-7766-474d-8707-702459ba45f3",
@@ -224,6 +233,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "MousePos",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e7960178-13bc-47ca-92eb-aed49b8bd688",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "AttackCancle",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

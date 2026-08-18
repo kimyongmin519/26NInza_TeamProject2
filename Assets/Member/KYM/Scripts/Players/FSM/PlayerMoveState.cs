@@ -21,7 +21,8 @@ namespace Member.KYM.Scripts.Players.FSM
                 return;
             }
 
-            _mover.SetMovementX(_player.PlayerInput.MoveDirX);
+            float xInput = _player.PlayerInput.MoveDirX;
+            _mover.SetMovementX(xInput);
         }
     }
 }

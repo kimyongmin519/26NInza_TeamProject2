@@ -2,12 +2,14 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Core
+namespace Member.KYM.Scripts.CoreSystems
 {
     [CreateAssetMenu(fileName = "PlayerInputSO", menuName = "KImSO/Core/PlayerInputSO", order = 0)]
     public class PlayerInputSO : ScriptableObject, Controls.IPlayerActions
     {
         public event Action AttackPressed;
+        public event Action AttackCancelPressed;
+        public event Action OnJumpKeyPressed;
         public event Action InteractPressed;
 
         public float MoveDirX { get; private set; }
@@ -40,6 +42,12 @@ namespace Core
                 AttackPressed?.Invoke();
         }
 
+        public void OnAttackCancle(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+                AttackCancelPressed?.Invoke();
+        }
+
         public void OnInteract(InputAction.CallbackContext context)
         {
             if (context.performed)
@@ -48,7 +56,8 @@ namespace Core
 
         public void OnJump(InputAction.CallbackContext context)
         {
-            
+            if (context.performed)
+                OnJumpKeyPressed?.Invoke();
         }
 
         public void OnDash(InputAction.CallbackContext context)

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Member.KYM.Scripts.RobotArm
+namespace Member.KYM.Scripts.Players.RobotArm
 {
     public interface IGrabbable
     {
@@ -9,6 +9,6 @@ namespace Member.KYM.Scripts.RobotArm
 
         void Grab(Transform grabPoint, GameObject grabber);
         void Release();
-        void Throw(Vector2 velocity, GameObject newOwner);
+        void Throw(ThrowData throwData);
     }
 }

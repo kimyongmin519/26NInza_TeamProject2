@@ -1,8 +1,8 @@
 using System.Collections;
-using Core;
+using Member.KYM.Scripts.CoreSystems;
 using UnityEngine;
 
-namespace Member.KYM.Scripts.RobotArm
+namespace Member.KYM.Scripts.Players.RobotArm
 {
     public class RobotArmGrabber : MonoBehaviour
     {
@@ -10,25 +10,34 @@ namespace Member.KYM.Scripts.RobotArm
         [SerializeField] private GameObject throwOwner;
         [SerializeField] private Transform grabPoint;
         [SerializeField] private Transform aimTarget;
+        [SerializeField] private RobotArm robotArm;
         [SerializeField] private RobotArmFingerAnimator fingerAnimator;
 
         [SerializeField] private LayerMask grabbableLayers = ~0;
         [SerializeField] private float grabRadius = 0.15f;
         [SerializeField] private float throwSpeed = 10f;
+        [SerializeField] private float throwReleaseDelay = 0.04f;
         [SerializeField] private float failedGrabCloseTime = 0.12f;
 
         public bool IsHolding => _heldObject != null;
 
         private IGrabbable _heldObject;
         private Coroutine _failedGrabRoutine;
+        private Coroutine _throwRoutine;
+
+        private void Awake()
+        {
+            if (robotArm == null)
+                robotArm = GetComponent<RobotArm>();
+        }
 
         private void OnEnable()
         {
             if (playerInput == null)
                 return;
 
-            playerInput.InteractPressed += HandleInteract;
             playerInput.AttackPressed += HandleAttack;
+            playerInput.AttackCancelPressed += HandleCancel;
         }
 
         private void OnDisable()
@@ -36,32 +45,69 @@ namespace Member.KYM.Scripts.RobotArm
             if (playerInput == null)
                 return;
 
-            playerInput.InteractPressed -= HandleInteract;
             playerInput.AttackPressed -= HandleAttack;
+            playerInput.AttackCancelPressed -= HandleCancel;
+
+            if (_throwRoutine != null)
+            {
+                StopCoroutine(_throwRoutine);
+                _throwRoutine = null;
+            }
         }
 
-        private void HandleInteract()
+        private void HandleCancel()
         {
-            if (_heldObject != null)
-            {
-                ReleaseHeldObject();
+            if (_heldObject == null)
                 return;
+
+            if (_throwRoutine != null)
+            {
+                StopCoroutine(_throwRoutine);
+                _throwRoutine = null;
             }
 
-            TryGrabNearest();
+            ReleaseHeldObject();
         }
 
         private void HandleAttack()
         {
             if (_heldObject == null)
+            {
+                TryGrabNearest();
+                return;
+            }
+
+            if (_throwRoutine != null)
                 return;
 
+            _throwRoutine = StartCoroutine(ThrowRoutine());
+        }
+
+        private IEnumerator ThrowRoutine()
+        {
             Vector2 throwDirection = GetAimDirection();
+
+            fingerAnimator?.SetClosed(false);
+            yield return new WaitForSeconds(throwReleaseDelay);
+
+            if (_heldObject == null)
+            {
+                _throwRoutine = null;
+                yield break;
+            }
+
+            ThrowData context = new ThrowData(
+                throwDirection,
+                throwOwner,
+                throwSpeed
+            );
+
             IGrabbable objectToThrow = _heldObject;
             _heldObject = null;
 
-            objectToThrow.Throw(throwDirection * throwSpeed, throwOwner);
-            fingerAnimator?.SetClosed(false);
+            robotArm?.ApplyRecoil(throwDirection);
+            objectToThrow.Throw(context);
+            _throwRoutine = null;
         }
 
         private void TryGrabNearest()
@@ -132,7 +178,7 @@ namespace Member.KYM.Scripts.RobotArm
 
         private Vector2 GetAimDirection()
         {
-            Vector2 direction = aimTarget.position - grabPoint.position;
+            Vector2 direction = aimTarget.right;
             return direction.sqrMagnitude > 0.0001f
                 ? direction.normalized
                 : Vector2.right;
@@ -167,6 +213,7 @@ namespace Member.KYM.Scripts.RobotArm
         {
             grabRadius = Mathf.Max(0f, grabRadius);
             throwSpeed = Mathf.Max(0f, throwSpeed);
+            throwReleaseDelay = Mathf.Max(0f, throwReleaseDelay);
             failedGrabCloseTime = Mathf.Max(0f, failedGrabCloseTime);
         }
     }
