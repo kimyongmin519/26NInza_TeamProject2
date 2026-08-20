@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Member.KYM.Scripts.Players.RobotArm
 {
     [RequireComponent(typeof(Rigidbody2D))]
-    public class GrabbableRigidbody2D : MonoBehaviour, IGrabbable
+    public class GrabbableRigidbody : MonoBehaviour, IGrabbable
     {
         [SerializeField] private bool canBeGrabbed = true;
         [SerializeField] private bool alignRotationWhileHeld = true;
