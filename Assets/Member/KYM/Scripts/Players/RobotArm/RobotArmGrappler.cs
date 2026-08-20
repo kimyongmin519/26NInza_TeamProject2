@@ -208,7 +208,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 return;
 
             Rigidbody2D body = _mover.RigidBody;
-            Vector2 fromAnchor = body.position - anchorPosition;
+            Vector2 fromAnchor = robotArm.ArmBasePosition - anchorPosition;
             if (fromAnchor.sqrMagnitude < 0.0001f)
                 return;
 
