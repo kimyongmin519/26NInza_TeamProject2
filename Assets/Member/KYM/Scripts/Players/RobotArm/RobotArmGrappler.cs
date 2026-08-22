@@ -175,6 +175,10 @@ namespace Member.KYM.Scripts.Players.RobotArm
             if (_joint == null)
                 return;
 
+            _joint.anchor = _mover.RigidBody.transform.InverseTransformPoint(
+                robotArm.ArmBasePosition
+            );
+
             if (_connectedBody != null)
             {
                 _joint.connectedAnchor =
