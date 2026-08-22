@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Member.KYM.Scripts.Players.RobotArm
 {
-    public class ReflectableProjectile2D : GrabbableRigidbody2D, IReflectableProjectile
+    public class ReflectableProjectile : GrabbableRigidbody, IReflectableProjectile
     {
         [SerializeField] private float testSpeed;
         [field: SerializeField] public GameObject Owner { get; private set; }

@@ -27,7 +27,10 @@ namespace Member.KYM.Scripts.Players.RobotArm
         private float _handRestLocalAngle;
         private float _lastAimAngle;
         private float _maxArmReach;
+        private Transform _targetOverride;
         private Camera _mainCamera;
+
+        public Vector2 ArmBasePosition => armBase.position;
 
         private void Awake()
         {
@@ -52,6 +55,12 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
             mouseWorldPosition.z = armTarget.position.z;
 
+            Vector3 desiredWorldPosition = _targetOverride != null
+                ? _targetOverride.position
+                : mouseWorldPosition;
+
+            desiredWorldPosition.z = armTarget.position.z;
+
             _recoilOffset = Vector2.SmoothDamp(
                 _recoilOffset,
                 Vector2.zero,
@@ -60,7 +69,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
             );
 
             Vector2 aimDirection =
-                (Vector2)mouseWorldPosition - (Vector2)armBase.position;
+                (Vector2)desiredWorldPosition - (Vector2)armBase.position;
 
             if (aimDirection.sqrMagnitude >= 0.0001f)
             {
@@ -82,7 +91,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
             smoothAngle = ClampHandWorldAngle(smoothAngle);
 
             Vector2 desiredHandPosition = GetHandTargetPosition(
-                mouseWorldPosition,
+                desiredWorldPosition,
                 smoothAngle
             );
 
@@ -104,12 +113,14 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 armTarget.position.z
             );
 
-            Vector3 smoothedTargetPosition = Vector3.SmoothDamp(
-                armTarget.position,
-                desiredTargetPosition,
-                ref _positionVelocity,
-                smoothTime
-            );
+            Vector3 smoothedTargetPosition = _targetOverride != null
+                ? desiredTargetPosition
+                : Vector3.SmoothDamp(
+                    armTarget.position,
+                    desiredTargetPosition,
+                    ref _positionVelocity,
+                    smoothTime
+                );
 
             Vector2 reachableSmoothedPosition = ClampTargetToArmReach(
                 smoothedTargetPosition
@@ -150,6 +161,18 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 recoilPosition.y,
                 armTarget.position.z
             );
+        }
+
+        public void SetTargetOverride(Transform target)
+        {
+            _targetOverride = target;
+            _positionVelocity = Vector3.zero;
+        }
+
+        public void ClearTargetOverride()
+        {
+            _targetOverride = null;
+            _positionVelocity = Vector3.zero;
         }
 
         private float CalculateMaxArmReach()

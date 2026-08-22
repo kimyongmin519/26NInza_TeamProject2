@@ -3,5 +3,4 @@
     <ui:IntegerField label="State Index" name="StateIndexField" binding-path="stateIndex"/>
     <ui:DropdownField label="ClassName" name="ClassDropdownField" binding-path="className"/>
     <uie:ObjectField label="State param" name="AnimParamField" binding-path="stateParam" type="KimLIb.AnimatorSystems.AnimParamSO, Assembly-CSharp"/>
-    <ui:ListView show-border="false" reorderable="true" show-add-remove-footer="true" show-foldout-header="true" header-title="상태에 쓸 추가적인 파람들" binding-path="additiveList" fixed-item-height="10" data-source-type="GameSystems.AnimationSystem.AnimParamSO, Assembly-CSharp"/>
 </ui:UXML>

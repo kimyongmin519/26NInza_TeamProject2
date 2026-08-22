@@ -1,12 +1,10 @@
 using System.Collections;
-using Member.KYM.Scripts.CoreSystems;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Players.RobotArm
 {
     public class RobotArmGrabber : MonoBehaviour
     {
-        [SerializeField] private PlayerInputSO playerInput;
         [SerializeField] private GameObject throwOwner;
         [SerializeField] private Transform grabPoint;
         [SerializeField] private Transform aimTarget;
@@ -20,6 +18,8 @@ namespace Member.KYM.Scripts.Players.RobotArm
         [SerializeField] private float failedGrabCloseTime = 0.12f;
 
         public bool IsHolding => _heldObject != null;
+        public bool IsBusy => _throwRoutine != null;
+        public Transform GrabPoint => grabPoint;
 
         private IGrabbable _heldObject;
         private Coroutine _failedGrabRoutine;
@@ -31,23 +31,8 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 robotArm = GetComponent<RobotArm>();
         }
 
-        private void OnEnable()
-        {
-            if (playerInput == null)
-                return;
-
-            playerInput.AttackPressed += HandleAttack;
-            playerInput.AttackCancelPressed += HandleCancel;
-        }
-
         private void OnDisable()
         {
-            if (playerInput == null)
-                return;
-
-            playerInput.AttackPressed -= HandleAttack;
-            playerInput.AttackCancelPressed -= HandleCancel;
-
             if (_throwRoutine != null)
             {
                 StopCoroutine(_throwRoutine);
@@ -55,7 +40,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
             }
         }
 
-        private void HandleCancel()
+        public void Release()
         {
             if (_heldObject == null)
                 return;
@@ -69,18 +54,13 @@ namespace Member.KYM.Scripts.Players.RobotArm
             ReleaseHeldObject();
         }
 
-        private void HandleAttack()
+        public bool TryThrow()
         {
-            if (_heldObject == null)
-            {
-                TryGrabNearest();
-                return;
-            }
-
-            if (_throwRoutine != null)
-                return;
+            if (_heldObject == null || _throwRoutine != null)
+                return false;
 
             _throwRoutine = StartCoroutine(ThrowRoutine());
+            return true;
         }
 
         private IEnumerator ThrowRoutine()
@@ -110,18 +90,16 @@ namespace Member.KYM.Scripts.Players.RobotArm
             _throwRoutine = null;
         }
 
-        private void TryGrabNearest()
+        public bool TryGrab()
         {
             IGrabbable nearest = FindNearestGrabbable();
             if (nearest == null)
-            {
-                PlayFailedGrabAnimation();
-                return;
-            }
+                return false;
 
             _heldObject = nearest;
             _heldObject.Grab(grabPoint, throwOwner);
             fingerAnimator?.SetClosed(true);
+            return true;
         }
 
         private IGrabbable FindNearestGrabbable()
@@ -184,7 +162,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 : Vector2.right;
         }
 
-        private void PlayFailedGrabAnimation()
+        public void PlayFailedAction()
         {
             if (_failedGrabRoutine != null)
                 StopCoroutine(_failedGrabRoutine);

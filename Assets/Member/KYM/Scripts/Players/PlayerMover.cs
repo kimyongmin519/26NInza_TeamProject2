@@ -20,11 +20,13 @@ namespace Member.KYM.Scripts.Players
 
         private float _moveDirX;
         private ModuleOwner _owner;
+        private float _originalGravityScale;
         
         public void Initialize(ModuleOwner owner)
         {
             _owner = owner;
             RigidBody = owner.GetComponent<Rigidbody2D>();
+            _originalGravityScale = RigidBody.gravityScale;
         }
         
         public void SetMoveSpeedMultiplier(float value)
@@ -32,10 +34,7 @@ namespace Member.KYM.Scripts.Players
             
         }
 
-        public void SetGravityScale(float value)
-        {
-            ;
-        }
+        public void SetGravityScale(float value) => RigidBody.gravityScale = _originalGravityScale * value;
 
         public void AddForceToAgent(Vector2 force) => RigidBody.AddForce(force, ForceMode2D.Impulse);
 
@@ -47,7 +46,9 @@ namespace Member.KYM.Scripts.Players
 
         private void MoveCharacter()
         {
-            RigidBody.linearVelocityX = _moveDirX * moveSpeed;
+            if (CanManualMovement)
+                RigidBody.linearVelocityX = _moveDirX * moveSpeed;
+
             OnVelocityChange?.Invoke(RigidBody.linearVelocity);
         }
         

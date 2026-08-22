@@ -4,12 +4,13 @@ using UnityEngine.InputSystem;
 
 namespace Member.KYM.Scripts.CoreSystems
 {
-    [CreateAssetMenu(fileName = "PlayerInputSO", menuName = "KImSO/Core/PlayerInputSO", order = 0)]
+    [CreateAssetMenu(fileName = "PlayerInputSO", menuName = "KimSO/Core/PlayerInputSO", order = 0)]
     public class PlayerInputSO : ScriptableObject, Controls.IPlayerActions
     {
         public event Action AttackPressed;
         public event Action AttackCancelPressed;
         public event Action OnJumpKeyPressed;
+        public event Action OnDashKeyPressed;
         public event Action InteractPressed;
 
         public float MoveDirX { get; private set; }
@@ -62,7 +63,8 @@ namespace Member.KYM.Scripts.CoreSystems
 
         public void OnDash(InputAction.CallbackContext context)
         {
-            
+            if (context.performed)
+                OnDashKeyPressed?.Invoke();
         }
 
         public void OnMousePos(InputAction.CallbackContext context)
