@@ -31,6 +31,17 @@ namespace Member.KYM.Scripts.Players.RobotArm
         private Camera _mainCamera;
 
         public Vector2 ArmBasePosition => armBase.position;
+        public float MaximumGrabReach
+        {
+            get
+            {
+                float grabOffset = grabCenter != null
+                    ? Vector2.Distance(grabCenter.position, handBone.position)
+                    : 0f;
+
+                return _maxArmReach + grabOffset;
+            }
+        }
 
         private void Awake()
         {

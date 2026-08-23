@@ -161,10 +161,15 @@ namespace Member.KYM.Scripts.Players.RobotArm
             _joint.enableCollision = false;
             UpdateConnectedAnchor(point);
 
-            float distance = Vector2.Distance(
-                robotArm.ArmBasePosition,
-                point.position
-            );
+            float distance = robotArm.MaximumGrabReach;
+
+            if (distance <= 0f)
+            {
+                distance = Vector2.Distance(
+                    robotArm.ArmBasePosition,
+                    point.position
+                );
+            }
 
             _joint.distance = Mathf.Max(minimumHangDistance, distance);
             _joint.enabled = true;
