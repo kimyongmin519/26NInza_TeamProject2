@@ -11,7 +11,7 @@ namespace Member.KYM.Scripts.CoreSystems
         public event Action AttackCancelPressed;
         public event Action OnJumpKeyPressed;
         public event Action OnDashKeyPressed;
-        public event Action InteractPressed;
+        public event Action<bool> OnInteractKeyPressed;
 
         public float MoveDirX { get; private set; }
         public Vector2 MousePos { get; private set; }
@@ -52,7 +52,9 @@ namespace Member.KYM.Scripts.CoreSystems
         public void OnInteract(InputAction.CallbackContext context)
         {
             if (context.performed)
-                InteractPressed?.Invoke();
+                OnInteractKeyPressed?.Invoke(true);
+            if (context.canceled)
+                OnInteractKeyPressed?.Invoke(false);
         }
 
         public void OnJump(InputAction.CallbackContext context)

@@ -38,6 +38,8 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 StopCoroutine(_throwRoutine);
                 _throwRoutine = null;
             }
+
+            Release();
         }
 
         public void Release()
