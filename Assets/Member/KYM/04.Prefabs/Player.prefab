@@ -355,13 +355,14 @@ GameObject:
   - component: {fileID: 1901866150548698806}
   - component: {fileID: 8561485440484760458}
   - component: {fileID: 131818989352974566}
+  - component: {fileID: 7321111111111111111}
   m_Layer: 6
   m_Name: RobotArm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1501959609257359815
 Transform:
   m_ObjectHideFlags: 0
@@ -487,7 +488,7 @@ MonoBehaviour:
   fingerAnimator: {fileID: 1901866150548698806}
   grappleLayers:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 512
   detectionRadius: 0.35
   minimumHangDistance: 0.25
   hangGravityScale: 1
@@ -509,6 +510,21 @@ MonoBehaviour:
   playerInput: {fileID: 11400000, guid: a66c4c0d4ed7bb141991aa0954182ed9, type: 2}
   grabber: {fileID: 4176750376861397631}
   grappler: {fileID: 8561485440484760458}
+--- !u!114 &7321111111111111111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5391453299532267432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f34336124464b968612ccb11011be94, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Players.Equipment.RobotArmEquipment
+  definition: {fileID: 11400000, guid: 2a8bf12e2e524f88a06ea14b3ed9d5dc, type: 2}
+  grabber: {fileID: 4176750376861397631}
+  grappler: {fileID: 8561485440484760458}
 --- !u!1 &6899043265987018698
 GameObject:
   m_ObjectHideFlags: 0
@@ -521,6 +537,7 @@ GameObject:
   - component: {fileID: 6758748404451482369}
   - component: {fileID: 8357779135266577966}
   - component: {fileID: 1647090863225142304}
+  - component: {fileID: 7322222222222222222}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -565,6 +582,23 @@ MonoBehaviour:
   <MaxJumpCount>k__BackingField: 2
   <PlayerInput>k__BackingField: {fileID: 11400000, guid: a66c4c0d4ed7bb141991aa0954182ed9, type: 2}
   stateList: {fileID: 11400000, guid: 36f3f9cbbe45ead4c820b99ff85e8714, type: 2}
+--- !u!114 &7322222222222222222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6899043265987018698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dd22b53d3964d619a8c58fe570a8508, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Players.Equipment.PlayerEquipmentController
+  equipmentRoot: {fileID: 4431676650236865722}
+  equipmentCatalog:
+  - {fileID: 11400000, guid: 2a8bf12e2e524f88a06ea14b3ed9d5dc, type: 2}
+  initiallyUnlocked: []
+  initiallyEquipped: []
 --- !u!50 &8357779135266577966
 Rigidbody2D:
   serializedVersion: 5

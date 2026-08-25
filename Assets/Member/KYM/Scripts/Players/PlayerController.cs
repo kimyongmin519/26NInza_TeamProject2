@@ -2,7 +2,7 @@ using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.Agents.FSM;
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using Member.KYM.Scripts.CoreSystems;
-using Member.KYM.Scripts.Players.RobotArm;
+using Member.KYM.Scripts.Players.Equipment;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Players
@@ -17,8 +17,9 @@ namespace Member.KYM.Scripts.Players
         [SerializeField] private StateListSO stateList;
         public AgentSensor Sensor { get; private set; }
         public ISkillModule SkillModule { get; private set; }
+        public PlayerEquipmentController EquipmentController { get; private set; }
+        public bool IsEquipmentActionActive { get; private set; }
         private StateMachine _stateMachine;
-        private RobotArmGrappler _grappler;
         private int _currentJumpCount;
 
         protected override void InitializeModules()
@@ -27,25 +28,19 @@ namespace Member.KYM.Scripts.Players
             _stateMachine = new StateMachine(this, stateList.states);
             Sensor = GetModule<AgentSensor>();
             SkillModule = GetModule<ISkillModule>();
-            _grappler = GetComponentInChildren<RobotArmGrappler>(true);
-;        }
+            EquipmentController = GetModule<PlayerEquipmentController>();
+        }
 
         protected override void AfterInitializeModules()
         {
             base.AfterInitializeModules();
             PlayerInput.OnJumpKeyPressed += HandleJumpKeyPressed;
             PlayerInput.OnDashKeyPressed += HandleDashKeyPressed;
-
-            if (_grappler != null)
-            {
-                _grappler.GrappleStarted += HandleGrappleStarted;
-                _grappler.GrappleEnded += HandleGrappleEnded;
-            }
         }
 
         private void HandleDashKeyPressed()
         {
-            if (_grappler != null && _grappler.IsGrappling)
+            if (IsEquipmentActionActive)
                 return;
 
             if (SkillModule.CanUseSkill(0))
@@ -66,17 +61,11 @@ namespace Member.KYM.Scripts.Players
                 PlayerInput.OnJumpKeyPressed -= HandleJumpKeyPressed;
                 PlayerInput.OnDashKeyPressed -= HandleDashKeyPressed;
             }
-
-            if (_grappler != null)
-            {
-                _grappler.GrappleStarted -= HandleGrappleStarted;
-                _grappler.GrappleEnded -= HandleGrappleEnded;
-            }
         }
         
         private void HandleJumpKeyPressed()
         {
-            if (_grappler != null && _grappler.IsGrappling)
+            if (IsEquipmentActionActive)
                 return;
 
             if (_currentJumpCount < MaxJumpCount)
@@ -88,13 +77,18 @@ namespace Member.KYM.Scripts.Players
         
         public void ResetJumpCount() => _currentJumpCount = 0;
 
-        private void HandleGrappleStarted()
+        public void BeginEquipmentAction(PlayerStateEnum state)
         {
-            ChangeState(PlayerStateEnum.GRAPPLE);
+            IsEquipmentActionActive = true;
+            ChangeState(state);
         }
 
-        private void HandleGrappleEnded()
+        public void EndEquipmentAction()
         {
+            if (!IsEquipmentActionActive)
+                return;
+
+            IsEquipmentActionActive = false;
             IMover mover = GetModule<IMover>();
             ChangeState(
                 mover.IsGrounded
