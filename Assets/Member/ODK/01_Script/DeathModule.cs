@@ -2,7 +2,7 @@ using KimLIb.ModuleSystems;
 using System;
 using UnityEngine;
 
-public class DeathModule : IModule
+public class DeathModule : MonoBehaviour, IModule
 {
     public bool IsDead;
     public Action OnDeath { get; set; }
@@ -15,5 +15,12 @@ public class DeathModule : IModule
     public void ActiveDeath()
     {
         OnDeath?.Invoke();
+    }
+    [ContextMenu("Revive")]
+    public void Revive()
+    {
+        IsDead = false;
+        HealthModule hm = owner.GetModule<HealthModule>();
+        hm.SetMaxHealth(hm.MaxHealth, true);
     }
 }
