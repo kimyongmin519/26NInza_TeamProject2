@@ -18,12 +18,13 @@ namespace Member.KYM.Scripts.Players.RobotArm
         [SerializeField] private float failedGrabCloseTime = 0.12f;
 
         public bool IsHolding => _heldObject != null;
-        public bool IsBusy => _throwRoutine != null;
+        public bool IsBusy => _throwRoutine != null || _actionLocked;
         public Transform GrabPoint => grabPoint;
 
         private IGrabbable _heldObject;
         private Coroutine _failedGrabRoutine;
         private Coroutine _throwRoutine;
+        private bool _actionLocked;
 
         private void Awake()
         {
@@ -33,13 +34,13 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
         private void OnDisable()
         {
+            _actionLocked = false;
+
             if (_throwRoutine != null)
             {
                 StopCoroutine(_throwRoutine);
                 _throwRoutine = null;
             }
-
-            Release();
         }
 
         public void Release()
@@ -95,13 +96,28 @@ namespace Member.KYM.Scripts.Players.RobotArm
         public bool TryGrab()
         {
             IGrabbable nearest = FindNearestGrabbable();
-            if (nearest == null)
-                return false;
+            return TryGrab(nearest);
+        }
 
-            _heldObject = nearest;
+        public bool TryGrab(IGrabbable grabbable)
+        {
+            if (_heldObject != null ||
+                _throwRoutine != null ||
+                grabbable == null ||
+                !grabbable.CanBeGrabbed)
+            {
+                return false;
+            }
+
+            _heldObject = grabbable;
             _heldObject.Grab(grabPoint, throwOwner);
             fingerAnimator?.SetClosed(true);
             return true;
+        }
+
+        public void SetActionLocked(bool locked)
+        {
+            _actionLocked = locked;
         }
 
         private IGrabbable FindNearestGrabbable()

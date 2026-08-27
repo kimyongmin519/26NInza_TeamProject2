@@ -817,7 +817,7 @@ MonoBehaviour:
   m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 496376341}
+    TrackingTarget: {fileID: 1341303436}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -849,7 +849,7 @@ Transform:
   m_GameObject: {fileID: 46003641}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.62, y: -0.23300004, z: -10}
+  m_LocalPosition: {x: 5.06, y: 1.51, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4985,11 +4985,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!4 &496376341 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4431676650236865722, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
-  m_PrefabInstance: {fileID: 2636230306884800122}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &498633375
 GameObject:
   m_ObjectHideFlags: 0
@@ -5493,7 +5488,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.62, y: -0.23300004, z: -10}
+  m_LocalPosition: {x: 5.06, y: 1.51, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11414,6 +11409,11 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!4 &1341303436 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7847070380472739339, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
+  m_PrefabInstance: {fileID: 2636230306884800122}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1358803980
 GameObject:
   m_ObjectHideFlags: 0
@@ -19334,7 +19334,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5391453299532267432, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6899043265987018698, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
       propertyPath: m_Name

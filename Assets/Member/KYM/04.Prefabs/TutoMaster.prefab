@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1731265016878409047}
   - component: {fileID: 4584859333309257690}
   - component: {fileID: 1018261807039264953}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: TutoMaster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &1018261807039264953
 MonoBehaviour:
   m_ObjectHideFlags: 0
