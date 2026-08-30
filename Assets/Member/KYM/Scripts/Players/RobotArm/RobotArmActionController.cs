@@ -59,14 +59,14 @@ namespace Member.KYM.Scripts.Players.RobotArm
             if (IsSkillLocked)
                 return;
 
+            if (grabber.IsBusy)
+                return;
+
             if (grabber.IsHolding)
             {
                 grabber.TryThrow();
                 return;
             }
-
-            if (grabber.IsBusy)
-                return;
 
             if (grabber.TryGrab())
                 return;
