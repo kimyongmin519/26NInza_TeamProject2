@@ -30,7 +30,7 @@ namespace Member.KYM.Scripts.Players
 
         public void SetGravityScale(float value)
         {
-            ;
+            
         }
 
         public void AddForceToAgent(Vector2 force)
