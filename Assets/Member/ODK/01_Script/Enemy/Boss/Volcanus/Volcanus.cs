@@ -6,7 +6,6 @@ using UnityEngine.Events;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "Volcanus")]
     public class Volcanus : EnemyController
     {
         [Header("Piece")]
@@ -496,7 +495,6 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
     }
 
     [System.Serializable]
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "VolcanusPositionEvent")]
     public class VolcanusPositionEvent : UnityEvent<Vector3>
     {
     }

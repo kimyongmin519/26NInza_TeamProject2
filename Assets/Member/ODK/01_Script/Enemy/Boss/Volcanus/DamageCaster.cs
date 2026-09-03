@@ -4,7 +4,6 @@ using UnityEngine.Rendering;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "DamageCastMode")]
     public enum DamageCastMode
     {
         Circle,
@@ -13,7 +12,6 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         OutsideBox
     }
 
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "DamageCastingMode")]
     public enum DamageCastingMode
     {
         Instant,
@@ -21,7 +19,6 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         Manual
     }
 
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "DamageCaster")]
     public class DamageCaster : MonoBehaviour
     {
         [Header("Cast Setting")]

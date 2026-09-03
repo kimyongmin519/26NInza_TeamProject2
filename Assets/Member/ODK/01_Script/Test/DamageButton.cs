@@ -3,7 +3,6 @@ using UnityEngine.UI;
 
 namespace Member.ODK.Scripts.Tests
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "DamageButton")]
     public class DamageButton : MonoBehaviour
     {
 

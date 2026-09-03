@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Skills
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "SkillCommand")]
     public struct SkillCommand
     {
         public int skillIndex;

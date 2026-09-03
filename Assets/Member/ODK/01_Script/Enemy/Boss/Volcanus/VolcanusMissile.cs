@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "VolcanusMissile")]
     public class VolcanusMissile : MonoBehaviour
     {
         [SerializeField] private float rotateSpeed = 720f;

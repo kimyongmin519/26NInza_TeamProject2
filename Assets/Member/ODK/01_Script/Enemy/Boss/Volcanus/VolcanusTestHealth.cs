@@ -4,7 +4,6 @@ using UnityEngine.Events;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "VolcanusTestHealth")]
     public class VolcanusTestHealth : MonoBehaviour, IDamageable
     {
         [field: SerializeField] public float MaxHealth { get; private set; } = 300f;

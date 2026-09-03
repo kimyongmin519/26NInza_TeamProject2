@@ -10,13 +10,11 @@ using UnityEngine;
 namespace Member.ODK.Scripts.Editor
 {
     [Serializable]
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp-Editor", sourceClassName: "ScriptBundleManifest")]
     public class ScriptBundleManifest
     {
         public string[] files;
     }
 
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp-Editor", sourceClassName: "ScriptLibraryWindow")]
     public class ScriptLibraryWindow : EditorWindow
     {
         const string PrefsKey = "ScriptLibrary.RootPath";

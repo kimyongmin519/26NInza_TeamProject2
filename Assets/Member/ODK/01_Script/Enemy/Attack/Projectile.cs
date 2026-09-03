@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Attacks
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "Member.ODK.Script", sourceAssembly: "Assembly-CSharp", sourceClassName: "Projectile")]
     public class Projectile : MonoBehaviour, IProjectile, IPoolable
     {
         private Agent ownerAgent;

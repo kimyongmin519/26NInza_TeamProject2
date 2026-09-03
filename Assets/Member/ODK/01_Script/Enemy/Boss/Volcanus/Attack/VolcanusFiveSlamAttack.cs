@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "VolcanusFiveSlamAttack")]
     public class VolcanusFiveSlamAttack : VolcanusSkill
     {
         [SerializeField] private int slamCount = 5;

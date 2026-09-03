@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "VolcanusFeedback")]
     public class VolcanusFeedback : MonoBehaviour
     {
         [Header("Optional Audio")]

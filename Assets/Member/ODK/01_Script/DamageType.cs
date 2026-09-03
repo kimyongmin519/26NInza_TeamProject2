@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "DamageType")]
     public enum DamageType
     {
         Melee,
@@ -11,7 +10,6 @@ namespace Member.ODK.Scripts
         Special
     }
 
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "CriticalType")]
     public enum CriticalType
     {
         Normal,

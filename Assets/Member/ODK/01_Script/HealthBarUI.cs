@@ -4,13 +4,11 @@ using UnityEngine.UI;
 
 namespace Member.ODK.Scripts.UI
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "IHealthModuleExtra")]
     public interface IHealthModuleExtra
     {
         void Setting(HealthModule module);
     }
 
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "HealthBarUI")]
     public class HealthBarUI : MonoBehaviour, IHealthModuleExtra
     {
         [Header("References")]

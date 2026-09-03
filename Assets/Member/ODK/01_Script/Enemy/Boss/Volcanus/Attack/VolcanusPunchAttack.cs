@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "VolcanusPunchAttack")]
     public class VolcanusPunchAttack : VolcanusSkill
     {
         [SerializeField] private Vector2 dir = Vector2.right;

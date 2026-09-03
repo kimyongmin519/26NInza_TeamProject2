@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "HealthModule")]
     public class HealthModule : MonoBehaviour, IModule
     {
         [field:SerializeField] public float MaxHealth { get; private set; } = 1000;

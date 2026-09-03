@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "VolcanusPiece")]
     public class VolcanusPiece : MonoBehaviour, IDamageable
     {
         public bool IsDestroyed { get; private set; }

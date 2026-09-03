@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "VolcanusSkill")]
     public abstract class VolcanusSkill : AbstractEnemySkill
     {
         [field: Header("Damage")]

@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "DeathModule")]
     public class DeathModule : MonoBehaviour, IModule
     {
         public bool IsDead;

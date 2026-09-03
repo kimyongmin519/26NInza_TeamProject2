@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.States
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "Member.KYM.Scripts.Players.FSM", sourceAssembly: "Assembly-CSharp", sourceClassName: "AbstractEnemyState")]
     public abstract class AbstractEnemyState : AgentState
     {
         protected IMover _mover;

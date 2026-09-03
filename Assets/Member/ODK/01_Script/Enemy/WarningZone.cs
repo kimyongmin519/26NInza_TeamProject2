@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "WarningZone")]
     public class WarningZone : MonoBehaviour, IPoolable
     {
         [SerializeField] private PoolManagerSO poolManager;

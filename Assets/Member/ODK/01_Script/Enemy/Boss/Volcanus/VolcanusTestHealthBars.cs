@@ -3,7 +3,6 @@ using UnityEngine.UI;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "VolcanusTestHealthBars")]
     public class VolcanusTestHealthBars : MonoBehaviour
     {
         [Header("Target")]

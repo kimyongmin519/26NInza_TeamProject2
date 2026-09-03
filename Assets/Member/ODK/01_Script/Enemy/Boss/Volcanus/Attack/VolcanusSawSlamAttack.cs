@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "VolcanusSawSlamAttack")]
     public class VolcanusSawSlamAttack : VolcanusSkill
     {
         [SerializeField] private float readyHeight = 9f;
