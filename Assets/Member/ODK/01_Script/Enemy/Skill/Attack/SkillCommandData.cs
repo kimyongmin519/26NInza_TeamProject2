@@ -1,33 +1,38 @@
 using UnityEngine;
-public struct SkillCommand
+
+namespace Member.ODK.Scripts.Enemys.Skills
 {
-    public int skillIndex;
-    public Vector2 direction;
-
-    public int projectileCount;
-    public float spreadAngle;
-    public float projectileSpeed;
-
-    public int repeatCount;
-    public float shotInterval;
-
-    public SkillCommand(
-        int skillIndex,
-        Vector2 direction,
-        int projectileCount,
-        float spreadAngle,
-        float projectileSpeed,
-        int repeatCount,
-        float shotInterval)
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "SkillCommand")]
+    public struct SkillCommand
     {
-        this.skillIndex = skillIndex;
-        this.direction = direction;
+        public int skillIndex;
+        public Vector2 direction;
 
-        this.projectileCount = projectileCount;
-        this.spreadAngle = spreadAngle;
-        this.projectileSpeed = projectileSpeed;
+        public int projectileCount;
+        public float spreadAngle;
+        public float projectileSpeed;
 
-        this.repeatCount = repeatCount;
-        this.shotInterval = shotInterval;
+        public int repeatCount;
+        public float shotInterval;
+
+        public SkillCommand(
+            int skillIndex,
+            Vector2 direction,
+            int projectileCount,
+            float spreadAngle,
+            float projectileSpeed,
+            int repeatCount,
+            float shotInterval)
+        {
+            this.skillIndex = skillIndex;
+            this.direction = direction;
+
+            this.projectileCount = projectileCount;
+            this.spreadAngle = spreadAngle;
+            this.projectileSpeed = projectileSpeed;
+
+            this.repeatCount = repeatCount;
+            this.shotInterval = shotInterval;
+        }
     }
 }

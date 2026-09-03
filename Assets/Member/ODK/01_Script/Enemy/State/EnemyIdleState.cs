@@ -3,14 +3,15 @@ using Member.KYM.Scripts.Agents.FSM;
 using Member.ODK.Scripts.Enemys;
 using UnityEngine;
 
-namespace Member.KYM.Scripts.Players.FSM
+namespace Member.ODK.Scripts.Enemys.States
 {
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "Member.KYM.Scripts.Players.FSM", sourceAssembly: "Assembly-CSharp", sourceClassName: "AbstractEnemyState")]
     public abstract class AbstractEnemyState : AgentState
     {
         protected IMover _mover;
         protected EnemyController _player;
         protected const float INPUT_DEADLINE = 0.1f;
-        
+
         public AbstractEnemyState(Agent agent, int stateClipHash) : base(agent, stateClipHash)
         {
             _mover = agent.GetModule<IMover>();

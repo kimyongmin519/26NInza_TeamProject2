@@ -1,70 +1,74 @@
 using UnityEngine;
 
-public class VolcanusPieceGroup : MonoBehaviour
+namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    [Header("Follow")]
-    [SerializeField] private float followThreshold = 3f;
-    [SerializeField] private float followStrength = 0.4f;
-    [SerializeField] private float maxFollowDistance = 3f;
-
-    private VolcanusPiece[] pieces;
-
-    private void Awake()
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "VolcanusPieceGroup")]
+    public class VolcanusPieceGroup : MonoBehaviour
     {
-        pieces = GetComponentsInChildren<VolcanusPiece>(true);
-    }
+        [Header("Follow")]
+        [SerializeField] private float followThreshold = 3f;
+        [SerializeField] private float followStrength = 0.4f;
+        [SerializeField] private float maxFollowDistance = 3f;
 
-    public Vector3 GetFollowOffset(VolcanusPiece requester)
-    {
-        if (pieces == null || pieces.Length == 0)
-            return Vector3.zero;
+        private VolcanusPiece[] pieces;
 
-        VolcanusPiece farthestPiece = null;
-
-        Vector3 farthestDisplacement = Vector3.zero;
-        float farthestDistance = followThreshold;
-
-        foreach (VolcanusPiece piece in pieces)
+        private void Awake()
         {
-            if (piece == null)
-                continue;
-
-            if (piece == requester)
-                continue;
-
-            if (piece.IsDestroyed)
-                continue;
-
-            // 중요한 부분:
-            // 자기 원래 위치에서 얼마나 벗어났는지를 검사
-            Vector3 displacement =
-                piece.transform.localPosition -
-                piece.OriginLocalPosition;
-
-            float distance = displacement.magnitude;
-
-            if (distance <= farthestDistance)
-                continue;
-
-            farthestDistance = distance;
-            farthestDisplacement = displacement;
-            farthestPiece = piece;
+            pieces = GetComponentsInChildren<VolcanusPiece>(true);
         }
 
-        if (farthestPiece == null)
-            return Vector3.zero;
+        public Vector3 GetFollowOffset(VolcanusPiece requester)
+        {
+            if (pieces == null || pieces.Length == 0)
+                return Vector3.zero;
 
-        float excess =
-            farthestDistance -
-            followThreshold;
+            VolcanusPiece farthestPiece = null;
 
-        float followDistance =
-            Mathf.Min(
-                excess * followStrength,
-                maxFollowDistance
-            );
+            Vector3 farthestDisplacement = Vector3.zero;
+            float farthestDistance = followThreshold;
 
-        return farthestDisplacement.normalized *
-               followDistance;
+            foreach (VolcanusPiece piece in pieces)
+            {
+                if (piece == null)
+                    continue;
+
+                if (piece == requester)
+                    continue;
+
+                if (piece.IsDestroyed)
+                    continue;
+
+                // 중요한 부분:
+                // 자기 원래 위치에서 얼마나 벗어났는지를 검사
+                Vector3 displacement =
+                    piece.transform.localPosition -
+                    piece.OriginLocalPosition;
+
+                float distance = displacement.magnitude;
+
+                if (distance <= farthestDistance)
+                    continue;
+
+                farthestDistance = distance;
+                farthestDisplacement = displacement;
+                farthestPiece = piece;
+            }
+
+            if (farthestPiece == null)
+                return Vector3.zero;
+
+            float excess =
+                farthestDistance -
+                followThreshold;
+
+            float followDistance =
+                Mathf.Min(
+                    excess * followStrength,
+                    maxFollowDistance
+                );
+
+            return farthestDisplacement.normalized *
+                   followDistance;
+        }
     }
 }

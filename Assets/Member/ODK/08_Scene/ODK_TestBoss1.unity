@@ -396,7 +396,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 783af83518c22274d9b8ec6e1d08d391, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusPunchAttack
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusPunchAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: 7d732e6decfa14341b6e139bf439f32e, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000300}
   animationStateName: Inferno_Hand_Attack
@@ -1015,7 +1015,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45349ef74ff66ad4e98dffc41bd1004f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DeathModule
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.DeathModule
   IsDead: 0
 --- !u!1 &41518352
 GameObject:
@@ -4157,7 +4157,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthModule
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
   <MaxHealth>k__BackingField: 1000
   <CurrentHealth>k__BackingField: 1000
   owner: {fileID: 1070182107}
@@ -4302,7 +4302,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7486273020ca51647942194b03f0ae22, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusPiece
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusPiece
   defaultAnimationStateName: IDLE
   defaultAnimationFadeDuration: 0.08
   destroyAnimationStateName: 
@@ -7643,7 +7643,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthModule
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
   <MaxHealth>k__BackingField: 1000
   <CurrentHealth>k__BackingField: 1000
   owner: {fileID: 1811559538}
@@ -9899,7 +9899,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7486273020ca51647942194b03f0ae22, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusPiece
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusPiece
   defaultAnimationStateName: IDLE
   defaultAnimationFadeDuration: 0.08
   destroyAnimationStateName: Death
@@ -18388,7 +18388,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7486273020ca51647942194b03f0ae22, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusPiece
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusPiece
   defaultAnimationStateName: IDLE
   defaultAnimationFadeDuration: 0.08
   destroyAnimationStateName: 
@@ -18665,7 +18665,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a690efbfdb2e9164ba738ef981971dc7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Volcanus
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.Volcanus
   <Head>k__BackingField: {fileID: 892350016}
   <Truso>k__BackingField: {fileID: 1778107359}
   <LeftHand>k__BackingField: {fileID: 286545409}
@@ -20062,7 +20062,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 783af83518c22274d9b8ec6e1d08d391, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusPunchAttack
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusPunchAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: 180c2d93d5a8fa04fad711d6c97864ff, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000301}
   animationStateName: Inferno_Hand_Attack
@@ -21614,7 +21614,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7486273020ca51647942194b03f0ae22, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusPiece
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusPiece
   defaultAnimationStateName: IDLE
   defaultAnimationFadeDuration: 0.08
   destroyAnimationStateName: 
@@ -22189,7 +22189,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e0e4c31dfd7a44e9a81bc65a2828fe84, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusSawSlamAttack
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusSawSlamAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a1111111111141118111111111111112, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000302}
   animationStateName: inferno_Saw_Attack
@@ -22209,7 +22209,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0a44bad5f6b48a3a240bd24a4b1db97, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusSideSlashAttack
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusSideSlashAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a2222222222242228222222222222223, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000303}
   animationStateName: 
@@ -22237,7 +22237,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e373123d76f4028995b3310be26a473, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusFiveSlamAttack
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusFiveSlamAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a3333333333343338333333333333334, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000304}
   animationStateName: Inferno_Hand_Attack2
@@ -22259,7 +22259,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eaf3dbddbf2f43cc878fa74fae21ab68, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusLaserAttack
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusLaserAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4444444444444448444444444444445, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000305}
   animationStateName: 
@@ -22290,7 +22290,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da10d1adf9734cd7b21b1f2a173d41b1, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusMissileAttack
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusMissileAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a5555555555545558555555555555556, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000306}
   animationStateName: 
@@ -22322,7 +22322,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 97f9399f63e94b6599ac2b0552093369, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusFeedback
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusFeedback
   audioSource: {fileID: 0}
   readyClip: {fileID: 0}
   impactClip: {fileID: 0}
@@ -22342,7 +22342,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 424b7860596541c393b95cf911677375, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VolcanusTestHealthBars
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusTestHealthBars
   boss: {fileID: 1811559538}
   player: {fileID: 2636230306884800123}
   addTestPlayerHealth: 1
@@ -22527,7 +22527,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6311cb5cb2184a25844b51f6d378d37d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageCaster
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.DamageCaster
   castMode: 0
   referenceTransform: {fileID: 2091253906}
   positionOffset: {x: 2.5, y: -3.5}
@@ -22556,7 +22556,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6311cb5cb2184a25844b51f6d378d37d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageCaster
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.DamageCaster
   castMode: 0
   referenceTransform: {fileID: 2091253906}
   positionOffset: {x: 2.5, y: -3.5}
@@ -22585,7 +22585,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6311cb5cb2184a25844b51f6d378d37d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageCaster
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.DamageCaster
   castMode: 0
   referenceTransform: {fileID: 286545408}
   positionOffset: {x: -1, y: -6}
@@ -22614,7 +22614,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6311cb5cb2184a25844b51f6d378d37d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageCaster
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.DamageCaster
   castMode: 0
   referenceTransform: {fileID: 286545408}
   positionOffset: {x: -1, y: -6}
@@ -22643,7 +22643,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6311cb5cb2184a25844b51f6d378d37d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageCaster
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.DamageCaster
   castMode: 0
   referenceTransform: {fileID: 2091253906}
   positionOffset: {x: 2.5, y: -4.5}
@@ -22672,7 +22672,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6311cb5cb2184a25844b51f6d378d37d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageCaster
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.DamageCaster
   castMode: 3
   referenceTransform: {fileID: 3000000241}
   positionOffset: {x: 0, y: 0}
@@ -22701,7 +22701,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6311cb5cb2184a25844b51f6d378d37d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageCaster
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.DamageCaster
   castMode: 0
   referenceTransform: {fileID: 3000000251}
   positionOffset: {x: 0, y: 0}
@@ -22762,7 +22762,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6311cb5cb2184a25844b51f6d378d37d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageCaster
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.DamageCaster
   castMode: 0
   referenceTransform: {fileID: 2091253906}
   positionOffset: {x: 2.5, y: -4.5}

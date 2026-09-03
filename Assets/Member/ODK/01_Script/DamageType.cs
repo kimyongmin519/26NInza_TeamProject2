@@ -1,16 +1,21 @@
 using UnityEngine;
 
-public enum DamageType
+namespace Member.ODK.Scripts
 {
-    Melee,
-    Beam,
-    Projectile,
-    Special
-}
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "DamageType")]
+    public enum DamageType
+    {
+        Melee,
+        Beam,
+        Projectile,
+        Special
+    }
 
-public enum CriticalType
-{
-    Normal,
-    Critical,
-    SuperCritical
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "CriticalType")]
+    public enum CriticalType
+    {
+        Normal,
+        Critical,
+        SuperCritical
+    }
 }

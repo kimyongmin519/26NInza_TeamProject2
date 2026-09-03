@@ -1,19 +1,23 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DamageButton : MonoBehaviour
+namespace Member.ODK.Scripts.Tests
 {
-
-    [SerializeField] private HealthModule enemy;
-    [SerializeField] private float dmage = 50;
-   
-
-
-    public void ApplyDamage()
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "", sourceAssembly: "Assembly-CSharp", sourceClassName: "DamageButton")]
+    public class DamageButton : MonoBehaviour
     {
-        DamageData damage= new DamageData();
-        damage.Amount = dmage;
-        enemy.ApplyDamage(damage);
-    }
 
+        [SerializeField] private HealthModule enemy;
+        [SerializeField] private float dmage = 50;
+
+
+
+        public void ApplyDamage()
+        {
+            DamageData damage= new DamageData();
+            damage.Amount = dmage;
+            enemy.ApplyDamage(damage);
+        }
+
+    }
 }

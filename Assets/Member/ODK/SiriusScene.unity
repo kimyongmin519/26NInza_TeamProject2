@@ -341,7 +341,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 86339700}
-        m_TargetAssemblyTypeName: DamageButton, Assembly-CSharp
+        m_TargetAssemblyTypeName: Member.ODK.Scripts.Tests.DamageButton, Assembly-CSharp
         m_MethodName: ApplyDamage
         m_Mode: 1
         m_Arguments:
@@ -401,7 +401,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06ab9b25133fe934eb717dbbefa21145, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageButton
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Tests.DamageButton
   enemy: {fileID: 2071244734}
   dmage: 50
 --- !u!1 &593763228
@@ -671,7 +671,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c763364058c9f4744bf40f3af807d9a6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.UI.HealthBarUI
   barObject: {fileID: 1687000715}
   barHighLight: {fileID: 593763230}
   barFill: {fileID: 1862166362}
@@ -718,7 +718,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45349ef74ff66ad4e98dffc41bd1004f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DeathModule
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.DeathModule
   IsDead: 0
 --- !u!1 &1687000714
 GameObject:
@@ -1006,7 +1006,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthModule
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
   <MaxHealth>k__BackingField: 1000
   <CurrentHealth>k__BackingField: 1000
   owner: {fileID: 0}

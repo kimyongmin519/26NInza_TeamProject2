@@ -1,13 +1,15 @@
 ﻿using Member.KYM.Scripts.Agents;
 using UnityEngine;
 
-namespace Member.ODK.Script
+namespace Member.ODK.Scripts.Enemys.Attacks
 {
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "Member.ODK.Script", sourceAssembly: "Assembly-CSharp", sourceClassName: "IProjectile")]
     public interface IProjectile
     {
         void Launch(Agent ownerAgent, ProjectileData projectileData);
         void Release();
     }
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "Member.ODK.Script", sourceAssembly: "Assembly-CSharp", sourceClassName: "ProjectileData")]
     public readonly struct ProjectileData
     {
         public Vector2 Direction { get; }
