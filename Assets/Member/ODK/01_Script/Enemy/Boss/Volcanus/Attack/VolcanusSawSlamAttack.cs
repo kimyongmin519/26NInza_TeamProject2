@@ -32,8 +32,9 @@ public class VolcanusSawSlamAttack : VolcanusSkill
         yield return new WaitForSeconds(waitDuration * DurationScale);
 
         groundPoint = Boss.GetGroundPoint(Boss.Target.position.x);
-        Vector3 hitPosition = Boss.GetSawImpactPosition(groundPoint);
+        Vector3 hitPosition = Boss.GetSawImpactPosition(groundPoint) + new Vector3(0,-3f,0);
         Vector3 damagePoint = groundPoint;
+        PlayAttackAnimation(Boss.LeftHand);
         DamageCaster?.EnableCasting(
             new DamageData(damage, DamageType.Melee),
             (slamDuration + 0.16f) * DurationScale + 0.3f
@@ -46,6 +47,7 @@ public class VolcanusSawSlamAttack : VolcanusSkill
         Boss.SpawnSawRocks(damagePoint);
         yield return new WaitForSeconds(0.3f);
         DamageCaster?.DisableCasting();
+        EndAttackAnimation();
         Boss.SetSawMoving(false);
     }
 

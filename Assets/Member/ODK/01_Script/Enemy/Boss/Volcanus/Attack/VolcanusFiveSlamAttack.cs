@@ -44,6 +44,7 @@ public class VolcanusFiveSlamAttack : VolcanusSkill
             sequence.Join(fist.DORotate(new Vector3(0f, 0f, Boss.FistDownAngle), readyDuration * DurationScale).SetEase(Ease.OutQuad));
             yield return sequence.WaitForCompletion();
 
+            PlayAttackAnimation(Boss.RightHand);
             DamageCaster?.EnableCasting(
                 new DamageData(damage, DamageType.Melee),
                 slamDuration * DurationScale + Time.fixedDeltaTime
@@ -55,9 +56,13 @@ public class VolcanusFiveSlamAttack : VolcanusSkill
             Boss.AttackImpact(damagePoint);
             Boss.SpawnFistRocks(damagePoint);
             DamageCaster?.DisableCasting();
+            
 
             if (i < slamCount - 1)
+            {
                 yield return new WaitForSeconds(slamInterval * DurationScale);
+                EndAttackAnimation();
+            }
         }
 
         Boss.RightHand.SetAnotherMoving(false);

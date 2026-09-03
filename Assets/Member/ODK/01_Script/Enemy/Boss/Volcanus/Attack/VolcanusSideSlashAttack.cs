@@ -11,6 +11,8 @@ public class VolcanusSideSlashAttack : VolcanusSkill
     [SerializeField] private float slashRotation = 720f;
     [SerializeField] private float slashDuration = 0.42f;
     [SerializeField] private float sawDamage = 70f;
+    [SerializeField] private string sawAnimationStateName;
+    [SerializeField] private float plusY = 4f;
 
     [Header("Fist Slam")]
     [SerializeField] private float readyHeight = 8f;
@@ -18,6 +20,7 @@ public class VolcanusSideSlashAttack : VolcanusSkill
     [SerializeField] private float slamDuration = 0.16f;
     [SerializeField] private float damage = 95f;
     [SerializeField] private DamageCaster fistDamageCaster;
+    [SerializeField] private string fistAnimationStateName;
 
     private Sequence sequence;
 
@@ -41,7 +44,7 @@ public class VolcanusSideSlashAttack : VolcanusSkill
 
         Boss.SetSawMoving(true);
         float slashY = Boss.GetGroundPoint(Boss.Target.position.x).y + slashHeight;
-        Vector3 slashStart = new Vector3(Boss.ArenaCenter.x + side * Boss.ArenaHalfWidth, slashY, Boss.Saw.position.z);
+        Vector3 slashStart = new Vector3(Boss.ArenaCenter.x + side * Boss.ArenaHalfWidth, slashY + plusY, Boss.Saw.position.z);
         Vector3 slashEnd = slashStart + Vector3.left * side * slashDistance;
         Boss.AttackReady(slashStart);
         sequence = DOTween.Sequence();
@@ -49,6 +52,7 @@ public class VolcanusSideSlashAttack : VolcanusSkill
         sequence.Join(Boss.Saw.DOLocalRotate(new Vector3(0f, 0f, Boss.SawDownAngle), 0.35f).SetEase(Ease.OutCubic));
         yield return sequence.WaitForCompletion();
 
+        PlayAttackAnimation(Boss.LeftHand, sawAnimationStateName);
         DamageCaster?.EnableCasting(
             new DamageData(sawDamage, DamageType.Melee),
             slashDuration
@@ -62,6 +66,7 @@ public class VolcanusSideSlashAttack : VolcanusSkill
         yield return sequence.WaitForCompletion();
         Boss.AttackImpact(slashEnd);
         DamageCaster?.DisableCasting();
+        EndAttackAnimation();
         Boss.SetSawMoving(false);
 
         yield return FistSlam();
@@ -87,6 +92,7 @@ public class VolcanusSideSlashAttack : VolcanusSkill
         sequence.Join(fist.DORotate(new Vector3(0f, 0f, Boss.FistDownAngle), readyDuration).SetEase(Ease.OutQuad));
         yield return sequence.WaitForCompletion();
 
+        PlayAttackAnimation(Boss.RightHand, fistAnimationStateName);
         fistDamageCaster?.EnableCasting(
             new DamageData(damage, DamageType.Melee),
             slamDuration + 0.08f
@@ -98,6 +104,7 @@ public class VolcanusSideSlashAttack : VolcanusSkill
         Boss.AttackImpact(groundPoint);
         Boss.SpawnFistRocks(groundPoint);
         fistDamageCaster?.DisableCasting();
+        EndAttackAnimation();
         Boss.RightHand.SetAnotherMoving(false);
     }
 

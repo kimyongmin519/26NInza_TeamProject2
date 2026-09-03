@@ -24,6 +24,7 @@ public class VolcanusMissileAttack : VolcanusSkill
 
     protected override IEnumerator Execute(GameObject target)
     {
+        PlayAttackAnimation(Boss.Truso);
         for (int i = 0; i < 4; i++)
         {
             SpawnMissile(i);

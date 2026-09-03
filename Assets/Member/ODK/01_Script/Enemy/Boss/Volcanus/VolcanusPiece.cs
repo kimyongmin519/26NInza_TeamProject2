@@ -117,10 +117,23 @@ public class VolcanusPiece : MonoBehaviour, IDamageable
         returnSequence.OnComplete(() => returnSequence = null);
     }
 
+    public bool PlayAttackAnimation(string stateName)
+    {
+        if (IsDestroyed || Animator == null || Animator.runtimeAnimatorController == null || string.IsNullOrWhiteSpace(stateName))
+            return false;
+
+        int stateHash = UnityEngine.Animator.StringToHash(stateName);
+        if (!Animator.HasState(0, stateHash)) return false;
+        Animator.Play(stateHash, 0, 0f);
+        return true;
+    }
+
     public void PlayDefaultAnimation()
     {
-        if (IsDestroyed || Animator == null || string.IsNullOrWhiteSpace(defaultAnimationStateName)) return;
-        Animator.CrossFadeInFixedTime(defaultAnimationStateName, defaultAnimationFadeDuration, 0, 0f);
+        if (IsDestroyed || Animator == null || Animator.runtimeAnimatorController == null || string.IsNullOrWhiteSpace(defaultAnimationStateName)) return;
+        int stateHash = UnityEngine.Animator.StringToHash(defaultAnimationStateName);
+        if (Animator.HasState(0, stateHash))
+            Animator.CrossFadeInFixedTime(stateHash, defaultAnimationFadeDuration, 0, 0f);
     }
 
     public bool IsUseable() => !IsDestroyed && !IsAnotherMoving;

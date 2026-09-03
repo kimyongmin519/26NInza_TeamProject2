@@ -99,6 +99,7 @@ public class VolcanusLaserAttack : VolcanusSkill
         laserSweepTween = null;
         if (Boss.IsPhaseTwo || Boss.IsDead) yield break;
 
+        PlayAttackAnimation(Boss.Head);
         Boss.LaserFeedback(false);
         float damageTime = 0f;
         float currentTime = 0f;
@@ -116,6 +117,7 @@ public class VolcanusLaserAttack : VolcanusSkill
         }
 
         SetLaserActive(false);
+        EndAttackAnimation();
         if (Boss.IsPhaseTwo || Boss.IsDead) yield break;
 
         sequence = DOTween.Sequence();

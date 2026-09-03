@@ -8,12 +8,16 @@ public abstract class VolcanusSkill : AbstractEnemySkill
     [field: Header("Damage")]
     [field: SerializeField] protected DamageCaster DamageCaster { get; private set; }
 
+    [Header("Animation")]
+    [SerializeField] private string animationStateName;
+
     protected Volcanus Boss => _volcanus;
     protected float DurationScale { get; private set; } = 1f;
 
     protected Volcanus _volcanus;
 
     private Coroutine attackCoroutine;
+    private VolcanusPiece animatedPiece;
     private bool isInitialized;
 
     public override void InitializeSkill(ISkillModule skillModule)
@@ -66,6 +70,7 @@ public abstract class VolcanusSkill : AbstractEnemySkill
         }
 
         OnCancel();
+        EndAttackAnimation();
         if (IsUsing) base.StopSkill();
     }
 
@@ -84,9 +89,24 @@ public abstract class VolcanusSkill : AbstractEnemySkill
         damageCaster.Cast(new DamageData(damage, type));
     }
 
+    protected void PlayAttackAnimation(VolcanusPiece piece, string stateName = null)
+    {
+        EndAttackAnimation();
+        string playStateName = string.IsNullOrWhiteSpace(stateName) ? animationStateName : stateName;
+        if (piece != null && piece.PlayAttackAnimation(playStateName))
+            animatedPiece = piece;
+    }
+
+    protected void EndAttackAnimation()
+    {
+        if (animatedPiece != null) animatedPiece.PlayDefaultAnimation();
+        animatedPiece = null;
+    }
+
     private IEnumerator RunAttack(GameObject target)
     {
         yield return Execute(target);
+        EndAttackAnimation();
         attackCoroutine = null;
         if (IsUsing) base.StopSkill();
     }

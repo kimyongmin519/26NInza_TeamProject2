@@ -399,6 +399,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VolcanusPunchAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: 7d732e6decfa14341b6e139bf439f32e, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000300}
+  animationStateName: Inferno_Hand_Attack
   dir: {x: 1, y: 0}
   readyDuration: 0.55
   punchDuration: 0.3
@@ -1091,7 +1092,7 @@ MonoBehaviour:
   m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 0}
+    TrackingTarget: {fileID: 2636230306884800123}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -1123,7 +1124,7 @@ Transform:
   m_GameObject: {fileID: 46003641}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.62, y: -0.23300004, z: -10}
+  m_LocalPosition: {x: 2.29, y: 22.13, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1939,14 +1940,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Players.PlayerMover
   moveSpeed: 0
   whatIsGround:
+    serializedVersion: 2
     m_Bits: 0
   groundCheckSize: {x: 0, y: 0}
-  <RigidBody>k__BackingField: {fileID: 0}
-  <IsGrounded>k__BackingField: 0
-  <CanManualMovement>k__BackingField: 1
-  _moveDirX: 0
-  _owner: {fileID: 0}
-  _originalGravityScale: 0
 --- !u!1 &145743519
 GameObject:
   m_ObjectHideFlags: 0
@@ -6437,7 +6433,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.32999992, y: -22.362999, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20069,6 +20065,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VolcanusPunchAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: 180c2d93d5a8fa04fad711d6c97864ff, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000301}
+  animationStateName: Inferno_Hand_Attack
   dir: {x: -1, y: 0}
   readyDuration: 0.55
   punchDuration: 0.3
@@ -22195,6 +22192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VolcanusSawSlamAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a1111111111141118111111111111112, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000302}
+  animationStateName: inferno_Saw_Attack
   readyHeight: 6
   readyDuration: 0.75
   slamDuration: 0.16
@@ -22214,17 +22212,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VolcanusSideSlashAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a2222222222242228222222222222223, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000303}
+  animationStateName: 
   sideMoveDuration: 0.8
   slashDistance: 18
   slashHeight: 3
   slashRotation: -32
   slashDuration: 1.5
   sawDamage: 70
+  sawAnimationStateName: 
   readyHeight: 9
   readyDuration: 0.42
   slamDuration: 0.16
   damage: 95
   fistDamageCaster: {fileID: 3000000502}
+  fistAnimationStateName: Inferno_Hand_Attack2
 --- !u!114 &3000000103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22239,12 +22240,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VolcanusFiveSlamAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a3333333333343338333333333333334, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000304}
+  animationStateName: Inferno_Hand_Attack2
   slamCount: 5
   slamWidthRate: 0.75
   readyHeight: 9
   readyDuration: 0.35
   slamDuration: 0.2
-  slamInterval: 0
+  slamInterval: 0.3
   damage: 42
 --- !u!114 &3000000104
 MonoBehaviour:
@@ -22260,6 +22262,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VolcanusLaserAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4444444444444448444444444444445, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000305}
+  animationStateName: 
   randomHorizontalRange: 4
   laserOriginHeight: 5
   moveDuration: 0.7
@@ -22290,6 +22293,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VolcanusMissileAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a5555555555545558555555555555556, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000306}
+  animationStateName: 
   missilePrefab: {fileID: 0}
   spawnPoints:
   - {fileID: 0}
@@ -22526,7 +22530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DamageCaster
   castMode: 0
   referenceTransform: {fileID: 2091253906}
-  positionOffset: {x: 0.8, y: -1.5}
+  positionOffset: {x: 2.5, y: -3.5}
   rotateOffsetWithReference: 1
   size: {x: 1, y: 1}
   range: 1.8
@@ -22555,7 +22559,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DamageCaster
   castMode: 0
   referenceTransform: {fileID: 2091253906}
-  positionOffset: {x: 0.8, y: -1.5}
+  positionOffset: {x: 2.5, y: -3.5}
   rotateOffsetWithReference: 1
   size: {x: 1, y: 1}
   range: 1.8

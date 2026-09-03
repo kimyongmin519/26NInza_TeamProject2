@@ -25,10 +25,11 @@ public class VolcanusPunchAttack : VolcanusSkill
         float groundY = Boss.GetGroundPoint(Boss.Target.position.x).y;
         Vector3 readyPosition = new Vector3(Boss.ArenaCenter.x - Boss.ArenaHalfWidth * direction, groundY + readyHeight, hand.position.z);
         Vector3 punchPosition = new Vector3(Boss.ArenaCenter.x + Boss.ArenaHalfWidth * direction, readyPosition.y, hand.position.z);
-        float punchAngle = Boss.FistDownAngle + direction * 90f;
+        float punchAngle = (Boss.FistDownAngle - 45f) + direction * 90f;
 
         handPiece.SetAnotherMoving(true);
         Boss.AttackReady(readyPosition);
+        PlayAttackAnimation(handPiece);
         Boss.ReactPieces(handPiece, new Vector2(direction, 0.2f));
 
         sequence = DOTween.Sequence();
@@ -46,6 +47,7 @@ public class VolcanusPunchAttack : VolcanusSkill
         yield return sequence.WaitForCompletion();
         Boss.AttackImpact(hand.position);
         DamageCaster?.DisableCasting();
+        EndAttackAnimation();
         handPiece.SetAnotherMoving(false);
     }
 
