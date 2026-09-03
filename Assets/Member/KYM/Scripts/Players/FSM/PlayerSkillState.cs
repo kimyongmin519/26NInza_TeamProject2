@@ -6,12 +6,12 @@ namespace Member.KYM.Scripts.Players.FSM
 {
     public class PlayerSkillState : AbstractPlayerState
     {
-        private readonly PlayerSkillModule _skillModule;
+        private readonly SkillModule _skillModule;
         private bool _isSkillEnd;
         
         public PlayerSkillState(Agent agent, int stateClipHash) : base(agent, stateClipHash)
         {
-            _skillModule = agent.GetModule<PlayerSkillModule>();
+            _skillModule = agent.GetModule<SkillModule>();
             Debug.Assert(_skillModule != null, "플레이어 스킬 상태는 스킬 모듈이 필요!!!");
         }
 
