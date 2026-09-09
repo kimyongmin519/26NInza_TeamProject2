@@ -255,9 +255,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da4a64fd77a14d94ac8520b3fb91ff64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Enemies.Boss.Splines.BossSplineMover
+  moveSpeed: 5
   <SplinePaths>k__BackingField: []
   currentPath: {fileID: 0}
-  moveSpeed: 5
 --- !u!114 &32374453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,6 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4759763f2fb4dccaa4d37cf3eaa5912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Enemies.Boss.Splines.SplineMarkerManager
+  markers: []
 --- !u!1001 &65060110
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1160,8 +1161,10 @@ GameObject:
   m_Component:
   - component: {fileID: 685156016}
   - component: {fileID: 685156015}
+  - component: {fileID: 685156017}
+  - component: {fileID: 685156018}
   m_Layer: 0
-  m_Name: Spline
+  m_Name: Path1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1196,26 +1199,8 @@ MonoBehaviour:
   - m_EditModeType: 1
     m_Knots:
     - Position:
-        x: 0
-        y: -0.22000003
-        z: 0
-      TangentIn:
-        x: 0
+        x: 7.25
         y: 0
-        z: 0
-      TangentOut:
-        x: 0
-        y: 0
-        z: 0
-      Rotation:
-        value:
-          x: -0.48902008
-          y: 0.5107439
-          z: -0.51074386
-          w: 0.48902017
-    - Position:
-        x: 7.1299996
-        y: -0.1500001
         z: 0
       TangentIn:
         x: 0
@@ -1232,8 +1217,8 @@ MonoBehaviour:
           z: 0.29004484
           w: -0.644883
     - Position:
-        x: 7.29
-        y: 5.75
+        x: 7.25
+        y: 3
         z: -0
       TangentIn:
         x: 0
@@ -1250,8 +1235,6 @@ MonoBehaviour:
           z: 0.05014096
           w: -0.7053268
     m_MetaData:
-    - Mode: 1
-      Tension: 0.5
     - Mode: 1
       Tension: 0.5
     - Mode: 1
@@ -1275,13 +1258,42 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 685156014}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.09, y: -1.17, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.91, y: -2.82, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1604216919}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &685156017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685156014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f94476ee6a9e4d9fac54e37b1b97d728, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Enemies.Boss.Splines.SplinePath
+  <SplineIndex>k__BackingField: 0
+  <MarkerManager>k__BackingField: {fileID: 685156018}
+--- !u!114 &685156018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685156014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4759763f2fb4dccaa4d37cf3eaa5912, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Enemies.Boss.Splines.SplineMarkerManager
+  markers:
+  - knotIndex: 0
+    events: []
 --- !u!1 &688297450
 GameObject:
   m_ObjectHideFlags: 0
@@ -6716,6 +6728,38 @@ Transform:
   - {fileID: 1700613513}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1604216918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1604216919}
+  m_Layer: 0
+  m_Name: SplinePaths
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1604216919
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1604216918}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.735, y: 1.595, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 685156016}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1640467210
 GameObject:
   m_ObjectHideFlags: 0
@@ -7819,6 +7863,6 @@ SceneRoots:
   - {fileID: 352741293}
   - {fileID: 1115971176}
   - {fileID: 65060110}
-  - {fileID: 685156016}
   - {fileID: 1948769307}
   - {fileID: 1285947188}
+  - {fileID: 1604216919}
