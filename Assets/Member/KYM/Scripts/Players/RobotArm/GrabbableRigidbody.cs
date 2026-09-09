@@ -5,6 +5,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
     [RequireComponent(typeof(Rigidbody2D))]
     public class GrabbableRigidbody : MonoBehaviour, IGrabbable
     {
+        [Header("잡기 설정")]
         [SerializeField] private bool canBeGrabbed = true;
         [SerializeField] private bool alignRotationWhileHeld = true;
 
@@ -25,6 +26,13 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
         protected virtual void Awake()
         {
+            if (!GrabbableLayer.TryApply(gameObject))
+            {
+                Debug.LogError(
+                    $"프로젝트에 {GrabbableLayer.Name} 레이어가 없습니다.",
+                    this);
+            }
+
             Rigidbody = GetComponent<Rigidbody2D>();
             _colliders = GetComponentsInChildren<Collider2D>(true);
             _colliderEnabledStates = new bool[_colliders.Length];
@@ -81,6 +89,11 @@ namespace Member.KYM.Scripts.Players.RobotArm
         protected virtual void OnGrabbed() { }
         protected virtual void OnReleased() { }
         protected virtual void OnThrown(ThrowData throwData) { }
+
+        protected virtual void OnValidate()
+        {
+            GrabbableLayer.TryApply(gameObject);
+        }
 
         private void RestorePhysicsState()
         {

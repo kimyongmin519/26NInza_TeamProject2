@@ -11,9 +11,11 @@ namespace Member.KYM.Scripts.CoreSystems
         public event Action AttackCancelPressed;
         public event Action OnJumpKeyPressed;
         public event Action OnDashKeyPressed;
-        public event Action InteractPressed;
+        public event Action<bool> OnInteractKeyPressed;
+        public event Action OnTakeOutKeyPressed;
 
         public float MoveDirX { get; private set; }
+        public float MoveDirY { get; private set; }
         public Vector2 MousePos { get; private set; }
         private Controls _controls;
 
@@ -34,7 +36,9 @@ namespace Member.KYM.Scripts.CoreSystems
 
         public void OnMove(InputAction.CallbackContext context)
         {
-            MoveDirX = context.ReadValue<Vector2>().x;
+            Vector2 moveDirection = context.ReadValue<Vector2>();
+            MoveDirX = moveDirection.x;
+            MoveDirY = moveDirection.y;
         }
 
         public void OnAttack(InputAction.CallbackContext context)
@@ -51,8 +55,11 @@ namespace Member.KYM.Scripts.CoreSystems
 
         public void OnInteract(InputAction.CallbackContext context)
         {
-            if (context.performed)
-                InteractPressed?.Invoke();
+            if (context.started)
+                OnInteractKeyPressed?.Invoke(true);
+
+            if (context.canceled)
+                OnInteractKeyPressed?.Invoke(false);
         }
 
         public void OnJump(InputAction.CallbackContext context)
@@ -70,6 +77,12 @@ namespace Member.KYM.Scripts.CoreSystems
         public void OnMousePos(InputAction.CallbackContext context)
         {
             MousePos = context.ReadValue<Vector2>();
+        }
+
+        public void OnTakeOut(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+                OnTakeOutKeyPressed?.Invoke();
         }
     }
 }

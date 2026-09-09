@@ -1,3 +1,4 @@
+using System;
 using KimLIb.ModuleSystems;
 using UnityEngine;
 
@@ -11,12 +12,74 @@ namespace Member.KYM.Scripts.Agents
 
         [SerializeField] private Vector2 boxSize;
         [SerializeField] private Vector2 boxOffset;
+
+        [Header("땅 체크")]
+        [SerializeField] private LayerMask groundLayer;
+        [SerializeField] private Vector2 groundCheckSize;
+        [SerializeField] private Vector2 groundCheckOffset;
+        
+        [SerializeField] private int maxColliderCount = 5;
+        private Collider[] _colliderResults;
+        public Collider[] ColliderResults => _colliderResults;
+
+        public bool IsGrounded { get; private set; }
+        public event Action<bool> OnGroundStatusChange;
         
         private ModuleOwner _owner;
         
         public void Initialize(ModuleOwner owner)
         {
             _owner = owner;    
+        }
+
+        private void FixedUpdate()
+        {
+            CheckGround();
+        }
+
+        private void CheckGround()
+        {
+            bool isGrounded = Physics2D.OverlapBox(
+                GetGroundCheckPosition(),
+                groundCheckSize,
+                0f,
+                groundLayer);
+
+            if (IsGrounded == isGrounded)
+                return;
+
+            IsGrounded = isGrounded;
+            OnGroundStatusChange?.Invoke(IsGrounded);
+        }
+
+        public bool TryGetOneWayPlatformBelow(out Collider2D platformCollider)
+        {
+            Collider2D[] groundColliders = Physics2D.OverlapBoxAll(
+                GetGroundCheckPosition(),
+                groundCheckSize,
+                0f,
+                groundLayer);
+
+            foreach (Collider2D groundCollider in groundColliders)
+            {
+                if (groundCollider == null || !groundCollider.usedByEffector)
+                    continue;
+
+                PlatformEffector2D platformEffector = groundCollider.GetComponentInParent<PlatformEffector2D>();
+                if (platformEffector != null && platformEffector.useOneWay)
+                {
+                    platformCollider = groundCollider;
+                    return true;
+                }
+            }
+
+            platformCollider = null;
+            return false;
+        }
+
+        private Vector2 GetGroundCheckPosition()
+        {
+            return (Vector2)transform.position + groundCheckOffset;
         }
 
         public bool IsObstaclePresent(Vector2 direction, out Collider2D hitCollider)
@@ -50,6 +113,11 @@ namespace Member.KYM.Scripts.Agents
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireCube(transform.position + (Vector3)boxOffset, boxSize);
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube(
+                transform.position + (Vector3)groundCheckOffset,
+                groundCheckSize);
         }
     }
 }

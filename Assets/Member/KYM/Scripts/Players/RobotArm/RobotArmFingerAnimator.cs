@@ -4,17 +4,19 @@ namespace Member.KYM.Scripts.Players.RobotArm
 {
     public class RobotArmFingerAnimator : MonoBehaviour
     {
-        [Header("Finger bones")]
+        [Header("손가락 관절")]
         [SerializeField] private Transform upperLeft;
         [SerializeField] private Transform lowerLeft;
         [SerializeField] private Transform upperRight;
         [SerializeField] private Transform lowerRight;
 
-        [Header("Closed rotation offsets")]
+        [Header("손가락 닫힘 각도")]
         [SerializeField] private float upperLeftClosedAngle = -25f;
         [SerializeField] private float lowerLeftClosedAngle = -35f;
         [SerializeField] private float upperRightClosedAngle = 25f;
         [SerializeField] private float lowerRightClosedAngle = 35f;
+
+        [Header("손가락 동작 속도")]
         [SerializeField] private float fingerSmoothTime = 0.08f;
         [SerializeField] private float fingerOpenSmoothTime = 0.025f;
 

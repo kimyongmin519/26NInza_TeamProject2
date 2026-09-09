@@ -5,34 +5,49 @@ namespace Member.KYM.Scripts.Players.RobotArm
 {
     public class RobotArmGrabber : MonoBehaviour
     {
+        [Header("필수 참조")]
         [SerializeField] private GameObject throwOwner;
         [SerializeField] private Transform grabPoint;
         [SerializeField] private Transform aimTarget;
         [SerializeField] private RobotArm robotArm;
         [SerializeField] private RobotArmFingerAnimator fingerAnimator;
 
-        [SerializeField] private LayerMask grabbableLayers = ~0;
+        [Header("잡기 설정")]
         [SerializeField] private float grabRadius = 0.15f;
+
+        [Header("던지기 설정")]
         [SerializeField] private float throwSpeed = 10f;
         [SerializeField] private float throwReleaseDelay = 0.04f;
+
+        [Header("잡기 연출")]
         [SerializeField] private float failedGrabCloseTime = 0.12f;
 
         public bool IsHolding => _heldObject != null;
-        public bool IsBusy => _throwRoutine != null;
+        public bool IsBusy => _throwRoutine != null || _actionLocked;
         public Transform GrabPoint => grabPoint;
 
         private IGrabbable _heldObject;
         private Coroutine _failedGrabRoutine;
         private Coroutine _throwRoutine;
+        private bool _actionLocked;
 
         private void Awake()
         {
             if (robotArm == null)
                 robotArm = GetComponent<RobotArm>();
+
+            if (GrabbableLayer.Index < 0)
+            {
+                Debug.LogError(
+                    $"프로젝트에 {GrabbableLayer.Name} 레이어가 없습니다.",
+                    this);
+            }
         }
 
         private void OnDisable()
         {
+            _actionLocked = false;
+
             if (_throwRoutine != null)
             {
                 StopCoroutine(_throwRoutine);
@@ -93,13 +108,29 @@ namespace Member.KYM.Scripts.Players.RobotArm
         public bool TryGrab()
         {
             IGrabbable nearest = FindNearestGrabbable();
-            if (nearest == null)
-                return false;
+            return TryGrab(nearest);
+        }
 
-            _heldObject = nearest;
+        public bool TryGrab(IGrabbable grabbable)
+        {
+            if (_heldObject != null ||
+                _throwRoutine != null ||
+                grabbable == null ||
+                grabbable.GrabTransform == null ||
+                !grabbable.CanBeGrabbed)
+            {
+                return false;
+            }
+
+            _heldObject = grabbable;
             _heldObject.Grab(grabPoint, throwOwner);
             fingerAnimator?.SetClosed(true);
             return true;
+        }
+
+        public void SetActionLocked(bool locked)
+        {
+            _actionLocked = locked;
         }
 
         private IGrabbable FindNearestGrabbable()
@@ -107,7 +138,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
             Collider2D[] hits = Physics2D.OverlapCircleAll(
                 grabPoint.position,
                 grabRadius,
-                grabbableLayers
+                GrabbableLayer.Mask
             );
 
             IGrabbable nearest = null;

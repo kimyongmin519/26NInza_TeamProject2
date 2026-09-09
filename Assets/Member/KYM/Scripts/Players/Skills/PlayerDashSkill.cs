@@ -1,6 +1,5 @@
 using DG.Tweening;
 using KimLIb.AnimatorSystems;
-using Member.KYM.Scripts.Agents.FSM;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Players.Skills
