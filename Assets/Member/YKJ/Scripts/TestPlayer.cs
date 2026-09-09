@@ -1,7 +1,5 @@
-using Core;
 using Member.KYM.Scripts.Agents;
-using Member.KYM.Scripts.Players;
-using System;
+using Member.KYM.Scripts.CoreSystems;
 using UnityEngine;
 
 public class TestPlayer : Agent
@@ -15,10 +13,10 @@ public class TestPlayer : Agent
     {
         base.Awake();
         playerMover.Initialize(this);
-        playerInput.InteractPressed += HandleInteract;
+        playerInput.OnInteractKeyPressed += HandleInteract;
     }
 
-    private void HandleInteract()
+    private void HandleInteract(bool isPressed)
     {
         Debug.Log("이벤트 호출");
         agentSensor.IsInteractableInDirection();
@@ -26,7 +24,7 @@ public class TestPlayer : Agent
 
     private void OnDestroy()
     {
-        playerInput.InteractPressed -= HandleInteract;
+        playerInput.OnInteractKeyPressed -= HandleInteract;
     }
     private void Update()
     {
