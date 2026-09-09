@@ -1,5 +1,6 @@
 using System.Collections;
 using DG.Tweening;
+using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
@@ -38,7 +39,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             return Boss != null && Boss.Head != null && Boss.Target != null && !Boss.IsPhaseTwo;
         }
 
-        protected override void OnInitialize()
+        protected override void OnVolcanusInitialize()
         {
             if (leftLaser == null) leftLaser = CreateLaser("Left Laser");
             if (rightLaser == null) rightLaser = CreateLaser("Right Laser");
@@ -236,7 +237,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             Gizmos.DrawLine(start, groundPoint);
         }
 
-        protected override void OnCancel()
+        protected override void OnVolcanusCancel()
         {
             sequence?.Kill();
             laserSweepTween?.Kill();

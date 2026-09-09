@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Member.ODK.Scripts.Enemys.Volcanus
+namespace Member.ODK.Scripts.Enemys.Combat
 {
     public enum DamageCastMode
     {

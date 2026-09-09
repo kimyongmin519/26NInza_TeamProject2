@@ -1,5 +1,6 @@
 using System.Collections;
 using DG.Tweening;
+using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
@@ -70,7 +71,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             Boss.RightHand.SetAnotherMoving(false);
         }
 
-        protected override void OnCancel()
+        protected override void OnVolcanusCancel()
         {
             sequence?.Kill();
             DamageCaster?.DisableCasting();

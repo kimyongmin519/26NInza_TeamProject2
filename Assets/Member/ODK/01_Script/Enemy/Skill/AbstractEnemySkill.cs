@@ -3,6 +3,7 @@ using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using UnityEngine;
 using Member.ODK.Scripts.Enemys;
+using System.Collections.Generic;
 namespace Member.ODK.Scripts.Enemys.Skills
 {
     public abstract class AbstractEnemySkill : MonoBehaviour, ISkill
@@ -60,6 +61,7 @@ namespace Member.ODK.Scripts.Enemys.Skills
         {
             IsUsing = true;
         }
+
 
         public virtual void StopSkill()
         {

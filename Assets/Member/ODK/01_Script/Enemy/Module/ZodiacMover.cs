@@ -7,7 +7,7 @@ namespace Member.ODK.Scripts.Enemys.Modules
 {
     public class FlyingMover : MonoBehaviour, IModule, IMover
     {
-        //ÀÓ½Ã
+        //ìž„ì‹œ
         [SerializeField] private float MoveSpeed;
 
         public float MoveSpeedMultiplier { get; private set; } = 1f;
@@ -27,6 +27,7 @@ namespace Member.ODK.Scripts.Enemys.Modules
             this.owner = owner;
             RigidBody = owner.GetComponent<Rigidbody2D>();
             RigidBody.gravityScale = 0f;
+            OnGroundStatusChange?.Invoke(IsGrounded);
         }
 
         public void AddForceToAgent(Vector2 force)
@@ -35,6 +36,7 @@ namespace Member.ODK.Scripts.Enemys.Modules
             {
                 RigidBody.AddForce(force * MoveSpeed);
                 prevForce = force;
+                OnVelocityChange?.Invoke(RigidBody.linearVelocity);
             }
             
         }
@@ -44,6 +46,7 @@ namespace Member.ODK.Scripts.Enemys.Modules
             {
                 RigidBody.linearVelocity = force * MoveSpeed;
                 prevForce = force;
+                OnVelocityChange?.Invoke(RigidBody.linearVelocity);
             }
 
         }
@@ -55,6 +58,7 @@ namespace Member.ODK.Scripts.Enemys.Modules
         public void SetMovementX(float value)
         {
             RigidBody.linearVelocityX = value;
+            OnVelocityChange?.Invoke(RigidBody.linearVelocity);
         }
 
 
@@ -69,6 +73,7 @@ namespace Member.ODK.Scripts.Enemys.Modules
                 RigidBody.linearVelocityX = 0;
             if (yAxis)
                 RigidBody.linearVelocityY = 0;
+            OnVelocityChange?.Invoke(RigidBody.linearVelocity);
         }
     }
 
