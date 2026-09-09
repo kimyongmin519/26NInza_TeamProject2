@@ -9,7 +9,7 @@ namespace Member.KYM.Scripts.Agents
         bool CanManualMovement { get; set; }
         event Action<bool> OnGroundStatusChange;
         event Action<Vector2> OnVelocityChange;
-        Rigidbody2D RigidBody2D { get; }
+        Rigidbody2D RigidBody { get; }
         void SetMoveSpeedMultiplier(float value);
         void SetGravityScale(float value);
         void AddForceToAgent(Vector2 force);

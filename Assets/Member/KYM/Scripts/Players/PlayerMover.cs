@@ -8,7 +8,11 @@ namespace Member.KYM.Scripts.Players
     public class PlayerMover : MonoBehaviour, IMover, IModule
     {
         [SerializeField] private float moveSpeed;
-        public Rigidbody2D RigidBody2D { get; private set; }
+        [Header("땅 체크")]
+        [SerializeField] private LayerMask whatIsGround; //차후 센서시스템으로 변경
+        [SerializeField] private Vector2 groundCheckSize;
+        
+        public Rigidbody2D RigidBody { get; private set; }
         public bool IsGrounded { get; private set; }
         public bool CanManualMovement { get; set; } = true;
         public event Action<bool> OnGroundStatusChange;
@@ -16,11 +20,13 @@ namespace Member.KYM.Scripts.Players
 
         private float _moveDirX;
         private ModuleOwner _owner;
+        private float _originalGravityScale;
         
         public void Initialize(ModuleOwner owner)
         {
             _owner = owner;
-            RigidBody2D = owner.GetComponent<Rigidbody2D>();
+            RigidBody = owner.GetComponent<Rigidbody2D>();
+            _originalGravityScale = RigidBody.gravityScale;
         }
         
         public void SetMoveSpeedMultiplier(float value)
@@ -28,30 +34,47 @@ namespace Member.KYM.Scripts.Players
             
         }
 
-        public void SetGravityScale(float value)
-        {
-            
-        }
+        public void SetGravityScale(float value) => RigidBody.gravityScale = _originalGravityScale * value;
 
-        public void AddForceToAgent(Vector2 force)
-        {
-            
-        }
+        public void AddForceToAgent(Vector2 force) => RigidBody.AddForce(force, ForceMode2D.Impulse);
 
         private void FixedUpdate()
         {
-            RigidBody2D.linearVelocityX = _moveDirX * moveSpeed;
+            MoveCharacter();
+            CheckGround();
+        }
+
+        private void MoveCharacter()
+        {
+            if (CanManualMovement)
+                RigidBody.linearVelocityX = _moveDirX * moveSpeed;
+
+            OnVelocityChange?.Invoke(RigidBody.linearVelocity);
+        }
+        
+        private void CheckGround()
+        {
+            bool before = IsGrounded;
+            IsGrounded = Physics2D.OverlapBox(transform.position, groundCheckSize, 0, whatIsGround);
+            
+            if(before != IsGrounded)
+                OnGroundStatusChange?.Invoke(IsGrounded);
         }
 
         public void StopImmediately(bool xAxis, bool yAxis)
         {
             if (xAxis)
-                RigidBody2D.linearVelocityX = 0;
+                RigidBody.linearVelocityX = 0;
             if (yAxis)
-                RigidBody2D.linearVelocityY = 0;
+                RigidBody.linearVelocityY = 0;
         }
 
         public void SetMovementX(float value) => _moveDirX = value;
         
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(transform.position, groundCheckSize);
+        }
     }
 }

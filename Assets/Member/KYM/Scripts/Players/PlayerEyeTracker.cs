@@ -1,4 +1,4 @@
-using Core;
+using Member.KYM.Scripts.CoreSystems;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Players
