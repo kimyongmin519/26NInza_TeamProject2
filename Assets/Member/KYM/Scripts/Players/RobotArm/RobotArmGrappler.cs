@@ -7,14 +7,22 @@ namespace Member.KYM.Scripts.Players.RobotArm
 {
     public class RobotArmGrappler : MonoBehaviour
     {
+        [Header("필수 참조")]
         [SerializeField] private RobotArm robotArm;
         [SerializeField] private RobotArmFingerAnimator fingerAnimator;
-        [SerializeField] private LayerMask grappleLayers = ~0;
+
+        [Header("그래플 탐지")]
         [SerializeField] private float detectionRadius = 0.35f;
         [SerializeField] private float minimumHangDistance = 0.25f;
+
+        [Header("매달리기 설정")]
         [SerializeField, Range(0f, 2f)] private float hangGravityScale = 1f;
+
+        [Header("스윙 설정")]
         [SerializeField] private float swingForce = 30f;
         [SerializeField] private float maximumSwingSpeed = 12f;
+
+        [Header("제어 복귀")]
         [SerializeField] private float controlReturnDelay = 0.12f;
 
         public event Action GrappleStarted;
@@ -37,6 +45,13 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
             if (fingerAnimator == null)
                 fingerAnimator = GetComponent<RobotArmFingerAnimator>();
+
+            if (GrabbableLayer.Index < 0)
+            {
+                Debug.LogError(
+                    $"프로젝트에 {GrabbableLayer.Name} 레이어가 없습니다.",
+                    this);
+            }
         }
 
         private void FixedUpdate()
@@ -261,7 +276,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
             Collider2D[] hits = Physics2D.OverlapCircleAll(
                 searchPosition,
                 detectionRadius,
-                grappleLayers
+                GrabbableLayer.Mask
             );
 
             IGrappleAnchor nearest = null;

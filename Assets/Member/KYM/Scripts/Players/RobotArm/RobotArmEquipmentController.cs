@@ -5,9 +5,12 @@ namespace Member.KYM.Scripts.Players.RobotArm
 {
     public class RobotArmEquipmentController : MonoBehaviour, IPlayerEquipable
     {
+        [Header("장착 대상")]
         [SerializeField] private GameObject robotArm;
         [SerializeField] private RobotArmGrabber grabber;
         [SerializeField] private RobotArmGrappler grappler;
+
+        [Header("시작 설정")]
         [SerializeField] private bool equippedOnStart;
 
         public bool IsEquipped => robotArm != null && robotArm.activeSelf;

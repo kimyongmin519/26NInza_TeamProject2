@@ -45,7 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Players.PlayerMover
   moveSpeed: 5
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 8
-  groundCheckSize: {x: 0.35, y: 0.2}
+  dropThroughSpeed: 2
+  dropThroughDelay: 1
+  useExtraGravity: 1
+  extraGravityDelay: 0.1
+  extraGravityPower: 10

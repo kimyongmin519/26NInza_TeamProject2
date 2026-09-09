@@ -8,11 +8,10 @@ using Action = Unity.Behavior.Action;
 namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
 {
     [Serializable, GeneratePropertyBag]
-    [NodeDescription(name: "MoveToDirection", story: "[Enemy] go to [Direction] in [Duration]", category: "Action", id: "4d992756f739b8594aee31441dd63b4b")]
+    [NodeDescription(name: "MoveToDirection", story: "[Enemy] go to front in [Duration]", category: "Action", id: "4d992756f739b8594aee31441dd63b4b")]
     public partial class MoveToDirectionAction : Action
     {
         [SerializeReference] public BlackboardVariable<AbstractBoss> Enemy;
-        [SerializeReference] public BlackboardVariable<float> Direction;
         [SerializeReference] public BlackboardVariable<float> Duration;
 
         private IMover _mover;

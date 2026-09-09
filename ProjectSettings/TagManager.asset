@@ -12,11 +12,11 @@ TagManager:
   - Water
   - UI
   - Player
-  - Prop
-  - GrappleAnchor
+  - Projectile
+  - Boss
+  - Grabbable
   - 
-  - 
-  - 
+  - Interactable
   - 
   - 
   - 
@@ -46,6 +46,9 @@ TagManager:
     locked: 0
   - name: Agent
     uniqueID: 100422575
+    locked: 0
+  - name: Weapon
+    uniqueID: 1566733007
     locked: 0
   - name: Prop
     uniqueID: 2828800409

@@ -5,18 +5,24 @@ namespace Member.KYM.Scripts.Players.RobotArm
 {
     public class RobotArm : MonoBehaviour
     {
+        [Header("필수 참조")]
         [SerializeField] private PlayerInputSO playerInput;
         [SerializeField] private Transform armBase;
         [SerializeField] private Transform handBone;
         [SerializeField] private Transform grabCenter;
         [SerializeField] private Transform armTarget;
 
+        [Header("조준 설정")]
         [SerializeField] private float smoothTime = 0.04f;
         [SerializeField] private float rotationOffset;
         [SerializeField, Range(0f, 180f)] private float handRotationLimit = 90f;
+
+        [Header("장애물 충돌")]
         [SerializeField] private LayerMask obstacleLayers;
         [SerializeField] private float handRadius = 0.08f;
         [SerializeField] private float surfaceOffset = 0.02f;
+
+        [Header("반동")]
         [SerializeField] private float recoilDistance = 0.35f;
         [SerializeField] private float recoilRecoveryTime = 0.12f;
 

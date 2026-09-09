@@ -208,7 +208,7 @@ MonoBehaviour:
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 8
-  handRadius: 0.2
+  handRadius: 0.1
   surfaceOffset: 0.02
   recoilDistance: 1
   recoilRecoveryTime: 0.12
@@ -229,10 +229,7 @@ MonoBehaviour:
   aimTarget: {fileID: 6416807232787729562}
   robotArm: {fileID: 5539127962044629045}
   fingerAnimator: {fileID: 8303114410518035434}
-  grabbableLayers:
-    serializedVersion: 2
-    m_Bits: 384
-  grabRadius: 0.35
+  grabRadius: 0.5
   throwSpeed: 20
   throwReleaseDelay: 0.04
   failedGrabCloseTime: 0.12
@@ -272,9 +269,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Players.RobotArm.RobotArmGrappler
   robotArm: {fileID: 5539127962044629045}
   fingerAnimator: {fileID: 8303114410518035434}
-  grappleLayers:
-    serializedVersion: 2
-    m_Bits: 256
   detectionRadius: 0.35
   minimumHangDistance: 0.25
   hangGravityScale: 1
@@ -309,6 +303,7 @@ GameObject:
   - component: {fileID: 5716825557623502865}
   - component: {fileID: 6298944713583939712}
   - component: {fileID: 9088893378534672122}
+  - component: {fileID: 3470552637338703421}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -349,8 +344,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 366a735c16854fc9acde574f0689594f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Players.PlayerController
-  <JumpPower>k__BackingField: 6
+  <JumpPower>k__BackingField: 9
   <MaxJumpCount>k__BackingField: 2
+  <CrouchHeightMultiplier>k__BackingField: 0.6
   <PlayerInput>k__BackingField: {fileID: 11400000, guid: a66c4c0d4ed7bb141991aa0954182ed9, type: 2}
   stateList: {fileID: 11400000, guid: 36f3f9cbbe45ead4c820b99ff85e8714, type: 2}
 --- !u!50 &5716825557623502865
@@ -433,6 +429,21 @@ MonoBehaviour:
   grabber: {fileID: 9090595490636206771}
   grappler: {fileID: 3750919866789354374}
   equippedOnStart: 1
+--- !u!114 &3470552637338703421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3193289139636146138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a5340150f884763aca42ec16b594525, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Players.RobotArm.RobotArmAnchorFollower
+  anchor: {fileID: 1137530594452879431}
+  robotArm: {fileID: 5169532041035544935}
+  localOffset: {x: -0.0311, y: 0, z: 0}
 --- !u!1 &3603185815089652309
 GameObject:
   m_ObjectHideFlags: 0
@@ -752,6 +763,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AgentMover
       objectReference: {fileID: 0}
+    - target: {fileID: 3240835291305538611, guid: 227c251d74a02af4d8f204cbe2bb48dd, type: 3}
+      propertyPath: extraGravityPower
+      value: 15
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -835,6 +850,14 @@ PrefabInstance:
     - target: {fileID: 1313830533324196246, guid: 4a963ab250dbed04a8b8ad862fab3d23, type: 3}
       propertyPath: m_Name
       value: PlayerDashSkill
+      objectReference: {fileID: 0}
+    - target: {fileID: 1875552272717166321, guid: 4a963ab250dbed04a8b8ad862fab3d23, type: 3}
+      propertyPath: dashDistance
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1875552272717166321, guid: 4a963ab250dbed04a8b8ad862fab3d23, type: 3}
+      propertyPath: dashDuration
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3368925547156393061, guid: 4a963ab250dbed04a8b8ad862fab3d23, type: 3}
       propertyPath: m_LocalPosition.x

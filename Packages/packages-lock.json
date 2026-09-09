@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.gustavopsantos.reflex": {
+      "version": "https://github.com/gustavopsantos/Reflex.git?path=/Assets/Reflex",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "55423389e8d443f18090720891af52d9952d6e5e"
+    },
     "com.unity.2d.animation": {
       "version": "13.0.5",
       "depth": 0,
@@ -190,6 +197,13 @@
       "dependencies": {
         "com.unity.test-framework": "1.1.33"
       },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.ide.vscode": {
+      "version": "1.2.3",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
