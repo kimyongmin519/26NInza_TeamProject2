@@ -1,16 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Member.KYM.Scripts.Enemies.Boss.Splines.SplineEvents;
+using Reflex.Core;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Enemies.Boss.Splines
 {
-    [Serializable]
-    public enum MarkerType
-    {
-        
-    }
-
     [Serializable]
     public class EventMarker
     {
@@ -19,7 +14,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.Splines
 
         public AbstractSplineEventDataSO[] events;
     }
-    public class SplineMarkerManager : MonoBehaviour
+    public class SplineMarkerManager : MonoBehaviour, IInstaller
     {
         [SerializeField] private EventMarker[] markers;
 
@@ -58,6 +53,11 @@ namespace Member.KYM.Scripts.Enemies.Boss.Splines
                     splineEvent?.Handle(context);
                 }
             }
+        }
+
+        public void InstallBindings(ContainerBuilder containerBuilder)
+        {
+            containerBuilder.RegisterValue(this);
         }
     }
 }

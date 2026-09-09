@@ -1,3 +1,4 @@
+using Reflex.Attributes;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -7,11 +8,9 @@ namespace Member.KYM.Scripts.Enemies.Boss.Splines
     [RequireComponent(typeof(SplineContainer))]
     public class SplinePath : MonoBehaviour
     {
-        [field: SerializeField]
-        public int SplineIndex { get; private set; }
+        [field: SerializeField] public int SplineIndex { get; private set; }
 
-        [field: SerializeField]
-        public SplineMarkerManager MarkerManager { get; private set; }
+        [Inject][field: SerializeField] public SplineMarkerManager MarkerManager { get; private set; }
 
         public SplineContainer Container { get; private set; }
 
