@@ -1,23 +1,26 @@
 using UnityEngine;
 
-[System.Serializable]
-public struct DamageData
+namespace Member.ODK._01_Script
 {
-    public float Damage;
-    public Vector3 KnockbackForce;
-
-    public DamageType DamageType;
-    public CriticalType CriticalType;
-
-    public DamageData(
-        float damage,
-        DamageType damageType,
-        CriticalType criticalType = CriticalType.Normal,
-        Vector3 knockbackForce = default)
+    [System.Serializable]
+    public struct DamageData
     {
-        Damage = damage;
-        DamageType = damageType;
-        CriticalType = criticalType;
-        KnockbackForce = knockbackForce;
+        public float Damage;
+        public Vector3 KnockbackForce;
+
+        public DamageType DamageType;
+        public CriticalType CriticalType;
+
+        public DamageData(
+            float damage,
+            DamageType damageType,
+            CriticalType criticalType = CriticalType.Normal,
+            Vector3 knockbackForce = default)
+        {
+            Damage = damage;
+            DamageType = damageType;
+            CriticalType = criticalType;
+            KnockbackForce = knockbackForce;
+        }
     }
 }

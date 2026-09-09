@@ -1,4 +1,6 @@
 using Member.KYM.Scripts.Agents;
+using Member.KYM.Scripts.CombatSystems.SkillSystems;
+using Member.KYM.Scripts.CombatSystems.WeaponSystems;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Enemies.Boss
@@ -9,6 +11,8 @@ namespace Member.KYM.Scripts.Enemies.Boss
         
         public IMover Mover { get; private set; }
         public IAnimateRenderer Renderer { get; private set; }
+        public ISkillModule SkillModule { get; private set; }
+        public IWeaponModule WeaponModule { get; private set; }
         public AgentSensor Sensor { get; private set; }
 
         protected override void InitializeModules()
@@ -17,6 +21,8 @@ namespace Member.KYM.Scripts.Enemies.Boss
             Mover = GetModule<IMover>();
             Renderer = GetModule<IAnimateRenderer>();
             Sensor = GetModule<AgentSensor>();
+            SkillModule = GetModule<ISkillModule>();
+            WeaponModule = GetModule<IWeaponModule>();
         }
     }
 }

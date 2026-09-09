@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class HealthBarUI : MonoBehaviour
+namespace Member.ODK._01_Script
 {
+    public class HealthBarUI : MonoBehaviour
+    {
     
+    }
 }

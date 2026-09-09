@@ -1,3 +1,4 @@
+using Member.ODK._01_Script;
 using Unity.Behavior;
 
 namespace Member.KYM.Scripts.Enemies.Boss

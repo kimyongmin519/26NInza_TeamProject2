@@ -15,6 +15,7 @@ namespace Member.KYM.Scripts.CoreSystems
         public event Action OnTakeOutKeyPressed;
 
         public float MoveDirX { get; private set; }
+        public float MoveDirY { get; private set; }
         public Vector2 MousePos { get; private set; }
         private Controls _controls;
 
@@ -35,7 +36,9 @@ namespace Member.KYM.Scripts.CoreSystems
 
         public void OnMove(InputAction.CallbackContext context)
         {
-            MoveDirX = context.ReadValue<Vector2>().x;
+            Vector2 moveDirection = context.ReadValue<Vector2>();
+            MoveDirX = moveDirection.x;
+            MoveDirY = moveDirection.y;
         }
 
         public void OnAttack(InputAction.CallbackContext context)

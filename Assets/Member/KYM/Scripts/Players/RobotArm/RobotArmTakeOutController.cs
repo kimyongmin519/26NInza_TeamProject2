@@ -9,6 +9,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
 {
     public class RobotArmTakeOutController : MonoBehaviour
     {
+        [Header("필수 참조")]
         [SerializeField] private PlayerInputSO playerInput;
         [SerializeField] private Animator animator;
         [SerializeField] private AnimatorTrigger animatorTrigger;
@@ -17,7 +18,11 @@ namespace Member.KYM.Scripts.Players.RobotArm
         [SerializeField] private RobotArmGrappler grappler;
         [SerializeField] private IKManager2D ikManager;
         [SerializeField] private AgentRenderer agentRenderer;
+
+        [Header("꺼낼 오브젝트")]
         [SerializeField] private GameObject[] propPrefabs;
+
+        [Header("애니메이션 설정")]
         [SerializeField] private AnimParamSO takeOutParam;
         [SerializeField, Min(0f)] private float controlBlendDuration = 0.15f;
 

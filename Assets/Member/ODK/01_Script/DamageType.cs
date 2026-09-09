@@ -1,16 +1,17 @@
-using UnityEngine;
-
-public enum DamageType
+namespace Member.ODK._01_Script
 {
-    Melee,
-    Beam,
-    Projectile,
-    Special
-}
+    public enum DamageType
+    {
+        Melee,
+        Beam,
+        Projectile,
+        Special
+    }
 
-public enum CriticalType
-{
-    Normal,
-    Critical,
-    SuperCritical
+    public enum CriticalType
+    {
+        Normal,
+        Critical,
+        SuperCritical
+    }
 }

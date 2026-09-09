@@ -5,16 +5,21 @@ namespace Member.KYM.Scripts.Players.RobotArm
 {
     public class RobotArmGrabber : MonoBehaviour
     {
+        [Header("필수 참조")]
         [SerializeField] private GameObject throwOwner;
         [SerializeField] private Transform grabPoint;
         [SerializeField] private Transform aimTarget;
         [SerializeField] private RobotArm robotArm;
         [SerializeField] private RobotArmFingerAnimator fingerAnimator;
 
-        [SerializeField] private LayerMask grabbableLayers = ~0;
+        [Header("잡기 설정")]
         [SerializeField] private float grabRadius = 0.15f;
+
+        [Header("던지기 설정")]
         [SerializeField] private float throwSpeed = 10f;
         [SerializeField] private float throwReleaseDelay = 0.04f;
+
+        [Header("잡기 연출")]
         [SerializeField] private float failedGrabCloseTime = 0.12f;
 
         public bool IsHolding => _heldObject != null;
@@ -30,6 +35,13 @@ namespace Member.KYM.Scripts.Players.RobotArm
         {
             if (robotArm == null)
                 robotArm = GetComponent<RobotArm>();
+
+            if (GrabbableLayer.Index < 0)
+            {
+                Debug.LogError(
+                    $"프로젝트에 {GrabbableLayer.Name} 레이어가 없습니다.",
+                    this);
+            }
         }
 
         private void OnDisable()
@@ -104,6 +116,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
             if (_heldObject != null ||
                 _throwRoutine != null ||
                 grabbable == null ||
+                grabbable.GrabTransform == null ||
                 !grabbable.CanBeGrabbed)
             {
                 return false;
@@ -125,7 +138,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
             Collider2D[] hits = Physics2D.OverlapCircleAll(
                 grabPoint.position,
                 grabRadius,
-                grabbableLayers
+                GrabbableLayer.Mask
             );
 
             IGrabbable nearest = null;

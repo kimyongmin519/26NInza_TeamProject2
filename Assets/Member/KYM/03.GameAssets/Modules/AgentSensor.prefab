@@ -55,3 +55,8 @@ MonoBehaviour:
     m_Bits: 8
   boxSize: {x: 0.25, y: 1}
   boxOffset: {x: 0, y: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  groundCheckSize: {x: 0.35, y: 0.2}
+  groundCheckOffset: {x: 0, y: -0.75}
