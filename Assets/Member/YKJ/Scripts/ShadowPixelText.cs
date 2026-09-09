@@ -32,6 +32,9 @@ public class ShadowPixelText : MonoBehaviour
     [SerializeField] private TextMeshProUGUI frontText;
     [SerializeField] private TextMeshProUGUI backText;
 
+    public TextMeshProUGUI FrontText => frontText;
+    public TextMeshProUGUI BackText => backText;
+
     private void OnValidate()
     {
         Refresh();
@@ -46,6 +49,18 @@ public class ShadowPixelText : MonoBehaviour
             backText.text = text;
     }
     public string GetText() => frontText != null ? frontText.text : string.Empty;
+
+    public void SetMaxVisibleCharacters(int count)
+    {
+        if (frontText != null)
+            frontText.maxVisibleCharacters = count;
+
+        if (backText != null)
+            backText.maxVisibleCharacters = count;
+    }
+
+    public int GetTextLength() => frontText != null ? frontText.text.Length : 0;
+
     private void Refresh()
     {
         if (frontText == null || backText == null)

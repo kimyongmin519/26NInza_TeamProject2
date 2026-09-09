@@ -9,6 +9,7 @@ public class DialogUIContainer : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI ActorText;
     [SerializeField] private ShadowPixelText DialogText;
+    [SerializeField] private DialogTextAnimator DialogTextAnimator;
     [SerializeField] private List<Image> ActorIcons;
     [SerializeField] private float PerCharTime = 0.05f;
 
@@ -21,7 +22,18 @@ public class DialogUIContainer : MonoBehaviour
 
 
 
+    private void Awake()
+    {
+        if (DialogTextAnimator == null && DialogText != null)
+        {
+            DialogTextAnimator = DialogText.GetComponent<DialogTextAnimator>();
+        }
 
+        if (DialogTextAnimator == null && DialogText != null)
+        {
+            DialogTextAnimator = DialogText.gameObject.AddComponent<DialogTextAnimator>();
+        }
+    }
 
     public void Set(int actorIndex, string actorText, string dialogText, Sprite actorBackGround, Action talkEndAction = null)
     {
@@ -54,7 +66,7 @@ public class DialogUIContainer : MonoBehaviour
     public void SetActorText(string text) => ActorText.text = text;
     public void SetDialogText(string text, Action talkEndAction = null)
     {
-        _currentDialogText = text;
+        _currentDialogText = DialogTextAnimator != null ? DialogTextAnimator.SetText(text) : text;
         _talkEndAction = talkEndAction;
 
         if (_typingCoroutine != null)
@@ -89,6 +101,7 @@ public class DialogUIContainer : MonoBehaviour
         _isTyping = false;
         ActorText.text = string.Empty;
         DialogText.SetText(string.Empty);
+        SetVisibleCharacters(0);
         SetAllActorIconActive(false);
     }
 
@@ -108,12 +121,24 @@ public class DialogUIContainer : MonoBehaviour
     private IEnumerator TypingCoroutine()
     {
         _isTyping = true;
-        DialogText.SetText(string.Empty);
+        DialogText.SetText(_currentDialogText);
+        SetVisibleCharacters(0);
 
         for (int i = 0; i < _currentDialogText.Length; i++)
         {
-            DialogText.SetText(DialogText.GetText() + _currentDialogText[i]);
-            yield return new WaitForSeconds(PerCharTime);
+            float waitTime = DialogTextAnimator != null ? DialogTextAnimator.GetWait(i) : 0f;
+            if (waitTime > 0f)
+            {
+                yield return new WaitForSeconds(waitTime);
+            }
+
+            SetVisibleCharacters(i + 1);
+
+            float delay = DialogTextAnimator != null ? DialogTextAnimator.GetDelay(i, PerCharTime) : PerCharTime;
+            if (delay > 0f)
+            {
+                yield return new WaitForSeconds(delay);
+            }
         }
 
         _typingCoroutine = null;
@@ -136,8 +161,20 @@ public class DialogUIContainer : MonoBehaviour
         }
 
         DialogText.SetText(_currentDialogText);
+        SetVisibleCharacters(_currentDialogText.Length);
         _isTyping = false;
         _talkEndAction?.Invoke();
         _talkEndAction = null;
+    }
+
+    private void SetVisibleCharacters(int count)
+    {
+        if (DialogTextAnimator != null)
+        {
+            DialogTextAnimator.SetMaxVisibleCharacters(count);
+            return;
+        }
+
+        DialogText.SetMaxVisibleCharacters(count);
     }
 }

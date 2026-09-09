@@ -1,6 +1,5 @@
 using KimLIb.EventSystem;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,6 +8,7 @@ public class DialogManager : MonoBehaviour
     [SerializeField] private EventChannelSO DialogEventChannel;
     [SerializeField] private EventChannelSO UIEventChannel;
     [SerializeField] private EventChannelSO InputChannel;
+    [SerializeField] private EventChannelSO CameraEventChannel;
 
 
 
@@ -64,6 +64,7 @@ public class DialogManager : MonoBehaviour
         Talking = false;
         UIEventChannel.RaiseEvent(UiEvent.HighlightEvent.Init(false));
         InputChannel.RaiseEvent(InputEvent.LockInputAllEvent.Init(false));
+        CameraEventChannel?.RaiseEvent(CameraEvent.ReturnDefaultCameraTargetEvent);
         DialogEventChannel.RaiseEvent(DialogEvent.EndDialogEvent);
         _dialogCoroutine = null;
     }

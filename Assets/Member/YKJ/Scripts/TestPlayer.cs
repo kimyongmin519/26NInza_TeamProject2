@@ -10,6 +10,7 @@ public class TestPlayer : Agent
 
     [SerializeField] private MapPlayerMover playerMover;
     [SerializeField] private AgentSensor agentSensor;
+    [SerializeField] private AgentRenderer agentRenderer;
     protected override void Awake()
     {
         base.Awake();
@@ -29,6 +30,14 @@ public class TestPlayer : Agent
     }
     private void Update()
     {
+        if (playerInput.MoveDir == Vector2.zero)
+        {
+            agentRenderer.PlayClip(Animator.StringToHash("IDLE"));
+        }
+        else
+        {
+            agentRenderer.PlayClip(Animator.StringToHash("MOVE"));
+        }
         playerMover.SetMovementX(playerInput.MoveDir);
     }
 }

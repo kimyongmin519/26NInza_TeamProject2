@@ -1,46 +1,10 @@
 fileFormatVersion: 2
-guid: dcede20c574f6064f979824ca639e0f6
+guid: fe06910172ad89f41ac9c2e2ad22d490
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7345947534495021671
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_0"
-  - first:
-      213: 2426401405126939900
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_1"
-  - first:
-      213: -6027644041523095078
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_2"
-  - first:
-      213: -8903156864386894204
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_3"
-  - first:
-      213: -4704811490960764093
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_4"
-  - first:
-      213: -7894601872953298637
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_5"
-  - first:
-      213: 4359927876141543250
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_6"
-  - first:
-      213: -2395038433545189514
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_7"
-  - first:
-      213: -2586947955532209971
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_8"
-  - first:
-      213: 362905549567920512
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_9"
-  - first:
-      213: -8880060585051547842
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_10"
-  - first:
-      213: 7553818140941249401
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_11"
-  - first:
-      213: -5925382689412061752
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 27\uC77C \uC624\uD6C4 08_20_40_12"
+      213: 8966229917842704349
+    second: speech_bubble_04_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -136,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DialogBackGround_0
+      name: speech_bubble_04_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1672
-        height: 941
+        width: 1128
+        height: 322
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 127, y: 127, z: 127, w: 127}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 764cd2a67992baa4bbc192ac13783bd4
-      internalID: 1195177066
+      spriteID: dd78e7bea927e6c70800000000000000
+      internalID: 8966229917842704349
       vertices: []
       indices: 
       edges: []
@@ -161,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: d8ae76a362d029241843159198703eb9
+    spriteID: 7751bac19bd550c499bdf0b20279bcf0
     internalID: 0
     vertices: []
     indices: 
@@ -171,9 +135,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":1672.0,"y":941.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":1128.0,"y":322.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      DialogBackGround_0: 1195177066
+      speech_bubble_04_0: 8966229917842704349
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
