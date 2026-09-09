@@ -22,6 +22,12 @@ namespace Member.KYM.Scripts.Players.FSM
         public override void Update()
         {
             base.Update();
+
+            if (_player.PlayerInput.MoveDirY < -INPUT_DEADLINE)
+            {
+                _player.ChangeState(PlayerStateEnum.CROUCH);
+                return;
+            }
             
             if (Mathf.Abs(_player.PlayerInput.MoveDirX) > INPUT_DEADLINE)
             {

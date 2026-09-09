@@ -1,6 +1,7 @@
-using UnityEngine;
-
-public interface IDamageable
+namespace Member.ODK._01_Script
 {
-    void TakeDamage(DamageData damage);
+    public interface IDamageable
+    {
+        void TakeDamage(DamageData damage);
+    }
 }

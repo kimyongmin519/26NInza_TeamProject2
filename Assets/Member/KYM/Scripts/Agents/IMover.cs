@@ -15,6 +15,7 @@ namespace Member.KYM.Scripts.Agents
         void AddForceToAgent(Vector2 force);
         void StopImmediately(bool xAxis, bool yAxis);
         void SetMovementX(float value);
+        bool TryDropThroughPlatform();
         
     }
 }

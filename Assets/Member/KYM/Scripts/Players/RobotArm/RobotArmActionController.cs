@@ -5,6 +5,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
 {
     public class RobotArmActionController : MonoBehaviour
     {
+        [Header("필수 참조")]
         [SerializeField] private PlayerInputSO playerInput;
         [SerializeField] private RobotArmGrabber grabber;
         [SerializeField] private RobotArmGrappler grappler;
@@ -59,14 +60,14 @@ namespace Member.KYM.Scripts.Players.RobotArm
             if (IsSkillLocked)
                 return;
 
+            if (grabber.IsBusy)
+                return;
+
             if (grabber.IsHolding)
             {
                 grabber.TryThrow();
                 return;
             }
-
-            if (grabber.IsBusy)
-                return;
 
             if (grabber.TryGrab())
                 return;

@@ -12,23 +12,39 @@ namespace Member.KYM.Scripts.Players
         [field:Header("임시")]
         [field:SerializeField] public float JumpPower { get; private set; }
         [field:SerializeField] public int MaxJumpCount { get; private set; }
+
+        [field: Header("숙이기")]
+        [field: SerializeField, Range(0.1f, 1f)]
+        public float CrouchHeightMultiplier { get; private set; } = 0.5f;
         
         [field:SerializeField] public PlayerInputSO PlayerInput { get; private set; }
         [SerializeField] private StateListSO stateList;
         public AgentSensor Sensor { get; private set; }
         public ISkillModule SkillModule { get; private set; }
         private StateMachine _stateMachine;
-        private RobotArmGrappler _grappler;
+        private RobotArmGrappler _robotArmGrappler;
         private int _currentJumpCount;
+        private CapsuleCollider2D _bodyCollider;
+        private Vector2 _standingColliderSize;
+        private Vector2 _standingColliderOffset;
 
         protected override void InitializeModules()
         {
             base.InitializeModules();
+            _bodyCollider = GetComponent<CapsuleCollider2D>();
+            Debug.Assert(_bodyCollider != null, $"{name}에 CapsuleCollider2D가 없습니다.");
+
+            if (_bodyCollider != null)
+            {
+                _standingColliderSize = _bodyCollider.size;
+                _standingColliderOffset = _bodyCollider.offset;
+            }
+
             _stateMachine = new StateMachine(this, stateList.states);
             Sensor = GetModule<AgentSensor>();
             SkillModule = GetModule<ISkillModule>();
-            _grappler = GetComponentInChildren<RobotArmGrappler>(true);
-;        }
+            _robotArmGrappler = GetComponentInChildren<RobotArmGrappler>(true);
+        }
 
         protected override void AfterInitializeModules()
         {
@@ -36,16 +52,16 @@ namespace Member.KYM.Scripts.Players
             PlayerInput.OnJumpKeyPressed += HandleJumpKeyPressed;
             PlayerInput.OnDashKeyPressed += HandleDashKeyPressed;
 
-            if (_grappler != null)
+            if (_robotArmGrappler != null)
             {
-                _grappler.GrappleStarted += HandleGrappleStarted;
-                _grappler.GrappleEnded += HandleGrappleEnded;
+                _robotArmGrappler.GrappleStarted += HandleGrappleStarted;
+                _robotArmGrappler.GrappleEnded += HandleGrappleEnded;
             }
         }
 
         private void HandleDashKeyPressed()
         {
-            if (_grappler != null && _grappler.IsGrappling)
+            if (_robotArmGrappler != null && _robotArmGrappler.IsGrappling)
                 return;
 
             if (SkillModule.CanUseSkill(0))
@@ -67,17 +83,26 @@ namespace Member.KYM.Scripts.Players
                 PlayerInput.OnDashKeyPressed -= HandleDashKeyPressed;
             }
 
-            if (_grappler != null)
+            if (_robotArmGrappler != null)
             {
-                _grappler.GrappleStarted -= HandleGrappleStarted;
-                _grappler.GrappleEnded -= HandleGrappleEnded;
+                _robotArmGrappler.GrappleStarted -= HandleGrappleStarted;
+                _robotArmGrappler.GrappleEnded -= HandleGrappleEnded;
             }
         }
         
         private void HandleJumpKeyPressed()
         {
-            if (_grappler != null && _grappler.IsGrappling)
+            if (_robotArmGrappler != null && _robotArmGrappler.IsGrappling)
                 return;
+
+            IMover mover = GetModule<IMover>();
+            if (PlayerInput.MoveDirY < -0.5f)
+            {
+                if (mover.TryDropThroughPlatform())
+                    ChangeState(PlayerStateEnum.FALL);
+
+                return;
+            }
 
             if (_currentJumpCount < MaxJumpCount)
             {
@@ -87,6 +112,28 @@ namespace Member.KYM.Scripts.Players
         }
         
         public void ResetJumpCount() => _currentJumpCount = 0;
+
+        public void SetCrouching(bool isCrouching)
+        {
+            if (_bodyCollider == null)
+                return;
+
+            if (!isCrouching)
+            {
+                _bodyCollider.size = _standingColliderSize;
+                _bodyCollider.offset = _standingColliderOffset;
+                return;
+            }
+
+            float crouchHeight = _standingColliderSize.y * CrouchHeightMultiplier;
+            float heightDifference = _standingColliderSize.y - crouchHeight;
+
+            _bodyCollider.size = new Vector2(_standingColliderSize.x, crouchHeight);
+            _bodyCollider.offset = new Vector2(
+                _standingColliderOffset.x,
+                _standingColliderOffset.y - heightDifference * 0.5f
+            );
+        }
 
         private void HandleGrappleStarted()
         {
