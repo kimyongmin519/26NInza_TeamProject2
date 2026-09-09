@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d732aeb12788bea4593f68098f050240, type: 3}
+  m_Name: DialogSO 1
+  m_EditorClassIdentifier: Assembly-CSharp::DialogInitDataSO
+  DialogList:
+  - Id: 0
+    SpeakerName: "\uC591\uACBD\uC900\uB9E8\uC774\uC57C"
+    SpeakeIcon: {fileID: -6578267993364069794, guid: 1c9bc0d104c01934da10d4333b9dc48b, type: 3}
+  - Id: 1
+    SpeakerName: "\uC591\uACBD\uC900\uB9E8\uC774\uC57C2"
+    SpeakeIcon: {fileID: 21300000, guid: e15a0aaf619d8aa429bd091186fb29a2, type: 3}
