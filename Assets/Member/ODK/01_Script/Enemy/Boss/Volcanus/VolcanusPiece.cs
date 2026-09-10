@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Member.ODK._01_Script;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus

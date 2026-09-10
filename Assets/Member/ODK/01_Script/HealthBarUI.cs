@@ -123,8 +123,8 @@ namespace Member.ODK.Scripts.UI
                             8,
                             60f,
                             false,
-                            true,
-                            ShakeRandomnessMode.Full
+                            true
+                            
                         )
                         .SetEase(Ease.OutQuad)
                 )

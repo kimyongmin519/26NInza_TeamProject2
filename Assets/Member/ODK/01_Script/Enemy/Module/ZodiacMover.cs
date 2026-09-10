@@ -75,6 +75,11 @@ namespace Member.ODK.Scripts.Enemys.Modules
                 RigidBody.linearVelocityY = 0;
             OnVelocityChange?.Invoke(RigidBody.linearVelocity);
         }
+
+        public bool TryDropThroughPlatform()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

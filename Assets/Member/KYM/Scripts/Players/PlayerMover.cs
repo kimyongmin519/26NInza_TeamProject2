@@ -76,5 +76,10 @@ namespace Member.KYM.Scripts.Players
             Gizmos.color = Color.red;
             Gizmos.DrawWireCube(transform.position, groundCheckSize);
         }
+
+        public bool TryDropThroughPlatform()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
