@@ -17,19 +17,19 @@ namespace Member.KYM.Scripts.Agents
         [SerializeField] private LayerMask groundLayer;
         [SerializeField] private Vector2 groundCheckSize;
         [SerializeField] private Vector2 groundCheckOffset;
-        
+
         [SerializeField] private int maxColliderCount = 5;
         private Collider[] _colliderResults;
         public Collider[] ColliderResults => _colliderResults;
 
         public bool IsGrounded { get; private set; }
         public event Action<bool> OnGroundStatusChange;
-        
+
         private ModuleOwner _owner;
-        
+
         public void Initialize(ModuleOwner owner)
         {
-            _owner = owner;    
+            _owner = owner;
         }
 
         private void FixedUpdate()
@@ -88,7 +88,7 @@ namespace Member.KYM.Scripts.Agents
             hitCollider = Physics2D.OverlapBox(position, boxSize, 0, obstacleLayer);
             return hitCollider != null;
         }
-
+        
         public float BoxCastObstacle(Vector2 direction, float distance, out RaycastHit2D hit)
         {
             hit = Physics2D.BoxCast((Vector2)transform.position + boxOffset, boxSize, 0, direction, distance, obstacleLayer);
@@ -108,7 +108,20 @@ namespace Member.KYM.Scripts.Agents
             RaycastHit2D hit = Physics2D.Raycast(startPosition, direction.normalized, direction.magnitude, obstacleLayer);
             return hit.collider == null; //타겟과 나 사이에 아무런 장애물이 없을 경우 null이 나온다.
         }
+        public bool IsInteractableInDirection()
+        {
 
+            Collider2D Target = Physics2D.OverlapBox(transform.position, boxSize, 0, interactableLayer);
+
+            if (Target == null)
+                return false;
+
+
+
+            Target.GetComponent<Interactable>()?.Interaction(_owner as Agent);
+            return true;
+
+        }
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;
