@@ -1056,11 +1056,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d54ebf2a53dd6c349ad1e05c8b1a805b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AgentSensor
-  interactableLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  boxSize: {x: 3, y: 3}
-  offset: {x: 0, y: 0}
 --- !u!1 &526651953
 GameObject:
   m_ObjectHideFlags: 0
@@ -1416,6 +1411,7 @@ GameObject:
   - component: {fileID: 794174713}
   - component: {fileID: 794174715}
   - component: {fileID: 794174716}
+  - component: {fileID: 794174717}
   m_Layer: 0
   m_Name: MapPlayer
   m_TagString: Untagged
@@ -1454,7 +1450,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TestPlayer
   playerInput: {fileID: 11400000, guid: a66c4c0d4ed7bb141991aa0954182ed9, type: 2}
   playerMover: {fileID: 794174716}
-  agentSensor: {fileID: 400472320}
+  agentSensor: {fileID: 794174717}
   agentRenderer: {fileID: 797983483}
 --- !u!50 &794174715
 Rigidbody2D:
@@ -1496,6 +1492,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapPlayerMover
   moveSpeed: 8
+--- !u!114 &794174717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 794174711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6fe4cd5db9e425fa5fe2c1b79222130, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Agents.AgentSensor
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 2048
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  boxSize: {x: 4, y: 4}
+  boxOffset: {x: 0, y: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  groundCheckSize: {x: 0, y: 0}
+  groundCheckOffset: {x: 0, y: 0}
+  maxColliderCount: 5
 --- !u!1 &797983479
 GameObject:
   m_ObjectHideFlags: 0
@@ -2488,7 +2513,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 327e1c1c70ed9fc4dbfc9172e8e96954, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Npc
-  DialogEventChannel: {fileID: 11400000, guid: 6fb4af2337fad444399b1c39daed72c0, type: 2}
+  BubbleDialogEventChannel: {fileID: 11400000, guid: b03dbe8eb5da45569f9288192a0387f3, type: 2}
   CameraEventChannel: {fileID: 11400000, guid: 6aa65e035152473d98d0e27a69a4c43c, type: 2}
   CameraFocusTarget: {fileID: 1167343970}
   dialogData: {fileID: 11400000, guid: 8081e09586d2d5c41b5198e0ba1826f8, type: 2}
