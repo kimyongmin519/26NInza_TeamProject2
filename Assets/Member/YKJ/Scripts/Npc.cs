@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Npc : MonoBehaviour, Interactable
 {
-    [SerializeField] private EventChannelSO DialogEventChannel;
+    [SerializeField] private EventChannelSO BubbleDialogEventChannel;
     [SerializeField] private EventChannelSO CameraEventChannel;
     [SerializeField] private Transform CameraFocusTarget;
     [SerializeField] private DialogDataSO dialogData;
@@ -13,8 +13,9 @@ public class Npc : MonoBehaviour, Interactable
     {
         if (DialogManager.Talking == false)
         {
-            CameraEventChannel?.RaiseEvent(CameraEvent.FocusCameraTargetEvent.Init(CameraFocusTarget != null ? CameraFocusTarget : transform));
-            DialogEventChannel.RaiseEvent(DialogEvent.StartDialogEvent.InitData(dialogData));
+            Transform target = CameraFocusTarget != null ? CameraFocusTarget : transform;
+            CameraEventChannel?.RaiseEvent(CameraEvent.FocusCameraTargetEvent.Init(target));
+            BubbleDialogEventChannel?.RaiseEvent(BubbleDialogEvent.StartBubbleDialogEvent.InitData(dialogData, target));
         }
     }
 }
