@@ -1,4 +1,5 @@
 using System.Collections;
+using KimLIb.ModuleSystems;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Players.RobotArm
@@ -6,7 +7,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
     public class RobotArmGrabber : MonoBehaviour
     {
         [Header("필수 참조")]
-        [SerializeField] private GameObject throwOwner;
+        [SerializeField] private ModuleOwner throwOwner;
         [SerializeField] private Transform grabPoint;
         [SerializeField] private Transform aimTarget;
         [SerializeField] private RobotArm robotArm;
@@ -123,7 +124,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
             }
 
             _heldObject = grabbable;
-            _heldObject.Grab(grabPoint, throwOwner);
+            _heldObject.Grab(grabPoint, throwOwner != null ? throwOwner.gameObject : null);
             fingerAnimator?.SetClosed(true);
             return true;
         }

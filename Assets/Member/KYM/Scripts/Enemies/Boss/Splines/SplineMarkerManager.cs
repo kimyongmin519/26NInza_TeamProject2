@@ -20,16 +20,37 @@ namespace Member.KYM.Scripts.Enemies.Boss.Splines
 
         private readonly HashSet<int> _executedMarkers = new();
 
-        public void ResetMarkers(float startT)
+        public void ResetMarkers()
         {
             _executedMarkers.Clear();
+        }
 
-            // 진입 위치보다 뒤쪽에 있는 마커는 실행하지 않는다.
-            // 필요하면 여기서 미리 executed 처리할 수 있음.
+        public void ProcessAt(
+            SplinePath path,
+            float currentT,
+            SplineEventContext context)
+        {
+            if (markers == null)
+                return;
+
+            for (int i = 0; i < markers.Length; i++)
+            {
+                if (_executedMarkers.Contains(i))
+                    continue;
+
+                float markerT = path.GetKnotT(markers[i].knotIndex);
+                if (!Mathf.Approximately(markerT, currentT))
+                    continue;
+
+                ExecuteMarker(i, context);
+            }
         }
 
         public void Process(SplinePath path, float previousT, float currentT, SplineEventContext context)
         {
+            if (markers == null)
+                return;
+
             for (int i = 0; i < markers.Length; i++)
             {
                 if (_executedMarkers.Contains(i))
@@ -38,20 +59,35 @@ namespace Member.KYM.Scripts.Enemies.Boss.Splines
                 EventMarker marker = markers[i];
                 float markerT = path.GetKnotT(marker.knotIndex);
 
-                bool crossed =
+                bool crossedForward =
                     previousT < markerT &&
                     currentT >= markerT;
 
-                if (!crossed)
+                bool crossedBackward =
+                    previousT > markerT &&
+                    currentT <= markerT;
+
+                if (!crossedForward && !crossedBackward)
                     continue;
 
-                _executedMarkers.Add(i);
+                ExecuteMarker(i, context);
+            }
+        }
 
-                foreach (AbstractSplineEventDataSO splineEvent
-                         in marker.events)
-                {
-                    splineEvent?.Handle(context);
-                }
+        private void ExecuteMarker(int markerIndex, SplineEventContext context)
+        {
+            _executedMarkers.Add(markerIndex);
+
+            EventMarker marker = markers[markerIndex];
+            if (marker.events == null)
+                return;
+
+            SplineEventContext markerContext =
+                context.WithKnotIndex(marker.knotIndex);
+
+            foreach (AbstractSplineEventDataSO splineEvent in marker.events)
+            {
+                splineEvent?.Handle(markerContext);
             }
         }
 
