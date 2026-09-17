@@ -7,16 +7,14 @@ using UnityEngine;
 public class DialogTextAnimator : MonoBehaviour
 {
     [SerializeField] private ShadowPixelText TargetText;
+    [SerializeField] private TextMeshProUGUI NormalText;
 
     private readonly List<DialogTextTag> _tags = new();
     private string _parsedText = string.Empty;
 
     private void Awake()
     {
-        if (TargetText == null)
-        {
-            TargetText = GetComponent<ShadowPixelText>();
-        }
+        ResolveTargetText();
     }
 
     public string SetText(string text)
@@ -29,6 +27,11 @@ public class DialogTextAnimator : MonoBehaviour
             TargetText.SetText(_parsedText);
         }
 
+        if (NormalText != null)
+        {
+            NormalText.text = _parsedText;
+        }
+
         return _parsedText;
     }
 
@@ -36,6 +39,11 @@ public class DialogTextAnimator : MonoBehaviour
     {
         ResolveTargetText();
         TargetText?.SetMaxVisibleCharacters(count);
+
+        if (NormalText != null)
+        {
+            NormalText.maxVisibleCharacters = count;
+        }
     }
 
     public float GetDelay(int characterIndex, float defaultDelay)
@@ -75,18 +83,23 @@ public class DialogTextAnimator : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (TargetText == null || _tags.Count == 0)
+        if (HasTargetText() == false || _tags.Count == 0)
         {
             ResolveTargetText();
         }
 
-        if (TargetText == null || _tags.Count == 0)
+        if (HasTargetText() == false || _tags.Count == 0)
         {
             return;
         }
 
-        Play(TargetText.BackText);
-        Play(TargetText.FrontText);
+        if (TargetText != null)
+        {
+            Play(TargetText.BackText);
+            Play(TargetText.FrontText);
+        }
+
+        Play(NormalText);
     }
 
     private void Play(TextMeshProUGUI text)
@@ -206,6 +219,26 @@ public class DialogTextAnimator : MonoBehaviour
         {
             TargetText = GetComponent<ShadowPixelText>();
         }
+
+        if (NormalText == null)
+        {
+            NormalText = GetComponent<TextMeshProUGUI>();
+        }
+
+        if (TargetText == null)
+        {
+            TargetText = GetComponentInChildren<ShadowPixelText>(true);
+        }
+
+        if (TargetText == null && NormalText == null)
+        {
+            NormalText = GetComponentInChildren<TextMeshProUGUI>(true);
+        }
+    }
+
+    private bool HasTargetText()
+    {
+        return TargetText != null || NormalText != null;
     }
 }
 

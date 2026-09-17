@@ -25,6 +25,11 @@ public class DialogManager : MonoBehaviour
 
     private void HandleStartDialog(StartDialogEvent startDialogEvent)
     {
+        if (BubbleDialogManager.Talking)
+        {
+            return;
+        }
+
         if (_dialogCoroutine != null)
         {
             StopCoroutine(_dialogCoroutine);
