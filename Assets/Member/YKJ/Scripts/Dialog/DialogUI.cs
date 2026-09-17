@@ -2,9 +2,9 @@ using KimLIb.EventSystem;
 using System.Collections;
 using UnityEngine;
 
-#if DOTWEEN
+
 using DG.Tweening;
-#endif
+
 
 public class DialogUI : MonoBehaviour
 {
@@ -19,13 +19,13 @@ public class DialogUI : MonoBehaviour
     [SerializeField] private float ShowDuration = 0.35f;
     [SerializeField] private float HideDuration = 0.25f;
 
-#if DOTWEEN
+
     [SerializeField] private Ease ShowEase = Ease.OutBack;
     [SerializeField] private Ease HideEase = Ease.InBack;
     private Tween _dialogTween;
-#else
+
     private Coroutine _dialogCoroutine;
-#endif
+
 
     private void Awake()
     {
@@ -53,11 +53,10 @@ public class DialogUI : MonoBehaviour
         DialogEventChannel.RemoveListener<StartDialogEvent>(OnStartDialogEvent);
         DialogEventChannel.RemoveListener<EndDialogEvent>(OnEndDialogEvent);
 
-#if DOTWEEN
         _dialogTween?.Kill();
-#else
+
         StopDialogCoroutine();
-#endif
+
     }
 
     private void OnSetDialogLineEvent(SetDialogLineEvent evt)
@@ -82,29 +81,29 @@ public class DialogUI : MonoBehaviour
 
     private void ShowDialogUI()
     {
-#if DOTWEEN
+
         _dialogTween?.Kill();
         DialogUIRect.DOKill();
-#else
+
         StopDialogCoroutine();
-#endif
+
 
         DialogUIObject.SetActive(true);
         SetBackGroundActive(true);
         DialogUIRect.anchoredPosition = ShowStartPosition;
 
-#if DOTWEEN
+
         _dialogTween = DialogUIRect
             .DOAnchorPos(ShowPosition, ShowDuration)
             .SetEase(ShowEase);
-#else
+
         _dialogCoroutine = StartCoroutine(MoveDialogCoroutine(ShowPosition, ShowDuration, null));
-#endif
+
     }
 
     private void HideDialogUI()
     {
-#if DOTWEEN
+
         _dialogTween?.Kill();
         DialogUIRect.DOKill();
 
@@ -117,7 +116,7 @@ public class DialogUI : MonoBehaviour
                 DialogUIObject.SetActive(false);
                 SetBackGroundActive(false);
             });
-#else
+
         StopDialogCoroutine();
         _dialogCoroutine = StartCoroutine(MoveDialogCoroutine(HideEndPosition, HideDuration, () =>
         {
@@ -125,7 +124,7 @@ public class DialogUI : MonoBehaviour
             DialogUIObject.SetActive(false);
             SetBackGroundActive(false);
         }));
-#endif
+
     }
 
     private void SetDialogUIInstant(bool isShow)
@@ -150,7 +149,7 @@ public class DialogUI : MonoBehaviour
         BackGroundObject.SetActive(isActive);
     }
 
-#if !DOTWEEN
+
     private IEnumerator MoveDialogCoroutine(Vector2 targetPosition, float duration, System.Action onComplete)
     {
         if (duration <= 0f)
@@ -187,5 +186,5 @@ public class DialogUI : MonoBehaviour
         StopCoroutine(_dialogCoroutine);
         _dialogCoroutine = null;
     }
-#endif
+
 }
