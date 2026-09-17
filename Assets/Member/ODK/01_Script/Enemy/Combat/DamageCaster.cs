@@ -10,6 +10,7 @@ namespace Member.ODK.Scripts.Enemys.Combat
         Circle,
         Box,
         Capsule,
+        Sector,
         OutsideBox
     }
 
@@ -30,6 +31,7 @@ namespace Member.ODK.Scripts.Enemys.Combat
         [SerializeField] private Vector2 size = Vector2.one;
         [SerializeField] private float range = 1f;
         [SerializeField] private float angle;
+        [SerializeField, Range(0f, 360f)] private float sectorAngle = 45f;
         [SerializeField] private CapsuleDirection2D capsuleDirection = CapsuleDirection2D.Horizontal;
         [SerializeField] private bool useReferenceRotation;
         [SerializeField] private LayerMask targetLayer = 1 << 6;
@@ -161,6 +163,8 @@ namespace Member.ODK.Scripts.Enemys.Combat
             {
                 if (hit == null || castMode == DamageCastMode.OutsideBox && IsInsideBox(hit.bounds.center, center, castAngle))
                     continue;
+                if (castMode == DamageCastMode.Sector && !IsInsideSector(hit.bounds.center, center, castAngle))
+                    continue;
 
                 IDamageable damageable = hit.GetComponentInParent<IDamageable>();
                 if (damageable == null) damageable = hit.GetComponentInChildren<IDamageable>();
@@ -198,6 +202,29 @@ namespace Member.ODK.Scripts.Enemys.Combat
 
         public void SetRange(float value) => range = Mathf.Max(0f, value);
         public void SetSize(Vector2 value) => size = new Vector2(Mathf.Abs(value.x), Mathf.Abs(value.y));
+        public void SetSectorAngle(float value) => sectorAngle = Mathf.Clamp(value, 0f, 360f);
+
+        public void ConfigureCircle(float castRange, LayerMask layer)
+        {
+            castMode = DamageCastMode.Circle;
+            range = Mathf.Max(0f, castRange);
+            targetLayer = layer;
+        }
+
+        public void ConfigureSector(float castRange, float width, LayerMask layer)
+        {
+            castMode = DamageCastMode.Sector;
+            range = Mathf.Max(0f, castRange);
+            sectorAngle = Mathf.Clamp(width, 0f, 360f);
+            targetLayer = layer;
+        }
+
+        public void ConfigureBox(Vector2 castSize, LayerMask layer)
+        {
+            castMode = DamageCastMode.Box;
+            size = new Vector2(Mathf.Abs(castSize.x), Mathf.Abs(castSize.y));
+            targetLayer = layer;
+        }
 
         public static bool ApplyDamage(Transform target, DamageData damage)
         {
@@ -222,12 +249,22 @@ namespace Member.ODK.Scripts.Enemys.Combat
         {
             return castMode switch
             {
-                DamageCastMode.Circle => Physics2D.OverlapCircleAll(center, range, targetLayer),
+                DamageCastMode.Circle or DamageCastMode.Sector =>
+                    Physics2D.OverlapCircleAll(center, range, targetLayer),
                 DamageCastMode.Box => Physics2D.OverlapBoxAll(center, size, castAngle, targetLayer),
                 DamageCastMode.Capsule => Physics2D.OverlapCapsuleAll(center, size, capsuleDirection, castAngle, targetLayer),
                 DamageCastMode.OutsideBox => Physics2D.OverlapCircleAll(center, range, targetLayer),
                 _ => System.Array.Empty<Collider2D>()
             };
+        }
+
+        private bool IsInsideSector(Vector3 point, Vector3 center, float castAngle)
+        {
+            Vector2 direction = point - center;
+            if (direction.sqrMagnitude <= Mathf.Epsilon) return true;
+
+            float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            return Mathf.Abs(Mathf.DeltaAngle(castAngle, targetAngle)) <= sectorAngle * 0.5f;
         }
 
         private bool IsInsideBox(Vector3 point, Vector3 center, float castAngle)
@@ -287,6 +324,11 @@ namespace Member.ODK.Scripts.Enemys.Combat
                 Gizmos.DrawWireSphere(center, castRange);
                 return;
             }
+            if (mode == DamageCastMode.Sector)
+            {
+                DrawGizmoSector(center, castRange, castAngle);
+                return;
+            }
             if (mode == DamageCastMode.OutsideBox)
             {
                 Gizmos.DrawWireSphere(center, castRange);
@@ -301,6 +343,22 @@ namespace Member.ODK.Scripts.Enemys.Combat
 
             GetCapsulePoints(center, castSize, castAngle, direction, out Vector3 start, out Vector3 end, out float radius);
             DrawGizmoCapsule(start, end, radius);
+        }
+
+        private void DrawGizmoSector(Vector3 center, float castRange, float castAngle)
+        {
+            const int segmentCount = 20;
+            float startAngle = castAngle - sectorAngle * 0.5f;
+            Vector3 previous = center + DirectionFromAngle(startAngle) * castRange;
+            Gizmos.DrawLine(center, previous);
+            for (int i = 1; i <= segmentCount; i++)
+            {
+                float currentAngle = Mathf.Lerp(startAngle, startAngle + sectorAngle, i / (float)segmentCount);
+                Vector3 current = center + DirectionFromAngle(currentAngle) * castRange;
+                Gizmos.DrawLine(previous, current);
+                previous = current;
+            }
+            Gizmos.DrawLine(previous, center);
         }
 
         private void DrawGizmoBox(Vector3 center, Vector2 castSize, float castAngle)
@@ -328,6 +386,11 @@ namespace Member.ODK.Scripts.Enemys.Combat
                 DrawRuntimeCircle(center, castRange);
                 return;
             }
+            if (mode == DamageCastMode.Sector)
+            {
+                DrawRuntimeSector(center, castRange, castAngle);
+                return;
+            }
             if (mode == DamageCastMode.OutsideBox)
             {
                 DrawRuntimeCircle(center, castRange);
@@ -342,6 +405,28 @@ namespace Member.ODK.Scripts.Enemys.Combat
 
             GetCapsulePoints(center, castSize, castAngle, direction, out Vector3 start, out Vector3 end, out float radius);
             DrawRuntimeCapsule(start, end, radius);
+        }
+
+        private void DrawRuntimeSector(Vector3 center, float castRange, float castAngle)
+        {
+            const int segmentCount = 20;
+            float startAngle = castAngle - sectorAngle * 0.5f;
+            Vector3 previous = center + DirectionFromAngle(startAngle) * castRange;
+            DrawRuntimeLine(center, previous);
+            for (int i = 1; i <= segmentCount; i++)
+            {
+                float currentAngle = Mathf.Lerp(startAngle, startAngle + sectorAngle, i / (float)segmentCount);
+                Vector3 current = center + DirectionFromAngle(currentAngle) * castRange;
+                DrawRuntimeLine(previous, current);
+                previous = current;
+            }
+            DrawRuntimeLine(previous, center);
+        }
+
+        private static Vector3 DirectionFromAngle(float value)
+        {
+            float radians = value * Mathf.Deg2Rad;
+            return new Vector3(Mathf.Cos(radians), Mathf.Sin(radians));
         }
 
         private void GetCapsulePoints(Vector3 center, Vector2 castSize, float castAngle, CapsuleDirection2D direction, out Vector3 start, out Vector3 end, out float radius)

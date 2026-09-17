@@ -16,8 +16,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [Header("Target / Ground")]
         [SerializeField] private Transform target;
         [SerializeField] private LayerMask groundLayer = 1 << 3;
-        [field: SerializeField] public Transform ArenaPos { get; private set; }
-        [field: SerializeField] public float ArenaHalfWidth { get; private set; } = 13.5f;
+        [SerializeField] private BossArena arena;
         [SerializeField] private float groundRayHeight = 20f;
         [SerializeField] private float groundRayDistance = 50f;
         [SerializeField] private bool drawDebugGizmos = true;
@@ -48,17 +47,22 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [SerializeField] private UnityEvent onDeath;
 
         public Transform Target => target;
-        public Vector3 ArenaCenter => ArenaPos != null ? ArenaPos.position : (Vector3)originPos;
+        public BossArena Arena => arena;
+        public Vector3 ArenaCenter => arena != null ? arena.Center : (Vector3)originPos;
+        public float ArenaHalfWidth => arena != null ? arena.HalfWidth : 13.5f;
+        public float ArenaHalfHeight => arena != null ? arena.HalfHeight : 7.5f;
         public Vector2 originPos { get; private set; }
         public float CurrentHealth => healthModule != null ? healthModule.CurrentHealth : 0f;
         public float MaxHealth => healthModule != null ? healthModule.MaxHealth : 0f;
         public bool IsPhaseTwo { get; private set; }
         public bool IsDead { get; private set; }
+        protected virtual float PhaseTransitionDelay => 1.1f;
 
         protected override void Awake()
         {
             base.Awake();
             originPos = transform.position;
+            if (arena == null) arena = FindFirstObjectByType<BossArena>();
             if (healthModule == null) healthModule = GetModule<HealthModule>();
             if (deathModule == null) deathModule = GetModule<DeathModule>();
             if (deathModule != null) deathModule.OnDeath += HandleHealthDeath;
@@ -71,7 +75,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             if (playOnStart) StartCoroutine(AttackLoop());
         }
 
-        protected abstract IEnumerable<BossSkill> GetAttacks();
+        protected abstract IEnumerable<ODKBossSkill> GetAttacks();
         protected abstract IEnumerator PhaseOneLoop();
         protected abstract IEnumerator PhaseTwoLoop();
 
@@ -83,7 +87,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         private void InitializeAttacks()
         {
-            foreach (BossSkill attack in GetAttacks())
+            foreach (ODKBossSkill attack in GetAttacks())
                 attack?.InitializeAttack(this);
         }
 
@@ -99,15 +103,15 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             }
         }
 
-        protected IEnumerator PlayAttack(BossSkill attack, float durationScale = 1f)
+        protected IEnumerator PlayAttack(ODKBossSkill attack, float durationScale = 1f)
         {
             if (attack != null) yield return attack.Play(durationScale);
         }
 
         protected IEnumerator RunParallel(
-            BossSkill first,
+            ODKBossSkill first,
             float firstScale,
-            BossSkill second,
+            ODKBossSkill second,
             float secondScale)
         {
             int runningCount = 2;
@@ -116,7 +120,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             yield return new WaitUntil(() => runningCount <= 0 || IsDead);
         }
 
-        private IEnumerator RunAttack(BossSkill attack, float durationScale, Action onComplete)
+        private IEnumerator RunAttack(ODKBossSkill attack, float durationScale, Action onComplete)
         {
             yield return PlayAttack(attack, durationScale);
             onComplete?.Invoke();
@@ -314,14 +318,14 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         private IEnumerator PhaseTwoRestart()
         {
-            yield return new WaitForSeconds(1.1f);
+            yield return new WaitForSeconds(Mathf.Max(0f, PhaseTransitionDelay));
             while (!IsDead && IsPhaseTwo)
                 yield return PhaseTwoLoop();
         }
 
         protected void CancelAttacks()
         {
-            foreach (BossSkill attack in GetAttacks())
+            foreach (ODKBossSkill attack in GetAttacks())
                 attack?.StopSkill();
         }
 
@@ -340,13 +344,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         {
             if (!drawDebugGizmos) return;
 
-            Vector3 center = ArenaPos != null ? ArenaPos.position : transform.position;
-            Gizmos.color = new Color(0.1f, 0.9f, 1f, 0.8f);
-            Gizmos.DrawLine(
-                center + Vector3.left * ArenaHalfWidth,
-                center + Vector3.right * ArenaHalfWidth
-            );
-            Gizmos.DrawWireCube(center, new Vector3(ArenaHalfWidth * 2f, 0.2f, 0f));
+            Vector3 center = arena != null ? arena.Center : transform.position;
 
             Gizmos.color = new Color(1f, 0.9f, 0.1f, 0.75f);
             for (int i = 0; i < 5; i++)

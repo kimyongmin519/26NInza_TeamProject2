@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Bosses
 {
-    public abstract class BossSkill : AbstractEnemySkill
+    public abstract class ODKBossSkill : AbstractEnemySkill
     {
         protected PhasedBossController Owner { get; private set; }
         protected float DurationScale { get; private set; } = 1f;

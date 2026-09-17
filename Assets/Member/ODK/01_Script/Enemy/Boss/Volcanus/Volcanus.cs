@@ -69,7 +69,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             base.Start();
         }
 
-        protected override IEnumerable<BossSkill> GetAttacks()
+        protected override IEnumerable<ODKBossSkill> GetAttacks()
         {
             yield return rightPunchAttack;
             yield return sawSlamAttack;
