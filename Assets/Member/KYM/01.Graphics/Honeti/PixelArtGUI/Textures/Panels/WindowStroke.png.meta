@@ -45,7 +45,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
+  spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 16
@@ -105,15 +105,15 @@ TextureImporter:
         width: 42
         height: 42
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 6, y: 6, z: 6, w: 6}
+      pivot: {x: 0, y: 0}
+      border: {x: 7, y: 7, z: 7, w: 7}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5555e9dbc591b9c408dc5a6f0b407c56
-      internalID: 759918885
+      spriteID: 4790095bbfaae944980c136f1fc7bcb3
+      internalID: 1827376163
       vertices: []
       indices: 
       edges: []
@@ -132,7 +132,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      WindowStroke_0: 759918885
+      WindowStroke_0: 1827376163
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

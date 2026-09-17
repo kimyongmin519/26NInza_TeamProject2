@@ -15,9 +15,11 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
 
         protected override Status OnStart()
         {
-            if (Enemy?.Value == null || Index == null || Enemy.Value.WeaponModule == null)
+            if (Enemy.Value == null || Enemy.Value.WeaponModule == null)
+            {
                 return Status.Failure;
-            
+            }
+
             return Enemy.Value.WeaponModule.TryEquipWeapon(Index.Value)
                 ? Status.Success
                 : Status.Failure;
