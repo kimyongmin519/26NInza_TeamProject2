@@ -21,8 +21,10 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
         protected override Status OnStart()
         {
             if (Enemy.Value == null || Enemy.Value.Mover == null || Enemy.Value.Renderer == null
-                || Enemy.Value.Sensor == null) //Enemy.Value.AttackConfig == null
+                || Enemy.Value.Sensor == null)//Enemy.Value.AttackConfig == null
+            {
                 return Status.Failure;
+            }
             
             float direction = Enemy.Value.Renderer.FacingDirection;
             
@@ -38,7 +40,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
         protected override Status OnUpdate()
         {
             if(!_isGround)
-                return Status.Failure;
+                return Status.Running;
 
             Vector2 moveDirection = Enemy.Value.transform.right;
             float distance = Enemy.Value.Sensor.BoxCastObstacle(moveDirection, 10f, out RaycastHit2D hit);

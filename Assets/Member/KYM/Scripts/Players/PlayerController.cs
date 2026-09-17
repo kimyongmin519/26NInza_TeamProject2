@@ -3,11 +3,12 @@ using Member.KYM.Scripts.Agents.FSM;
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using Member.KYM.Scripts.CoreSystems;
 using Member.KYM.Scripts.Players.RobotArm;
+using Member.ODK._01_Script;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Players
 {
-    public class PlayerController : Agent
+    public class PlayerController : Agent, IDamageable
     {
         [field:Header("임시")]
         [field:SerializeField] public float JumpPower { get; private set; }
@@ -156,5 +157,9 @@ namespace Member.KYM.Scripts.Players
         }
 
         public void ChangeState(PlayerStateEnum state) => _stateMachine.ChangeState((int) state);
+        public void TakeDamage(DamageData damage)
+        {
+            
+        }
     }
 }

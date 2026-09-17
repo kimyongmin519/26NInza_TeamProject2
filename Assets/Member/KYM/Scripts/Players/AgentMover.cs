@@ -77,14 +77,17 @@ namespace Member.KYM.Scripts.Players
         {
             if (!useExtraGravity) return;
             
-            if (!IsGrounded)
+            if (IsGrounded)
             {
-                _extraGravityTimer += Time.fixedDeltaTime;
+                _extraGravityTimer = 0f;
+                return;
+            }
 
-                if (_extraGravityTimer >= extraGravityDelay)
-                {
-                    RigidBody.AddForceY(-extraGravityPower, ForceMode2D.Force);
-                }
+            _extraGravityTimer += Time.fixedDeltaTime;
+
+            if (_extraGravityTimer >= extraGravityDelay)
+            {
+                RigidBody.AddForceY(-extraGravityPower, ForceMode2D.Force);
             }
         }
         
