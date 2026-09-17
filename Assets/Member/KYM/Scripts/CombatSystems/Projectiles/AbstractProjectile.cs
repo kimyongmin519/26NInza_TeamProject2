@@ -1,3 +1,4 @@
+using KimLIb.ModuleSystems;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.CombatSystems.Projectiles
@@ -7,7 +8,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
     {
         [SerializeField, Min(0f)] private float speed = 10f;
 
-        public GameObject Owner { get; private set; }
+        public ModuleOwner Owner { get; private set; }
         public float DamageMultiplier { get; private set; } = 1f;
 
         protected Rigidbody2D Rigidbody { get; private set; }
@@ -24,7 +25,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
         public virtual void Shot(
             Vector2 direction,
-            GameObject owner,
+            ModuleOwner owner,
             float launchSpeed,
             float damageMultiplier = 1f)
         {

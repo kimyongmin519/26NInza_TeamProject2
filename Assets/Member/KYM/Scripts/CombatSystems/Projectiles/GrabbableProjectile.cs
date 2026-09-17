@@ -1,4 +1,5 @@
 using System.Collections;
+using KimLIb.ModuleSystems;
 using Member.KYM.Scripts.CombatSystems.DamageSystems;
 using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK._01_Script;
@@ -31,7 +32,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
         private RigidbodyConstraints2D _originalConstraints;
         private float _originalGravityScale;
         private Transform _originalParent;
-        private GameObject _grabber;
+        private ModuleOwner _grabber;
         private bool _isHeld;
         private bool _hasImpacted;
         private Coroutine _lifetimeRoutine;
@@ -68,7 +69,9 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
                 return;
 
             _isHeld = true;
-            _grabber = grabber;
+            _grabber = grabber != null
+                ? grabber.GetComponentInParent<ModuleOwner>()
+                : null;
             StopLifetime();
 
             _originalParent = transform.parent;
@@ -95,7 +98,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             if (!_isHeld)
                 return;
 
-            GameObject releaseOwner = _grabber;
+            ModuleOwner releaseOwner = _grabber;
             RestorePhysicsState();
             Shot(Vector2.zero, releaseOwner, 0f, DamageMultiplier);
             RestartLifetime();
@@ -110,11 +113,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             RestorePhysicsState();
             _hasImpacted = false;
 
-            Shot(
-                throwData.Direction,
-                throwData.Owner,
-                throwData.ArmThrowSpeed,
-                reflectedDamage);
+            Shot(throwData.Direction, throwData.Owner, throwData.ArmThrowSpeed, reflectedDamage);
 
             RestartLifetime();
         }
@@ -131,27 +130,13 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
         private void HandleImpact(GameObject hitObject)
         {
-            if (_isHeld || _hasImpacted || hitObject == null || IsOwner(hitObject))
-                return;
-
-            IDamageable damageable = FindDamageable(hitObject);
-            if (damageable == null && !destroyOnNonDamageableImpact)
+            if (_isHeld || _hasImpacted || IsOwner(hitObject))
                 return;
 
             _hasImpacted = true;
-
-            if (damageable != null)
-            {
-                Vector2 direction = Rigidbody.linearVelocity.sqrMagnitude > Mathf.Epsilon
-                    ? Rigidbody.linearVelocity.normalized
-                    : (Vector2)transform.right;
-
-                damageable.TakeDamage(new DamageData(
-                    damage * DamageMultiplier,
-                    DamageType.Projectile,
-                    CriticalType.Normal,
-                    direction * knockbackForce));
-            }
+            
+            _damageCaster.InitCaster(Owner);
+            _damageCaster.CastDamage(transform.position, transform.right);
 
             Destroy(gameObject);
         }
@@ -166,7 +151,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             return hitTransform == ownerTransform || hitTransform.IsChildOf(ownerTransform);
         }
 
-        private static IDamageable FindDamageable(GameObject hitObject)
+        /*private static IDamageable FindDamageable(GameObject hitObject)
         {
             MonoBehaviour[] behaviours = hitObject.GetComponentsInParent<MonoBehaviour>();
             foreach (MonoBehaviour behaviour in behaviours)
@@ -176,7 +161,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             }
 
             return null;
-        }
+        }*/
 
         private void RestorePhysicsState()
         {

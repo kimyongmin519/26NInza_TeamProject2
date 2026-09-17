@@ -29,6 +29,7 @@ namespace Member.KYM.Scripts.CombatSystems.DamageSystems
                 CastType.BOX => Physics2D.OverlapBox(position, boxSize, angle, contactFilter, _hitResults), 
                 _ => 0
             };
+            
 
             for (int i = 0; i < cnt; i++)
             {
@@ -42,6 +43,8 @@ namespace Member.KYM.Scripts.CombatSystems.DamageSystems
                     };
                     
                     damageable.TakeDamage(damageData);
+                    MonoBehaviour target = damageable as MonoBehaviour;
+                    Debug.Log($"{damageData.Damage} 데미지 입힙: {target.gameObject.name}"); //테스트 완료
                 }
             }
             return cnt > 0;
