@@ -1,8 +1,6 @@
-using Member.ODK.Scripts.UI;
+
 using KimLIb.ModuleSystems;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Member.ODK.Scripts
@@ -15,24 +13,21 @@ namespace Member.ODK.Scripts
         public bool IsDead { get; protected set; }
 
         public Action<float, float> OnHealthChanged;
-        public ModuleOwner owner;
+        private ModuleOwner owner;
 
 
-        protected Dictionary<Type, IHealthModuleExtra> _moduleDict;
-
-        protected virtual void Awake()
+        public void Initialize(ModuleOwner owner)
         {
-            _moduleDict = GetComponentsInChildren<IHealthModuleExtra>().ToDictionary(module => module.GetType(), module => module);
-            InitializeHealthModuleExtra();
+            this.owner = owner;
+
+            CurrentHealth = MaxHealth;
+            OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
+
         }
 
-        protected virtual void InitializeHealthModuleExtra()
-        {
-            foreach (IHealthModuleExtra module in _moduleDict.Values)
-            {
-                module.Setting(this);
-            }
-        }
+
+
+
         public void ApplyDamage(DamageData damage)
         {
             if (IsDead)
@@ -74,14 +69,5 @@ namespace Member.ODK.Scripts
             OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
         }
 
-        public void Initialize(ModuleOwner owner)
-        {
-            this.owner = owner;
-
-            CurrentHealth = MaxHealth;
-
-            OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
-
-        }
     }
 }
