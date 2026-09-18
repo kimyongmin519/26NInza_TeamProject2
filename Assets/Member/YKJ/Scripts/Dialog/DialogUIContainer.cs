@@ -9,6 +9,7 @@ public class DialogUIContainer : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI ActorText;
     [SerializeField] private ShadowPixelText DialogText;
+    [SerializeField] private TextMeshProUGUI FallbackDialogText;
     [SerializeField] private DialogTextAnimator DialogTextAnimator;
     [SerializeField] private List<Image> ActorIcons;
     [SerializeField] private float PerCharTime = 0.05f;
@@ -24,14 +25,42 @@ public class DialogUIContainer : MonoBehaviour
 
     private void Awake()
     {
+        if (DialogText == null)
+        {
+            DialogText = GetComponentInChildren<ShadowPixelText>(true);
+        }
+
+        if (FallbackDialogText == null)
+        {
+            TextMeshProUGUI[] texts = GetComponentsInChildren<TextMeshProUGUI>(true);
+            for (int i = 0; i < texts.Length; i++)
+            {
+                if (texts[i] != ActorText)
+                {
+                    FallbackDialogText = texts[i];
+                    break;
+                }
+            }
+        }
+
         if (DialogTextAnimator == null && DialogText != null)
         {
             DialogTextAnimator = DialogText.GetComponent<DialogTextAnimator>();
         }
 
+        if (DialogTextAnimator == null && FallbackDialogText != null)
+        {
+            DialogTextAnimator = FallbackDialogText.GetComponent<DialogTextAnimator>();
+        }
+
         if (DialogTextAnimator == null && DialogText != null)
         {
             DialogTextAnimator = DialogText.gameObject.AddComponent<DialogTextAnimator>();
+        }
+
+        if (DialogTextAnimator == null && FallbackDialogText != null)
+        {
+            DialogTextAnimator = FallbackDialogText.gameObject.AddComponent<DialogTextAnimator>();
         }
     }
 
@@ -63,7 +92,14 @@ public class DialogUIContainer : MonoBehaviour
         }
     }
 
-    public void SetActorText(string text) => ActorText.text = text;
+    public void SetActorText(string text)
+    {
+        if (ActorText != null)
+        {
+            ActorText.text = text;
+        }
+    }
+
     public void SetDialogText(string text, Action talkEndAction = null)
     {
         _currentDialogText = DialogTextAnimator != null ? DialogTextAnimator.SetText(text) : text;
@@ -99,8 +135,8 @@ public class DialogUIContainer : MonoBehaviour
         _currentDialogText = string.Empty;
         _talkEndAction = null;
         _isTyping = false;
-        ActorText.text = string.Empty;
-        DialogText.SetText(string.Empty);
+        SetActorText(string.Empty);
+        SetText(string.Empty);
         SetVisibleCharacters(0);
         SetAllActorIconActive(false);
     }
@@ -121,7 +157,7 @@ public class DialogUIContainer : MonoBehaviour
     private IEnumerator TypingCoroutine()
     {
         _isTyping = true;
-        DialogText.SetText(_currentDialogText);
+        SetText(_currentDialogText);
         SetVisibleCharacters(0);
 
         for (int i = 0; i < _currentDialogText.Length; i++)
@@ -160,11 +196,25 @@ public class DialogUIContainer : MonoBehaviour
             StopCoroutine(typingCoroutine);
         }
 
-        DialogText.SetText(_currentDialogText);
+        SetText(_currentDialogText);
         SetVisibleCharacters(_currentDialogText.Length);
         _isTyping = false;
         _talkEndAction?.Invoke();
         _talkEndAction = null;
+    }
+
+    private void SetText(string text)
+    {
+        if (DialogText != null)
+        {
+            DialogText.SetText(text);
+            return;
+        }
+
+        if (FallbackDialogText != null)
+        {
+            FallbackDialogText.text = text;
+        }
     }
 
     private void SetVisibleCharacters(int count)
@@ -175,6 +225,15 @@ public class DialogUIContainer : MonoBehaviour
             return;
         }
 
-        DialogText.SetMaxVisibleCharacters(count);
+        if (DialogText != null)
+        {
+            DialogText.SetMaxVisibleCharacters(count);
+            return;
+        }
+
+        if (FallbackDialogText != null)
+        {
+            FallbackDialogText.maxVisibleCharacters = count;
+        }
     }
 }

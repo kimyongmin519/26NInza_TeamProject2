@@ -11,7 +11,7 @@ public class Npc : MonoBehaviour, Interactable
 
     public void Interaction(Agent player)
     {
-        if (DialogManager.Talking == false)
+        if (DialogManager.Talking == false && BubbleDialogManager.Talking == false)
         {
             Transform target = CameraFocusTarget != null ? CameraFocusTarget : transform;
             CameraEventChannel?.RaiseEvent(CameraEvent.FocusCameraTargetEvent.Init(target));

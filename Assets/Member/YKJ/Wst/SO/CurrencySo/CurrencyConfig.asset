@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f932224cda3d44c1a8c247f151868608, type: 3}
+  m_Name: CurrencyConfig
+  m_EditorClassIdentifier: Assembly-CSharp::Member.Wst.Scripts.Currencys.CurrencyConfig
+  currencies:
+  - type: 1
+    displayName: "\uACE8\uB4DC"
+    icon: {fileID: 47813434996547701, guid: 3421078018dc3934a8c1ab3b7bf89aa0, type: 3}
+    startingBalance: 0
+    maxBalance: 100000000
+  - type: 2
+    displayName: "\uB2E4\uC774\uC544\uBAAC\uB4DC"
+    icon: {fileID: 7293598183456022363, guid: 1ddc9afd21fec77489b1248d18f31b68, type: 3}
+    startingBalance: 0
+    maxBalance: 100000000

@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5320696561b4409966e807f38cbdbaf, type: 3}
+  m_Name: Pool Item
+  m_EditorClassIdentifier: ObjectPool_Runtime_assembly::GGMLib.ObjectPool.Runtime.PoolItemSO
+  itemName: WarningZone
+  prefab: {fileID: 5832390105621652527, guid: 32142890a0f455f4fb1874ce2e2dc747, type: 3}
+  initCount: 5
