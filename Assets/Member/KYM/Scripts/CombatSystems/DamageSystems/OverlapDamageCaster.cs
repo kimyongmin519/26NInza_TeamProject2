@@ -44,7 +44,7 @@ namespace Member.KYM.Scripts.CombatSystems.DamageSystems
                     
                     damageable.TakeDamage(damageData);
                     MonoBehaviour target = damageable as MonoBehaviour;
-                    Debug.Log($"{damageData.Damage} 데미지 입힙: {target.gameObject.name}"); //테스트 완료
+                    Debug.Log($"{damageData.Amount} 데미지 입힙: {target.gameObject.name}"); //테스트 완료
                 }
             }
             return cnt > 0;
