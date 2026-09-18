@@ -1,15 +1,13 @@
 using DG.Tweening;
+using KimLIb.ModuleSystems;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Member.ODK.Scripts.UI
 {
-    public interface IHealthModuleExtra
-    {
-        void Setting(HealthModule module);
-    }
 
-    public class HealthBarUI : MonoBehaviour, IHealthModuleExtra
+
+    public class HealthBarUI : MonoBehaviour, IModule, IAfterInitModule
     {
         [Header("References")]
         [SerializeField] private RectTransform barObject;
@@ -23,7 +21,7 @@ namespace Member.ODK.Scripts.UI
 
         private Sequence currentFillSequence;
         private Sequence currentShakeSequence;
-
+        private ModuleOwner owner;
         private HealthModule healthModule;
 
         private Vector2 barOriginPosition;
@@ -35,26 +33,27 @@ namespace Member.ODK.Scripts.UI
             barOriginRotation = barObject.localRotation;
         }
 
-        public void Setting(HealthModule module)
+        public void Initialize(ModuleOwner owner)
         {
+            this.owner = owner;
+        }
+
+        public void AfterInit()
+        {
+            healthModule = owner.GetModule<HealthModule>();
             if (healthModule != null)
             {
                 healthModule.OnHealthChanged -= ChangeHealthBar;
+                healthModule.OnHealthChanged += ChangeHealthBar;
+
+                float percent = Mathf.Clamp01(
+                    healthModule.CurrentHealth / healthModule.MaxHealth
+                );
+
+                barFill.fillAmount = percent;
+                barHighLight.fillAmount = percent;
             }
 
-            healthModule = module;
-
-            if (healthModule == null)
-                return;
-
-            healthModule.OnHealthChanged += ChangeHealthBar;
-
-            float percent = Mathf.Clamp01(
-                healthModule.CurrentHealth / healthModule.MaxHealth
-            );
-
-            barFill.fillAmount = percent;
-            barHighLight.fillAmount = percent;
         }
 
         private void ChangeHealthBar(float current, float previous)
@@ -112,36 +111,36 @@ namespace Member.ODK.Scripts.UI
             float positionStrength = Mathf.Lerp(0.5f, 3f, ratio);
             float rotationStrength = Mathf.Lerp(0.15f, 0.75f, ratio);
 
-            currentShakeSequence = DOTween.Sequence();
+            //currentShakeSequence = DOTween.Sequence();
 
-            currentShakeSequence
-                .Append(
-                    barObject
-                        .DOShakeAnchorPos(
-                            0.12f,
-                            positionStrength,
-                            8,
-                            60f,
-                            false,
-                            true
+            //currentShakeSequence
+            //    .Append(
+            //        barObject
+            //            .DOShakeAnchorPos(
+            //                0.12f,
+            //                positionStrength,
+            //                8,
+            //                60f,
+            //                false,
+            //                true
                             
-                        )
-                        .SetEase(Ease.OutQuad)
-                )
-                .Join(
-                    barObject
-                        .DOShakeRotation(
-                            0.12f,
-                            new Vector3(0f, 0f, rotationStrength),
-                            8,
-                            60f,
-                            false,
-                            ShakeRandomnessMode.Full
-                        )
-                        .SetEase(Ease.OutQuad)
-                )
-                .AppendCallback(ResetBarTransform)
-                .OnKill(ResetBarTransform);
+            //            )
+            //            .SetEase(Ease.OutQuad)
+            //    )
+            //    .Join(
+            //        barObject
+            //            .DOShakeRotation(
+            //                0.12f,
+            //                new Vector3(0f, 0f, rotationStrength),
+            //                8,
+            //                60f,
+            //                false,
+            //                ShakeRandomnessMode.Full
+            //            )
+            //            .SetEase(Ease.OutQuad)
+            //    )
+            //    .AppendCallback(ResetBarTransform)
+            //    .OnKill(ResetBarTransform);
         }
 
         private void ResetBarTransform()
