@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
-    public abstract class VolcanusSkill : BossSkill
+    public abstract class VolcanusSkill : ODKBossSkill
     {
         [field: Header("Damage")]
         [field: SerializeField] protected DamageCaster DamageCaster { get; private set; }

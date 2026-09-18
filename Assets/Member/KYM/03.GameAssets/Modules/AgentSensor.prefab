@@ -49,7 +49,7 @@ MonoBehaviour:
     m_Bits: 8
   interactableLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 2048
   targetLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -57,6 +57,7 @@ MonoBehaviour:
   boxOffset: {x: 0, y: 0}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 1032
   groundCheckSize: {x: 0.35, y: 0.2}
   groundCheckOffset: {x: 0, y: -0.75}
+  maxColliderCount: 5

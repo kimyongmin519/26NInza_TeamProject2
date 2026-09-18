@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4435381174269793023}
   - component: {fileID: 6597006220325757120}
   - component: {fileID: 2868640506097931003}
-  m_Layer: 3
+  m_Layer: 10
   m_Name: Platformer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,10 +138,10 @@ PlatformEffector2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8123458498934824796}
   m_Enabled: 1
-  m_UseColliderMask: 1
+  m_UseColliderMask: 0
   m_ColliderMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1024
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0

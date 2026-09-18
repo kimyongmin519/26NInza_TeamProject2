@@ -14,6 +14,7 @@ namespace Member.KYM.Scripts.Enemies.Boss
         public ISkillModule SkillModule { get; private set; }
         public IWeaponModule WeaponModule { get; private set; }
         public AgentSensor Sensor { get; private set; }
+        public BossPhaseController PhaseController { get; private set; }
 
         protected override void InitializeModules()
         {
@@ -23,6 +24,7 @@ namespace Member.KYM.Scripts.Enemies.Boss
             Sensor = GetModule<AgentSensor>();
             SkillModule = GetModule<ISkillModule>();
             WeaponModule = GetModule<IWeaponModule>();
+            PhaseController = GetModule<BossPhaseController>();
         }
     }
 }
