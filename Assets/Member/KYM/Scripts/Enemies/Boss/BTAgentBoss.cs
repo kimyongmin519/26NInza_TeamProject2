@@ -42,7 +42,7 @@ namespace Member.KYM.Scripts.Enemies.Boss
 
         public void TakeDamage(DamageData damage)
         {
-            
+            ApplyDamage(damage.Amount);
         }
         
         public void SetVariableValue<T>(string variableName, T value)

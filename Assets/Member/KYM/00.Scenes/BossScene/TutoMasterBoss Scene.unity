@@ -394,7 +394,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &229158669
 Transform:
   m_ObjectHideFlags: 0
@@ -2291,6 +2291,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 306668278}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1031100416
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8444165542683116536}
+    m_Modifications:
+    - target: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4.9839897
+      objectReference: {fileID: 0}
+    - target: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.37334
+      objectReference: {fileID: 0}
+    - target: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6385670432325225292, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: m_Name
+      value: HealthModule
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+--- !u!4 &1031100417 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+  m_PrefabInstance: {fileID: 1031100416}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1036441534 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7062725644185007046, guid: 318b5db63eebb3844a1b50728b89229e, type: 3}
@@ -9011,31 +9073,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1077073750301775237, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1992003781}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
---- !u!1 &1992003780 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1077073750301775237, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
-  m_PrefabInstance: {fileID: 1992003779}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1992003781
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1992003780}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
-  <MaxHealth>k__BackingField: 1000
-  <CurrentHealth>k__BackingField: 1000
-  owner: {fileID: 0}
 --- !u!1 &2032509305
 GameObject:
   m_ObjectHideFlags: 0
@@ -10584,6 +10623,7 @@ Transform:
   - {fileID: 32374451}
   - {fileID: 1527151206}
   - {fileID: 688297451}
+  - {fileID: 1031100417}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8444165542683116537

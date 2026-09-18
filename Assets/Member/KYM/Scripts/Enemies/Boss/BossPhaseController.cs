@@ -17,23 +17,18 @@ namespace Member.KYM.Scripts.Enemies.Boss
             CurrentPhase = initialPhase;
         }
 
-        /*public bool TryStartPhaseTwoTransition()
+        public bool TryChangePhase(BossPhaseEnum nextPhase)
         {
-            if (CurrentPhase != BossPhaseEnum.PHASE1)
+            if (CurrentPhase == nextPhase)
                 return false;
 
-            ChangePhase(BossPhaseEnum.TRANSITION);
+            if (CurrentPhase != BossPhaseEnum.PHASE1 ||
+                nextPhase != BossPhaseEnum.PHASE2)
+                return false;
+
+            ChangePhase(nextPhase);
             return true;
         }
-
-        public bool TryCompletePhaseTwoTransition()
-        {
-            if (CurrentPhase != BossPhaseEnum.TRANSITION)
-                return false;
-
-            ChangePhase(BossPhaseEnum.PHASE2);
-            return true;
-        }*/
 
         private void ChangePhase(BossPhaseEnum nextPhase)
         {
