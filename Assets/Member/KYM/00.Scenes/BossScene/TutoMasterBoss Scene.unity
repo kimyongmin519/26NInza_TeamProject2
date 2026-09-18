@@ -9011,8 +9011,31 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1077073750301775237, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1992003781}
   m_SourcePrefab: {fileID: 100100000, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
+--- !u!1 &1992003780 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1077073750301775237, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
+  m_PrefabInstance: {fileID: 1992003779}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1992003781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1992003780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
+  <MaxHealth>k__BackingField: 1000
+  <CurrentHealth>k__BackingField: 1000
+  owner: {fileID: 0}
 --- !u!1 &2032509305
 GameObject:
   m_ObjectHideFlags: 0
