@@ -26,6 +26,16 @@ namespace Member.KYM.Scripts.CombatSystems.DamageSystems
             _hitResults = new Collider2D[maxHitCount];
         }
 
+        protected bool IsCasterOwner(Collider2D hitCollider)
+        {
+            if (CasterOwner == null || hitCollider == null)
+                return false;
+
+            ModuleOwner hitOwner =
+                hitCollider.GetComponentInParent<ModuleOwner>();
+            return ReferenceEquals(hitOwner, CasterOwner);
+        }
+
         public abstract bool CastDamage(Vector2 position, Vector2 direction);
     }
 }

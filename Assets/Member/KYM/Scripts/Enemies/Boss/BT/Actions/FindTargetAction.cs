@@ -21,7 +21,10 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
                 return Status.Failure;
 
             if (TargetGameObject.Value != null)
+            {
+                Enemy.Value.WeaponModule?.SetTarget(TargetGameObject.Value);
                 return Status.Success;
+            }
 
             AgentSensor sensor = Enemy.Value.Sensor;
 
@@ -30,7 +33,11 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
             if(!isFinding) return Status.Failure;
             
             TargetGameObject.Value = findtarget.gameObject;
-            return TargetGameObject.Value == null ? Status.Failure : Status.Success;
+            if (TargetGameObject.Value == null)
+                return Status.Failure;
+
+            Enemy.Value.WeaponModule?.SetTarget(TargetGameObject.Value);
+            return Status.Success;
         }
     }
 }

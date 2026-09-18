@@ -21,6 +21,23 @@ namespace Member.KYM.Scripts.Enemies.Boss
         private void Start()
         {
             SetVariableValue<AbstractBoss>(BtVar.Boss, this);
+
+            if (PhaseController == null)
+                return;
+
+            SetVariableValue(BtVar.CurrentPhase, PhaseController.CurrentPhase);
+            PhaseController.OnPhaseChanged += HandlePhaseChanged;
+        }
+
+        private void HandlePhaseChanged(BossPhaseEnum phase)
+        {
+            SetVariableValue(BtVar.CurrentPhase, phase);
+        }
+
+        private void OnDestroy()
+        {
+            if (PhaseController != null)
+                PhaseController.OnPhaseChanged -= HandlePhaseChanged;
         }
 
         public void TakeDamage(DamageData damage)

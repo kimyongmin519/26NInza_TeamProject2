@@ -3,8 +3,9 @@ using Unity.Behavior;
 namespace Member.KYM.Scripts.Enemies.Boss.BT
 {
     [BlackboardEnum]
-    public enum BossStateEnum
+    public enum BossPhaseEnum
     {
-        IDLE, MOVE, COMBAT, HIT, DEATH, TRANSITION
+        PHASE1,
+        PHASE2
     }
 }

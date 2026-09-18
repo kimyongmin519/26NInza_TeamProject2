@@ -2,21 +2,15 @@ using System.Collections;
 using KimLIb.ModuleSystems;
 using Member.KYM.Scripts.CombatSystems.DamageSystems;
 using Member.KYM.Scripts.Players.RobotArm;
-using Member.ODK._01_Script;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.CombatSystems.Projectiles
 {
     public class GrabbableProjectile : AbstractProjectile, IGrabbable
     {
-        [Header("피해")]
-        [SerializeField, Min(0f)] private float damage = 1f;
-        [SerializeField, Min(0f)] private float knockbackForce;
-        [SerializeField, Min(0f)] private float reflectedDamageMultiplier = 1f;
-
         [Header("수명")]
         [SerializeField, Min(0f)] private float lifetime = 5f;
-        [SerializeField] private bool destroyOnNonDamageableImpact = true;
+        [SerializeField, Min(0f)] private float launchCollisionDelay;
 
         [Header("잡기")]
         [SerializeField] private bool canBeGrabbed = true;
@@ -35,6 +29,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
         private bool _isHeld;
         private bool _hasImpacted;
         private Coroutine _lifetimeRoutine;
+        private Coroutine _launchCollisionRoutine;
 
         private AbstractDamageCaster _damageCaster;
 
@@ -60,6 +55,16 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
         private void OnDisable()
         {
             StopLifetime();
+            StopLaunchCollisionDelay(false);
+        }
+
+        public override void Shot(
+            Vector2 direction,
+            ModuleOwner owner,
+            float launchSpeed)
+        {
+            base.Shot(direction, owner, launchSpeed);
+            RestartLaunchCollisionDelay();
         }
 
         public void Grab(Transform grabPoint, GameObject grabber)
@@ -67,6 +72,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             if (!CanBeGrabbed || grabPoint == null)
                 return;
 
+            StopLaunchCollisionDelay(true);
             _isHeld = true;
             _grabber = grabber != null
                 ? grabber.GetComponentInParent<ModuleOwner>()
@@ -99,7 +105,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
             ModuleOwner releaseOwner = _grabber;
             RestorePhysicsState();
-            Shot(Vector2.zero, releaseOwner, 0f, DamageMultiplier);
+            Shot(Vector2.zero, releaseOwner, 0f);
             RestartLifetime();
         }
 
@@ -108,11 +114,10 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             if (!_isHeld)
                 return;
 
-            float reflectedDamage = DamageMultiplier * reflectedDamageMultiplier;
             RestorePhysicsState();
             _hasImpacted = false;
 
-            Shot(throwData.Direction, throwData.Owner, throwData.ArmThrowSpeed, reflectedDamage);
+            Shot(throwData.Direction, throwData.Owner, throwData.ArmThrowSpeed);
 
             RestartLifetime();
         }
@@ -149,18 +154,6 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             Transform ownerTransform = Owner.transform;
             return hitTransform == ownerTransform || hitTransform.IsChildOf(ownerTransform);
         }
-
-        /*private static IDamageable FindDamageable(GameObject hitObject)
-        {
-            MonoBehaviour[] behaviours = hitObject.GetComponentsInParent<MonoBehaviour>();
-            foreach (MonoBehaviour behaviour in behaviours)
-            {
-                if (behaviour is IDamageable damageable)
-                    return damageable;
-            }
-
-            return null;
-        }*/
 
         private void RestorePhysicsState()
         {
@@ -216,12 +209,42 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             Destroy(gameObject);
         }
 
+        private void RestartLaunchCollisionDelay()
+        {
+            StopLaunchCollisionDelay(true);
+
+            if (_collider == null || launchCollisionDelay <= 0f)
+                return;
+
+            _collider.enabled = false;
+            _launchCollisionRoutine = StartCoroutine(LaunchCollisionDelayRoutine());
+        }
+
+        private IEnumerator LaunchCollisionDelayRoutine()
+        {
+            yield return new WaitForSeconds(launchCollisionDelay);
+            _launchCollisionRoutine = null;
+
+            if (_collider != null && !_isHeld)
+                _collider.enabled = true;
+        }
+
+        private void StopLaunchCollisionDelay(bool restoreCollider)
+        {
+            if (_launchCollisionRoutine != null)
+            {
+                StopCoroutine(_launchCollisionRoutine);
+                _launchCollisionRoutine = null;
+            }
+
+            if (restoreCollider && _collider != null && !_isHeld)
+                _collider.enabled = true;
+        }
+
         private void OnValidate()
         {
-            damage = Mathf.Max(0f, damage);
-            knockbackForce = Mathf.Max(0f, knockbackForce);
-            reflectedDamageMultiplier = Mathf.Max(0f, reflectedDamageMultiplier);
             lifetime = Mathf.Max(0f, lifetime);
+            launchCollisionDelay = Mathf.Max(0f, launchCollisionDelay);
 
             Collider2D projectileCollider = GetComponent<Collider2D>();
             if (projectileCollider != null)

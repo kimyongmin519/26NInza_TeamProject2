@@ -29,10 +29,14 @@ namespace Member.KYM.Scripts.CombatSystems.DamageSystems
                 CastType.BOX => Physics2D.OverlapBox(position, boxSize, angle, contactFilter, _hitResults), 
                 _ => 0
             };
-            
+
+            bool damagedTarget = false;
 
             for (int i = 0; i < cnt; i++)
             {
+                if (IsCasterOwner(_hitResults[i]))
+                    continue;
+
                 if (_hitResults[i].TryGetComponent(out IDamageable damageable))
                 {
                     Vector2 point = _hitResults[i].ClosestPoint(position);
@@ -43,11 +47,12 @@ namespace Member.KYM.Scripts.CombatSystems.DamageSystems
                     };
                     
                     damageable.TakeDamage(damageData);
+                    damagedTarget = true;
                     MonoBehaviour target = damageable as MonoBehaviour;
                     Debug.Log($"{damageData.Damage} 데미지 입힙: {target.gameObject.name}"); //테스트 완료
                 }
             }
-            return cnt > 0;
+            return damagedTarget;
         }
 
         private void OnDrawGizmosSelected()
