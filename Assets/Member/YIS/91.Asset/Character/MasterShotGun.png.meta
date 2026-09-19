@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 9aa6959baab5663488ee438b0f38c107
+guid: 64437fda8c0463f45bf7d7573e4dab2c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5676741272876029023
-    second: Master_0
+      213: -5436900920761240014
+    second: MasterShotGun_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -100,12 +100,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Master_0
+      name: MasterShotGun_0
       rect:
         serializedVersion: 2
-        x: 87
+        x: 165
         y: 27
-        width: 145
+        width: 299
         height: 239
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1abec6493e92831b0800000000000000
-      internalID: -5676741272876029023
+      spriteID: 23638032b6f3c84b0800000000000000
+      internalID: -5436900920761240014
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Master_0: -5676741272876029023
+      MasterShotGun_0: -5436900920761240014
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
