@@ -10,9 +10,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
     public class MoonBoss : PhasedBossController, IDamageable
     {
         [Header("Pattern")]
-        [SerializeField] private MoonMeteorAttack meteorAttack;
-        [SerializeField] private MoonOrbitAttack orbitAttack;
-        [SerializeField] private MoonReflectionAttack reflectionAttack;
+
         [SerializeField] private LayerMask playerLayer = 1 << 6;
 
         [Header("Moon Phase Clone")]
@@ -53,24 +51,9 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         {
             base.Awake();
             if (moonAnimator == null) moonAnimator = GetComponentInChildren<Animator>();
-            PrepareAttacks();
         }
 
-        private void PrepareAttacks()
-        {
-            if (meteorAttack == null) meteorAttack = GetComponentInChildren<MoonMeteorAttack>(true);
-            if (orbitAttack == null) orbitAttack = GetComponentInChildren<MoonOrbitAttack>(true);
-            if (reflectionAttack == null) reflectionAttack = GetComponentInChildren<MoonReflectionAttack>(true);
 
-            if (meteorAttack == null) meteorAttack = gameObject.AddComponent<MoonMeteorAttack>();
-            if (orbitAttack == null) orbitAttack = gameObject.AddComponent<MoonOrbitAttack>();
-            if (reflectionAttack == null) reflectionAttack = gameObject.AddComponent<MoonReflectionAttack>();
-
-            availableAttacks.Clear();
-            availableAttacks.Add(meteorAttack);
-            availableAttacks.Add(orbitAttack);
-            availableAttacks.Add(reflectionAttack);
-        }
 
         protected override IEnumerable<ODKBossSkill> GetAttacks()
         {

@@ -23,7 +23,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         [Header("Health / Phase")]
         [SerializeField] private HealthModule healthModule;
-        [SerializeField] private DeathModule deathModule;
         [SerializeField] private bool invincible;
 
         [Header("Grab Rock")]
@@ -64,8 +63,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             originPos = transform.position;
             if (arena == null) arena = FindFirstObjectByType<BossArena>();
             if (healthModule == null) healthModule = GetModule<HealthModule>();
-            if (deathModule == null) deathModule = GetModule<DeathModule>();
-            if (deathModule != null) deathModule.OnDeath += HandleHealthDeath;
+            if (healthModule != null) healthModule.OnDeath += HandleHealthDeath;
         }
 
         protected virtual void Start()
@@ -299,7 +297,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             }
 
             EnterPhaseTwo();
-            if (deathModule != null) deathModule.Revive();
+            if (healthModule != null) healthModule.Revive();
             else if (healthModule != null) healthModule.SetMaxHealth(healthModule.MaxHealth, true);
         }
 
@@ -380,7 +378,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         protected virtual void OnDestroy()
         {
-            if (deathModule != null) deathModule.OnDeath -= HandleHealthDeath;
+            if (healthModule != null) healthModule.OnDeath -= HandleHealthDeath;
             CancelAttacks();
         }
     }
