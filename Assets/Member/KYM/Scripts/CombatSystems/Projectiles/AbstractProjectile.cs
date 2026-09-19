@@ -19,13 +19,15 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
         public virtual void Shot(Vector2 direction)
         {
-            Shot(direction, null, speed);
+            Shot(direction, null);
         }
 
-        public virtual void Shot(
-            Vector2 direction,
-            ModuleOwner owner,
-            float launchSpeed)
+        public virtual void Shot(Vector2 direction, ModuleOwner owner)
+        {
+            Shot(direction, owner, speed);
+        }
+
+        public virtual void Shot(Vector2 direction, ModuleOwner owner, float launchSpeed)
         {
             Owner = owner;
 

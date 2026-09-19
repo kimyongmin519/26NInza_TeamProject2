@@ -122,25 +122,20 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             RestartLifetime();
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            HandleImpact(other.gameObject);
-        }
-
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            HandleImpact(collision.gameObject);
+            HandleImpact(collision);
         }
 
-        private void HandleImpact(GameObject hitObject)
+        private void HandleImpact(Collision2D collision)
         {
-            if (_isHeld || _hasImpacted || IsOwner(hitObject))
+            if (_isHeld || _hasImpacted || IsOwner(collision.gameObject))
                 return;
 
             _hasImpacted = true;
             
             _damageCaster.InitCaster(Owner);
-            _damageCaster.CastDamage(transform.position, transform.right);
+            _damageCaster.CastDamage(collision.collider, collision.GetContact(0).point, collision.GetContact(0).normal);
 
             Destroy(gameObject);
         }

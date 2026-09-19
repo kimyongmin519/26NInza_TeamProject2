@@ -6,11 +6,7 @@ using UnityEngine;
 namespace Member.KYM.Scripts.Enemies.Boss.BT.Conditions
 {
     [Serializable, GeneratePropertyBag]
-    [Condition(
-        name: "Can Enter Phase Two",
-        story: "[Enemy] health is below [HealthRatio]",
-        category: "Conditions",
-        id: "40e3da8188524f5f8e54724c751730bf")]
+    [Condition(name: "Can Enter Phase Two", story: "[Enemy] health is below [HealthRatio]", category: "Conditions", id: "40e3da8188524f5f8e54724c751730bf")]
     public partial class CanEnterPhaseTwoCondition : Condition
     {
         [SerializeReference] public BlackboardVariable<AbstractBoss> Enemy;
@@ -24,7 +20,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Conditions
 
             float threshold = Mathf.Clamp01(HealthRatio?.Value ?? 0.5f);
             return boss.PhaseController.CurrentPhase == BossPhaseEnum.PHASE1 &&
-                   boss.NormalizedHealth <= threshold;
+                   boss.NormalizeHealth <= threshold;
         }
     }
 }

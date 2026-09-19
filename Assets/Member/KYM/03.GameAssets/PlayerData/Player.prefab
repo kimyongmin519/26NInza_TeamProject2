@@ -347,6 +347,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Players.PlayerController
   <JumpPower>k__BackingField: 9
   <MaxJumpCount>k__BackingField: 2
+  <UIChannel>k__BackingField: {fileID: 11400000, guid: 6fb4af2337fad444399b1c39daed72c0, type: 2}
   <CrouchHeightMultiplier>k__BackingField: 0.6
   <PlayerInput>k__BackingField: {fileID: 11400000, guid: a66c4c0d4ed7bb141991aa0954182ed9, type: 2}
   stateList: {fileID: 11400000, guid: 36f3f9cbbe45ead4c820b99ff85e8714, type: 2}
@@ -1281,6 +1282,14 @@ PrefabInstance:
     - target: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4442423921022520634, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: <MaxHealth>k__BackingField
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4442423921022520634, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      propertyPath: <CurrentHealth>k__BackingField
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6385670432325225292, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
       propertyPath: m_Name
