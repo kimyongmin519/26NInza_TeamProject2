@@ -1,4 +1,6 @@
-namespace Member.ODK._01_Script
+using UnityEngine;
+
+namespace Member.ODK.Scripts
 {
     public enum DamageType
     {

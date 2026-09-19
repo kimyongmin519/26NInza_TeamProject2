@@ -9,7 +9,6 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
         [SerializeField, Min(0f)] private float speed = 10f;
 
         public ModuleOwner Owner { get; private set; }
-        public float DamageMultiplier { get; private set; } = 1f;
 
         protected Rigidbody2D Rigidbody { get; private set; }
 
@@ -20,17 +19,15 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
         public virtual void Shot(Vector2 direction)
         {
-            Shot(direction, null, speed, 1f);
+            Shot(direction, null, speed);
         }
 
         public virtual void Shot(
             Vector2 direction,
             ModuleOwner owner,
-            float launchSpeed,
-            float damageMultiplier = 1f)
+            float launchSpeed)
         {
             Owner = owner;
-            DamageMultiplier = Mathf.Max(0f, damageMultiplier);
 
             if (direction.sqrMagnitude <= Mathf.Epsilon)
             {

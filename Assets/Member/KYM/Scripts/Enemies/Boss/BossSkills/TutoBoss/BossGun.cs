@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using KimLIb.AnimatorSystems;
 using KimLIb.ModuleSystems;
@@ -39,7 +40,6 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
         [FormerlySerializedAs("projectilePrefab")]
         [SerializeField] private AbstractProjectile abstractProjectilePrefab;
         [SerializeField, Min(0f)] private float projectileSpeed = 10f;
-        [SerializeField, Min(0f)] private float damageMultiplier = 1f;
 
         [Header("산탄")]
         [SerializeField, Min(1)] private int projectileCount = 1;
@@ -51,12 +51,12 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
         [SerializeField, Min(0f)] private float burstInterval = 0.1f;
         [SerializeField, Min(0f)] private float recoveryTime = 0.1f;
 
-        [Header("사용 후 무기 투척")]
+        [Header("사용 후 무기 투척 (꺼놓으면 직렬화 값 굳이 안넣어도 됨)")]
         [SerializeField] private bool throwWeaponAfterAttack;
         [SerializeField] private GrabbableProjectile thrownWeaponPrefab;
         [SerializeField] private Transform weaponThrowPoint;
         [SerializeField, Min(0f)] private float thrownWeaponSpeed = 12f;
-        [SerializeField, Min(0f)] private float thrownWeaponDamageMultiplier = 1f;
+        [SerializeField, Min(0)] private int weaponIndexAfterThrow;
 
         [Header("무기 투척 연출")]
         [SerializeField, Min(0f)] private float throwDelay = 0.25f;
@@ -119,7 +119,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
 
             Vector2 direction = gunHolder.right;
             ModuleOwner attackOwner = Owner;
-            _fireRoutine = StartCoroutine(FireSequence(direction, attackOwner, damageMultiplier));
+            _fireRoutine = StartCoroutine(FireSequence(direction, attackOwner));
         }
 
         public override void StopAttack()
@@ -141,7 +141,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
             RestoreThrowMotionTarget();
         }
 
-        private IEnumerator FireSequence(Vector2 direction, ModuleOwner owner, float damageMultiplier)
+        private IEnumerator FireSequence(Vector2 direction, ModuleOwner owner)
         {
             int safeBurstCount = Mathf.Max(1, burstCount);
 
@@ -151,7 +151,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
                 Vector2 currentDirection = muzzle != null
                     ? (Vector2)muzzle.right
                     : direction;
-                FireProjectiles(currentDirection.normalized, owner, damageMultiplier);
+                FireProjectiles(currentDirection.normalized, owner);
 
                 if (burstIndex < safeBurstCount - 1 && burstInterval > 0f)
                     yield return new WaitForSeconds(burstInterval);
@@ -189,6 +189,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
             CacheThrowMotionStartPose();
             _isPlayingThrowMotion = true;
             _throwMotionSequence = DOTween.Sequence();
+            float facingDirection = GetThrowMotionFacingDirection();
 
             foreach (ThrowMotionStep step in throwMotionSteps)
             {
@@ -196,10 +197,15 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
                     continue;
 
                 float duration = Mathf.Max(0f, step.duration);
+                Vector3 positionOffset = step.localPositionOffset;
+                Vector3 rotationOffset = step.localRotationOffset;
+                positionOffset.x *= facingDirection;
+                rotationOffset.z *= facingDirection;
+
                 Vector3 targetPosition =
-                    _throwMotionStartLocalPosition + step.localPositionOffset;
+                    _throwMotionStartLocalPosition + positionOffset;
                 Vector3 targetRotation =
-                    _throwMotionStartLocalEulerAngles + step.localRotationOffset;
+                    _throwMotionStartLocalEulerAngles + rotationOffset;
 
                 _throwMotionSequence.Append(
                     throwMotionTarget
@@ -220,9 +226,10 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
             _isPlayingThrowMotion = false;
         }
 
-        private void FireProjectiles(Vector2 direction, ModuleOwner owner, float damageMultiplier)
+        private void FireProjectiles(Vector2 direction, ModuleOwner owner)
         {
             int safeProjectileCount = Mathf.Max(1, projectileCount);
+            List<Collider2D> spawnedColliders = new(safeProjectileCount);
             float angleStep = safeProjectileCount > 1
                 ? spreadAngle / (safeProjectileCount - 1)
                 : 0f;
@@ -235,11 +242,18 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
                     : startAngle + angleStep * projectileIndex;
 
                 Vector2 shotDirection = Quaternion.Euler(0f, 0f, angleOffset) * direction;
-                SpawnProjectile(shotDirection.normalized, owner, damageMultiplier);
+                Collider2D spawnedCollider = SpawnProjectile(shotDirection.normalized, owner);
+                if (spawnedCollider == null)
+                    continue;
+
+                foreach (Collider2D otherCollider in spawnedColliders)
+                    Physics2D.IgnoreCollision(spawnedCollider, otherCollider);
+
+                spawnedColliders.Add(spawnedCollider);
             }
         }
 
-        private void SpawnProjectile(Vector2 direction, ModuleOwner owner, float damageMultiplier)
+        private Collider2D SpawnProjectile(Vector2 direction, ModuleOwner owner)
         {
             float rotationZ = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             AbstractProjectile abstractProjectileObject = Instantiate(
@@ -250,10 +264,10 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
             abstractProjectileObject.Shot(
                 direction,
                 owner,
-                projectileSpeed,
-                damageMultiplier);
+                projectileSpeed);
 
             OnProjectileSpawned?.Invoke(abstractProjectileObject.gameObject);
+            return abstractProjectileObject.GetComponent<Collider2D>();
         }
 
         private void ThrowWeapon()
@@ -278,8 +292,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
             thrownWeapon.Shot(
                 direction.normalized,
                 Owner,
-                thrownWeaponSpeed,
-                thrownWeaponDamageMultiplier);
+                thrownWeaponSpeed);
 
             OnProjectileSpawned?.Invoke(thrownWeapon.gameObject);
         }
@@ -332,6 +345,9 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
         {
             _fireRoutine = null;
             base.StopAttack();
+
+            if (throwWeaponAfterAttack)
+                WeaponModule?.TryEquipWeapon(weaponIndexAfterThrow);
         }
 
         private void Update()
@@ -340,14 +356,24 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
                 TryAimAtTarget();
         }
 
+        private float GetThrowMotionFacingDirection()
+        {
+            if (Target != null)
+            {
+                float directionX = Target.transform.position.x - gunHolder.position.x;
+                if (!Mathf.Approximately(directionX, 0f))
+                    return Mathf.Sign(directionX);
+            }
+
+            return gunHolder.right.x < 0f ? -1f : 1f;
+        }
+
         private bool TryAimAtTarget()
         {
             if (Target == null || gunHolder == null)
                 return false;
 
             Vector2 direction = Target.transform.position - gunHolder.position;
-            if (direction.sqrMagnitude <= Mathf.Epsilon)
-                return false;
 
             float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             float angle = aimSmoothTime > 0f
