@@ -13,6 +13,7 @@ namespace Member.ODK.Scripts
         public bool IsDead { get; protected set; }
 
         public Action<float, float> OnHealthChanged;
+        public Action OnDeath { get; set; }
         private ModuleOwner owner;
 
 
@@ -27,6 +28,17 @@ namespace Member.ODK.Scripts
 
 
 
+        public void ActiveDeath()
+        {
+            IsDead = true;
+            OnDeath?.Invoke();
+        }
+        [ContextMenu("Revive")]
+        public void Revive()
+        {
+            IsDead = false;
+            SetMaxHealth(MaxHealth, true);
+        }
 
         public void ApplyDamage(DamageData damage)
         {
@@ -39,8 +51,8 @@ namespace Member.ODK.Scripts
 
             if (CurrentHealth <= 0)
             {
-                IsDead = true;
-                owner.GetModule<DeathModule>().ActiveDeath();
+                
+                ActiveDeath();
             }
         }
 
