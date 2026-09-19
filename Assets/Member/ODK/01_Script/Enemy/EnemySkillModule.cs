@@ -57,7 +57,10 @@ namespace Member.ODK.Scripts.Enemys
 
             _currentSkill.OnSkillEnd -= HandleCurrentSkillEnd;
         }
-
+        public ISkill[] GetAllSkill()
+        {
+            return _skillDict.Values.ToArray();
+        }
         public ISkill GetCurrentSkill() => _currentSkill;
         public void InvokeSkillEnd() => OnCurrentSkillEnd?.Invoke();
     }
