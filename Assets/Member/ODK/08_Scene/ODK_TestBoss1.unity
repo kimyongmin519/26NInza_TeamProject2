@@ -1017,6 +1017,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.DeathModule
   IsDead: 0
+  owner: {fileID: 0}
 --- !u!1 &41518352
 GameObject:
   m_ObjectHideFlags: 0
@@ -4356,7 +4357,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
   <MaxHealth>k__BackingField: 1000
   <CurrentHealth>k__BackingField: 1000
-  owner: {fileID: 1070182107}
 --- !u!1 &250070933
 GameObject:
   m_ObjectHideFlags: 0
@@ -6380,7 +6380,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
   <MaxHealth>k__BackingField: 1000
   <CurrentHealth>k__BackingField: 1000
-  owner: {fileID: 1811559538}
 --- !u!1 &498633375
 GameObject:
   m_ObjectHideFlags: 0
@@ -8113,7 +8112,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
   <MaxHealth>k__BackingField: 1000
   <CurrentHealth>k__BackingField: 1000
-  owner: {fileID: 1811559538}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -8681,6 +8679,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.DeathModule
   IsDead: 0
+  owner: {fileID: 0}
 --- !u!1 &714678139
 GameObject:
   m_ObjectHideFlags: 0
@@ -9683,6 +9682,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 810209805}
+  - component: {fileID: 810209806}
   m_Layer: 0
   m_Name: MoonOrbit
   m_TagString: Untagged
@@ -9705,6 +9705,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1285843070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &810209806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 810209804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7554e207e9aa4f14bb2d5c0a6b9a0e42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonOrbitAttack
+  <SkillData>k__BackingField: {fileID: 0}
+  animationStateName: 
+  directionLine: {fileID: 0}
+  directionTelegraph: {fileID: 0}
+  warningDuration: 1
+  phaseOneDuration: 4.5
+  phaseTwoDuration: 5.5
+  moveSpeed: 17
+  collisionRadius: 1.5
+  returnDuration: 0.55
+  contactDamage: 45
+  wallShockwaveCaster: {fileID: 0}
+  wallShockwaveRadius: 2.2
+  wallShockwaveDamage: 22
+  fragmentPrefab: {fileID: 0}
+  rotationSpeed: 360
+  fragmentAngleStep: 45
+  fragmentSpeed: 12
+  fragmentDamage: 28
+  fragmentLifeTime: 5
 --- !u!1 &841412479
 GameObject:
   m_ObjectHideFlags: 0
@@ -11354,6 +11386,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1002432528}
+  - component: {fileID: 1002432529}
   m_Layer: 0
   m_Name: MoonRef
   m_TagString: Untagged
@@ -11376,6 +11409,47 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1285843070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1002432529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1002432527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d48b727435ef482f8154aa6611d083f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonReflectionAttack
+  <SkillData>k__BackingField: {fileID: 0}
+  animationStateName: 
+  phaseOneShotCount: 5
+  phaseTwoShotCount: 6
+  intervalBetweenShots: 0.15
+  moveDuration: 0.3
+  returnDuration: 0.25
+  horizontalRangeRate: 1
+  phaseOneHeightRate: {x: 0.35, y: 0.78}
+  phaseTwoHeightRate: {x: -0.1, y: 0.45}
+  minimumPositionDistance: 4
+  chargeDuration: 0.7
+  activeDuration: 0.25
+  beamWidth: 0.35
+  beamRangeMultiplier: 2.2
+  phaseOneBeamCount: 4
+  phaseTwoBeamCount: 3
+  phaseOneBeamSpread: 95
+  phaseTwoBeamSpread: 65
+  phaseOneDamage: 38
+  phaseTwoDamage: 65
+  warningColor: {r: 1, g: 1, b: 1, a: 1}
+  beamColor: {r: 1, g: 0.82, b: 0.3, a: 1}
+  flashWidthMultiplier: 0.7
+  flashDuration: 0.14
+  reflectionLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  reflectionSkin: 0.03
 --- !u!1 &1025917738
 GameObject:
   m_ObjectHideFlags: 0
@@ -11899,6 +11973,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1063495761}
+  - component: {fileID: 1063495762}
   m_Layer: 0
   m_Name: MoonMeteo
   m_TagString: Untagged
@@ -11921,6 +11996,41 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1285843070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1063495762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1063495760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e638c362450785642a8a6e90d3b738c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonMeteorAttack
+  <SkillData>k__BackingField: {fileID: 0}
+  animationStateName: 
+  meteorPrefab: {fileID: 6483865675676234788, guid: 0eeceba62804a0748893501b3aa0b767, type: 3}
+  patternDuration: 9
+  initialSpawnInterval: 1.2
+  finalSpawnInterval: 0.8
+  warningDuration: 1
+  phaseOneSpeed: 5
+  phaseTwoSpeed: 8
+  spawnMargin: 1.5
+  meteorAcceleration: 6
+  maximumMeteorSpeed: 8
+  meteorTurnSpeed: 6
+  playerDamage: 25
+  bossDamage: 100
+  meteorLifeTime: 10
+  sidePositionRate: 0.72
+  oppositeConeHalfAngle: 45
+  sideMoveDuration: 0.65
+  returnDuration: 0.5
+  movementLeanAngle: 5
+  shockwaveCaster: {fileID: 0}
+  shockwaveDamage: 15
 --- !u!1 &1066106581
 GameObject:
   m_ObjectHideFlags: 0
@@ -13826,9 +13936,6 @@ GameObject:
   - component: {fileID: 1233974791}
   - component: {fileID: 1233974792}
   - component: {fileID: 1233974793}
-  - component: {fileID: 1233974796}
-  - component: {fileID: 1233974795}
-  - component: {fileID: 1233974794}
   m_Layer: 0
   m_Name: Moon
   m_TagString: Untagged
@@ -13879,7 +13986,6 @@ MonoBehaviour:
   groundRayDistance: 50
   drawDebugGizmos: 1
   healthModule: {fileID: 481197632}
-  deathModule: {fileID: 649112530}
   invincible: 0
   rockVisualPrefabs: []
   fistRockCount: 1
@@ -13911,9 +14017,6 @@ MonoBehaviour:
   onDeath:
     m_PersistentCalls:
       m_Calls: []
-  meteorAttack: {fileID: 0}
-  orbitAttack: {fileID: 0}
-  reflectionAttack: {fileID: 0}
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -13969,114 +14072,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &1233974794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1233974789}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d48b727435ef482f8154aa6611d083f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonReflectionAttack
-  <SkillData>k__BackingField: {fileID: 0}
-  animationStateName: 
-  phaseOneShotCount: 5
-  phaseTwoShotCount: 6
-  intervalBetweenShots: 0.15
-  moveDuration: 0.3
-  returnDuration: 0.25
-  horizontalRangeRate: 1
-  phaseOneHeightRate: {x: 0.35, y: 0.78}
-  phaseTwoHeightRate: {x: -0.1, y: 0.45}
-  minimumPositionDistance: 4
-  chargeDuration: 0.7
-  activeDuration: 0.25
-  beamWidth: 0.35
-  beamRangeMultiplier: 2.2
-  phaseOneBeamCount: 4
-  phaseTwoBeamCount: 3
-  phaseOneBeamSpread: 95
-  phaseTwoBeamSpread: 65
-  phaseOneDamage: 38
-  phaseTwoDamage: 65
-  warningColor: {r: 1, g: 1, b: 1, a: 1}
-  beamColor: {r: 1, g: 0.82, b: 0.3, a: 1}
-  flashWidthMultiplier: 0.7
-  flashDuration: 0.14
-  reflectionLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  reflectionSkin: 0.03
---- !u!114 &1233974795
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1233974789}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7554e207e9aa4f14bb2d5c0a6b9a0e42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonOrbitAttack
-  <SkillData>k__BackingField: {fileID: 0}
-  animationStateName: 
-  directionLine: {fileID: 0}
-  directionTelegraph: {fileID: 0}
-  warningDuration: 1
-  phaseOneDuration: 4.5
-  phaseTwoDuration: 5.5
-  moveSpeed: 17
-  collisionRadius: 1.5
-  returnDuration: 0.55
-  contactDamage: 45
-  wallShockwaveCaster: {fileID: 0}
-  wallShockwaveRadius: 2.2
-  wallShockwaveDamage: 22
-  fragmentPrefab: {fileID: 0}
-  rotationSpeed: 360
-  fragmentAngleStep: 45
-  fragmentSpeed: 12
-  fragmentDamage: 28
-  fragmentLifeTime: 5
---- !u!114 &1233974796
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1233974789}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e638c362450785642a8a6e90d3b738c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonMeteorAttack
-  <SkillData>k__BackingField: {fileID: 0}
-  animationStateName: 
-  meteorPrefab: {fileID: 6483865675676234788, guid: 0eeceba62804a0748893501b3aa0b767, type: 3}
-  patternDuration: 9
-  initialSpawnInterval: 1.2
-  finalSpawnInterval: 0.8
-  warningDuration: 1
-  phaseOneSpeed: 5
-  phaseTwoSpeed: 8
-  spawnMargin: 1.5
-  meteorAcceleration: 6
-  maximumMeteorSpeed: 8
-  meteorTurnSpeed: 6
-  playerDamage: 25
-  bossDamage: 100
-  meteorLifeTime: 10
-  sidePositionRate: 0.72
-  oppositeConeHalfAngle: 45
-  sideMoveDuration: 0.65
-  returnDuration: 0.5
-  movementLeanAngle: 5
-  shockwaveCaster: {fileID: 0}
-  shockwaveDamage: 15
 --- !u!1 &1277811520
 GameObject:
   m_ObjectHideFlags: 0
@@ -20630,7 +20625,6 @@ MonoBehaviour:
   groundRayDistance: 50
   drawDebugGizmos: 1
   healthModule: {fileID: 604648790}
-  deathModule: {fileID: 39636608}
   invincible: 0
   rockVisualPrefabs:
   - {fileID: 7529635343020985361, guid: 8dab7379f6c67d9448d4c24d1eace61b, type: 3}
@@ -25035,6 +25029,10 @@ PrefabInstance:
     - target: {fileID: 1536539724179122758, guid: d8daf2c48a83e1740916070c547f520e, type: 3}
       propertyPath: m_Name
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1536539724179122758, guid: d8daf2c48a83e1740916070c547f520e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2302154063944126567, guid: d8daf2c48a83e1740916070c547f520e, type: 3}
       propertyPath: target
