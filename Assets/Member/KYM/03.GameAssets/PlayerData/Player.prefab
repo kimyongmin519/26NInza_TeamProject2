@@ -229,7 +229,7 @@ MonoBehaviour:
   aimTarget: {fileID: 6416807232787729562}
   robotArm: {fileID: 5539127962044629045}
   fingerAnimator: {fileID: 8303114410518035434}
-  grabRadius: 0.5
+  grabRadius: 0.75
   throwSpeed: 20
   throwReleaseDelay: 0.04
   failedGrabCloseTime: 0.12
@@ -347,7 +347,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Players.PlayerController
   <JumpPower>k__BackingField: 9
   <MaxJumpCount>k__BackingField: 2
-  <UIChannel>k__BackingField: {fileID: 11400000, guid: 6fb4af2337fad444399b1c39daed72c0, type: 2}
+  <UIChannel>k__BackingField: {fileID: 11400000, guid: 34695c655ee7ea444a7b7763fe55bce9, type: 2}
   <CrouchHeightMultiplier>k__BackingField: 0.6
   <PlayerInput>k__BackingField: {fileID: 11400000, guid: a66c4c0d4ed7bb141991aa0954182ed9, type: 2}
   stateList: {fileID: 11400000, guid: 36f3f9cbbe45ead4c820b99ff85e8714, type: 2}

@@ -181,7 +181,6 @@ namespace Member.KYM.Scripts.Enemies.Boss.Splines
             if (_state == MoveState.FollowingSpline && HasReachedPathEnd())
             {
                 CompleteFollow();
-                Debug.Log("노말라이즈 도착으로 인한 컴플리트");
             }
         }
 

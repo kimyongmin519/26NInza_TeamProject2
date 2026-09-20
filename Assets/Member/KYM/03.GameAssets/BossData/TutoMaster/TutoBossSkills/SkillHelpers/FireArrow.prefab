@@ -135,11 +135,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82cb90d1ef1c4b13abee5b51233004a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CombatSystems.Projectiles.GrabbableProjectile
-  speed: 15
+  <ProjectileData>k__BackingField: {fileID: 11400000, guid: 1b08e636586f555418705beddad5fa3a, type: 2}
   lifetime: 5
   launchCollisionDelay: 0
   canBeGrabbed: 1
   alignRotationWhileHeld: 1
+  createChannel: {fileID: 11400000, guid: 8a8ebc30316442e4f9ce086228bcfef6, type: 2}
 --- !u!95 &2561002803567885461
 Animator:
   serializedVersion: 7

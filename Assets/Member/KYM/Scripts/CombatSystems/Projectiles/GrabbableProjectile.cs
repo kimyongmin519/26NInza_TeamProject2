@@ -1,6 +1,10 @@
 using System.Collections;
+using GGMLib.ObjectPool.Runtime;
+using KimLIb.EventSystem;
 using KimLIb.ModuleSystems;
 using Member.KYM.Scripts.CombatSystems.DamageSystems;
+using Member.KYM.Scripts.CoreSystems.Events;
+using Member.KYM.Scripts.EffectSystems;
 using Member.KYM.Scripts.Players.RobotArm;
 using UnityEngine;
 
@@ -16,6 +20,9 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
         [SerializeField] private bool canBeGrabbed = true;
         [SerializeField] private bool alignRotationWhileHeld = true;
 
+        [Header("충돌 이펙트")]
+        [SerializeField] private EventChannelSO createChannel;
+        
         public bool CanBeGrabbed => canBeGrabbed && !_isHeld && !_hasImpacted;
         public Transform GrabTransform => transform;
 
@@ -58,10 +65,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             StopLaunchCollisionDelay(false);
         }
 
-        public override void Shot(
-            Vector2 direction,
-            ModuleOwner owner,
-            float launchSpeed)
+        public override void Shot(Vector2 direction, ModuleOwner owner, float launchSpeed)
         {
             base.Shot(direction, owner, launchSpeed);
             RestartLaunchCollisionDelay();
@@ -114,10 +118,17 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             if (!_isHeld)
                 return;
 
+            bool isEnemyProjectile = Owner != null && Owner != throwData.Owner;
+
             RestorePhysicsState();
             _hasImpacted = false;
 
-            Shot(throwData.Direction, throwData.Owner, throwData.ArmThrowSpeed);
+            float throwSpeed = isEnemyProjectile ? ProjectileData.MoveSpeed * 2f : throwData.ArmThrowSpeed; //적의 투사체를 잡고 내가 역으로 던진거면 원래 속도보다 2배로 더 쎄게 날림
+
+            Shot(
+                throwData.Direction,
+                throwData.Owner,
+                throwSpeed);
 
             RestartLifetime();
         }
@@ -133,11 +144,38 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
                 return;
 
             _hasImpacted = true;
-            
+            ContactPoint2D contact = collision.GetContact(0);
+
             _damageCaster.InitCaster(Owner);
-            _damageCaster.CastDamage(collision.collider, collision.GetContact(0).point, collision.GetContact(0).normal);
+            _damageCaster.CastDamage(collision.collider, contact.point, contact.normal);
+            PlayImpactEffect(contact.point, contact.normal);
 
             Destroy(gameObject);
+        }
+
+        private void PlayImpactEffect(Vector2 hitPoint, Vector2 hitNormal)
+        {
+            if (createChannel == null ||
+                ProjectileData == null ||
+                ProjectileData.ImpactItem == null)
+            {
+                return;
+            }
+
+            Vector2 normal = hitNormal.sqrMagnitude > Mathf.Epsilon
+                ? hitNormal.normalized
+                : -(Vector2)transform.right;
+            float rotationZ = Mathf.Atan2(normal.y, normal.x) * Mathf.Rad2Deg;
+
+            VfxSpawnContext context = new VfxSpawnContext(
+                hitPoint,
+                Quaternion.Euler(0f, 0f, rotationZ),
+                ProjectileData.ImpactColor);
+
+            createChannel.RaiseEvent(
+                CreateEvents.ShowPoolingEffect.InitData(
+                    ProjectileData.ImpactItem,
+                    context));
         }
 
         private bool IsOwner(GameObject hitObject)

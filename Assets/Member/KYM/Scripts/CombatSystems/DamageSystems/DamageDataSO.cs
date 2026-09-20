@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Member.KYM.Scripts.CombatSystems.DamageSystems
 {
-    [CreateAssetMenu(fileName = "Damage data", menuName = "Combat/Damage data", order = 0)]
+    [CreateAssetMenu(fileName = "Damage data", menuName = "KimSO/Combat/Damage data", order = 0)]
     public class DamageDataSO : ScriptableObject
     {
         [field:SerializeField] public DamageType DamageType { get; private set; }

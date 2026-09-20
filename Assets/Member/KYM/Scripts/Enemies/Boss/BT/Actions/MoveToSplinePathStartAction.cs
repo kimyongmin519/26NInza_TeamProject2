@@ -10,11 +10,7 @@ using Action = Unity.Behavior.Action;
 namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
 {
     [Serializable, GeneratePropertyBag]
-    [NodeDescription(
-        name: "MoveToSplinePathStart",
-        story: "[Enemy] moves to closest end of [Path]",
-        category: "Action",
-        id: "20327c0b29eb4137918047ce56570e73")]
+    [NodeDescription(name: "MoveToSplinePathStart", story: "[Enemy] moves to closest end of [Path]", category: "Action", id: "20327c0b29eb4137918047ce56570e73")]
     public partial class MoveToSplinePathStartAction : Action
     {
         [SerializeReference] public BlackboardVariable<AbstractBoss> Enemy;
@@ -22,6 +18,8 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
         [SerializeReference] public BlackboardVariable<float> HorizontalTolerance = new(0.15f);
         [SerializeReference] public BlackboardVariable<float> VerticalTolerance = new(0.15f);
         [SerializeReference] public BlackboardVariable<float> JumpForce = new(9f);
+        [SerializeReference] public BlackboardVariable<float> StuckVelocityThreshold = new(0.1f);
+        [SerializeReference] public BlackboardVariable<float> StuckJumpDelay = new(0.5f);
         [SerializeReference] public BlackboardVariable<AnimParamSO> JumpAnimation;
         [SerializeReference] public BlackboardVariable<AnimParamSO> MoveAnimation;
 
@@ -30,6 +28,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
         private SplinePath _path;
         private float _targetT;
         private float _bodyToFeetOffsetY;
+        private float _stuckTimer;
         private bool _canJump;
         private bool _isJumping;
 
@@ -50,6 +49,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
                 _mover.RigidBody,
                 _bodyToFeetOffsetY);
             _targetT = _path.GetClosestEndT(feetPosition);
+            _stuckTimer = 0f;
             _canJump = _mover.IsGrounded;
             _mover.OnGroundStatusChange += HandleGroundStatusChange;
 
@@ -76,13 +76,13 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
 
             _mover.SetMovementX(isCloseX ? 0f : Mathf.Sign(delta.x));
 
-            if (delta.y > verticalTolerance && _canJump && _mover.IsGrounded)
+            bool shouldJumpToHigherPath = delta.y > verticalTolerance;
+            bool shouldJumpBecauseStuck = UpdateStuckTimer(isCloseX);
+            if ((shouldJumpToHigherPath || shouldJumpBecauseStuck) &&
+                _canJump &&
+                _mover.IsGrounded)
             {
-                float jumpForce = Mathf.Max(0f, JumpForce?.Value ?? 0f);
-                _mover.AddForceToAgent(Vector2.up * jumpForce);
-                PlayAnimation(JumpAnimation);
-                _canJump = false;
-                _isJumping = true;
+                Jump();
             }
             else if (delta.y < -verticalTolerance && isCloseX && _mover.IsGrounded)
             {
@@ -99,7 +99,38 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
 
             _mover.SetMovementX(0f);
             _mover.OnGroundStatusChange -= HandleGroundStatusChange;
+            _stuckTimer = 0f;
             _isJumping = false;
+        }
+
+        private bool UpdateStuckTimer(bool isCloseX)
+        {
+            float velocityThreshold = Mathf.Max(
+                0f,
+                StuckVelocityThreshold?.Value ?? 0f);
+            bool isNearlyStopped =
+                Mathf.Abs(_mover.RigidBody.linearVelocityX) <= velocityThreshold;
+
+            if (isCloseX || !_mover.IsGrounded || !isNearlyStopped)
+            {
+                _stuckTimer = 0f;
+                return false;
+            }
+
+            _stuckTimer += Time.deltaTime;
+            float jumpDelay = Mathf.Max(0f, StuckJumpDelay?.Value ?? 0f);
+            return _stuckTimer >= jumpDelay;
+        }
+
+        private void Jump()
+        {
+            float jumpForce = Mathf.Max(0f, JumpForce?.Value ?? 0f);
+            _mover.AddForceToAgent(Vector2.up * jumpForce);
+            PlayAnimation(JumpAnimation);
+
+            _stuckTimer = 0f;
+            _canJump = false;
+            _isJumping = true;
         }
 
         private void HandleGroundStatusChange(bool isGrounded)

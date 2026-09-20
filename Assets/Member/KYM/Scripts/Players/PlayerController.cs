@@ -26,7 +26,6 @@ namespace Member.KYM.Scripts.Players
         [SerializeField] private StateListSO stateList;
         public AgentSensor Sensor { get; private set; }
         public ISkillModule SkillModule { get; private set; }
-        public HealthModule HealthModule { get; private set; }
         private StateMachine _stateMachine;
         private RobotArmGrappler _robotArmGrappler;
         private int _currentJumpCount;
@@ -49,7 +48,6 @@ namespace Member.KYM.Scripts.Players
             _stateMachine = new StateMachine(this, stateList.states);
             Sensor = GetModule<AgentSensor>();
             SkillModule = GetModule<ISkillModule>();
-            HealthModule = GetModule<HealthModule>();
             _robotArmGrappler = GetComponentInChildren<RobotArmGrappler>(true);
         }
 
