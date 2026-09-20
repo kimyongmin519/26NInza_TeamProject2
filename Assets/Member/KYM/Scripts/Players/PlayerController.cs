@@ -57,6 +57,9 @@ namespace Member.KYM.Scripts.Players
             PlayerInput.OnJumpKeyPressed += HandleJumpKeyPressed;
             PlayerInput.OnDashKeyPressed += HandleDashKeyPressed;
 
+            if (HealthModule != null)
+                HealthModule.OnDeath += HandleDeath;
+
             if (_robotArmGrappler != null)
             {
                 _robotArmGrappler.GrappleStarted += HandleGrappleStarted;
@@ -66,6 +69,9 @@ namespace Member.KYM.Scripts.Players
 
         private void HandleDashKeyPressed()
         {
+            if (HealthModule != null && HealthModule.IsDead)
+                return;
+
             if (_robotArmGrappler != null && _robotArmGrappler.IsGrappling)
                 return;
 
@@ -90,6 +96,9 @@ namespace Member.KYM.Scripts.Players
                 PlayerInput.OnDashKeyPressed -= HandleDashKeyPressed;
             }
 
+            if (HealthModule != null)
+                HealthModule.OnDeath -= HandleDeath;
+
             if (_robotArmGrappler != null)
             {
                 _robotArmGrappler.GrappleStarted -= HandleGrappleStarted;
@@ -99,6 +108,9 @@ namespace Member.KYM.Scripts.Players
         
         private void HandleJumpKeyPressed()
         {
+            if (HealthModule != null && HealthModule.IsDead)
+                return;
+
             if (_robotArmGrappler != null && _robotArmGrappler.IsGrappling)
                 return;
 
@@ -162,7 +174,29 @@ namespace Member.KYM.Scripts.Players
             _stateMachine.UpdateMachine();
         }
 
-        public void ChangeState(PlayerStateEnum state) => _stateMachine.ChangeState((int) state);
+        private void HandleDeath()
+        {
+            ISkill currentSkill = SkillModule?.GetCurrentSkill();
+            if (currentSkill is { IsUsing: true })
+                currentSkill.StopSkill();
+
+            if (_robotArmGrappler != null && _robotArmGrappler.IsGrappling)
+                _robotArmGrappler.StopGrapple();
+
+            ChangeState(PlayerStateEnum.DEATH);
+        }
+
+        public void ChangeState(PlayerStateEnum state)
+        {
+            if (HealthModule != null &&
+                HealthModule.IsDead &&
+                state != PlayerStateEnum.DEATH)
+            {
+                return;
+            }
+
+            _stateMachine.ChangeState((int)state);
+        }
         public void TakeDamage(DamageData damage)
         {
             HealthModule?.ApplyDamage(damage);

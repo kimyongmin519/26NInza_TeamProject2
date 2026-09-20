@@ -137,8 +137,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15bacf2d8b844e22b0e745e0bf319962, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.EffectSystems.FeedbackVfx.ScalingVfx
-  targetScale: {x: 1.25, y: 1.25, z: 1.25}
-  scalingDuration: 0.2
+  targetScale: {x: 1.5, y: 1.5, z: 1.5}
+  scalingDuration: 0.25
   scalingEase: 6
 --- !u!114 &1652803791232805260
 MonoBehaviour:
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.EffectSystems.FeedbackVfx.AlphaVfx
   targetRenderer: {fileID: 7622570500613567511}
   targetAlpha: 0
-  fadingDuration: 0.2
+  fadingDuration: 0.25
   fadingEase: 6
 --- !u!114 &6249083124567890123
 MonoBehaviour:
@@ -166,6 +166,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a2d7305b68a4c5d81422e5165df2734, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.EffectSystems.SpriteVfxTint
   targetRenderer: {fileID: 7622570500613567511}
