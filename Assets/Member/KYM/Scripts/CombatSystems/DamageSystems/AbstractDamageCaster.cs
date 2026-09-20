@@ -1,6 +1,8 @@
 using System;
 using KimLIb.ModuleSystems;
+using Member.KYM.Scripts.Players;
 using Member.ODK._01_Script;
+using Member.ODK.Scripts;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.CombatSystems.DamageSystems
@@ -9,7 +11,6 @@ namespace Member.KYM.Scripts.CombatSystems.DamageSystems
     {
         [field:SerializeField] public DamageDataSO DamageData { get; private set; }
         [SerializeField] private int maxHitCount;
-        [SerializeField] protected LayerMask whatIsEnemy;
         [SerializeField] protected ContactFilter2D contactFilter;
         
         public ModuleOwner CasterOwner { get; private set; }
@@ -36,6 +37,43 @@ namespace Member.KYM.Scripts.CombatSystems.DamageSystems
             return ReferenceEquals(hitOwner, CasterOwner);
         }
 
-        public abstract bool CastDamage(Vector2 position, Vector2 direction);
+        protected bool TryApplyDamage(Collider2D hitCollider, Vector2 hitPoint, Vector2 hitNormal)
+        {
+            if (hitCollider == null || IsCasterOwner(hitCollider))
+                return false;
+            
+            IDamageable damageable = hitCollider.GetComponentInParent<IDamageable>();
+            if (damageable == null)
+                return false;
+
+            float baseDamage = DamageData.BaseDamageAmount;
+            DamageData damageData = new DamageData
+            {
+                Amount = CasterOwner is PlayerController
+                    ? baseDamage
+                    : DamageConverter.DamageToPlayerHitDamage(baseDamage),
+                DamageType = DamageData.DamageType,
+                CriticalType = CriticalType.Normal,
+                KnockbackForce = DamageData.KnockbackForce
+            };
+
+            LastHitPosition = hitPoint;
+            LastHitNormal = hitNormal;
+            LastHitCritical = false;
+
+            damageable.TakeDamage(damageData);
+            OnHit?.Invoke(damageData);
+            return true;
+        }
+
+        public virtual bool CastDamage(Vector2 position, Vector2 direction)
+        {
+            return false;
+        }
+
+        public virtual bool CastDamage(Collider2D hitCollider, Vector2 hitPoint, Vector2 hitNormal)
+        {
+            return false;
+        }
     }
 }

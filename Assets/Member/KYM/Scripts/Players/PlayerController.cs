@@ -1,9 +1,12 @@
+using KimLIb.EventSystem;
 using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.Agents.FSM;
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using Member.KYM.Scripts.CoreSystems;
+using Member.KYM.Scripts.CoreSystems.Events;
 using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK._01_Script;
+using Member.ODK.Scripts;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Players
@@ -13,6 +16,7 @@ namespace Member.KYM.Scripts.Players
         [field:Header("임시")]
         [field:SerializeField] public float JumpPower { get; private set; }
         [field:SerializeField] public int MaxJumpCount { get; private set; }
+        [field:SerializeField] public EventChannelSO UIChannel { get; private set; }
 
         [field: Header("숙이기")]
         [field: SerializeField, Range(0.1f, 1f)]
@@ -74,6 +78,8 @@ namespace Member.KYM.Scripts.Players
         private void Start()
         {
             ChangeState(PlayerStateEnum.IDLE);
+            
+            UIChannel.RaiseEvent(PlayerSubEvents.PlayerHealthSubEvent.InitData(HealthModule));
         }
 
         private void OnDestroy()
@@ -159,8 +165,7 @@ namespace Member.KYM.Scripts.Players
         public void ChangeState(PlayerStateEnum state) => _stateMachine.ChangeState((int) state);
         public void TakeDamage(DamageData damage)
         {
-            if (damage.Amount > 0f)
-                HealthModule?.ApplyDamage(damage);
+            HealthModule?.ApplyDamage(damage);
         }
     }
 }

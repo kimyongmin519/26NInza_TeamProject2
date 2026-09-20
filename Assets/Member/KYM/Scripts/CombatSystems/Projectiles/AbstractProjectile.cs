@@ -6,8 +6,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
     [RequireComponent(typeof(Rigidbody2D))]
     public abstract class AbstractProjectile : MonoBehaviour
     {
-        [SerializeField, Min(0f)] private float speed = 10f;
-
+        [field:SerializeField] public ProjectileDataSO ProjectileData { get; private set; }
         public ModuleOwner Owner { get; private set; }
 
         protected Rigidbody2D Rigidbody { get; private set; }
@@ -19,13 +18,15 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
         public virtual void Shot(Vector2 direction)
         {
-            Shot(direction, null, speed);
+            Shot(direction, null);
         }
 
-        public virtual void Shot(
-            Vector2 direction,
-            ModuleOwner owner,
-            float launchSpeed)
+        public virtual void Shot(Vector2 direction, ModuleOwner owner)
+        {
+            Shot(direction, owner, ProjectileData.MoveSpeed);
+        }
+
+        public virtual void Shot(Vector2 direction, ModuleOwner owner, float launchSpeed)
         {
             Owner = owner;
 

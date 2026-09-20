@@ -1,4 +1,3 @@
-using Member.ODK._01_Script;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.CombatSystems.DamageSystems
@@ -34,23 +33,12 @@ namespace Member.KYM.Scripts.CombatSystems.DamageSystems
 
             for (int i = 0; i < cnt; i++)
             {
-                if (IsCasterOwner(_hitResults[i]))
-                    continue;
+                Collider2D hitCollider = _hitResults[i];
+                Vector2 hitPoint = hitCollider.ClosestPoint(position);
+                Vector2 hitNormal = ((Vector2)position - hitPoint).normalized;
 
-                if (_hitResults[i].TryGetComponent(out IDamageable damageable))
-                {
-                    Vector2 point = _hitResults[i].ClosestPoint(position);
-
-                    DamageData damageData = new DamageData
-                    {
-
-                    };
-                    
-                    damageable.TakeDamage(damageData);
+                if (TryApplyDamage(hitCollider, hitPoint, hitNormal))
                     damagedTarget = true;
-                    MonoBehaviour target = damageable as MonoBehaviour;
-                    Debug.Log($"{damageData.Amount} 데미지 입힙: {target.gameObject.name}"); //테스트 완료
-                }
             }
             return damagedTarget;
         }

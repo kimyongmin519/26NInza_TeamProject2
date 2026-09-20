@@ -14,8 +14,14 @@ namespace Member.KYM.Scripts.Enemies.Boss
         {
             base.InitializeModules();
             BTAgent = GetComponent<BehaviorGraphAgent>();
+        }
+
+        protected override void AfterInitializeModules()
+        {
+            base.AfterInitializeModules();
             
-            
+            PhaseController.OnPhaseChanged += HandlePhaseChanged;
+            HealthModule.SetMaxHealth(BossData.MaxHealth);
         }
 
         private void Start()
@@ -26,7 +32,6 @@ namespace Member.KYM.Scripts.Enemies.Boss
                 return;
 
             SetVariableValue(BtVar.CurrentPhase, PhaseController.CurrentPhase);
-            PhaseController.OnPhaseChanged += HandlePhaseChanged;
         }
 
         private void HandlePhaseChanged(BossPhaseEnum phase)
@@ -42,7 +47,7 @@ namespace Member.KYM.Scripts.Enemies.Boss
 
         public void TakeDamage(DamageData damage)
         {
-            ApplyDamage(damage.Amount);
+            HealthModule?.ApplyDamage(damage);
         }
         
         public void SetVariableValue<T>(string variableName, T value)

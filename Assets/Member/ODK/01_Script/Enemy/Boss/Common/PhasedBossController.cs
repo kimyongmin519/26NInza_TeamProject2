@@ -298,6 +298,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
             EnterPhaseTwo();
             if (healthModule != null) healthModule.Revive();
+            else if (healthModule != null) healthModule.SetMaxHealth(healthModule.MaxHealth, true);
         }
 
         [ContextMenu("Enter Phase Two")]

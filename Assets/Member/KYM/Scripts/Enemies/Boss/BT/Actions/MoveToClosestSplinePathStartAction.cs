@@ -1,4 +1,5 @@
 using System;
+using KimLIb.AnimatorSystems;
 using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.Enemies.Boss.Splines;
 using Unity.Behavior;
@@ -20,12 +21,16 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
         [SerializeReference] public BlackboardVariable<float> HorizontalTolerance = new(0.15f);
         [SerializeReference] public BlackboardVariable<float> VerticalTolerance = new(0.15f);
         [SerializeReference] public BlackboardVariable<float> JumpForce = new(9f);
+        [SerializeReference] public BlackboardVariable<AnimParamSO> JumpAnimation;
+        [SerializeReference] public BlackboardVariable<AnimParamSO> MoveAnimation;
 
         private IMover _mover;
+        private IAnimateRenderer _renderer;
         private SplinePath _path;
         private float _targetT;
         private float _bodyToFeetOffsetY;
         private bool _canJump;
+        private bool _isJumping;
 
         protected override Status OnStart()
         {
@@ -33,6 +38,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
                 return Status.Failure;
 
             _mover = Enemy.Value.Mover;
+            _renderer = Enemy.Value.Renderer;
             ISplineMover splineMover = Enemy.Value.GetModule<ISplineMover>();
             if (_mover == null || splineMover == null)
                 return Status.Failure;
@@ -81,7 +87,9 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
             {
                 float jumpForce = Mathf.Max(0f, JumpForce?.Value ?? 0f);
                 _mover.AddForceToAgent(Vector2.up * jumpForce);
+                PlayAnimation(JumpAnimation);
                 _canJump = false;
+                _isJumping = true;
             }
             else if (delta.y < -verticalTolerance && isCloseX && _mover.IsGrounded)
             {
@@ -98,12 +106,28 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
 
             _mover.SetMovementX(0f);
             _mover.OnGroundStatusChange -= HandleGroundStatusChange;
+            _isJumping = false;
         }
 
         private void HandleGroundStatusChange(bool isGrounded)
         {
-            if (isGrounded)
-                _canJump = true;
+            if (!isGrounded)
+                return;
+
+            _canJump = true;
+            if (!_isJumping)
+                return;
+
+            _isJumping = false;
+            PlayAnimation(MoveAnimation);
+        }
+
+        private void PlayAnimation(BlackboardVariable<AnimParamSO> animation)
+        {
+            if (_renderer == null || animation?.Value == null)
+                return;
+
+            _renderer.PlayClip(animation.Value.ParamHash);
         }
     }
 }
