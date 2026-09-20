@@ -159,7 +159,8 @@ namespace Member.KYM.Scripts.Players
         public void ChangeState(PlayerStateEnum state) => _stateMachine.ChangeState((int) state);
         public void TakeDamage(DamageData damage)
         {
-            
+            if (damage.Amount > 0f)
+                HealthModule?.ApplyDamage(damage);
         }
     }
 }
