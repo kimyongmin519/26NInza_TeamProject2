@@ -39,7 +39,6 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
         [Header("탄환")]
         [FormerlySerializedAs("projectilePrefab")]
         [SerializeField] private AbstractProjectile abstractProjectilePrefab;
-        [SerializeField, Min(0f)] private float projectileSpeed = 10f;
 
         [Header("산탄")]
         [SerializeField, Min(1)] private int projectileCount = 1;
@@ -261,10 +260,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
                 muzzle.position,
                 Quaternion.Euler(0f, 0f, rotationZ));
 
-            abstractProjectileObject.Shot(
-                direction,
-                owner,
-                projectileSpeed);
+            abstractProjectileObject.Shot(direction, owner);
 
             OnProjectileSpawned?.Invoke(abstractProjectileObject.gameObject);
             return abstractProjectileObject.GetComponent<Collider2D>();

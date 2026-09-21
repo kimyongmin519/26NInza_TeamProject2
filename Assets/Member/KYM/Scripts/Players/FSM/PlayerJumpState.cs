@@ -1,10 +1,11 @@
 using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.Agents.FSM;
+using Member.KYM.Scripts.Players.FSM.Interface;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Players.FSM
 {
-    public class PlayerJumpState : AbstractAirState
+    public class PlayerJumpState : AbstractAirState, ICanJumpState, ICanFallState
     {
         public PlayerJumpState(Agent agent, int stateClipHash) : base(agent, stateClipHash)
         {

@@ -1,4 +1,5 @@
 using System;
+using KimLIb.AnimatorSystems;
 using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.Enemies.Boss.Splines;
 using Unity.Behavior;
@@ -20,12 +21,22 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
         [SerializeReference] public BlackboardVariable<float> HorizontalTolerance = new(0.15f);
         [SerializeReference] public BlackboardVariable<float> VerticalTolerance = new(0.15f);
         [SerializeReference] public BlackboardVariable<float> JumpForce = new(9f);
+        [SerializeReference] public BlackboardVariable<float> GroundedVerticalTolerance = new(0.75f);
+        [SerializeReference] public BlackboardVariable<float> NoProgressDuration = new(0.75f);
+        [SerializeReference] public BlackboardVariable<float> MaxDuration = new(5f);
+        [SerializeReference] public BlackboardVariable<int> MaxRecoveryJumps = new(2);
+        [SerializeReference] public BlackboardVariable<AnimParamSO> JumpAnimation;
+        [SerializeReference] public BlackboardVariable<AnimParamSO> MoveAnimation;
 
         private IMover _mover;
+        private IAnimateRenderer _renderer;
         private SplinePath _path;
         private float _targetT;
         private float _bodyToFeetOffsetY;
+        private int _recoveryJumpCount;
         private bool _canJump;
+        private bool _isJumping;
+        private readonly MovementProgressWatchdog _progressWatchdog = new();
 
         protected override Status OnStart()
         {
@@ -33,6 +44,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
                 return Status.Failure;
 
             _mover = Enemy.Value.Mover;
+            _renderer = Enemy.Value.Renderer;
             ISplineMover splineMover = Enemy.Value.GetModule<ISplineMover>();
             if (_mover == null || splineMover == null)
                 return Status.Failure;
@@ -51,6 +63,9 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
                 _mover.RigidBody,
                 _bodyToFeetOffsetY);
             _targetT = _path.GetClosestEndT(feetPosition);
+            _recoveryJumpCount = 0;
+            _progressWatchdog.Reset(
+                Vector2.Distance(_path.EvaluatePosition(_targetT), feetPosition));
             _canJump = _mover.IsGrounded;
             _mover.OnGroundStatusChange += HandleGroundStatusChange;
 
@@ -72,20 +87,50 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
 
             bool isCloseX = Mathf.Abs(delta.x) <= horizontalTolerance;
             bool isCloseY = Mathf.Abs(delta.y) <= verticalTolerance;
-            if (isCloseX && isCloseY)
+            float groundedVerticalTolerance = Mathf.Max(
+                verticalTolerance,
+                GroundedVerticalTolerance?.Value ?? 0.75f);
+            bool isGroundedCloseEnough =
+                isCloseX &&
+                _mover.IsGrounded &&
+                Mathf.Abs(delta.y) <= groundedVerticalTolerance;
+            if ((isCloseX && isCloseY) || isGroundedCloseEnough)
                 return Status.Success;
+
+            MovementProgressState progressState = _progressWatchdog.Update(
+                delta.magnitude,
+                Time.deltaTime,
+                _mover.IsGrounded,
+                Mathf.Max(0.1f, NoProgressDuration?.Value ?? 0.75f),
+                Mathf.Max(0.1f, MaxDuration?.Value ?? 5f));
+            if (progressState == MovementProgressState.TimedOut)
+                return Status.Failure;
 
             _mover.SetMovementX(isCloseX ? 0f : Mathf.Sign(delta.x));
 
             if (delta.y > verticalTolerance && _canJump && _mover.IsGrounded)
             {
-                float jumpForce = Mathf.Max(0f, JumpForce?.Value ?? 0f);
-                _mover.AddForceToAgent(Vector2.up * jumpForce);
-                _canJump = false;
+                Jump();
             }
             else if (delta.y < -verticalTolerance && isCloseX && _mover.IsGrounded)
             {
-                _mover.TryDropThroughPlatform();
+                if (_mover.TryDropThroughPlatform())
+                    _progressWatchdog.ResetStall(delta.magnitude);
+                else if (progressState == MovementProgressState.Stalled)
+                    return Status.Failure;
+            }
+            else if (progressState == MovementProgressState.Stalled &&
+                     _mover.IsGrounded)
+            {
+                int maxRecoveryJumps = Mathf.Max(
+                    0,
+                    MaxRecoveryJumps?.Value ?? 2);
+                if (_recoveryJumpCount >= maxRecoveryJumps)
+                    return Status.Failure;
+
+                _recoveryJumpCount++;
+                _progressWatchdog.ResetStall(delta.magnitude);
+                Jump();
             }
 
             return Status.Running;
@@ -98,12 +143,38 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
 
             _mover.SetMovementX(0f);
             _mover.OnGroundStatusChange -= HandleGroundStatusChange;
+            _recoveryJumpCount = 0;
+            _isJumping = false;
+        }
+
+        private void Jump()
+        {
+            float jumpForce = Mathf.Max(0f, JumpForce?.Value ?? 0f);
+            _mover.AddForceToAgent(Vector2.up * jumpForce);
+            PlayAnimation(JumpAnimation);
+            _canJump = false;
+            _isJumping = true;
         }
 
         private void HandleGroundStatusChange(bool isGrounded)
         {
-            if (isGrounded)
-                _canJump = true;
+            if (!isGrounded)
+                return;
+
+            _canJump = true;
+            if (!_isJumping)
+                return;
+
+            _isJumping = false;
+            PlayAnimation(MoveAnimation);
+        }
+
+        private void PlayAnimation(BlackboardVariable<AnimParamSO> animation)
+        {
+            if (_renderer == null || animation?.Value == null)
+                return;
+
+            _renderer.PlayClip(animation.Value.ParamHash);
         }
     }
 }

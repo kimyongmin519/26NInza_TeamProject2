@@ -1,8 +1,9 @@
 using Member.KYM.Scripts.Agents;
+using Member.KYM.Scripts.Players.FSM.Interface;
 
 namespace Member.KYM.Scripts.Players.FSM
 {
-    public class PlayerGrappleState : AbstractPlayerState
+    public class PlayerGrappleState : AbstractPlayerState, ICanFallState
     {
         public PlayerGrappleState(Agent agent, int stateClipHash)
             : base(agent, stateClipHash)
