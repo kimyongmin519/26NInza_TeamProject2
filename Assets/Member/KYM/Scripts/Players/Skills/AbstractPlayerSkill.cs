@@ -34,7 +34,7 @@ namespace Member.KYM.Scripts.Players.Skills
             }
         }
         
-        public void InitializeSkill(ISkillModule skillModule)
+        public virtual void InitializeSkill(ISkillModule skillModule)
         {
             _playerSkillModule = skillModule;
             Debug.Assert(_playerSkillModule != null, "플레이어 스킬은 반드시 플레이어 스킬 모듈의 자식이어야 함");

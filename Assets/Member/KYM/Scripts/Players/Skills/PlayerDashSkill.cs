@@ -1,5 +1,6 @@
 using DG.Tweening;
 using KimLIb.AnimatorSystems;
+using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Players.Skills
@@ -9,13 +10,35 @@ namespace Member.KYM.Scripts.Players.Skills
         [SerializeField] private AnimParamSO dashParam;
         [SerializeField] private float dashDistance = 4.5f;
         [SerializeField] private float dashDuration = 0.25f;
+
+        [Header("재사용")]
+        [SerializeField, Min(0f)] private float dashRechargeDelay = 0.25f;
+
+        private bool _canDash = true;
+        private float _dashRechargeReadyTime;
+
+        public override void InitializeSkill(ISkillModule skillModule)
+        {
+            base.InitializeSkill(skillModule);
+            _canDash = true;
+            _dashRechargeReadyTime = 0f;
+            _mover.OnGroundStatusChange += HandleGroundStatusChange;
+        }
+
         public override bool CanUseSkill(GameObject target = null)
         {
-            return IsUsing == false && NormalizedCooldown >= 1f;
+            return _canDash &&
+                   IsUsing == false &&
+                   Time.time >= _dashRechargeReadyTime &&
+                   NormalizedCooldown >= 1f;
         }
 
         public override void UseSkill(GameObject target = null)
         {
+            if (!CanUseSkill(target))
+                return;
+
+            _canDash = false;
             base.UseSkill(target);
             
             _renderer.PlayClip(dashParam.ParamHash);
@@ -45,6 +68,28 @@ namespace Member.KYM.Scripts.Players.Skills
             _mover.StopImmediately(true, false);
             _mover.CanManualMovement = true;
             _mover.SetGravityScale(1f);
+
+            _dashRechargeReadyTime = Time.time + dashRechargeDelay;
+
+            if (_mover.IsGrounded)
+                _canDash = true;
+        }
+
+        private void HandleGroundStatusChange(bool isGrounded)
+        {
+            if (isGrounded)
+                _canDash = true;
+        }
+
+        private void OnDestroy()
+        {
+            if (_mover != null)
+                _mover.OnGroundStatusChange -= HandleGroundStatusChange;
+        }
+
+        private void OnValidate()
+        {
+            dashRechargeDelay = Mathf.Max(0f, dashRechargeDelay);
         }
     }
 }

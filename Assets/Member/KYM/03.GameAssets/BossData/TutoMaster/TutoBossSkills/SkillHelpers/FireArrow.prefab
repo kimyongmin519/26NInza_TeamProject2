@@ -135,11 +135,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82cb90d1ef1c4b13abee5b51233004a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CombatSystems.Projectiles.GrabbableProjectile
-  speed: 15
+  <ProjectileData>k__BackingField: {fileID: 11400000, guid: 1b08e636586f555418705beddad5fa3a, type: 2}
   lifetime: 5
-  launchCollisionDelay: 0
+  launchCollisionDelay: 0.05
   canBeGrabbed: 1
   alignRotationWhileHeld: 1
+  createChannel: {fileID: 11400000, guid: 8a8ebc30316442e4f9ce086228bcfef6, type: 2}
 --- !u!95 &2561002803567885461
 Animator:
   serializedVersion: 7
@@ -192,7 +193,7 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -209,6 +210,10 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3733626205428986397, guid: 139622b415db9de428975b5e6ca532bf, type: 3}
       propertyPath: maxHitCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3733626205428986397, guid: 139622b415db9de428975b5e6ca532bf, type: 3}
+      propertyPath: contactFilter.useTriggers
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3733626205428986397, guid: 139622b415db9de428975b5e6ca532bf, type: 3}

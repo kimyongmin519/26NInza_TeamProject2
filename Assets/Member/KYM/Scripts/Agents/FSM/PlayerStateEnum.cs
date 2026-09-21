@@ -9,6 +9,7 @@ namespace Member.KYM.Scripts.Agents.FSM
         FALL = 3,
         SKILL = 4,
         GRAPPLE = 5,
-        CROUCH = 6
+        CROUCH = 6,
+        DEATH = 7
     }
 }
