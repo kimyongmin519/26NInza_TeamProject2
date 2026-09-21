@@ -82,8 +82,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 56887967
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3304151112959605491, guid: 380b970ff2849064eabc54c65dc0d1f7, type: 3}
@@ -138,7 +138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.EffectSystems.FeedbackVfx.ScalingVfx
   targetScale: {x: 1.5, y: 1.5, z: 1.5}
-  scalingDuration: 0.25
+  scalingDuration: 0.2
   scalingEase: 6
 --- !u!114 &1652803791232805260
 MonoBehaviour:
@@ -154,8 +154,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.EffectSystems.FeedbackVfx.AlphaVfx
   targetRenderer: {fileID: 7622570500613567511}
   targetAlpha: 0
-  fadingDuration: 0.25
-  fadingEase: 6
+  fadingDuration: 0.2
+  fadingEase: 1
 --- !u!114 &6249083124567890123
 MonoBehaviour:
   m_ObjectHideFlags: 0

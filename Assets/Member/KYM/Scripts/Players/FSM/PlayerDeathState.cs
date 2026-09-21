@@ -22,6 +22,7 @@ namespace Member.KYM.Scripts.Players.FSM
             _mover.SetMovementX(0f);
             _mover.StopImmediately(true, true);
             _mover.CanManualMovement = false;
+            _player.PlayerInput.AllInputLock(true);
 
             if (_eyes != null)
                 _eyes.SetActive(false);

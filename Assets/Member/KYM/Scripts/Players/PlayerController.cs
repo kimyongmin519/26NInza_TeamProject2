@@ -4,6 +4,7 @@ using Member.KYM.Scripts.Agents.FSM;
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using Member.KYM.Scripts.CoreSystems;
 using Member.KYM.Scripts.CoreSystems.Events;
+using Member.KYM.Scripts.Players.FSM.Interface;
 using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts;
@@ -16,14 +17,16 @@ namespace Member.KYM.Scripts.Players
         [field:Header("임시")]
         [field:SerializeField] public float JumpPower { get; private set; }
         [field:SerializeField] public int MaxJumpCount { get; private set; }
+        [field:SerializeField] public PlayerInputSO PlayerInput { get; private set; }
+        [SerializeField] private StateListSO stateList;
         [field:SerializeField] public EventChannelSO UIChannel { get; private set; }
 
         [field: Header("숙이기")]
         [field: SerializeField, Range(0.1f, 1f)]
         public float CrouchHeightMultiplier { get; private set; } = 0.5f;
+        [field:Header("필요한 채널들")]
+        [field:SerializeField] public EventChannelSO PostProcessChannel { get; private set; }
         
-        [field:SerializeField] public PlayerInputSO PlayerInput { get; private set; }
-        [SerializeField] private StateListSO stateList;
         public AgentSensor Sensor { get; private set; }
         public ISkillModule SkillModule { get; private set; }
         private StateMachine _stateMachine;
@@ -115,7 +118,7 @@ namespace Member.KYM.Scripts.Players
                 return;
 
             IMover mover = GetModule<IMover>();
-            if (PlayerInput.MoveDirY < -0.5f)
+            if (PlayerInput.MoveDirY < -0.5f && _stateMachine.CurrentState is ICanFallState)
             {
                 if (mover.TryDropThroughPlatform())
                     ChangeState(PlayerStateEnum.FALL);
@@ -123,7 +126,7 @@ namespace Member.KYM.Scripts.Players
                 return;
             }
 
-            if (_currentJumpCount < MaxJumpCount)
+            if (_currentJumpCount < MaxJumpCount && _stateMachine.CurrentState is ICanJumpState)
             {
                 ChangeState(PlayerStateEnum.JUMP);
                 _currentJumpCount++;
@@ -200,6 +203,8 @@ namespace Member.KYM.Scripts.Players
         public void TakeDamage(DamageData damage)
         {
             HealthModule?.ApplyDamage(damage);
+            if (PostProcessChannel != null)
+                PostProcessChannel.RaiseEvent(PostProcessEvents.HurtVignetteEvent.Play());
         }
     }
 }

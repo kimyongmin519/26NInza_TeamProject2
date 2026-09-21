@@ -50,7 +50,10 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             Debug.Assert(_damageCaster != null, "프로젝타일은 데미지캐스터가 자식에 있어야함!");
 
             if (_collider != null)
+            {
+                _collider.isTrigger = true;
                 GrabbableLayer.TryApply(_collider.gameObject);
+            }
         }
 
         private void OnEnable()
@@ -133,24 +136,53 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             RestartLifetime();
         }
 
-        private void OnCollisionEnter2D(Collision2D collision)
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            HandleImpact(collision);
+            HandleImpact(other);
         }
 
-        private void HandleImpact(Collision2D collision)
+        private void HandleImpact(Collider2D hitCollider)
         {
-            if (_isHeld || _hasImpacted || IsOwner(collision.gameObject))
+            if (_isHeld ||
+                _hasImpacted ||
+                hitCollider == null ||
+                IsOwner(hitCollider.gameObject))
+            {
                 return;
+            }
 
             _hasImpacted = true;
-            ContactPoint2D contact = collision.GetContact(0);
+            GetImpactContact(hitCollider, out Vector2 hitPoint, out Vector2 hitNormal);
 
             _damageCaster.InitCaster(Owner);
-            _damageCaster.CastDamage(collision.collider, contact.point, contact.normal);
-            PlayImpactEffect(contact.point, contact.normal);
+            _damageCaster.CastDamage(hitCollider, hitPoint, hitNormal);
+            PlayImpactEffect(hitPoint, hitNormal);
 
             Destroy(gameObject);
+        }
+
+        private void GetImpactContact(
+            Collider2D hitCollider,
+            out Vector2 hitPoint,
+            out Vector2 hitNormal)
+        {
+            Vector2 travelDirection = Rigidbody.linearVelocity.sqrMagnitude > Mathf.Epsilon
+                ? Rigidbody.linearVelocity.normalized
+                : (Vector2)transform.right;
+
+            hitPoint = hitCollider.ClosestPoint(Rigidbody.position);
+            hitNormal = -travelDirection;
+
+            if (_collider == null)
+                return;
+
+            ColliderDistance2D distance = _collider.Distance(hitCollider);
+            if (!distance.isValid)
+                return;
+
+            hitPoint = distance.pointB;
+            if (distance.normal.sqrMagnitude > Mathf.Epsilon)
+                hitNormal = -distance.normal.normalized;
         }
 
         private void PlayImpactEffect(Vector2 hitPoint, Vector2 hitNormal)
@@ -172,10 +204,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
                 Quaternion.Euler(0f, 0f, rotationZ),
                 ProjectileData.ImpactColor);
 
-            createChannel.RaiseEvent(
-                CreateEvents.ShowPoolingEffect.InitData(
-                    ProjectileData.ImpactItem,
-                    context));
+            createChannel.RaiseEvent(CreateEvents.ShowPoolingEffect.InitData(ProjectileData.ImpactItem, context));
         }
 
         private bool IsOwner(GameObject hitObject)
@@ -281,7 +310,10 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
             Collider2D projectileCollider = GetComponent<Collider2D>();
             if (projectileCollider != null)
+            {
+                projectileCollider.isTrigger = true;
                 GrabbableLayer.TryApply(projectileCollider.gameObject);
+            }
         }
     }
 }

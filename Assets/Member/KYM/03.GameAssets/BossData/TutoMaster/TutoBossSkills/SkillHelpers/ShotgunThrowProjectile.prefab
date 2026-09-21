@@ -169,7 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CombatSystems.Projectiles.GrabbableProjectile
   <ProjectileData>k__BackingField: {fileID: 11400000, guid: c1111dabbe8554d4899156ef49d00346, type: 2}
   lifetime: 5
-  launchCollisionDelay: 0.1
+  launchCollisionDelay: 0.05
   canBeGrabbed: 0
   alignRotationWhileHeld: 1
   createChannel: {fileID: 11400000, guid: 8a8ebc30316442e4f9ce086228bcfef6, type: 2}
@@ -216,7 +216,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -232,6 +232,10 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3733626205428986397, guid: 139622b415db9de428975b5e6ca532bf, type: 3}
       propertyPath: maxHitCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3733626205428986397, guid: 139622b415db9de428975b5e6ca532bf, type: 3}
+      propertyPath: contactFilter.useTriggers
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3733626205428986397, guid: 139622b415db9de428975b5e6ca532bf, type: 3}

@@ -1,9 +1,10 @@
 using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.Agents.FSM;
+using Member.KYM.Scripts.Players.FSM.Interface;
 
 namespace Member.KYM.Scripts.Players.FSM
 {
-    public class PlayerFallState : AbstractAirState
+    public class PlayerFallState : AbstractAirState, ICanJumpState, ICanFallState
     {
         public PlayerFallState(Agent agent, int stateClipHash) : base(agent, stateClipHash)
         {

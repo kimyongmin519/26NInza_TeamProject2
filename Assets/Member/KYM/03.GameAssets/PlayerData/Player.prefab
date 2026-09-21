@@ -347,10 +347,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Players.PlayerController
   <JumpPower>k__BackingField: 9
   <MaxJumpCount>k__BackingField: 2
-  <UIChannel>k__BackingField: {fileID: 11400000, guid: 34695c655ee7ea444a7b7763fe55bce9, type: 2}
-  <CrouchHeightMultiplier>k__BackingField: 0.6
   <PlayerInput>k__BackingField: {fileID: 11400000, guid: a66c4c0d4ed7bb141991aa0954182ed9, type: 2}
   stateList: {fileID: 11400000, guid: 36f3f9cbbe45ead4c820b99ff85e8714, type: 2}
+  <UIChannel>k__BackingField: {fileID: 11400000, guid: 34695c655ee7ea444a7b7763fe55bce9, type: 2}
+  <CrouchHeightMultiplier>k__BackingField: 0.6
+  <PostProcessChannel>k__BackingField: {fileID: 11400000, guid: 8a23496a1fb64f4aa19a5c44512d5ad4, type: 2}
 --- !u!50 &5716825557623502865
 Rigidbody2D:
   serializedVersion: 5
@@ -831,6 +832,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7112159618935387801, guid: 1f0773d2a46c9294db404a399d0a169d, type: 3}
+      propertyPath: obstacleLayer.m_Bits
+      value: 1033
+      objectReference: {fileID: 0}
     - target: {fileID: 7421361565229730761, guid: 1f0773d2a46c9294db404a399d0a169d, type: 3}
       propertyPath: m_Name
       value: AgentSensor
@@ -858,11 +863,11 @@ PrefabInstance:
       value: PlayerDashSkill
       objectReference: {fileID: 0}
     - target: {fileID: 1875552272717166321, guid: 4a963ab250dbed04a8b8ad862fab3d23, type: 3}
-      propertyPath: dashDistance
-      value: 3.5
+      propertyPath: dashDuration
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 1875552272717166321, guid: 4a963ab250dbed04a8b8ad862fab3d23, type: 3}
-      propertyPath: dashDuration
+      propertyPath: dashRechargeDelay
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3368925547156393061, guid: 4a963ab250dbed04a8b8ad862fab3d23, type: 3}
