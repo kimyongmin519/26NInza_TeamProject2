@@ -80,6 +80,7 @@ namespace Member.KYM.Scripts.Players
 
             if (SkillModule.CanUseSkill(0))
             {
+                ChangeState(PlayerStateEnum.SKILL);
                 SkillModule.UseSkill(0);
             }
         }
