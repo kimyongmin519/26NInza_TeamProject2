@@ -18,8 +18,23 @@ namespace Member.ODK.Scripts.Enemys
         {
             Owner = owner;
 
-            _skillDict = GetComponentsInChildren<ISkill>()
-                .ToDictionary(skill => skill.SkillData.SkillIndex, skill => skill);
+            _skillDict = new Dictionary<int, ISkill>();
+            foreach (ISkill skill in GetComponentsInChildren<ISkill>())
+            {
+                if (skill.SkillData == null)
+                {
+                    Debug.LogError($"[{name}] SkillData is missing on {skill}.", this);
+                    continue;
+                }
+
+                int index = skill.SkillData.SkillIndex;
+                if (!_skillDict.TryAdd(index, skill))
+                {
+                    Debug.LogError($"[{name}] Duplicate skill index: {index}", this);
+                    continue;
+                }
+            }
+
             foreach (ISkill skill in _skillDict.Values)
             {
                 skill.InitializeSkill(this);
@@ -59,8 +74,14 @@ namespace Member.ODK.Scripts.Enemys
         }
         public ISkill[] GetAllSkill()
         {
-            return _skillDict.Values.ToArray();
+            return _skillDict == null
+                ? Array.Empty<ISkill>()
+                : _skillDict.OrderBy(pair => pair.Key).Select(pair => pair.Value).ToArray();
         }
+        public ISkill GetSkill(int skillIndex) =>
+            _skillDict != null && _skillDict.TryGetValue(skillIndex, out ISkill skill)
+                ? skill
+                : null;
         public ISkill GetCurrentSkill() => _currentSkill;
         public void InvokeSkillEnd() => OnCurrentSkillEnd?.Invoke();
     }

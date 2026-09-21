@@ -26,7 +26,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
 
         [Header("Side Pull Setup")]
         [SerializeField, Range(0.1f, 1f)] private float sidePositionRate = 0.72f;
-        [SerializeField, Range(0f, 89f)] private float oppositeConeHalfAngle = 45f;
+        [SerializeField, Range(0f, 89f)] private float oppositeConeHalfAngle = 25f;
         [SerializeField] private float sideMoveDuration = 0.65f;
         [SerializeField] private float returnDuration = 0.5f;
         [SerializeField] private float movementLeanAngle = 12f;
@@ -43,18 +43,6 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             return Boss != null && !Boss.IsDead;
         }
 
-        protected override void OnMoonInitialize()
-        {
-            if (shockwaveCaster != null) return;
-
-            Transform existing = transform.Find("Meteor Shockwave Caster");
-            if (existing != null) shockwaveCaster = existing.GetComponent<DamageCaster>();
-            if (shockwaveCaster != null) return;
-
-            GameObject casterObject = new GameObject("Meteor Shockwave Caster");
-            casterObject.transform.SetParent(transform, false);
-            shockwaveCaster = casterObject.AddComponent<DamageCaster>();
-        }
 
         protected override IEnumerator ExecuteMoon(GameObject target)
         {
@@ -114,11 +102,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             if (impactTarget == null) return;
 
             Vector3 spawnPosition = GetConeSpawnPosition(impactTarget);
-            MoonBullet meteor = meteorPrefab != null
-                ? Instantiate(meteorPrefab, spawnPosition, Quaternion.identity)
-                : CreateFallbackMeteor(spawnPosition);
+            MoonBullet meteor = Instantiate(meteorPrefab, spawnPosition, Quaternion.identity);
 
-            meteor.name = "Moon Meteor";
             meteor.OnBossImpact += HandleBossImpact;
             meteor.Launch(
                 impactTarget,
@@ -152,20 +137,6 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             Vector3 spawnPosition = targetPosition + direction * distance;
             spawnPosition.z = Boss.ArenaCenter.z;
             return spawnPosition;
-        }
-
-        private MoonBullet CreateFallbackMeteor(Vector3 position)
-        {
-            GameObject meteorObject = new GameObject("Moon Meteor");
-            meteorObject.transform.position = position;
-
-            Rigidbody2D body = meteorObject.AddComponent<Rigidbody2D>();
-            body.gravityScale = 0f;
-            CircleCollider2D collider = meteorObject.AddComponent<CircleCollider2D>();
-            collider.radius = 0.45f;
-
-
-            return meteorObject.AddComponent<MoonBullet>();
         }
 
         private void HandleBossImpact(Vector3 position)

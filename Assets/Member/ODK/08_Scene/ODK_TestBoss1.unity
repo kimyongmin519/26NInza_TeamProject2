@@ -9717,7 +9717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7554e207e9aa4f14bb2d5c0a6b9a0e42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonOrbitAttack
-  <SkillData>k__BackingField: {fileID: 0}
+  <SkillData>k__BackingField: {fileID: 11400000, guid: b1100000000040008000000000000002, type: 2}
   animationStateName: 
   directionLine: {fileID: 0}
   directionTelegraph: {fileID: 0}
@@ -11421,7 +11421,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d48b727435ef482f8154aa6611d083f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonReflectionAttack
-  <SkillData>k__BackingField: {fileID: 0}
+  <SkillData>k__BackingField: {fileID: 11400000, guid: b1100000000040008000000000000003, type: 2}
   animationStateName: 
   phaseOneShotCount: 5
   phaseTwoShotCount: 6
@@ -12008,7 +12008,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e638c362450785642a8a6e90d3b738c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonMeteorAttack
-  <SkillData>k__BackingField: {fileID: 0}
+  <SkillData>k__BackingField: {fileID: 11400000, guid: b1100000000040008000000000000001, type: 2}
   animationStateName: 
   meteorPrefab: {fileID: 6483865675676234788, guid: 0eeceba62804a0748893501b3aa0b767, type: 3}
   patternDuration: 9
