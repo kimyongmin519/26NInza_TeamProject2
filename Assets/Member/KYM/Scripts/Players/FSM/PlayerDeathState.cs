@@ -5,14 +5,11 @@ namespace Member.KYM.Scripts.Players.FSM
 {
     public class PlayerDeathState : AbstractPlayerState
     {
-        private readonly GameObject _eyes;
+        private readonly PlayerEyeTracker _eyes;
 
-        public PlayerDeathState(Agent agent, int stateClipHash)
-            : base(agent, stateClipHash)
+        public PlayerDeathState(Agent agent, int stateClipHash) : base(agent, stateClipHash)
         {
-            PlayerEyeTracker eyeTracker =
-                agent.GetComponentInChildren<PlayerEyeTracker>(true);
-            _eyes = eyeTracker != null ? eyeTracker.gameObject : null;
+            _eyes = _player.GetModule<PlayerEyeTracker>();
         }
 
         public override void Enter()
@@ -25,17 +22,12 @@ namespace Member.KYM.Scripts.Players.FSM
             _player.PlayerInput.AllInputLock(true);
 
             if (_eyes != null)
-                _eyes.SetActive(false);
+                _eyes.gameObject.SetActive(false);
         }
-
-        public override void Update()
-        {
-        }
-
         public override void Exit()
         {
             if (_eyes != null)
-                _eyes.SetActive(true);
+                _eyes.gameObject.SetActive(true);
 
             _mover.CanManualMovement = true;
             base.Exit();

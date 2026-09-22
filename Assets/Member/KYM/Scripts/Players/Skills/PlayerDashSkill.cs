@@ -17,6 +17,21 @@ namespace Member.KYM.Scripts.Players.Skills
         private bool _canDash = true;
         private float _dashRechargeReadyTime;
 
+        public float NormalizedRecharge
+        {
+            get
+            {
+                if (IsUsing || !_canDash)
+                    return 0f;
+
+                if (dashRechargeDelay <= 0f)
+                    return 1f;
+
+                float remainingTime = _dashRechargeReadyTime - Time.time;
+                return Mathf.Clamp01(1f - remainingTime / dashRechargeDelay);
+            }
+        }
+
         public override void InitializeSkill(ISkillModule skillModule)
         {
             base.InitializeSkill(skillModule);

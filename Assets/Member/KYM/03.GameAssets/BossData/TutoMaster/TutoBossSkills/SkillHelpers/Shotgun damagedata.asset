@@ -14,6 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CombatSystems.DamageSystems.DamageDataSO
   <DamageType>k__BackingField: 2
   <BaseDamageAmount>k__BackingField: 50
-  <KnockbackForce>k__BackingField: {x: 0, y: 1}
-  <KnockbackDuration>k__BackingField: 0
-  <BaseKnockbackPower>k__BackingField: 0
+  <KnockbackForce>k__BackingField: {x: 10, y: 2}

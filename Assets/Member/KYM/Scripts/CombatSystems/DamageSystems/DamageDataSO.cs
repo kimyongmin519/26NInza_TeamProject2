@@ -9,7 +9,5 @@ namespace Member.KYM.Scripts.CombatSystems.DamageSystems
         [field:SerializeField] public DamageType DamageType { get; private set; }
         [field:SerializeField] public float BaseDamageAmount { get; private set; }
         [field:SerializeField] public Vector2 KnockbackForce { get; private set; }
-        [field:SerializeField] public float KnockbackDuration { get; private set; }
-        [field:SerializeField] public float BaseKnockbackPower { get; private set; }
     }
 }

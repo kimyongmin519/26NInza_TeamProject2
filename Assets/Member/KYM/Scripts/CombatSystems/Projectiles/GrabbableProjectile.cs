@@ -156,6 +156,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
             _damageCaster.InitCaster(Owner);
             _damageCaster.CastDamage(hitCollider, hitPoint, hitNormal);
+            
             PlayImpactEffect(hitPoint, hitNormal);
 
             Destroy(gameObject);

@@ -1,5 +1,6 @@
 using System;
 using Member.KYM.Scripts.Enemies.Boss.BT;
+using Member.KYM.Scripts.Enemies.Boss.BT.Channels;
 using Member.ODK._01_Script;
 using Unity.Behavior;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace Member.KYM.Scripts.Enemies.Boss
     public class BTAgentBoss : AbstractBoss, IDamageable
     {
         public BehaviorGraphAgent BTAgent { get; private set; }
+        public StateChannel StateChannel { get; private set; }
 
         protected override void InitializeModules()
         {
@@ -31,6 +33,10 @@ namespace Member.KYM.Scripts.Enemies.Boss
             if (PhaseController == null)
                 return;
 
+            if (BTAgent.GetVariable(BtVar.StateChannel, out BlackboardVariable<StateChannel> channelVar))
+            {
+                StateChannel = channelVar.Value;
+            }
             SetVariableValue(BtVar.CurrentPhase, PhaseController.CurrentPhase);
         }
 
@@ -48,6 +54,13 @@ namespace Member.KYM.Scripts.Enemies.Boss
         public void TakeDamage(DamageData damage)
         {
             HealthModule?.ApplyDamage(damage);
+            
+            if (HealthModule.IsDead)
+                return;
+
+            StateChannel.SendEventMessage(BossStateEnum.HIT);
+            
+            ApplyKnockback(damage);
         }
         
         public void SetVariableValue<T>(string variableName, T value)
