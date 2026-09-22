@@ -15,7 +15,7 @@ namespace Member.YKJ.Bosses
 
         public bool Start(MimicPattern pattern)
         {
-            if (_transitioning || IsRunning || pattern == null || !pattern.CanStart())
+            if (_transitioning || IsRunning || pattern == null || !pattern.isActiveAndEnabled || !pattern.CanStart())
                 return false;
 
             Transition(() =>
@@ -29,13 +29,18 @@ namespace Member.YKJ.Bosses
         public void Tick(float deltaTime)
         {
             if (!_transitioning && deltaTime > 0f && !float.IsNaN(deltaTime) && !float.IsInfinity(deltaTime))
-                Current?.OnUpdate(deltaTime);
+            {
+                if (Current != null && !Current.isActiveAndEnabled)
+                    Cancel();
+                else if (Current != null)
+                    Current.OnUpdate(deltaTime);
+            }
         }
 
         public bool Interrupt(MimicPattern caller, MimicPattern next)
         {
             if (_transitioning || caller == null || caller != Current || next == null ||
-                next == caller || _suspended.Contains(next) || !next.CanStart())
+                next == caller || _suspended.Contains(next) || !next.isActiveAndEnabled || !next.CanStart())
                 return false;
 
             Transition(() =>
@@ -61,7 +66,8 @@ namespace Member.YKJ.Bosses
                     return;
 
                 Current = _suspended.Pop();
-                Current.OnResume();
+                if (Current != null)
+                    Current.OnResume();
             });
             return true;
         }

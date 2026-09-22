@@ -1,10 +1,13 @@
-using System;
+using UnityEngine;
 
 namespace Member.YKJ.Bosses
 {
-    [Serializable]
-    public abstract class MimicPattern
+    public abstract class MimicPattern : MonoBehaviour
     {
+        [SerializeField, Min(1)] protected int skillId;
+        public int SkillId => skillId;
+        protected virtual int DefaultSkillId => 1;
+        protected virtual void Reset() => skillId = DefaultSkillId;
         protected MimicBoss Boss { get; private set; }
 
         public virtual void Initialize(MimicBoss boss) => Boss = boss;

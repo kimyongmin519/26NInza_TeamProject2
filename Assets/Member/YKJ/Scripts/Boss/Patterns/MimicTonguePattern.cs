@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK._01_Script;
@@ -8,9 +7,9 @@ using Object = UnityEngine.Object;
 
 namespace Member.YKJ.Bosses
 {
-    [Serializable]
     public sealed class MimicTonguePattern : MimicPattern
     {
+        protected override int DefaultSkillId => 3;
         [SerializeField] private LineRenderer tongueLine;
         [SerializeField, Min(0f)] private float warningTime = 0.5f;
         [SerializeField, Min(0.01f)] private float extendTime = 0.2f;
@@ -21,6 +20,11 @@ namespace Member.YKJ.Bosses
         [SerializeField] private LayerMask playerLayers = 1 << 6;
         [SerializeField] private Color warningColor = Color.yellow;
         [SerializeField] private Color attackColor = new Color(1f, 0.2f, 0.35f);
+        [Header("Chest Appearance")]
+        [SerializeField] private SpriteRenderer chestRenderer;
+        [SerializeField] private Sprite openChestSprite;
+        private Sprite _previousSprite;
+        private bool _spriteChanged;
 
         private enum Step { Warning, Extending, Retracting }
         private readonly HashSet<IDamageable> _damaged = new HashSet<IDamageable>();
@@ -35,6 +39,13 @@ namespace Member.YKJ.Bosses
 
         public override void OnStart()
         {
+            Boss.BodyAnimator?.PrepareTongue(warningTime);
+            if (chestRenderer != null && openChestSprite != null)
+            {
+                _previousSprite = chestRenderer.sprite;
+                _spriteChanged = true;
+                chestRenderer.sprite = openChestSprite;
+            }
             _step = Step.Warning;
             _elapsed = 0f;
             _damaged.Clear();
@@ -47,6 +58,7 @@ namespace Member.YKJ.Bosses
             _capturePoint = new GameObject("Mimic Tongue Capture").transform;
             _capturePoint.position = _origin;
             tongueLine.useWorldSpace = true;
+            tongueLine.textureMode = LineTextureMode.Stretch;
             tongueLine.positionCount = 2;
             tongueLine.enabled = true;
             DrawLine(_end, true);
@@ -62,6 +74,7 @@ namespace Member.YKJ.Bosses
                         return;
                     _elapsed = 0f;
                     _step = Step.Extending;
+                    Boss.BodyAnimator?.ExtendTongue(extendTime);
                     DrawLine(_origin, false);
                     break;
                 case Step.Extending:
@@ -75,6 +88,7 @@ namespace Member.YKJ.Bosses
                     {
                         _elapsed = 0f;
                         _step = Step.Retracting;
+                        Boss.BodyAnimator?.RetractTongue(retractTime);
                     }
                     break;
                 case Step.Retracting:
@@ -151,6 +165,8 @@ namespace Member.YKJ.Bosses
 
         public override void OnEnd()
         {
+            RestoreChestSprite();
+            Boss.BodyAnimator?.ResetPose();
             ReleaseCaptured(false);
             if (_capturePoint != null)
                 Object.Destroy(_capturePoint.gameObject);
@@ -158,5 +174,17 @@ namespace Member.YKJ.Bosses
             if (tongueLine != null)
                 tongueLine.enabled = false;
         }
+
+        private void RestoreChestSprite()
+        {
+            if (!_spriteChanged)
+                return;
+            if (chestRenderer != null)
+                chestRenderer.sprite = _previousSprite;
+            _previousSprite = null;
+            _spriteChanged = false;
+        }
+
+        private void OnDisable() => RestoreChestSprite();
     }
 }

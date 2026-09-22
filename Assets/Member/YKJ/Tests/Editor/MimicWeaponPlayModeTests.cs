@@ -163,7 +163,7 @@ namespace Member.YKJ.Tests
         }
 
         [UnityTest]
-        public IEnumerator TenJumpsSpawnThirtyRocksAndResumeAfterOneTongue()
+        public IEnumerator TenJumpsSpawnNoRocksAndResumeAfterOneTongue()
         {
             MimicWeapon weapon = CreateWeapon(new Vector2(-20f, 0f));
             Transform target = Create("Target", new Vector2(12f, 0f)).transform;
@@ -188,7 +188,7 @@ namespace Member.YKJ.Tests
             Assert.That(jump.LandedCount, Is.EqualTo(10));
             Assert.That(interrupts, Is.EqualTo(1));
             Assert.That(boss.Patterns.IsRunning, Is.False);
-            Assert.That(Object.FindObjectsByType<MimicHazard>(FindObjectsSortMode.None).Length, Is.EqualTo(31));
+            Assert.That(Object.FindObjectsByType<MimicHazard>(FindObjectsSortMode.None).Length, Is.Zero);
             boss.StopEncounter();
             yield return null;
         }
@@ -241,12 +241,8 @@ namespace Member.YKJ.Tests
                 };
             }
             SetField(arena, "zones", zones);
-            GameObject rock = Create("Rock Prefab", new Vector2(-30f, 0f));
-            rock.AddComponent<CircleCollider2D>();
-            var hazard = rock.AddComponent<MimicHazard>();
             SetField(boss, "arena", arena);
-            SetField(boss, "rockPrefab", hazard);
-            var jump = new MimicJumpPattern();
+            var jump = boss.GetComponentInChildren<MimicJumpPattern>();
             jump.Initialize(boss);
             LineRenderer warning = Create("Landing Warning", Vector2.zero).AddComponent<LineRenderer>();
             warning.transform.SetParent(boss.transform);
@@ -256,14 +252,173 @@ namespace Member.YKJ.Tests
         }
 
         [UnityTest]
-        public IEnumerator DamageCallbackCancelsLandingBeforeMoreRocksSpawn()
+        public IEnumerator LandingRaisesFeedbackOnceAndNotWhenCancelledInFlight()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(-20f, 0f));
+            Transform target = Create("Target", new Vector2(12f, 0f)).transform;
+            MimicBoss boss = CreateBoss(Vector2.zero, target, weapon);
+            MimicJumpPattern jump = ConfigureJump(boss);
+            var channel = ScriptableObject.CreateInstance<KimLIb.EventSystem.EventChannelSO>();
+            var feedback = ScriptableObject.CreateInstance<YKJ_Script.Feedbacks.FeedbackSO>();
+            feedback.FeedBackId = 123;
+            SetField(jump, "feedbackChannel", channel);
+            SetField(jump, "landingFeedback", feedback);
+            int count = 0;
+            channel.AddListener<YKJ_Script.Feedbacks.PlayFeedBack>(evt =>
+            {
+                Assert.That(evt.FeedbackId, Is.EqualTo(123));
+                count++;
+            });
+            try
+            {
+                Assert.That(boss.Patterns.Start(jump), Is.True);
+                boss.Patterns.Tick(0.35f);
+                Assert.That(count, Is.Zero);
+                boss.Patterns.Tick(0.75f);
+                Assert.That(count, Is.EqualTo(1));
+                boss.Patterns.Tick(0.1f);
+                Assert.That(count, Is.EqualTo(1));
+                boss.Patterns.Cancel();
+                Assert.That(boss.Patterns.Start(jump), Is.True);
+                boss.Patterns.Tick(0.35f);
+                boss.Patterns.Tick(0.1f);
+                boss.Patterns.Cancel();
+                Assert.That(count, Is.EqualTo(1));
+            }
+            finally
+            {
+                channel.Clear();
+                Object.Destroy(channel);
+                Object.Destroy(feedback);
+            }
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator TongueRestoresChestSpriteAfterCompletionAndCancellation()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(-20f, 0f));
+            Transform target = Create("Target", new Vector2(12f, 0f)).transform;
+            MimicBoss boss = CreateBoss(Vector2.zero, target, weapon);
+            SpriteRenderer visual = Create("Chest", Vector2.zero).AddComponent<SpriteRenderer>();
+            visual.transform.SetParent(boss.transform);
+            Sprite closed = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), Vector2.one * 0.5f);
+            Sprite open = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), Vector2.one * 0.5f);
+            try
+            {
+                visual.sprite = closed;
+                SetField(boss.Tongue, "chestRenderer", visual);
+                SetField(boss.Tongue, "openChestSprite", open);
+                Assert.That(boss.Patterns.Start(boss.Tongue), Is.True);
+                Assert.That(visual.sprite, Is.SameAs(open));
+                boss.Patterns.Tick(0.5f);
+                boss.Patterns.Tick(0.2f);
+                boss.Patterns.Tick(0.35f);
+                Assert.That(visual.sprite, Is.SameAs(closed));
+                Assert.That(boss.Patterns.Start(boss.Tongue), Is.True);
+                Assert.That(visual.sprite, Is.SameAs(open));
+                boss.Patterns.Cancel();
+                Assert.That(visual.sprite, Is.SameAs(closed));
+                Assert.That(boss.Patterns.Start(boss.Tongue), Is.True);
+                boss.Tongue.enabled = false;
+                Assert.That(visual.sprite, Is.SameAs(closed));
+                boss.Patterns.Cancel();
+                boss.Tongue.enabled = true;
+                var treasure = boss.GetComponentInChildren<MimicTreasurePattern>();
+                SetField(treasure, "chestRenderer", visual);
+                SetField(treasure, "openChestSprite", open);
+                Assert.That(boss.Patterns.Start(treasure), Is.True);
+                Assert.That(visual.sprite, Is.SameAs(open));
+                Assert.That(boss.Patterns.Interrupt(treasure, boss.Tongue), Is.True);
+                Assert.That(visual.sprite, Is.SameAs(open));
+                boss.Patterns.Complete(boss.Tongue);
+                Assert.That(visual.sprite, Is.SameAs(open));
+                boss.Patterns.Complete(treasure);
+                Assert.That(visual.sprite, Is.SameAs(closed));
+                boss.Patterns.Start(treasure);
+                boss.Patterns.Interrupt(treasure, boss.Tongue);
+                boss.Patterns.Cancel();
+                Assert.That(visual.sprite, Is.SameAs(closed));
+            }
+            finally
+            {
+                Object.Destroy(closed);
+                Object.Destroy(open);
+            }
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator JumpAlignsColliderBottomWithGroundInsteadOfMarkerHeight()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(-20f, 0f));
+            Transform target = Create("Target", new Vector2(12f, 0f)).transform;
+            MimicBoss boss = CreateBoss(Vector2.zero, target, weapon);
+            var body = boss.gameObject.AddComponent<BoxCollider2D>();
+            body.size = new Vector2(2f, 2f);
+            body.offset = new Vector2(0f, 0.25f);
+            var ground = Create("Landing Ground", new Vector2(0f, -2f)).AddComponent<BoxCollider2D>();
+            ground.size = new Vector2(40f, 1f);
+            MimicJumpPattern jump = ConfigureJump(boss);
+            SetField(jump, "groundSurface", ground);
+            SetField(jump, "bossCollider", body);
+            Physics2D.SyncTransforms();
+            Assert.That(boss.Patterns.Start(jump), Is.True);
+            boss.Patterns.Tick(0.35f);
+            boss.Patterns.Tick(0.75f);
+            Physics2D.SyncTransforms();
+            Assert.That(body.bounds.min.y, Is.EqualTo(ground.bounds.max.y).Within(0.001f));
+            boss.Patterns.Cancel();
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator BodyAnticipationKeepsFeetAndColliderFixedAndResetsOnDisable()
+        {
+            GameObject root = Create("Animated Mimic", new Vector2(2f, 3f));
+            var collider = root.AddComponent<BoxCollider2D>();
+            GameObject visual = Create("Visual", Vector2.zero);
+            visual.transform.SetParent(root.transform, false);
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            Sprite sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), Vector2.one * 0.5f, 1f);
+            renderer.sprite = sprite;
+            var animator = root.AddComponent<MimicBodyAnimator>();
+            SetField(animator, "chestRenderer", renderer);
+            try
+            {
+                Physics2D.SyncTransforms();
+                Bounds originalBounds = collider.bounds;
+                float originalBottom = renderer.bounds.min.y;
+                animator.PrepareJump(0.35f);
+                var pose = (DG.Tweening.Sequence)typeof(MimicBodyAnimator)
+                    .GetField("_pose", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(animator);
+                DG.Tweening.TweenExtensions.Complete(pose, true);
+                Physics2D.SyncTransforms();
+                Assert.That(visual.transform.localScale.y, Is.EqualTo(0.72f).Within(0.001f));
+                Assert.That(renderer.bounds.min.y, Is.EqualTo(originalBottom).Within(0.001f));
+                Assert.That(collider.bounds, Is.EqualTo(originalBounds));
+                Assert.That(root.transform.position, Is.EqualTo(new Vector3(2f, 3f, 0f)));
+                animator.enabled = false;
+                Assert.That(visual.transform.localScale, Is.EqualTo(Vector3.one));
+                Assert.That(visual.transform.localPosition, Is.EqualTo(Vector3.zero));
+                animator.enabled = true;
+                animator.PrepareTreasure(0.5f);
+                animator.ResetPose();
+                Assert.That(visual.transform.localScale, Is.EqualTo(Vector3.one));
+            }
+            finally { Object.Destroy(sprite); }
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator DamageCallbackCancelsLandingWithoutContinuingPattern()
         {
             MimicWeapon weapon = CreateWeapon(new Vector2(-20f, 0f));
             Transform target = Create("Target", new Vector2(12f, 0f)).transform;
             MimicBoss boss = CreateBoss(Vector2.zero, target, weapon);
             MimicBoss receiver = CreateBoss(Vector2.zero, target, weapon);
             receiver.gameObject.layer = LayerMask.NameToLayer("Player");
-            receiver.gameObject.AddComponent<BoxCollider2D>();
+            receiver.gameObject.AddComponent<BoxCollider2D>().size = new Vector2(30f, 1f);
             receiver.BeginEncounter();
             receiver.HealthModule.OnHealthChanged += (_, __) => boss.StopEncounter();
             MimicJumpPattern jump = ConfigureJump(boss);
@@ -276,8 +431,91 @@ namespace Member.YKJ.Tests
             boss.Patterns.Tick(0.75f);
             Assert.That(receiver.HealthModule.CurrentHealth, Is.LessThan(receiver.HealthModule.MaxHealth));
             Assert.That(boss.Patterns.IsRunning, Is.False);
-            Assert.That(Object.FindObjectsByType<MimicHazard>(FindObjectsSortMode.None).Length, Is.EqualTo(1));
+            Assert.That(Object.FindObjectsByType<MimicHazard>(FindObjectsSortMode.None).Length, Is.Zero);
             receiver.StopEncounter();
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator LaserAccumulatesFiveBeamsThenRotatesOnceAndCleansUp()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(-20f, 0f));
+            Transform target = Create("Laser target", new Vector2(12f, 0f)).transform;
+            MimicBoss boss = CreateBoss(Vector2.zero, target, weapon);
+            MimicBoss receiver = CreateBoss(new Vector2(4f, 0f), target, weapon);
+            receiver.gameObject.layer = LayerMask.NameToLayer("Player");
+            receiver.gameObject.AddComponent<BoxCollider2D>();
+            receiver.BeginEncounter();
+            var laser = CreatePattern<MimicLaserPattern>(boss, 6);
+            SetField(laser, "laserMaterial", UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(
+                "Assets/Member/YKJ/MimicTestAssets/MimicUnlit.mat"));
+            SetField(laser, "angleRange", Vector2.zero);
+            boss.InitializePatternDictionary();
+            Physics2D.SyncTransforms();
+            float before = receiver.HealthModule.CurrentHealth;
+            Assert.That(boss.Patterns.Start(laser), Is.True);
+            LineRenderer[] lines = laser.GetComponentsInChildren<LineRenderer>();
+            Assert.That(lines.Length, Is.EqualTo(5));
+            for (int i = 0; i < lines.Length; i++)
+            {
+                Vector2 direction = lines[i].GetPosition(1) - lines[i].GetPosition(0);
+                Vector2 next = lines[(i + 1) % lines.Length].GetPosition(1) - lines[(i + 1) % lines.Length].GetPosition(0);
+                Assert.That(Vector2.SignedAngle(direction, next), Is.EqualTo(72f).Within(0.001f));
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                Assert.That(laser.FiredCount, Is.EqualTo(i));
+                boss.Patterns.Tick(i == 0 ? 0.6f : 0.12f);
+                Assert.That(laser.FiredCount, Is.EqualTo(i + 1));
+                for (int beam = 0; beam <= i; beam++)
+                {
+                    Assert.That(lines[beam].enabled, Is.True);
+                    Assert.That(lines[beam].startWidth, Is.EqualTo(0.65f).Within(0.001f));
+                }
+                Assert.That(before - receiver.HealthModule.CurrentHealth, Is.EqualTo(15f));
+                Assert.That(laser.RotationDegrees, Is.Zero);
+            }
+            boss.Patterns.Tick(0.3f);
+            Assert.That(laser.RotationDegrees, Is.Zero);
+            Assert.That(boss.Patterns.IsRunning, Is.True);
+            foreach (LineRenderer line in lines) Assert.That(line.enabled, Is.True);
+            boss.Patterns.Tick(0.3f);
+            Assert.That(laser.RotationDegrees, Is.Zero);
+            boss.Patterns.Tick(1.5f);
+            Assert.That(laser.RotationDegrees, Is.EqualTo(-180f).Within(0.001f));
+            foreach (LineRenderer line in lines) Assert.That(line.enabled, Is.True);
+            boss.Patterns.Tick(1.5f);
+            Assert.That(laser.RotationDegrees, Is.EqualTo(-360f).Within(0.001f));
+            Assert.That(boss.Patterns.IsRunning, Is.False);
+            Assert.That(before - receiver.HealthModule.CurrentHealth, Is.EqualTo(75f));
+            foreach (LineRenderer line in lines) Assert.That(line.enabled, Is.False);
+            boss.Patterns.Start(laser);
+            boss.Patterns.Cancel();
+            foreach (LineRenderer line in lines) Assert.That(line.enabled, Is.False);
+            receiver.StopEncounter();
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator BossWeaponExcludesPlayerButStillCanBeGrabbed()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(-3f, 0f));
+            var player = Create("Player body", Vector2.zero);
+            player.layer = LayerMask.NameToLayer("Player");
+            Collider2D playerCollider = player.AddComponent<BoxCollider2D>();
+            MimicBoss boss = CreateBoss(new Vector2(-6f, 0f), player.transform, weapon);
+            weapon.GetComponent<Rigidbody2D>().gravityScale = 0f;
+            weapon.LaunchFromBoss(boss, new Vector2(3f, 0f), 1f, true);
+            Collider2D collider = weapon.GetComponent<Collider2D>();
+            Assert.That(collider.excludeLayers.value & LayerMask.GetMask("Player"), Is.Not.Zero);
+            Assert.That(collider.includeLayers.value & LayerMask.GetMask("Player"), Is.Zero);
+            Assert.That(weapon.gameObject.layer, Is.EqualTo(GrabbableLayer.Index));
+            Assert.That(Physics2D.GetIgnoreCollision(collider, playerCollider), Is.True);
+            Physics2D.SyncTransforms();
+            for (int i = 0; i < 50; i++) Physics2D.Simulate(0.02f);
+            Assert.That(weapon.transform.position.x, Is.GreaterThan(2.5f));
+            Assert.That(weapon.State, Is.EqualTo(MimicWeapon.WeaponState.BossFlight));
+            Assert.That(weapon.CanBeGrabbed, Is.True);
             yield return null;
         }
 
@@ -298,8 +536,22 @@ namespace Member.YKJ.Tests
             SetField(boss, "firstPlatforms", new[] { lower });
             SetField(boss, "secondPlatforms", new[] { upper });
             SetField(boss, "weaponPrefabs", new[] { weapon });
-            SetField(boss.Tongue, "tongueLine", line);
+            CreatePattern<MimicTreasurePattern>(boss, 1);
+            CreatePattern<MimicJumpPattern>(boss, 2);
+            MimicTonguePattern tongue = CreatePattern<MimicTonguePattern>(boss, 3);
+            SetField(tongue, "tongueLine", line);
+            boss.InitializePatternDictionary();
             return boss;
+        }
+
+        private T CreatePattern<T>(MimicBoss boss, int id) where T : MimicPattern
+        {
+            GameObject child = Create(typeof(T).Name, boss.transform.position);
+            child.transform.SetParent(boss.transform);
+            T pattern = child.AddComponent<T>();
+            typeof(MimicPattern).GetField("skillId", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(pattern, id);
+            return pattern;
         }
 
         private MimicWeapon CreateWeapon(Vector2 position)

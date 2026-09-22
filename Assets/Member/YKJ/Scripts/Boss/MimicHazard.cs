@@ -9,6 +9,7 @@ namespace Member.YKJ.Bosses
     {
         [SerializeField] private LayerMask playerLayers = 1 << 6;
         [SerializeField] private LayerMask groundLayers = (1 << 3) | (1 << 10);
+        [SerializeField] private bool descendingOnly;
         private MimicBoss _owner;
         private float _damage;
         private float _lifetime;
@@ -42,10 +43,16 @@ namespace Member.YKJ.Bosses
 
         private void OnCollisionEnter2D(Collision2D collision) => Impact(collision.collider);
         private void OnTriggerEnter2D(Collider2D other) => Impact(other);
+        private void OnTriggerStay2D(Collider2D other)
+        {
+            if (descendingOnly) Impact(other);
+        }
 
         private void Impact(Collider2D other)
         {
             if (_spent || other == null || (_owner != null && other.transform.IsChildOf(_owner.transform)))
+                return;
+            if (descendingOnly && GetComponent<Rigidbody2D>().linearVelocity.y > 0f)
                 return;
             if ((playerLayers.value & (1 << other.gameObject.layer)) != 0)
             {
