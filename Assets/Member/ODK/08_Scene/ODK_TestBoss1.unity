@@ -9713,7 +9713,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7554e207e9aa4f14bb2d5c0a6b9a0e42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonOrbitAttack
-  <SkillData>k__BackingField: {fileID: 0}
+  <SkillData>k__BackingField: {fileID: 11400000, guid: b1100000000040008000000000000002, type: 2}
   animationStateName: 
   directionLine: {fileID: 0}
   directionTelegraph: {fileID: 0}
@@ -11417,7 +11417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d48b727435ef482f8154aa6611d083f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonReflectionAttack
-  <SkillData>k__BackingField: {fileID: 0}
+  <SkillData>k__BackingField: {fileID: 11400000, guid: b1100000000040008000000000000003, type: 2}
   animationStateName: 
   phaseOneShotCount: 5
   phaseTwoShotCount: 6
@@ -12004,7 +12004,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e638c362450785642a8a6e90d3b738c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonMeteorAttack
-  <SkillData>k__BackingField: {fileID: 0}
+  <SkillData>k__BackingField: {fileID: 11400000, guid: b1100000000040008000000000000001, type: 2}
   animationStateName: 
   meteorPrefab: {fileID: 6483865675676234788, guid: 0eeceba62804a0748893501b3aa0b767, type: 3}
   patternDuration: 9
@@ -20662,13 +20662,6 @@ MonoBehaviour:
   <Saw>k__BackingField: {fileID: 286545408}
   <SawDownAngle>k__BackingField: 0
   <FistDownAngle>k__BackingField: 0
-  rightPunchAttack: {fileID: 20389038}
-  sawSlamAttack: {fileID: 3000000101}
-  leftPunchAttack: {fileID: 1958834212}
-  sideSlashAttack: {fileID: 3000000102}
-  fiveSlamAttack: {fileID: 3000000103}
-  laserAttack: {fileID: 3000000104}
-  missileAttack: {fileID: 3000000105}
   feedback: {fileID: 3000000107}
   sawImpactVisualOffset: {x: 0, y: 0.1}
   <FistImpactVisualOffset>k__BackingField: {x: 0, y: -0.15}
@@ -24406,6 +24399,9 @@ MonoBehaviour:
   damage: 24
   damageInterval: 0.3
   returnDuration: 0.4
+  laserMaterial: {fileID: 0}
+  fireFlashMultiplier: 2
+  fireFlashDuration: 0.12
 --- !u!114 &3000000105
 MonoBehaviour:
   m_ObjectHideFlags: 0

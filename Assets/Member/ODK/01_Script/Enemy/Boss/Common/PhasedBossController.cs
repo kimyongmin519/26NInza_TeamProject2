@@ -1,7 +1,7 @@
+using Member.KYM.Scripts.CombatSystems.SkillSystems;
+using Member.ODK.Scripts.Enemys.Skills;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using Member.ODK.Scripts.Enemys.Skills;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -73,7 +73,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             if (playOnStart) StartCoroutine(AttackLoop());
         }
 
-        protected abstract IEnumerable<ODKBossSkill> GetAttacks();
         protected abstract IEnumerator PhaseOneLoop();
         protected abstract IEnumerator PhaseTwoLoop();
 
@@ -85,8 +84,41 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         private void InitializeAttacks()
         {
-            foreach (ODKBossSkill attack in GetAttacks())
-                attack?.InitializeAttack(this);
+            ISkill[] skills = GetBossSkillModule()?.GetAllSkill();
+            if (skills == null) return;
+
+            foreach (ISkill skill in skills)
+            {
+                if (skill is ODKBossSkill attack)
+                    attack.InitializeAttack(this);
+            }
+        }
+
+        protected ODKBossSkill GetAttack(int index)
+        {
+            EnemySkillModule skillModule = GetBossSkillModule();
+            if (skillModule == null)
+            {
+                Debug.LogError($"[{name}] {nameof(EnemySkillModule)} is missing.", this);
+                return null;
+            }
+
+            ODKBossSkill attack = skillModule.GetSkill(index) as ODKBossSkill;
+            if (attack == null)
+            {
+                Debug.LogError(
+                    $"[{name}] Boss attack index {index} is missing or invalid.",
+                    this
+                );
+                return null;
+            }
+
+            return attack;
+        }
+
+        private EnemySkillModule GetBossSkillModule()
+        {
+            return SkillModule as EnemySkillModule;
         }
 
         private IEnumerator AttackLoop()
@@ -101,26 +133,35 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             }
         }
 
-        protected IEnumerator PlayAttack(ODKBossSkill attack, float durationScale = 1f)
+        protected IEnumerator PlayAttack(int index, float durationScale = 1f)
         {
-            if (attack != null) yield return attack.Play(durationScale);
+            ODKBossSkill attack = GetAttack(index);
+            if (attack == null) yield break;
+
+            yield return attack.Play(durationScale);
         }
 
         protected IEnumerator RunParallel(
-            ODKBossSkill first,
+            int firstIndex,
             float firstScale,
-            ODKBossSkill second,
+            int secondIndex,
             float secondScale)
         {
             int runningCount = 2;
-            StartCoroutine(RunAttack(first, firstScale, () => runningCount--));
-            StartCoroutine(RunAttack(second, secondScale, () => runningCount--));
+
+            StartCoroutine(RunAttack(firstIndex, firstScale, () => runningCount--));
+            StartCoroutine(RunAttack(secondIndex, secondScale, () => runningCount--));
+
             yield return new WaitUntil(() => runningCount <= 0 || IsDead);
         }
 
-        private IEnumerator RunAttack(ODKBossSkill attack, float durationScale, Action onComplete)
+        private IEnumerator RunAttack(int index, float durationScale, Action onComplete)
         {
-            yield return PlayAttack(attack, durationScale);
+            ODKBossSkill attack = GetAttack(index);
+
+            if (attack != null)
+                yield return attack.Play(durationScale);
+
             onComplete?.Invoke();
         }
 
@@ -297,8 +338,8 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             }
 
             EnterPhaseTwo();
-            if (healthModule != null) healthModule.Revive();
-            else if (healthModule != null) healthModule.SetMaxHealth(healthModule.MaxHealth, true);
+            if (healthModule != null)
+                healthModule.Revive();
         }
 
         [ContextMenu("Enter Phase Two")]
@@ -323,8 +364,14 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         protected void CancelAttacks()
         {
-            foreach (ODKBossSkill attack in GetAttacks())
-                attack?.StopSkill();
+            ISkill[] skills = GetBossSkillModule()?.GetAllSkill();
+            if (skills == null) return;
+
+            foreach (ISkill skill in skills)
+            {
+                if (skill is ODKBossSkill attack)
+                    attack.StopSkill();
+            }
         }
 
         protected void Die()

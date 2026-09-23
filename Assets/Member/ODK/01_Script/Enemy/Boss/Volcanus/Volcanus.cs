@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using Member.ODK.Scripts.Enemys.Bosses;
 using UnityEngine;
@@ -18,13 +17,6 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         [field: SerializeField] public float FistDownAngle { get; private set; }
 
         [Header("Attack")]
-        [SerializeField] private VolcanusPunchAttack rightPunchAttack;
-        [SerializeField] private VolcanusSawSlamAttack sawSlamAttack;
-        [SerializeField] private VolcanusPunchAttack leftPunchAttack;
-        [SerializeField] private VolcanusSideSlashAttack sideSlashAttack;
-        [SerializeField] private VolcanusFiveSlamAttack fiveSlamAttack;
-        [SerializeField] private VolcanusLaserAttack laserAttack;
-        [SerializeField] private VolcanusMissileAttack missileAttack;
         [SerializeField] private VolcanusFeedback feedback;
 
         [Header("Impact Position")]
@@ -45,6 +37,14 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         private float sawGroundOffset;
         private float fistGroundOffset;
         private bool isGroundOffsetCached;
+
+        private const int RightPunchIndex = 0;
+        private const int LeftPunchIndex = 1;
+        private const int SawSlamIndex = 2;
+        private const int SideSlashIndex = 3;
+        private const int FiveSlamIndex = 4;
+        private const int LaserIndex = 5;
+        private const int MissileIndex = 6;
 
         protected override void Awake()
         {
@@ -69,42 +69,31 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             base.Start();
         }
 
-        protected override IEnumerable<ODKBossSkill> GetAttacks()
-        {
-            yield return rightPunchAttack;
-            yield return sawSlamAttack;
-            yield return leftPunchAttack;
-            yield return sideSlashAttack;
-            yield return fiveSlamAttack;
-            yield return laserAttack;
-            yield return missileAttack;
-        }
-
         protected override IEnumerator PhaseOneLoop()
         {
-            yield return PlayAttack(rightPunchAttack);
+            yield return PlayAttack(RightPunchIndex);
             yield return AttackWait();
-            yield return PlayAttack(sawSlamAttack);
+            yield return PlayAttack(SawSlamIndex);
             yield return AttackWait();
-            yield return PlayAttack(leftPunchAttack);
+            yield return PlayAttack(LeftPunchIndex);
             yield return AttackWait();
-            yield return PlayAttack(sideSlashAttack);
+            yield return PlayAttack(SideSlashIndex);
             yield return AttackWait();
-            yield return PlayAttack(fiveSlamAttack);
+            yield return PlayAttack(FiveSlamIndex);
             yield return AttackWait();
-            yield return PlayAttack(laserAttack);
+            yield return PlayAttack(LaserIndex);
             yield return AttackWait();
         }
 
         protected override IEnumerator PhaseTwoLoop()
         {
-            yield return RunParallel(sawSlamAttack, 1f, fiveSlamAttack, 1.5f);
+            yield return RunParallel(SawSlamIndex, 1f, FiveSlamIndex, 1.5f);
             yield return AttackWait();
-            yield return PlayAttack(missileAttack);
+            yield return PlayAttack(MissileIndex);
             yield return AttackWait();
-            yield return RunParallel(rightPunchAttack, 1f, sawSlamAttack, 1f);
+            yield return RunParallel(RightPunchIndex, 1f, SawSlamIndex, 1f);
             yield return AttackWait();
-            yield return PlayAttack(sideSlashAttack);
+            yield return PlayAttack(SideSlashIndex);
             yield return AttackWait();
         }
 
