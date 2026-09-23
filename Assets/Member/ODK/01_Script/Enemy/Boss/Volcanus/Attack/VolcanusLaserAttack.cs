@@ -26,9 +26,13 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         [SerializeField] private float damage = 24f;
         [SerializeField] private float damageInterval = 0.3f;
         [SerializeField] private float returnDuration = 0.65f;
+        [SerializeField] private Material laserMaterial;
+        [SerializeField] private float fireFlashMultiplier = 2f;
+        [SerializeField] private float fireFlashDuration = 0.12f;
 
         private Sequence sequence;
-        private Material laserMaterial;
+        private Tween laserFireTween;
+        private bool ownsLaserMaterial;
         private Vector3 aimGroundPoint;
         private float currentReadyDuration;
         private float laserSweepProgress = 1f;
@@ -43,6 +47,8 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         {
             if (leftLaser == null) leftLaser = CreateLaser("Left Laser");
             if (rightLaser == null) rightLaser = CreateLaser("Right Laser");
+            ApplyLaserMaterial(leftLaser);
+            ApplyLaserMaterial(rightLaser);
             SetLaserActive(false);
         }
 
@@ -102,6 +108,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             laserSweepTween = null;
             if (Boss.IsPhaseTwo || Boss.IsDead) yield break;
 
+            PlayLaserFlash();
             PlayAttackAnimation(Boss.Head);
             Boss.LaserFeedback(false);
             float damageTime = 0f;
@@ -142,11 +149,30 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             line.endWidth = laserWidth;
             line.useWorldSpace = true;
             line.sortingOrder = 20;
-            Shader shader = Shader.Find("Sprites/Default");
-            if (laserMaterial == null && shader != null)
-                laserMaterial = new Material(shader);
-            if (laserMaterial != null) line.sharedMaterial = laserMaterial;
+            line.numCapVertices = 8;
+            line.textureMode = LineTextureMode.Tile;
+            ApplyLaserMaterial(line);
             return line;
+        }
+
+        private void ApplyLaserMaterial(LineRenderer line)
+        {
+            if (line == null) return;
+            if (laserMaterial == null)
+                laserMaterial = Resources.Load<Material>("ODKLaser");
+            if (laserMaterial == null)
+            {
+                Shader shader = Shader.Find("ODK/Laser");
+                if (shader != null)
+                {
+                    laserMaterial = new Material(shader);
+                    ownsLaserMaterial = true;
+                }
+            }
+
+            if (laserMaterial != null) line.sharedMaterial = laserMaterial;
+            line.textureMode = LineTextureMode.Tile;
+            line.numCapVertices = 8;
         }
 
         private void SetLaserActive(bool active)
@@ -171,6 +197,39 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
                 rightLaser.startWidth = laserWidth;
                 rightLaser.endWidth = laserWidth;
             }
+        }
+
+        private void PlayLaserFlash()
+        {
+            laserFireTween?.Kill();
+            float progress = 0f;
+            Color fireColor = new Color(1f, 0.05f, 0.02f, 1f);
+            laserFireTween = DOTween.To(
+                    () => progress,
+                    value =>
+                    {
+                        progress = value;
+                        Color color = Color.Lerp(Color.white, fireColor, value);
+                        float width = Mathf.Lerp(
+                            laserWidth * Mathf.Max(1f, fireFlashMultiplier),
+                            laserWidth,
+                            value
+                        );
+                        SetLaserAppearance(leftLaser, color, width);
+                        SetLaserAppearance(rightLaser, color, width);
+                    },
+                    1f,
+                    Mathf.Max(0.01f, fireFlashDuration))
+                .SetEase(Ease.OutExpo);
+        }
+
+        private static void SetLaserAppearance(LineRenderer line, Color color, float width)
+        {
+            if (line == null) return;
+            line.startColor = color;
+            line.endColor = color;
+            line.startWidth = width;
+            line.endWidth = width;
         }
 
         private void UpdateLaserLines()
@@ -241,7 +300,9 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         {
             sequence?.Kill();
             laserSweepTween?.Kill();
+            laserFireTween?.Kill();
             laserSweepTween = null;
+            laserFireTween = null;
             SetLaserActive(false);
             if (Boss != null && Boss.Head != null && Boss.Head.IsAnotherMoving)
                 Boss.Head.SetAnotherMoving(false);
@@ -250,7 +311,8 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            if (laserMaterial != null) Destroy(laserMaterial);
+            laserFireTween?.Kill();
+            if (ownsLaserMaterial && laserMaterial != null) Destroy(laserMaterial);
         }
     }
 }
