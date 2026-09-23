@@ -191,12 +191,24 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
         protected void PlayImpactEffect(Vector2 hitPoint, Vector2 hitNormal)
         {
-            if (createChannel == null ||
-                ProjectileData == null ||
-                ProjectileData.ImpactItem == null)
-            {
+            if (ProjectileData == null)
                 return;
-            }
+
+            PlayEffect(
+                ProjectileData.ImpactItem,
+                hitPoint,
+                hitNormal,
+                ProjectileData.ImpactColor);
+        }
+
+        protected void PlayEffect(
+            PoolItemSO item,
+            Vector2 hitPoint,
+            Vector2 hitNormal,
+            Color tint)
+        {
+            if (createChannel == null || item == null)
+                return;
 
             Vector2 normal = hitNormal.sqrMagnitude > Mathf.Epsilon
                 ? hitNormal.normalized
@@ -206,9 +218,9 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             VfxSpawnContext context = new VfxSpawnContext(
                 hitPoint,
                 Quaternion.Euler(0f, 0f, rotationZ),
-                ProjectileData.ImpactColor);
+                tint);
 
-            createChannel.RaiseEvent(CreateEvents.ShowPoolingEffect.InitData(ProjectileData.ImpactItem, context));
+            createChannel.RaiseEvent(CreateEvents.ShowPoolingEffect.InitData(item, context));
         }
 
         private bool IsOwner(GameObject hitObject)

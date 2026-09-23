@@ -12,9 +12,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: Phase2_PistolWeapon Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 3826361735517120510, guid: 83a3c6e130baf3646ae310952438142c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4649479734857437206, guid: 83a3c6e130baf3646ae310952438142c, type: 3}
       propertyPath: burstCount
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4649479734857437206, guid: 83a3c6e130baf3646ae310952438142c, type: 3}
       propertyPath: burstInterval

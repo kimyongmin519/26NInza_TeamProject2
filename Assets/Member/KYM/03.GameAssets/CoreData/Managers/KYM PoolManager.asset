@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f4fa3b4e3554a2d8e0ec0a4bd8c659c, type: 3}
+  m_Name: KYM PoolManager
+  m_EditorClassIdentifier: ObjectPool_Runtime_assembly::GGMLib.ObjectPool.Runtime.PoolManagerSO
+  itemList:
+  - {fileID: 11400000, guid: 8088fcdb2e53d314992ff2094c2bbec8, type: 2}
+  - {fileID: 11400000, guid: baae851accdf6844c9c5682de17e13c5, type: 2}
+  - {fileID: 11400000, guid: 325c8744da3762c409cf5fbb0a791d28, type: 2}
+  - {fileID: 11400000, guid: f9318d66d269511449907751031c179b, type: 2}
