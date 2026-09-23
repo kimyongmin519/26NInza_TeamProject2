@@ -3,8 +3,7 @@ using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.Agents.FSM;
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using Member.KYM.Scripts.CoreSystems;
-using Member.KYM.Scripts.CoreSystems.Events;
-using Member.KYM.Scripts.Players.FSM.Interface;
+
 using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts;
