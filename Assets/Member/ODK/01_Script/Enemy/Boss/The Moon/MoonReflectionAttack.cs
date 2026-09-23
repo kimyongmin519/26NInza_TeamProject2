@@ -461,7 +461,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 LineRenderer warningRenderer = CreateLineRenderer(
                     warningObject,
                     Mathf.Max(0.025f, beamWidth * 0.18f),
-                    warningColor
+                    warningColor,
+                    false
                 );
                 warningRenderer.enabled = false;
                 warningLines.Add(warningObject.AddComponent<MoonTelegraphLine>());
@@ -471,7 +472,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 LineRenderer beamRenderer = CreateLineRenderer(
                     beamObject,
                     beamWidth,
-                    beamColor
+                    beamColor,
+                    true
                 );
                 beamRenderer.enabled = false;
                 beamLines.Add(beamRenderer);
@@ -493,16 +495,33 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private static LineRenderer CreateLineRenderer(
             GameObject owner,
             float width,
-            Color color)
+            Color color,
+            bool useLaserMaterial)
         {
             LineRenderer line = owner.AddComponent<LineRenderer>();
             line.useWorldSpace = true;
             line.widthMultiplier = width;
             line.startColor = color;
             line.endColor = color;
-            line.numCapVertices = 4;
-            Shader shader = Shader.Find("Sprites/Default");
-            if (shader != null) line.material = new Material(shader);
+            line.numCapVertices = 8;
+            line.numCornerVertices = 4;
+            line.textureMode = LineTextureMode.Tile;
+
+            if (useLaserMaterial)
+            {
+                Material laserMaterial = Resources.Load<Material>("ODKLaser");
+                if (laserMaterial != null) line.sharedMaterial = laserMaterial;
+                else
+                {
+                    Shader laserShader = Shader.Find("ODK/Laser");
+                    if (laserShader != null) line.material = new Material(laserShader);
+                }
+            }
+            else
+            {
+                Shader shader = Shader.Find("Sprites/Default");
+                if (shader != null) line.material = new Material(shader);
+            }
             return line;
         }
 

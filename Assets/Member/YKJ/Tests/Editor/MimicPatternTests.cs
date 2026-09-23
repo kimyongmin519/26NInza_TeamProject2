@@ -1,16 +1,38 @@
 #if UNITY_INCLUDE_TESTS
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Member.YKJ.Bosses;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Member.YKJ.Tests
 {
     public sealed class MimicPatternTests
     {
+        private readonly List<GameObject> _objects = new List<GameObject>();
+
+        private Probe CreateProbe(bool allowed = true)
+        {
+            var go = new GameObject("Pattern probe");
+            _objects.Add(go);
+            Probe probe = go.AddComponent<Probe>();
+            probe.Allowed = allowed;
+            return probe;
+        }
+
+        [TearDown]
+        public void Cleanup()
+        {
+            foreach (GameObject go in _objects)
+                if (go != null) UnityEngine.Object.DestroyImmediate(go);
+            _objects.Clear();
+        }
+
         private sealed class Probe : MimicPattern
         {
+            public void SetId(int id) => skillId = id;
             public int Starts, Updates, Pauses, Resumes, Ends, Deaths;
             public bool Allowed = true;
             public Action<float> TickAction;
@@ -24,11 +46,159 @@ namespace Member.YKJ.Tests
         }
 
         [Test]
+        public void ThreeZonesCoverTheWholeWidthWithoutGaps()
+        {
+            Vector2 horizontal = new Vector2(-12.444445f, 12.444445f);
+            Vector2 vertical = new Vector2(-2f, 8f);
+            Rect first = MimicArena.DivideZone(horizontal, vertical, 0);
+            Rect second = MimicArena.DivideZone(horizontal, vertical, 1);
+            Rect third = MimicArena.DivideZone(horizontal, vertical, 2);
+            Assert.That(first.xMin, Is.EqualTo(horizontal.x).Within(0.00001f));
+            Assert.That(first.xMax, Is.EqualTo(second.xMin).Within(0.00001f));
+            Assert.That(second.xMax, Is.EqualTo(third.xMin).Within(0.00001f));
+            Assert.That(third.xMax, Is.EqualTo(horizontal.y).Within(0.00001f));
+            Assert.That(first.width, Is.EqualTo(second.width).Within(0.00001f));
+            Assert.That(second.width, Is.EqualTo(third.width).Within(0.00001f));
+            Assert.That(first.yMin, Is.EqualTo(-2f));
+            Assert.That(first.yMax, Is.EqualTo(8f));
+        }
+
+        [TestCase(false, new[] { 0, 1, 2, 3 })]
+        [TestCase(true, new[] { 3, 2, 1, 0 })]
+        public void FallingWeaponsVisitAllFourPlatformsInOrder(bool reverse, int[] expected)
+        {
+            var actual = new int[4];
+            for (int i = 0; i < actual.Length; i++)
+                actual[i] = MimicFallingWeaponsPattern.PlatformIndex(i, reverse);
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void PhaseTwoAlternatesWithFiveSecondsAfterEachCompletion()
+        {
+            var root = new GameObject("Phase two test");
+            _objects.Add(root);
+            var boss = root.AddComponent<MimicBoss>();
+            Probe first = CreateProbe();
+            Probe second = CreateProbe();
+            first.SetId(5);
+            second.SetId(6);
+            first.transform.SetParent(root.transform);
+            second.transform.SetParent(root.transform);
+            Assert.That(boss.InitializePatternDictionary(), Is.True);
+            first.TickAction = _ => boss.Patterns.Complete(first);
+            second.TickAction = _ => boss.Patterns.Complete(second);
+            InvokeBoss(boss, "EnterPhaseTwo");
+            Assert.That(boss.Phase, Is.EqualTo(MimicBoss.EncounterPhase.PhaseTwo));
+            InvokeBoss(boss, "TickPhase", 0.01f);
+            Assert.That(boss.Patterns.Current, Is.SameAs(first));
+            InvokeBoss(boss, "TickPhase", 10f);
+            Assert.That(boss.Patterns.IsRunning, Is.False);
+            InvokeBoss(boss, "TickPhase", 4.9f);
+            Assert.That(second.Starts, Is.Zero);
+            InvokeBoss(boss, "TickPhase", 0.11f);
+            Assert.That(boss.Patterns.Current, Is.SameAs(second));
+            InvokeBoss(boss, "TickPhase", 10f);
+            InvokeBoss(boss, "TickPhase", 4.9f);
+            Assert.That(first.Starts, Is.EqualTo(1));
+            InvokeBoss(boss, "TickPhase", 0.11f);
+            Assert.That(first.Starts, Is.EqualTo(2));
+            boss.StopEncounter();
+        }
+
+        [Test]
+        public void HalfHealthCancelsBothActiveAndSuspendedPatternsOnlyOnce()
+        {
+            var root = new GameObject("Phase transition test");
+            _objects.Add(root);
+            var boss = root.AddComponent<MimicBoss>();
+            typeof(MimicBoss).GetField("_encounterActive", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boss, true);
+            Probe parent = CreateProbe();
+            Probe interrupt = CreateProbe();
+            boss.Patterns.Start(parent);
+            boss.Patterns.Interrupt(parent, interrupt);
+            InvokeBoss(boss, "HandleHealthChanged", 501f, 1000f);
+            Assert.That(boss.Phase, Is.EqualTo(MimicBoss.EncounterPhase.PhaseOne));
+            InvokeBoss(boss, "HandleHealthChanged", 500f, 1000f);
+            Assert.That(boss.Phase, Is.EqualTo(MimicBoss.EncounterPhase.Transition));
+            Assert.That(boss.Patterns.IsRunning, Is.False);
+            Assert.That(boss.Patterns.SuspendedCount, Is.Zero);
+            Assert.That(parent.Ends, Is.EqualTo(1));
+            Assert.That(interrupt.Ends, Is.EqualTo(1));
+            Assert.That(boss.IsEncounterActive, Is.True);
+            InvokeBoss(boss, "HandleHealthChanged", 300f, 1000f);
+            Assert.That(parent.Ends, Is.EqualTo(1));
+            Assert.That(boss.TryStartSkill(1), Is.False);
+        }
+
+        [Test]
+        public void LethalDamageDoesNotStartPhaseTransition()
+        {
+            var root = new GameObject("Lethal transition test");
+            _objects.Add(root);
+            var boss = root.AddComponent<MimicBoss>();
+            typeof(MimicBoss).GetField("_encounterActive", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boss, true);
+            InvokeBoss(boss, "HandleHealthChanged", 0f, 1000f);
+            Assert.That(boss.Phase, Is.EqualTo(MimicBoss.EncounterPhase.PhaseOne));
+        }
+
+        private static void InvokeBoss(MimicBoss boss, string method, params object[] args) =>
+            typeof(MimicBoss).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic).Invoke(boss, args);
+
+        [Test]
+        public void ChildPatternsAreResolvedAndStartedBySkillId()
+        {
+            var root = new GameObject("Mimic");
+            _objects.Add(root);
+            var boss = root.AddComponent<MimicBoss>();
+            Probe first = CreateProbe();
+            first.SetId(10);
+            first.transform.SetParent(root.transform);
+            Probe second = CreateProbe();
+            second.SetId(20);
+            second.transform.SetParent(root.transform);
+            Assert.That(boss.InitializePatternDictionary(), Is.True);
+            Assert.That(boss.GetPattern(20), Is.SameAs(second));
+            Assert.That(boss.TryStartSkill(99), Is.False);
+            Assert.That(boss.TryStartSkill(20), Is.True);
+            Assert.That(second.Starts, Is.EqualTo(1));
+            Assert.That(first.Starts, Is.Zero);
+            boss.StopEncounter();
+        }
+
+        [Test]
+        public void DuplicateSkillIdsRejectTheRegistry()
+        {
+            var root = new GameObject("Mimic");
+            _objects.Add(root);
+            var boss = root.AddComponent<MimicBoss>();
+            for (int i = 0; i < 2; i++)
+            {
+                Probe pattern = CreateProbe();
+                pattern.SetId(10);
+                pattern.transform.SetParent(root.transform);
+            }
+            LogAssert.Expect(LogType.Error, "Mimic pattern 'Pattern probe' has an invalid or duplicate Skill ID: 10.");
+            Assert.That(boss.InitializePatternDictionary(), Is.False);
+            Assert.That(boss.GetPattern(10), Is.Null);
+        }
+
+        [Test]
+        public void DisabledPatternCannotStart()
+        {
+            var runner = new MimicPatternRunner();
+            Probe pattern = CreateProbe();
+            pattern.enabled = false;
+            Assert.That(runner.Start(pattern), Is.False);
+            Assert.That(pattern.Starts, Is.Zero);
+        }
+
+        [Test]
         public void InterruptResumesWithoutRestartingParent()
         {
             var runner = new MimicPatternRunner();
-            var treasure = new Probe();
-            var tongue = new Probe();
+            var treasure = CreateProbe();
+            var tongue = CreateProbe();
             Assert.That(runner.Start(treasure), Is.True);
             Assert.That(runner.Interrupt(treasure, tongue), Is.True);
             runner.Tick(0.5f);
@@ -46,12 +216,12 @@ namespace Member.YKJ.Tests
         public void StaleCallbacksCannotFinishOrInterruptCurrentPattern()
         {
             var runner = new MimicPatternRunner();
-            var parent = new Probe();
-            var child = new Probe();
+            var parent = CreateProbe();
+            var child = CreateProbe();
             runner.Start(parent);
             runner.Interrupt(parent, child);
             Assert.That(runner.Complete(parent), Is.False);
-            Assert.That(runner.Interrupt(parent, new Probe()), Is.False);
+            Assert.That(runner.Interrupt(parent, CreateProbe()), Is.False);
             Assert.That(runner.Current, Is.SameAs(child));
         }
 
@@ -59,9 +229,9 @@ namespace Member.YKJ.Tests
         public void NestedInterruptsResumeInReverseOrder()
         {
             var runner = new MimicPatternRunner();
-            var first = new Probe();
-            var second = new Probe();
-            var third = new Probe();
+            var first = CreateProbe();
+            var second = CreateProbe();
+            var third = CreateProbe();
             runner.Start(first);
             runner.Interrupt(first, second);
             runner.Interrupt(second, third);
@@ -79,8 +249,8 @@ namespace Member.YKJ.Tests
         public void DeathCancelsActiveAndSuspendedPatternsExactlyOnce()
         {
             var runner = new MimicPatternRunner();
-            var parent = new Probe();
-            var child = new Probe();
+            var parent = CreateProbe();
+            var child = CreateProbe();
             runner.Start(parent);
             runner.Interrupt(parent, child);
             runner.Cancel(true);
@@ -98,7 +268,7 @@ namespace Member.YKJ.Tests
         public void CancelledRunnerCanStartANewEncounter()
         {
             var runner = new MimicPatternRunner();
-            var pattern = new Probe();
+            var pattern = CreateProbe();
             runner.Start(pattern);
             runner.Cancel();
             Assert.That(runner.Start(pattern), Is.True);
@@ -110,13 +280,13 @@ namespace Member.YKJ.Tests
         public void RejectsInvalidStartsAndInterruptsWithoutChangingParent()
         {
             var runner = new MimicPatternRunner();
-            var parent = new Probe();
+            var parent = CreateProbe();
             Assert.That(runner.Start(null), Is.False);
-            Assert.That(runner.Start(new Probe { Allowed = false }), Is.False);
+            Assert.That(runner.Start(CreateProbe(false)), Is.False);
             runner.Start(parent);
-            Assert.That(runner.Start(new Probe()), Is.False);
+            Assert.That(runner.Start(CreateProbe()), Is.False);
             Assert.That(runner.Interrupt(parent, parent), Is.False);
-            Assert.That(runner.Interrupt(parent, new Probe { Allowed = false }), Is.False);
+            Assert.That(runner.Interrupt(parent, CreateProbe(false)), Is.False);
             Assert.That(parent.Pauses, Is.Zero);
         }
 
@@ -124,8 +294,8 @@ namespace Member.YKJ.Tests
         public void CompletionInsideTickDoesNotUpdateTheResumedPatternInTheSameTick()
         {
             var runner = new MimicPatternRunner();
-            var parent = new Probe();
-            var child = new Probe();
+            var parent = CreateProbe();
+            var child = CreateProbe();
             child.TickAction = _ => runner.Complete(child);
             runner.Start(parent);
             runner.Interrupt(parent, child);
@@ -158,8 +328,8 @@ namespace Member.YKJ.Tests
         {
             var runner = new MimicPatternRunner();
             var progress = new MimicEmissionProgress(15, 0.5f);
-            var parent = new Probe();
-            var tongue = new Probe();
+            var parent = CreateProbe();
+            var tongue = CreateProbe();
             parent.TickAction = delta =>
             {
                 if (progress.Advance(delta) && progress.IsTongueCheckpoint)
@@ -192,7 +362,7 @@ namespace Member.YKJ.Tests
         public void InvalidDeltaDoesNotAdvancePatterns(float delta)
         {
             var runner = new MimicPatternRunner();
-            var pattern = new Probe();
+            var pattern = CreateProbe();
             runner.Start(pattern);
             runner.Tick(delta);
             Assert.That(pattern.Updates, Is.Zero);

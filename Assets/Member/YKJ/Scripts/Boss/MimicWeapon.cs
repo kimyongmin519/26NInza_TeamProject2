@@ -38,6 +38,9 @@ namespace Member.YKJ.Bosses
             _collider = GetComponent<Collider2D>();
             // Enable landing for this weapon only; leave the shared layer matrix unchanged.
             _collider.includeLayers |= groundLayers;
+            int playerMask = LayerMask.GetMask("Player");
+            _collider.includeLayers &= ~playerMask;
+            _collider.excludeLayers |= playerMask;
             _collider.layerOverridePriority = Mathf.Max(1, _collider.layerOverridePriority);
             Rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             _launchPosition = transform.position;
@@ -84,6 +87,7 @@ namespace Member.YKJ.Bosses
             Rigidbody.linearDamping = 0f;
             Rigidbody.linearVelocity = velocity;
             IgnoreCollisionsWith(boss != null ? boss.transform : null);
+            IgnoreCollisionsWith(boss != null ? boss.Target : null);
         }
 
         public static Vector2 CalculateLaunchVelocity(Vector2 origin, Vector2 target, Vector2 gravity, float seconds)
@@ -117,6 +121,7 @@ namespace Member.YKJ.Bosses
             State = WeaponState.Grounded;
             _hurtsPlayer = false;
             RestoreIgnoredCollisions();
+            IgnoreCollisionsWith(_boss != null ? _boss.Target : null);
             if (_retireWhenReleased)
                 Retire();
         }
@@ -129,6 +134,7 @@ namespace Member.YKJ.Bosses
             _throwOwner = throwData.Owner != null ? throwData.Owner.transform : null;
             RestoreIgnoredCollisions();
             IgnoreCollisionsWith(_throwOwner);
+            IgnoreCollisionsWith(_boss != null ? _boss.Target : null);
             if (_retireWhenReleased)
                 Retire();
         }
@@ -173,6 +179,8 @@ namespace Member.YKJ.Bosses
         private void HandleImpact(Collider2D other)
         {
             if (IsHeld || State == WeaponState.Spent || other == null ||
+                (LayerMask.GetMask("Player") & (1 << other.gameObject.layer)) != 0 ||
+                (_boss != null && _boss.Target != null && other.transform.IsChildOf(_boss.Target)) ||
                 other.transform.IsChildOf(transform) ||
                 (_throwOwner != null && other.transform.IsChildOf(_throwOwner)))
                 return;

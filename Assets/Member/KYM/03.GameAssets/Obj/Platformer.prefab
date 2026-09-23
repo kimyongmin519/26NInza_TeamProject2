@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4435381174269793023}
   - component: {fileID: 6597006220325757120}
   - component: {fileID: 2868640506097931003}
+  - component: {fileID: 980332389536715997}
   m_Layer: 10
   m_Name: Platformer
   m_TagString: Untagged
@@ -149,3 +150,19 @@ PlatformEffector2D:
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
+--- !u!114 &980332389536715997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8123458498934824796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12b86e57928044f9af2921c8d9703605, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.MapSystem.MoveEaseLevel
+  <SignalId>k__BackingField: 0
+  moveOffset: {x: 0, y: 0}
+  duration: 2
+  ease: 6

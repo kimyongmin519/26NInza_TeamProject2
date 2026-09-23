@@ -41,24 +41,24 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
 
         protected override float PhaseTransitionDelay => phaseTransitionDuration;
 
-        private readonly List<MoonSkill> availableAttacks = new List<MoonSkill>();
         private GameObject phaseClone;
         private int completedPatternCount;
         private int lastPatternIndex = -1;
         private float nextGravityTime;
 
+        private enum AttackIndex
+        {
+            Meteor = 0,
+            Orbit = 1,
+            Reflection = 2
+        }
+
+        private const int AttackCount = (int)AttackIndex.Reflection + 1;
+
         protected override void Awake()
         {
             base.Awake();
             if (moonAnimator == null) moonAnimator = GetComponentInChildren<Animator>();
-        }
-
-
-
-        protected override IEnumerable<ODKBossSkill> GetAttacks()
-        {
-            foreach (MoonSkill attack in availableAttacks)
-                yield return attack;
         }
 
         protected override IEnumerator PhaseOneLoop()
@@ -81,33 +81,31 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
 
         private IEnumerator PlayNextPattern()
         {
-            MoonSkill attack = SelectRandomAttack();
-            if (attack == null) yield break;
+            int attackIndex = SelectPatternIndex();
+            if (GetAttack(attackIndex) == null) yield break;
 
             bool useClone = (completedPatternCount + 1) % 4 == 0;
             if (useClone) SpawnPhaseClone();
 
-            yield return PlayAttack(attack);
+            yield return PlayAttack(attackIndex);
             completedPatternCount++;
 
             if (useClone) DespawnPhaseClone();
         }
 
-        private MoonSkill SelectRandomAttack()
+        private int SelectPatternIndex()
         {
-            if (availableAttacks.Count == 0) return null;
-            if (availableAttacks.Count == 1) return availableAttacks[0];
-
             int index;
             do
             {
-                index = Random.Range(0, availableAttacks.Count);
+                index = Random.Range((int)AttackIndex.Meteor, AttackCount);
             }
             while (index == lastPatternIndex);
 
             lastPatternIndex = index;
-            return availableAttacks[index];
+            return index;
         }
+
 
         private void SpawnPhaseClone()
         {

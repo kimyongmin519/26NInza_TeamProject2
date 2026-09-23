@@ -1,9 +1,10 @@
+using KimLIb.ModuleSystems;
 using Member.KYM.Scripts.CoreSystems;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Players
 {
-    public class PlayerEyeTracker : MonoBehaviour
+    public class PlayerEyeTracker : MonoBehaviour, IModule
     {
         [SerializeField] private PlayerInputSO playerInput;
         [SerializeField] private Vector2 maxOffset;
@@ -60,6 +61,11 @@ namespace Member.KYM.Scripts.Players
             maxOffset.x = Mathf.Max(0f, maxOffset.x);
             maxOffset.y = Mathf.Max(0f, maxOffset.y);
             smoothTime = Mathf.Max(0.001f, smoothTime);
+        }
+
+        public void Initialize(ModuleOwner owner)
+        {
+            //그냥 겟 컴포 안쓸려고 모듈로 한거임
         }
     }
 }

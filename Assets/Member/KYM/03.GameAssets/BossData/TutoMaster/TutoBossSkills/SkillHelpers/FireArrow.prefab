@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -4882086508364650489}
   - component: {fileID: 2561002803567885461}
   - component: {fileID: 1142925203790703915}
+  - component: {fileID: 481065763135102132}
   m_Layer: 9
   m_Name: FireArrow
   m_TagString: Untagged
@@ -208,6 +209,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6296444529857327160}
     m_Modifications:
+    - target: {fileID: 3692519082395748243, guid: 139622b415db9de428975b5e6ca532bf, type: 3}
+      propertyPath: shakePower
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 3733626205428986397, guid: 139622b415db9de428975b5e6ca532bf, type: 3}
       propertyPath: maxHitCount
       value: 1
@@ -278,3 +283,19 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6507681277067639899, guid: 139622b415db9de428975b5e6ca532bf, type: 3}
   m_PrefabInstance: {fileID: 4010683209983151339}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &481065763135102132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481065763135102131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9bdf4e867e04e05b5c8cbad44913174, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CombatSystems.Projectiles.ProjectileHoverOutline
+  playerInput: {fileID: 11400000, guid: a66c4c0d4ed7bb141991aa0954182ed9, type: 2}
+  targetRenderer: {fileID: 1009440797453356057}
+  grabbableOutline: {fileID: 2100000, guid: b45930779ec44a30a77af7ee3c335511, type: 2}
+  ungrabbableOutline: {fileID: 2100000, guid: 354bed74178642eb8931ad123db20fec, type: 2}

@@ -26,6 +26,9 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
         public bool CanBeGrabbed => canBeGrabbed && !_isHeld && !_hasImpacted;
         public Transform GrabTransform => transform;
 
+        protected bool IsHeld => _isHeld;
+        protected Collider2D ProjectileCollider => _collider;
+
         private Collider2D _collider;
         private bool _colliderEnabledState;
         private RigidbodyType2D _originalBodyType;
@@ -136,7 +139,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             RestartLifetime();
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        protected virtual void OnTriggerEnter2D(Collider2D other)
         {
             HandleImpact(other);
         }
@@ -156,12 +159,13 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
             _damageCaster.InitCaster(Owner);
             _damageCaster.CastDamage(hitCollider, hitPoint, hitNormal);
+            
             PlayImpactEffect(hitPoint, hitNormal);
 
             Destroy(gameObject);
         }
 
-        private void GetImpactContact(
+        protected void GetImpactContact(
             Collider2D hitCollider,
             out Vector2 hitPoint,
             out Vector2 hitNormal)
@@ -185,14 +189,26 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
                 hitNormal = -distance.normal.normalized;
         }
 
-        private void PlayImpactEffect(Vector2 hitPoint, Vector2 hitNormal)
+        protected void PlayImpactEffect(Vector2 hitPoint, Vector2 hitNormal)
         {
-            if (createChannel == null ||
-                ProjectileData == null ||
-                ProjectileData.ImpactItem == null)
-            {
+            if (ProjectileData == null)
                 return;
-            }
+
+            PlayEffect(
+                ProjectileData.ImpactItem,
+                hitPoint,
+                hitNormal,
+                ProjectileData.ImpactColor);
+        }
+
+        protected void PlayEffect(
+            PoolItemSO item,
+            Vector2 hitPoint,
+            Vector2 hitNormal,
+            Color tint)
+        {
+            if (createChannel == null || item == null)
+                return;
 
             Vector2 normal = hitNormal.sqrMagnitude > Mathf.Epsilon
                 ? hitNormal.normalized
@@ -202,9 +218,9 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             VfxSpawnContext context = new VfxSpawnContext(
                 hitPoint,
                 Quaternion.Euler(0f, 0f, rotationZ),
-                ProjectileData.ImpactColor);
+                tint);
 
-            createChannel.RaiseEvent(CreateEvents.ShowPoolingEffect.InitData(ProjectileData.ImpactItem, context));
+            createChannel.RaiseEvent(CreateEvents.ShowPoolingEffect.InitData(item, context));
         }
 
         private bool IsOwner(GameObject hitObject)
@@ -303,7 +319,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
                 _collider.enabled = true;
         }
 
-        private void OnValidate()
+        protected virtual void OnValidate()
         {
             lifetime = Mathf.Max(0f, lifetime);
             launchCollisionDelay = Mathf.Max(0f, launchCollisionDelay);

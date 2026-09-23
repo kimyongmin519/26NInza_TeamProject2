@@ -241,3 +241,49 @@ test was performed during setup, as explicitly requested by the user.
 3. Phase transition and all phase-two attacks, deadline/combo and terminal states.
 4. Scoped prefab/scene setup, player integration, graphics and HUD feedback.
 5. Complete encounter tests and real-scene Play Mode verification. Goal stays active.
+
+## Child Pattern Components (2026-09-21)
+
+- MimicPattern now derives from MonoBehaviour. Treasure, Jump and Tongue are
+  separate components under BossTest's Mimic/Patterns children, with Skill IDs
+  1, 2 and 3. Existing scene tuning and renderer references were preserved.
+- MimicBoss registers its own child patterns in Dictionary<int, MimicPattern>.
+  Phase One Skill Ids contains execution order only (1, 2); Tongue Skill Id is 3.
+  GetPattern(id) and TryStartSkill(id) use the dictionary. Invalid/duplicate IDs
+  and missing configured IDs report errors. Interrupt/resume still uses the runner.
+- Add Pattern in the boss Inspector now creates child components with unused IDs.
+  Initial BossTest setup uses the same component structure.
+- Migrated test construction to AddComponent and added ID lookup, duplicate ID,
+  and disabled component cases. Runtime/editor/test sources compiled with no
+  errors (three existing warnings). Scene object IDs/references checked statically.
+  Tests and Play Mode were not run; loaded-editor scene state was not inspected.
+
+## Equal Jump Zones (2026-09-21)
+
+- MimicArena now splits Horizontal Range into three adjacent equal rectangles.
+  BossTest uses -12.444445 to 12.444445, matching its fixed orthographic camera
+  at size 7 and 16:9. This is an editable world-space range, not dynamic viewport sizing.
+- Landing X is the zone center; existing LandingPoint Y/Z are retained. Rock X
+  spans the same zone, with existing spawn heights retained.
+- Jump warning uses a square-ended filled LineRenderer strip with pale red
+  color/alpha 0.25. Warning Vertical Range sets bottom/top (-2 to 8 in BossTest).
+  Landing damage uses the same cached rectangle instead of a radius.
+- Updated setup and regression sources. Compilation passed (three existing
+  warnings). No Play Mode, physics simulation or visual runtime test was run.
+
+## Attack Body Animation (2026-09-21)
+
+- Added MimicBodyAnimator on BossTest's Mimic, targeting only the Visual child.
+  Uses core DOTween for configurable squash/stretch; no DOTween Pro dependency.
+  Root movement, colliders and attack anchors are unchanged by the animation.
+- Jump: anticipation during warning, stretch during flight, squash/recover on
+  landing. The fifth-jump tongue interrupt now waits for the existing landing
+  delay so the impact animation can complete.
+- Treasure: inflate before emission, recoil per weapon, preserve the final
+  recoil for up to 0.18 seconds before closing. Tongue: wind-up, extension and
+  recovery poses synchronized to existing timings. Sprite switching is retained.
+- Renderer bottom is anchored while scaling. Own tweens and pose are cleared
+  on interruption, cancellation, death and disable. Added a regression source
+  for fixed feet/collider bounds and disable/reset cleanup.
+- Runtime/editor/test sources compiled successfully with three existing warnings.
+  No Play Mode or visual runtime verification was performed.

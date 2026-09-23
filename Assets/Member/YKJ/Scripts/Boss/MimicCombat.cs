@@ -7,6 +7,19 @@ namespace Member.YKJ.Bosses
 {
     public static class MimicCombat
     {
+        public static void DamageBox(Rect bounds, LayerMask mask, float amount, Transform owner)
+        {
+            var damaged = new HashSet<IDamageable>();
+            foreach (Collider2D hit in Physics2D.OverlapBoxAll(bounds.center, bounds.size, 0f, mask))
+            {
+                if (owner != null && hit.transform.IsChildOf(owner))
+                    continue;
+                IDamageable receiver = hit.GetComponentInParent<IDamageable>();
+                if (receiver != null && damaged.Add(receiver))
+                    receiver.TakeDamage(new DamageData(amount, DamageType.Special));
+            }
+        }
+
         public static void DamageCircle(Vector2 center, float radius, LayerMask mask, float amount, Transform owner)
         {
             var damaged = new HashSet<IDamageable>();

@@ -12,7 +12,7 @@ namespace Member.KYM.Scripts.CoreSystems.MapSystem
             RefreshTargets();
         }
 
-        [ContextMenu("맵 연출 대상 다시 찾기")]
+        [ContextMenu("RefreshTargets")]
         public void RefreshTargets()
         {
             _targetsBySignal.Clear();
