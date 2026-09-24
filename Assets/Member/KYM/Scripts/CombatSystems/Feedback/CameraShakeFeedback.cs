@@ -28,7 +28,7 @@ namespace Member.KYM.Scripts.CombatSystems.Feedback
                 return;
 
             cameraChannel.RaiseEvent(
-                CameraEvents.CameraShake.InitData(shakePower, shakeDuration));
+                new CameraShakeEvent().InitData(shakePower, shakeDuration));
         }
     }
 }

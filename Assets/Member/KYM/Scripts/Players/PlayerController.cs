@@ -3,7 +3,8 @@ using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.Agents.FSM;
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using Member.KYM.Scripts.CoreSystems;
-
+using Member.KYM.Scripts.CoreSystems.Events;
+using Member.KYM.Scripts.Players.FSM.Interface;
 using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts;
@@ -23,6 +24,10 @@ namespace Member.KYM.Scripts.Players
         
         [field:Header("PP")]
         [field:SerializeField] public EventChannelSO PostProcessChannel { get; private set; }
+
+        [Header("피격 무적")]
+        [SerializeField, Min(0f)] private float hitInvincibilityDuration = 1.5f;
+        [SerializeField, Min(0.02f)] private float blinkInterval = 0.1f;
         
         public UnityEvent OnHit;
         public UnityEvent OnDeath;
@@ -35,6 +40,11 @@ namespace Member.KYM.Scripts.Players
         private CapsuleCollider2D _bodyCollider;
         private Vector2 _standingColliderSize;
         private Vector2 _standingColliderOffset;
+        private SpriteRenderer[] _blinkRenderers;
+        private bool[] _originalForceRenderingOff;
+        private bool _isBlinking;
+        private bool _blinkHidden;
+        private float _nextBlinkTime;
 
         protected override void InitializeModules()
         {
@@ -94,6 +104,8 @@ namespace Member.KYM.Scripts.Players
 
         private void OnDestroy()
         {
+            StopInvincibilityBlink();
+
             if (PlayerInput != null)
             {
                 PlayerInput.OnJumpKeyPressed -= HandleJumpKeyPressed;
@@ -108,6 +120,11 @@ namespace Member.KYM.Scripts.Players
                 _robotArmGrappler.GrappleStarted -= HandleGrappleStarted;
                 _robotArmGrappler.GrappleEnded -= HandleGrappleEnded;
             }
+        }
+
+        private void OnDisable()
+        {
+            StopInvincibilityBlink();
         }
         
         private void HandleJumpKeyPressed()
@@ -176,10 +193,12 @@ namespace Member.KYM.Scripts.Players
         private void Update()
         {
             _stateMachine.UpdateMachine();
+            UpdateInvincibilityBlink();
         }
 
         private void HandleDeath()
         {
+            StopInvincibilityBlink();
             StopCurrentAction();
             ChangeState(PlayerStateEnum.DEATH);
             
@@ -209,12 +228,24 @@ namespace Member.KYM.Scripts.Players
         }
         public void TakeDamage(DamageData damage)
         {
-            HealthModule?.ApplyDamage(damage);
+            if (HealthModule == null || HealthModule.IsDead || damage.Amount <= 0f)
+                return;
+
+            if (HealthModule.IsInvisible)
+            {
+                HealthModule.ApplyDamage(damage);
+                return;
+            }
+
+            HealthModule.ApplyDamage(damage);
+
+            if (!HealthModule.IsDead && hitInvincibilityDuration > 0f)
+                HealthModule.SettingInvisibleTime(hitInvincibilityDuration);
 
             if (PostProcessChannel != null)
                 PostProcessChannel.RaiseEvent(PostProcessEvents.HurtVignetteEvent.Play());
 
-            if (HealthModule == null || HealthModule.IsDead)
+            if (HealthModule.IsDead)
                 return;
 
             StopCurrentAction();
@@ -222,6 +253,56 @@ namespace Member.KYM.Scripts.Players
             ChangeState(PlayerStateEnum.HIT);
             
             OnHit?.Invoke();
+        }
+
+        private void UpdateInvincibilityBlink()
+        {
+            if (HealthModule == null || HealthModule.IsDead || !HealthModule.IsInvisible)
+            {
+                StopInvincibilityBlink();
+                return;
+            }
+
+            if (!_isBlinking)
+            {
+                _blinkRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+                _originalForceRenderingOff = new bool[_blinkRenderers.Length];
+                for (int i = 0; i < _blinkRenderers.Length; i++)
+                    _originalForceRenderingOff[i] = _blinkRenderers[i].forceRenderingOff;
+
+                _isBlinking = true;
+                _nextBlinkTime = Time.time + blinkInterval;
+            }
+
+            if (Time.time < _nextBlinkTime)
+                return;
+
+            _blinkHidden = !_blinkHidden;
+            for (int i = 0; i < _blinkRenderers.Length; i++)
+            {
+                if (_blinkRenderers[i] != null)
+                    _blinkRenderers[i].forceRenderingOff =
+                        _originalForceRenderingOff[i] || _blinkHidden;
+            }
+
+            _nextBlinkTime = Time.time + Mathf.Max(0.02f, blinkInterval);
+        }
+
+        private void StopInvincibilityBlink()
+        {
+            if (!_isBlinking)
+                return;
+
+            for (int i = 0; i < _blinkRenderers.Length; i++)
+            {
+                if (_blinkRenderers[i] != null)
+                    _blinkRenderers[i].forceRenderingOff = _originalForceRenderingOff[i];
+            }
+
+            _blinkRenderers = null;
+            _originalForceRenderingOff = null;
+            _isBlinking = false;
+            _blinkHidden = false;
         }
     }
 }

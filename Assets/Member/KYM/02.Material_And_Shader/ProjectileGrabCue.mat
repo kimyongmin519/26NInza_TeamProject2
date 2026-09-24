@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ProjectileHoverRed
+  m_Name: ProjectileGrabCue
   m_Shader: {fileID: 4800000, guid: fbe91ab592b14fa592a32c7f42e87675, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -26,8 +26,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _OutlineWidth: 2
+    - _OutlineWidth: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor: {r: 1, g: 0.16, b: 0.12, a: 1}
+    - _OutlineColor: {r: 0.13, g: 1, b: 0.26, a: 1}
   m_BuildTextureStacks: []

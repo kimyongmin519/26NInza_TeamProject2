@@ -53,9 +53,13 @@ namespace Member.KYM.Scripts.Enemies.Boss
 
         public void TakeDamage(DamageData damage)
         {
-            HealthModule?.ApplyDamage(damage);
-            
-            if (HealthModule.IsDead)
+            if (HealthModule == null || HealthModule.IsDead || damage.Amount <= 0f)
+                return;
+
+            bool wasInvincible = HealthModule.IsInvisible;
+            HealthModule.ApplyDamage(damage);
+
+            if (wasInvincible || HealthModule.IsDead)
                 return;
 
             StateChannel.SendEventMessage(BossStateEnum.HIT);
