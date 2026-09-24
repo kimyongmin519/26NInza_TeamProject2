@@ -1,10 +1,10 @@
-Shader "KYM/2D/Projectile Hover Outline"
+Shader "KYM/2D/Projectile Grab Cue"
 {
     Properties
     {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _OutlineColor ("Outline Color", Color) = (0, 1, 0, 1)
-        _OutlineWidth ("Outline Width (Pixels)", Range(1, 3)) = 2
+        _OutlineWidth ("Outline Width (Pixels)", Range(1, 3)) = 1
         [HideInInspector] _Color ("Tint", Color) = (1, 1, 1, 1)
         [HideInInspector] _RendererColor ("Renderer Color", Color) = (1, 1, 1, 1)
         [HideInInspector] _AlphaTex ("External Alpha", 2D) = "white" {}
@@ -74,7 +74,7 @@ Shader "KYM/2D/Projectile Hover Outline"
             {
                 half4 sprite = CommonUnlitFragment(input, input.color);
                 if (sprite.a <= 0.05h)
-                    return sprite;
+                    return half4(0, 0, 0, 0);
 
                 float2 offset = _MainTex_TexelSize.xy * _OutlineWidth;
                 half neighborAlpha = 1;
@@ -90,7 +90,7 @@ Shader "KYM/2D/Projectile Hover Outline"
                 if (neighborAlpha <= 0.05h)
                     return half4(_OutlineColor.rgb, sprite.a * _OutlineColor.a);
 
-                return sprite;
+                return half4(0, 0, 0, 0);
             }
             ENDHLSL
         }

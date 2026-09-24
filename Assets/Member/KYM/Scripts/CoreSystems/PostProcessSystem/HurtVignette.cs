@@ -16,7 +16,7 @@ namespace Member.KYM.Scripts.CoreSystems.PostProcessSystem
         [SerializeField, Min(0f)] private float holdDuration = 0.1f;
         [SerializeField, Min(0f)] private float returnDuration = 0.25f;
 
-        public PostProcessType Type => PostProcessType.HurtVignette;
+         public PostProcessType Type => PostProcessType.HurtVignette;
 
         private Vignette _vignette;
         private Sequence _sequence;
@@ -25,6 +25,9 @@ namespace Member.KYM.Scripts.CoreSystems.PostProcessSystem
         {
             if (TryInitialize())
                 SetIntensity(0f);
+
+            if (volume != null)
+                volume.weight = 0f;
         }
 
         private void OnDisable()
@@ -33,6 +36,9 @@ namespace Member.KYM.Scripts.CoreSystems.PostProcessSystem
 
             if (_vignette != null)
                 SetIntensity(0f);
+
+            if (volume != null)
+                volume.weight = 0f;
         }
 
         public void Handle(PostProcessRequest request)
@@ -57,6 +63,7 @@ namespace Member.KYM.Scripts.CoreSystems.PostProcessSystem
         private void Play()
         {
             KillSequence();
+            volume.weight = 1f;
 
             _sequence = DOTween.Sequence().SetUpdate(true);
 
@@ -79,7 +86,7 @@ namespace Member.KYM.Scripts.CoreSystems.PostProcessSystem
                 _sequence.AppendInterval(holdDuration);
 
             AppendReturnTween(_sequence);
-            _sequence.OnComplete(() => _sequence = null);
+            _sequence.OnComplete(FinishEffect);
         }
 
         private void ReturnToZero()
@@ -88,13 +95,20 @@ namespace Member.KYM.Scripts.CoreSystems.PostProcessSystem
 
             if (returnDuration <= 0f)
             {
-                SetIntensity(0f);
+                FinishEffect();
                 return;
             }
 
             _sequence = DOTween.Sequence().SetUpdate(true);
             AppendReturnTween(_sequence);
-            _sequence.OnComplete(() => _sequence = null);
+            _sequence.OnComplete(FinishEffect);
+        }
+
+        private void FinishEffect()
+        {
+            SetIntensity(0f);
+            volume.weight = 0f;
+            _sequence = null;
         }
 
         private void AppendReturnTween(Sequence sequence)

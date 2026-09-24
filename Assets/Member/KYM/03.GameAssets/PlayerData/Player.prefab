@@ -236,6 +236,7 @@ MonoBehaviour:
   throwSpeed: 20
   throwReleaseDelay: 0.04
   failedGrabCloseTime: 0.12
+  postProcessChannel: {fileID: 11400000, guid: 8a23496a1fb64f4aa19a5c44512d5ad4, type: 2}
   aimLineLength: 50
   aimLineBlockLayers:
     serializedVersion: 2
@@ -470,6 +471,8 @@ MonoBehaviour:
   stateList: {fileID: 11400000, guid: 36f3f9cbbe45ead4c820b99ff85e8714, type: 2}
   <UIChannel>k__BackingField: {fileID: 11400000, guid: 34695c655ee7ea444a7b7763fe55bce9, type: 2}
   <PostProcessChannel>k__BackingField: {fileID: 11400000, guid: 8a23496a1fb64f4aa19a5c44512d5ad4, type: 2}
+  hitInvincibilityDuration: 2
+  blinkInterval: 0.1
   OnHit:
     m_PersistentCalls:
       m_Calls:

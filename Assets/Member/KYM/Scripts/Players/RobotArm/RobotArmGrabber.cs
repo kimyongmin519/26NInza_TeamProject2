@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using KimLIb.EventSystem;
 using KimLIb.ModuleSystems;
+using Member.KYM.Scripts.CombatSystems.Projectiles;
+using Member.KYM.Scripts.CoreSystems.Events;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Players.RobotArm
@@ -25,6 +28,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
         [Header("잡기 연출")]
         [SerializeField] private float failedGrabCloseTime = 0.12f;
+        [SerializeField] private EventChannelSO postProcessChannel;
 
         [Header("투척 조준선")]
         [SerializeField] private float aimLineLength = 15f;
@@ -176,10 +180,19 @@ namespace Member.KYM.Scripts.Players.RobotArm
             {
                 return false;
             }
+            
+            bool caughtEnemyProjectile =
+                grabbable is GrabbableProjectile projectile &&
+                projectile.Owner != null &&
+                projectile.Owner != throwOwner;
 
             _heldObject = grabbable;
             _heldObject.Grab(grabPoint, throwOwner != null ? throwOwner.gameObject : null);
             fingerAnimator?.SetClosed(true);
+            
+            if (postProcessChannel != null && caughtEnemyProjectile)
+                postProcessChannel.RaiseEvent(PostProcessEvents.ParryImpactEvent.Play());
+            
             return true;
         }
 
