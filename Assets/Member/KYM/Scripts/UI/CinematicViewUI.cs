@@ -49,6 +49,8 @@ namespace Member.KYM.Scripts.UI
         [ContextMenu("시네마틱 바 보이기")]
         public void Show()
         {
+            topBar.gameObject.SetActive(true);
+            bottomBar.gameObject.SetActive(true);
             Animate(true, showDuration, showEase);
         }
 
@@ -83,7 +85,7 @@ namespace Member.KYM.Scripts.UI
                 Debug.LogWarning("시네마틱 바 RectTransform이 할당되지 않았습니다.", this);
                 return;
             }
-
+            
             SetBarHeight(topBar);
             SetBarHeight(bottomBar);
 
