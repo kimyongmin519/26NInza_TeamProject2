@@ -12,7 +12,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private Sequence visualSequence;
         private LayerMask targetLayer;
 
-        public static MoonLaserShot Spawn(
+        public void Initialize(
+            MoonBoss owner,
             Vector3 origin,
             Vector2 direction,
             float length,
@@ -23,9 +24,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             LayerMask playerLayer,
             Color color)
         {
-            GameObject laserObject = new GameObject("Moon Laser Shot");
-            MoonLaserShot shot = laserObject.AddComponent<MoonLaserShot>();
-            shot.Build(
+            Build(
                 origin,
                 direction,
                 length,
@@ -34,9 +33,9 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 activeDuration,
                 damage,
                 playerLayer,
-                color
+                color,
+                owner
             );
-            return shot;
         }
 
         private void Build(
@@ -48,14 +47,21 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             float activeDuration,
             float damage,
             LayerMask playerLayer,
-            Color color)
+            Color color,
+            MoonBoss owner)
         {
             Vector2 normalizedDirection = direction.sqrMagnitude > 0.001f
                 ? direction.normalized
                 : Vector2.down;
             Vector3 end = origin + (Vector3)normalizedDirection * length;
 
-            line = gameObject.AddComponent<LineRenderer>();
+            line = GetComponent<LineRenderer>();
+            caster = GetComponent<DamageCaster>();
+            if (line == null || caster == null)
+            {
+                Destroy(gameObject);
+                return;
+            }
             line.useWorldSpace = true;
             line.positionCount = 2;
             line.SetPosition(0, origin);
@@ -69,12 +75,11 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             Shader warningShader = Shader.Find("Sprites/Default");
             if (warningShader != null) line.material = new Material(warningShader);
 
-            caster = gameObject.AddComponent<DamageCaster>();
             targetLayer = playerLayer;
             float angle = Mathf.Atan2(normalizedDirection.y, normalizedDirection.x) * Mathf.Rad2Deg;
             caster.ConfigureBox(new Vector2(length, width), playerLayer);
             caster.SetWorldPose(Vector3.Lerp(origin, end, 0.5f), angle);
-            StartCoroutine(FireRoutine(width, warningDuration, activeDuration, damage, color));
+            StartCoroutine(FireRoutine(width, warningDuration, activeDuration, damage, color, owner));
         }
 
         private IEnumerator FireRoutine(
@@ -82,13 +87,15 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             float warningDuration,
             float activeDuration,
             float damage,
-            Color color)
+            Color color,
+            MoonBoss owner)
         {
             float warningWidth = line.widthMultiplier;
             line.DOTweenWidth(warningWidth * 0.45f, Mathf.Max(0.06f, warningDuration * 0.28f))
                 .SetLoops(-1, LoopType.Yoyo);
             yield return new WaitForSeconds(Mathf.Max(0f, warningDuration));
             DOTween.Kill(line);
+            owner?.PlayLaserFeedback(line.GetPosition(0));
 
             Material laserMaterial = Resources.Load<Material>("ODKLaser");
             if (laserMaterial != null) line.sharedMaterial = laserMaterial;

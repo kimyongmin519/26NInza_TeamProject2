@@ -1,3 +1,4 @@
+using System.Collections;
 using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
@@ -6,63 +7,55 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
 {
     public abstract class VolcanusSkill : ODKBossSkill
     {
-        [field: Header("Damage")]
-        [field: SerializeField] protected DamageCaster DamageCaster { get; private set; }
-
         [Header("Animation")]
         [SerializeField] private string animationStateName;
 
-        protected Volcanus Boss => _volcanus;
-        private VolcanusPiece animatedPiece;
+        protected Volcanus Boss { get; private set; }
+        protected DamageCaster DamageCaster { get; private set; }
 
         protected sealed override void OnInitialize()
         {
-            _volcanus = Owner as Volcanus;
-            Debug.Assert(_volcanus != null, "VolcanusSkill의 소유자가 Volcanus가 아닙니다.", this);
-            if (DamageCaster == null)
-                DamageCaster = GetComponentInChildren<DamageCaster>(true);
+            Boss = Owner as Volcanus;
+            Debug.Assert(Boss != null, "VolcanusSkill owner must be Volcanus.", this);
+            GameObject casterObject = new GameObject(name + " Damage Caster");
+            casterObject.transform.SetParent(transform, false);
+            DamageCaster = casterObject.AddComponent<DamageCaster>();
             OnVolcanusInitialize();
         }
 
-        protected sealed override void OnCancel()
+        protected sealed override IEnumerator Execute(GameObject target)
         {
-            OnVolcanusCancel();
-            EndAttackAnimation();
+            Boss.FaceTargetImmediately();
+            Boss.SetAnimationSpeed(DurationScale);
+            Boss.PlayAnimation(animationStateName);
+            yield return ExecuteVolcanus(target);
         }
 
-        protected override void OnCompleted()
+        protected void ReplayAnimation(float fadeDuration = 0.04f)
         {
-            EndAttackAnimation();
+            Boss?.PlayAnimation(animationStateName, fadeDuration);
         }
 
         protected virtual void OnVolcanusInitialize() { }
+        protected abstract IEnumerator ExecuteVolcanus(GameObject target);
+
+        protected override void OnCompleted()
+        {
+            DamageCaster?.DisableCasting();
+            Boss?.ResetVisual();
+            Boss?.SetAnimationSpeed(1f);
+            Boss?.PlayIdle();
+        }
+
+        protected override void OnCancel()
+        {
+            DamageCaster?.DisableCasting();
+            OnVolcanusCancel();
+            Boss?.ResetVisual(0.08f);
+            Boss?.SetAnimationSpeed(1f);
+            Boss?.PlayIdle();
+        }
+
         protected virtual void OnVolcanusCancel() { }
-
-        protected void CastDamage(float damage, DamageType type)
-        {
-            CastDamage(DamageCaster, damage, type);
-        }
-
-        protected void CastDamage(DamageCaster damageCaster, float damage, DamageType type)
-        {
-            if (damageCaster == null) return;
-            damageCaster.Cast(new DamageData(damage, type));
-        }
-
-        protected void PlayAttackAnimation(VolcanusPiece piece, string stateName = null)
-        {
-            EndAttackAnimation();
-            string playStateName = string.IsNullOrWhiteSpace(stateName) ? animationStateName : stateName;
-            if (piece != null && piece.PlayAttackAnimation(playStateName))
-                animatedPiece = piece;
-        }
-
-        protected void EndAttackAnimation()
-        {
-            if (animatedPiece != null) animatedPiece.PlayDefaultAnimation();
-            animatedPiece = null;
-        }
-
-        private Volcanus _volcanus;
     }
 }

@@ -11,6 +11,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [SerializeField] private string animationStateName;
 
         protected MoonBoss Boss { get; private set; }
+        protected virtual bool UsesAmbientFloating => true;
 
         protected sealed override void OnInitialize()
         {
@@ -22,7 +23,15 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         protected sealed override IEnumerator Execute(GameObject target)
         {
             Boss?.PlayAnimation(animationStateName);
+            if (!UsesAmbientFloating) Boss?.SetAmbientFloating(false);
             yield return ExecuteMoon(target);
+            if (!UsesAmbientFloating) Boss?.SetAmbientFloating(true);
+        }
+
+        protected sealed override void OnCancel()
+        {
+            if (!UsesAmbientFloating) Boss?.SetAmbientFloating(true);
+            OnMoonCancel();
         }
 
         protected DamageCaster CreateCaster(string casterName)
@@ -33,6 +42,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         }
 
         protected virtual void OnMoonInitialize() { }
+        protected virtual void OnMoonCancel() { }
         protected abstract IEnumerator ExecuteMoon(GameObject target);
     }
 }

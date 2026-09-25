@@ -6,6 +6,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
     [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
     public class MoonHazardProjectile : MonoBehaviour
     {
+        [SerializeField] private Vector2 fallingAngularSpeedRange = new Vector2(-320f, 320f);
+
         public enum MoveMode
         {
             Linear,
@@ -24,8 +26,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private float lifeRemaining;
         private bool consumed;
 
-        public static MoonHazardProjectile Create(
-            Vector3 position,
+        public void Initialize(
             Vector2 velocity,
             MoveMode moveMode,
             Transform homingTarget,
@@ -36,34 +37,32 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             Sprite sprite = null,
             Color? color = null)
         {
-            GameObject projectileObject = new GameObject($"Moon {moveMode} Projectile");
-            projectileObject.transform.position = position;
-            Rigidbody2D rigidbody = projectileObject.AddComponent<Rigidbody2D>();
-            rigidbody.gravityScale = moveMode == MoveMode.Falling ? 2.2f : 0f;
-            rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-            rigidbody.linearVelocity = velocity;
-            CircleCollider2D collider = projectileObject.AddComponent<CircleCollider2D>();
-            collider.radius = moveMode == MoveMode.Homing ? 0.65f : 0.35f;
-            collider.isTrigger = true;
-
-            SpriteRenderer renderer = projectileObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite != null
-                ? sprite
-                : Sprite.Create(Texture2D.whiteTexture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
-            renderer.color = color ?? new Color(0.75f, 0.85f, 1f, 0.9f);
-            renderer.sortingOrder = 24;
-
-            MoonHazardProjectile projectile = projectileObject.AddComponent<MoonHazardProjectile>();
-            projectile.body = rigidbody;
-            projectile.target = homingTarget;
-            projectile.mode = moveMode;
-            projectile.playerLayer = playerMask;
-            projectile.groundLayer = groundMask;
-            projectile.damage = projectileDamage;
-            projectile.speed = Mathf.Max(0.1f, velocity.magnitude);
-            projectile.turnSpeed = 3.5f;
-            projectile.lifeRemaining = Mathf.Max(0.2f, lifeTime);
-            return projectile;
+            name = $"Moon {moveMode} Projectile";
+            target = homingTarget;
+            mode = moveMode;
+            playerLayer = playerMask;
+            groundLayer = groundMask;
+            damage = projectileDamage;
+            speed = Mathf.Max(0.1f, velocity.magnitude);
+            turnSpeed = 3.5f;
+            lifeRemaining = Mathf.Max(0.2f, lifeTime);
+            body.gravityScale = moveMode == MoveMode.Falling ? 2.2f : 0f;
+            body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            body.linearVelocity = velocity;
+            body.angularVelocity = moveMode == MoveMode.Falling
+                ? Random.Range(
+                    Mathf.Min(fallingAngularSpeedRange.x, fallingAngularSpeedRange.y),
+                    Mathf.Max(fallingAngularSpeedRange.x, fallingAngularSpeedRange.y)
+                )
+                : 0f;
+            CircleCollider2D circle = GetComponent<CircleCollider2D>();
+            if (circle != null) circle.radius = moveMode == MoveMode.Homing ? 0.65f : 0.35f;
+            SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+            if (renderer != null)
+            {
+                if (sprite != null) renderer.sprite = sprite;
+                renderer.color = color ?? new Color(0.75f, 0.85f, 1f, 0.9f);
+            }
         }
 
         private void Awake()

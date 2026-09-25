@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
@@ -17,32 +16,10 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private float lifeRemaining;
         private float armedTime;
         private LayerMask playerLayer;
-        private LayerMask groundLayer;
         private bool isThrown;
         private bool exploded;
         private Vector2 previousPosition;
-
-        public static MoonRock CreateFallback(Vector3 position)
-        {
-            GameObject rockObject = new GameObject("Moon Rock");
-            rockObject.transform.position = position;
-            Rigidbody2D body = rockObject.AddComponent<Rigidbody2D>();
-            body.gravityScale = 2.4f;
-            body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-            CircleCollider2D collider = rockObject.AddComponent<CircleCollider2D>();
-            collider.radius = 0.5f;
-
-            SpriteRenderer renderer = rockObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = Sprite.Create(
-                Texture2D.whiteTexture,
-                new Rect(0f, 0f, 1f, 1f),
-                new Vector2(0.5f, 0.5f),
-                1f
-            );
-            renderer.color = new Color(0.55f, 0.58f, 0.65f, 1f);
-            renderer.sortingOrder = 25;
-            return rockObject.AddComponent<MoonRock>();
-        }
+        [SerializeField] private DamageCaster explosionCaster;
 
         public void Initialize(
             MoonBoss moonBoss,
@@ -51,8 +28,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             float damageToPlayer,
             float blastRadius,
             float lifeTime,
-            LayerMask playerMask,
-            LayerMask groundMask)
+            LayerMask playerMask)
         {
             owner = moonBoss;
             bossDamage = Mathf.Max(0f, damageToBoss);
@@ -60,7 +36,6 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             explosionRadius = Mathf.Max(0.1f, blastRadius);
             lifeRemaining = Mathf.Max(0.5f, lifeTime);
             playerLayer = playerMask;
-            groundLayer = groundMask;
             armedTime = Time.time + Mathf.Max(0f, armDelay);
             Rigidbody.linearVelocity = velocity;
             Rigidbody.angularVelocity = Random.Range(-300f, 300f);
@@ -71,7 +46,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         {
             if (exploded || IsHeld) return;
             lifeRemaining -= Time.deltaTime;
-            if (lifeRemaining <= 0f) Explode(false);
+            if (lifeRemaining <= 0f) Destroy(gameObject);
         }
 
         private void FixedUpdate()
@@ -86,7 +61,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             foreach (RaycastHit2D hit in Physics2D.LinecastAll(previousPosition, currentPosition))
             {
                 if (hit.collider == null || hit.rigidbody == Rigidbody) continue;
-                if (TryHitBoss(hit.collider)) break;
+                HandleContact(hit.collider);
+                if (exploded) break;
             }
             previousPosition = currentPosition;
         }
@@ -124,53 +100,32 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private void HandleContact(Collider2D other)
         {
             if (exploded || IsHeld || other == null) return;
-            if (TryHitBoss(other)) return;
             if (Time.time < armedTime) return;
-
-            int layerMask = 1 << other.gameObject.layer;
-            bool hitGround = (groundLayer.value & layerMask) != 0;
-            bool hitPlayer = (playerLayer.value & layerMask) != 0 ||
-                other.CompareTag("Player") || other.transform.root.CompareTag("Player");
-            if (hitGround || hitPlayer) Explode(true);
-        }
-
-        private bool TryHitBoss(Collider2D other)
-        {
-            if (!isThrown || owner == null) return false;
             MoonBoss hitBoss = other.GetComponentInParent<MoonBoss>();
-            if (hitBoss == null || hitBoss != owner) return false;
-
-            hitBoss.TakeDamage(new DamageData(bossDamage, DamageType.Projectile));
-            Explode(false);
-            return true;
+            if (hitBoss == owner && !isThrown) return;
+            Explode();
         }
 
-        private void Explode(bool damagePlayer)
+        private void Explode()
         {
             if (exploded) return;
             exploded = true;
+            Rigidbody.linearVelocity = Vector2.zero;
+            Rigidbody.simulated = false;
 
-            if (damagePlayer)
+            if (explosionCaster != null)
             {
-                Collider2D[] hits = Physics2D.OverlapCircleAll(
-                    transform.position,
-                    explosionRadius,
-                    playerLayer
-                );
-                HashSet<Transform> damagedRoots = new HashSet<Transform>();
-                foreach (Collider2D hit in hits)
+                explosionCaster.transform.position = transform.position;
+                explosionCaster.ConfigureCircle(explosionRadius, playerLayer);
+                explosionCaster.Cast(new DamageData(playerDamage, DamageType.Special));
+                if (isThrown && owner != null)
                 {
-                    Transform root = hit.transform.root;
-                    if (!damagedRoots.Add(root)) continue;
-                    DamageCaster.ApplyDamage(
-                        root,
-                        new DamageData(playerDamage, DamageType.Special)
-                    );
+                    LayerMask bossLayer = 1 << owner.gameObject.layer;
+                    explosionCaster.ConfigureCircle(explosionRadius, bossLayer);
+                    explosionCaster.Cast(new DamageData(bossDamage, DamageType.Special));
                 }
             }
 
-            owner?.ShakeImpact(false);
-            owner?.AttackImpact(transform.position);
             Destroy(gameObject);
         }
 

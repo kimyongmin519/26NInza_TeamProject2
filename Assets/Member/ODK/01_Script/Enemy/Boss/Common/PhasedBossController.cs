@@ -55,6 +55,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         public float MaxHealth => healthModule != null ? healthModule.MaxHealth : 0f;
         public bool IsPhaseTwo { get; private set; }
         public bool IsDead { get; private set; }
+        protected virtual bool HasPhaseTwo => true;
         protected virtual float PhaseTransitionDelay => 1.1f;
 
         protected override void Awake()
@@ -331,7 +332,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         private void HandleHealthDeath()
         {
             if (IsDead) return;
-            if (IsPhaseTwo)
+            if (!HasPhaseTwo || IsPhaseTwo)
             {
                 Die();
                 return;

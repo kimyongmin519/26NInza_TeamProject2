@@ -10,14 +10,16 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [Header("Traverse")]
         [SerializeField] private int horizontalJumpCount = 6;
         [SerializeField] private float edgePadding = 1.2f;
-        [SerializeField] private float smallJumpHeight = 3.2f;
+        [SerializeField] private float smallJumpHeight = 3.4f;
         [SerializeField] private float smallJumpDuration = 0.34f;
-        [SerializeField] private float jumpInterval = 0.06f;
 
         [Header("Final Jump")]
-        [SerializeField] private float finalJumpHeight = 9f;
-        [SerializeField] private float finalJumpDuration = 1.25f;
-        [SerializeField] private float fragmentInterval = 0.08f;
+        [SerializeField] private float finalJumpHeight = 4.5f;
+        [SerializeField] private float finalJumpDuration = 0.9f;
+        [SerializeField] private float fragmentInterval = 0.1f;
+        [SerializeField] private Vector2Int fragmentsPerBurst = new Vector2Int(2, 4);
+        [SerializeField] private Vector2 fragmentScaleRange = new Vector2(0.35f, 1.25f);
+        [SerializeField] private float fragmentSpawnSpread = 1.5f;
         [SerializeField] private float fragmentDamage = 22f;
         [SerializeField] private float fragmentSpread = 4f;
         [SerializeField] private float landingDamage = 52f;
@@ -27,6 +29,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private DamageCaster landingCaster;
         private Vector3 originPosition;
         private bool hasOrigin;
+        protected override bool UsesAmbientFloating => false;
 
         public override bool CanUseSkill(GameObject target = null)
         {
@@ -56,6 +59,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                     groundPoint,
                     Vector2.zero
                 );
+                Boss.PlayJumpFeedback(Boss.transform.position);
                 yield return MoonJumpSlamAttack.MoveArc(
                     Boss.transform,
                     Boss.transform.position,
@@ -64,7 +68,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                     smallJumpDuration / DurationScale
                 );
                 Boss.ShakeImpact(false);
-                yield return new WaitForSeconds(jumpInterval / DurationScale);
+                Boss.PlayLandingFeedback(groundPoint, false);
             }
 
             Vector3 finalGroundPoint = Boss.GetGroundPoint(leftX);
@@ -75,12 +79,14 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 Vector2.zero
             );
             Boss.AttackReady(finalGroundPoint);
+            Boss.PlayJumpFeedback(Boss.transform.position);
             yield return FinalJumpWithFragments(finalLanding);
 
             landingCaster.ConfigureCircle(landingRadius, Boss.PlayerLayer);
             landingCaster.SetWorldPosition(finalGroundPoint);
             landingCaster.Cast(new DamageData(landingDamage, DamageType.Melee));
             Boss.ShakeImpact(true);
+            Boss.PlayLandingFeedback(finalGroundPoint, true);
             Boss.AttackImpact(finalGroundPoint);
 
             Boss.transform.DOKill();
@@ -110,7 +116,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 fragmentTimer -= Time.deltaTime * DurationScale;
                 if (fragmentTimer <= 0f)
                 {
-                    SpawnFragment();
+                    SpawnFragmentBurst();
                     fragmentTimer = fragmentInterval;
                 }
                 yield return null;
@@ -118,27 +124,43 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             Boss.transform.position = landing;
         }
 
-        private void SpawnFragment()
+        private void SpawnFragmentBurst()
         {
-            Vector2 velocity = new Vector2(
-                Random.Range(-fragmentSpread, fragmentSpread),
-                Random.Range(-2.5f, -0.5f)
-            );
-            MoonHazardProjectile.Create(
-                Boss.transform.position,
-                velocity,
-                MoonHazardProjectile.MoveMode.Falling,
-                null,
-                fragmentDamage,
-                5f,
-                Boss.PlayerLayer,
-                Boss.GroundLayer,
-                null,
-                new Color(0.75f, 0.82f, 1f, 0.9f)
-            ).transform.localScale = Vector3.one * Random.Range(0.35f, 0.75f);
+            int minimum = Mathf.Max(1, fragmentsPerBurst.x);
+            int maximum = Mathf.Max(minimum, fragmentsPerBurst.y);
+            int count = Random.Range(minimum, maximum + 1);
+            float minimumScale = Mathf.Min(fragmentScaleRange.x, fragmentScaleRange.y);
+            float maximumScale = Mathf.Max(fragmentScaleRange.x, fragmentScaleRange.y);
+
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 spawnPosition = Boss.transform.position + Vector3.right *
+                    Random.Range(-fragmentSpawnSpread, fragmentSpawnSpread);
+                Vector2 velocity = new Vector2(
+                    Random.Range(-fragmentSpread, fragmentSpread),
+                    Random.Range(-3.5f, -0.6f)
+                );
+                MoonHazardProjectile fragment = Boss.SpawnHazard(
+                    spawnPosition,
+                    velocity,
+                    MoonHazardProjectile.MoveMode.Falling,
+                    null,
+                    fragmentDamage,
+                    5f,
+                    null,
+                    new Color(0.75f, 0.82f, 1f, 0.9f)
+                );
+                if (fragment != null)
+                    fragment.transform.localScale = Vector3.one * Random.Range(
+                        Mathf.Max(0.1f, minimumScale),
+                        Mathf.Max(0.1f, maximumScale)
+                    );
+            }
+
+            Boss.PlayFragmentFeedback(Boss.transform.position);
         }
 
-        protected override void OnCancel()
+        protected override void OnMoonCancel()
         {
             if (Boss == null) return;
             Boss.transform.DOKill();

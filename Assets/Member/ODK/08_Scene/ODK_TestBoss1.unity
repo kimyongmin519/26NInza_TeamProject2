@@ -364,7 +364,7 @@ GameObject:
   - component: {fileID: 20389038}
   - component: {fileID: 3000000300}
   m_Layer: 0
-  m_Name: Right Punch Attack
+  m_Name: Golem Combo Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -394,17 +394,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 20389036}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 783af83518c22274d9b8ec6e1d08d391, type: 3}
+  m_Script: {fileID: 11500000, guid: c4305fd0ab2f47a6bb9ef13ef24af887, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusPunchAttack
-  <SkillData>k__BackingField: {fileID: 11400000, guid: 7d732e6decfa14341b6e139bf439f32e, type: 2}
-  <DamageCaster>k__BackingField: {fileID: 3000000300}
-  animationStateName: Inferno_Hand_Attack
-  dir: {x: 1, y: 0}
-  readyDuration: 0.55
-  punchDuration: 0.3
-  readyHeight: 2
-  damage: 75
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.GolemComboAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: 6bad037b765f46609ecbdf885fdcbed9, type: 2}
+  animationStateName: skill_1
+  readyDuration: 0.35
+  stepDuration: 0.18
+  strikeDuration: 0.16
+  preferredDistance: 2.2
+  hitboxSize: {x: 4, y: 3.2}
+  hitboxOffset: {x: 1.8, y: 1.6}
+  damage: 34
 --- !u!1 &21372804
 GameObject:
   m_ObjectHideFlags: 0
@@ -1279,6 +1280,8 @@ GameObject:
   - component: {fileID: 67787295}
   - component: {fileID: 67787297}
   - component: {fileID: 67787296}
+  - component: {fileID: 3000000700}
+  - component: {fileID: 3000000701}
   m_Layer: 0
   m_Name: Visual
   m_TagString: Untagged
@@ -1940,6 +1943,7 @@ GameObject:
   m_Component:
   - component: {fileID: 139892667}
   - component: {fileID: 139892668}
+  - component: {fileID: 3100000505}
   m_Layer: 0
   m_Name: Move
   m_TagString: Untagged
@@ -1980,6 +1984,36 @@ MonoBehaviour:
   useExtraGravity: 0
   extraGravityDelay: 0
   extraGravityPower: 0
+  externalVelocityDamping: 20
+--- !u!114 &3100000505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139892666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6fe4cd5db9e425fa5fe2c1b79222130, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Agents.AgentSensor
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  boxSize: {x: 3.2, y: 5.2}
+  boxOffset: {x: 0, y: 2.6}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  groundCheckSize: {x: 2.8, y: 0.3}
+  groundCheckOffset: {x: 0, y: 0.15}
+  maxColliderCount: 5
 --- !u!1 &145743519
 GameObject:
   m_ObjectHideFlags: 0
@@ -3172,7 +3206,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!251 &219011625
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -4496,7 +4530,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7486273020ca51647942194b03f0ae22, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusPiece
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.Legacy.VolcanusPiece
   defaultAnimationStateName: IDLE
   defaultAnimationFadeDuration: 0.08
   destroyAnimationStateName: 
@@ -4708,7 +4742,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!251 &302727855
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -5284,7 +5318,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &405992893
 Transform:
   m_ObjectHideFlags: 0
@@ -6332,6 +6366,7 @@ MonoBehaviour:
   useExtraGravity: 0
   extraGravityDelay: 0
   extraGravityPower: 0
+  externalVelocityDamping: 20
 --- !u!1 &481197630
 GameObject:
   m_ObjectHideFlags: 0
@@ -7601,7 +7636,7 @@ GameObject:
   - component: {fileID: 571756349}
   m_Layer: 0
   m_Name: Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7718,7 +7753,7 @@ Transform:
   m_GameObject: {fileID: 571756348}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.29, y: 22.13, z: -10}
+  m_LocalPosition: {x: 2.29, y: 17.72, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9719,6 +9754,8 @@ MonoBehaviour:
   entryDuration: 0.55
   legDuration: 1.15
   returnDuration: 0.5
+  travelFloatAmplitude: 0.55
+  travelFloatCycles: 1.5
   shotInterval: 0.34
   randomAngle: 9
   beamWarningDuration: 0.22
@@ -10328,7 +10365,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7486273020ca51647942194b03f0ae22, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusPiece
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.Legacy.VolcanusPiece
   defaultAnimationStateName: IDLE
   defaultAnimationFadeDuration: 0.08
   destroyAnimationStateName: Death
@@ -10395,7 +10432,7 @@ Transform:
   m_GameObject: {fileID: 899358539}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.29, y: 22.13, z: -10}
+  m_LocalPosition: {x: 2.29, y: 17.72, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11417,19 +11454,19 @@ MonoBehaviour:
   animationStateName: 
   horizontalJumpCount: 6
   edgePadding: 1.2
-  smallJumpHeight: 3.2
+  smallJumpHeight: 3.4
   smallJumpDuration: 0.34
-  jumpInterval: 0.06
-  finalJumpHeight: 9
-  finalJumpDuration: 1.25
-  fragmentInterval: 0.08
+  finalJumpHeight: 4.5
+  finalJumpDuration: 0.9
+  fragmentInterval: 0.1
+  fragmentsPerBurst: {x: 2, y: 4}
+  fragmentScaleRange: {x: 0.35, y: 1.25}
+  fragmentSpawnSpread: 1.5
   fragmentDamage: 22
   fragmentSpread: 4
   landingDamage: 52
   landingRadius: 2.2
   returnDuration: 0.45
-    m_Bits: 8
-  reflectionSkin: 0.03
 --- !u!1 &1025917738
 GameObject:
   m_ObjectHideFlags: 0
@@ -11993,16 +12030,20 @@ MonoBehaviour:
   slamCount: 9
   warningDuration: 0.38
   jumpDuration: 0.48
-  jumpHeight: 5
+  jumpHeight: 2.6
   landingDamage: 34
   landingRadius: 1.8
-  interval: 0.12
-  strongJumpHeightMultiplier: 1.65
+  playerAreaChance: 0.65
+  playerPositionSpread: 3.2
+  strongJumpHeightMultiplier: 1.4
   strongDamageMultiplier: 1.7
   sideProjectileSpeed: 13
   sideProjectileDamage: 26
   sideProjectileHeight: 0.75
-  rockLaunchVelocity: {x: 2.5, y: 8}
+  rockLaunchVelocity: {x: 2.5, y: 11.5}
+  normalRockCount: 3
+  strongRockCount: 6
+  rockHorizontalSpread: 1.25
 --- !u!1 &1066106581
 GameObject:
   m_ObjectHideFlags: 0
@@ -12206,7 +12247,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1070182103
 Transform:
   m_ObjectHideFlags: 0
@@ -12795,7 +12836,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!251 &1115167322
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -13757,7 +13798,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!251 &1225476645
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -13908,13 +13949,14 @@ GameObject:
   - component: {fileID: 1233974791}
   - component: {fileID: 1233974792}
   - component: {fileID: 1233974793}
+  - component: {fileID: 3000000600}
   m_Layer: 0
   m_Name: Moon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1233974791
 Transform:
   m_ObjectHideFlags: 0
@@ -13995,17 +14037,25 @@ MonoBehaviour:
   hazardGroundLayer:
     serializedVersion: 2
     m_Bits: 8
-  rockPrefab: {fileID: 0}
+  rockPrefab: {fileID: 100005, guid: 4d5e062cc51546988e2dd12aa2e40103, type: 3}
+  hazardProjectilePrefab: {fileID: 100005, guid: a1111111111141118111111111111111, type: 3}
+  laserShotPrefab: {fileID: 100004, guid: a2222222222242228222222222222222, type: 3}
+  telegraphLinePrefab: {fileID: 100003, guid: a3333333333343338333333333333333, type: 3}
   rockBossDamage: 95
   rockPlayerDamage: 28
   rockExplosionRadius: 1.4
   spawnedRockLifeTime: 12
-  moonAnimator: {fileID: 0}
+  rockScaleRange: {x: 0.55, y: 1.65}
+  moonAnimator: {fileID: 67787296}
   phaseTwoAnimationState: 
   phaseTransitionDuration: 1
+  floatingVisual: {fileID: 67787295}
+  floatingDistance: {x: 0.16, y: 0.32}
+  floatingDuration: 1.6
   impulseSource: {fileID: 0}
   normalImpactImpulse: 1.2
   strongImpactImpulse: 2.4
+  feedback: {fileID: 3000000600}
   onDamaged:
     m_PersistentCalls:
       m_Calls: []
@@ -14475,7 +14525,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!251 &1316651570
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -15193,7 +15243,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!251 &1408905791
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -17507,7 +17557,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!251 &1550867235
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -17997,7 +18047,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!251 &1582839848
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -20304,7 +20354,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7486273020ca51647942194b03f0ae22, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusPiece
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.Legacy.VolcanusPiece
   defaultAnimationStateName: IDLE
   defaultAnimationFadeDuration: 0.08
   destroyAnimationStateName: 
@@ -20549,7 +20599,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1811559537
 Transform:
   m_ObjectHideFlags: 0
@@ -20568,6 +20618,7 @@ Transform:
   - {fileID: 405992893}
   - {fileID: 604648789}
   - {fileID: 39636607}
+  - {fileID: 3100000501}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1811559538
@@ -20579,7 +20630,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1811559536}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a690efbfdb2e9164ba738ef981971dc7, type: 3}
+  m_Script: {fileID: 11500000, guid: 93767119f76b466ea5887f49e29b32dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.Volcanus
   attackInterval: 1
@@ -20594,17 +20645,14 @@ MonoBehaviour:
   drawDebugGizmos: 1
   healthModule: {fileID: 604648790}
   invincible: 0
-  rockVisualPrefabs:
-  - {fileID: 7529635343020985361, guid: 8dab7379f6c67d9448d4c24d1eace61b, type: 3}
-  - {fileID: 4973302571607540863, guid: b076c268235cb7348a5d9a036ec254c4, type: 3}
-  - {fileID: 2183321564951531335, guid: 2f54e7022d76f09478e2e1124e212cc5, type: 3}
+  rockVisualPrefabs: []
   fistRockCount: 1
-  sawRockCount: 2
-  rockSpawnSpread: 3
+  sawRockCount: 4
+  rockSpawnSpread: 1.2
   rockSpawnHeight: 0.15
-  rockLaunchForce: 4
-  rockScale: 0.7
-  rockDamage: 40
+  rockLaunchForce: 5
+  rockScale: 1.3
+  rockDamage: 80
   rockLifeTime: 15
   onAttackReady:
     m_PersistentCalls:
@@ -20627,22 +20675,39 @@ MonoBehaviour:
   onDeath:
     m_PersistentCalls:
       m_Calls: []
-  <Head>k__BackingField: {fileID: 892350016}
-  <Truso>k__BackingField: {fileID: 1778107359}
-  <LeftHand>k__BackingField: {fileID: 286545409}
-  <RightHand>k__BackingField: {fileID: 2091253907}
-  <Saw>k__BackingField: {fileID: 286545408}
-  <SawDownAngle>k__BackingField: 0
-  <FistDownAngle>k__BackingField: 0
+  visualMotionRoot: {fileID: 3100000501}
+  golemModelRoot: {fileID: 3100000503}
+  visualLocalPosition: {x: 0, y: 0, z: 0}
+  visualLocalScale: {x: 1, y: 1, z: 1}
+  prefabFacesRight: 1
+  visualSortingOrder: 20
+  motionResetDuration: 0.16
+  motionEase: 6
+  bodyFacingRoot: {fileID: 3100000503}
+  headFacingRoot: {fileID: 0}
+  faceTarget: 1
+  hitboxSize: {x: 3.2, y: 5.2}
+  hitboxOffset: {x: 0, y: 2.6}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  hazardGroundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  boulderPrefab: {fileID: 100005, guid: b1111111111141118111111111111111, type: 3}
+  groundWavePrefab: {fileID: 100004, guid: b2222222222242228222222222222222, type: 3}
+  telegraphLinePrefab: {fileID: 100002, guid: b3333333333343338333333333333333, type: 3}
+  boulderBossDamage: 90
+  boulderPlayerDamage: 30
+  boulderScaleRange: {x: 0.7, y: 1.45}
+  animator: {fileID: 3100000504}
+  idleState: idle_1
+  phaseTwoState: idle_2
+  hitState: hit_1
+  deathState: death
+  phaseTransitionDuration: 1
   feedback: {fileID: 3000000107}
-  sawImpactVisualOffset: {x: 0, y: 0.1}
-  <FistImpactVisualOffset>k__BackingField: {x: 0, y: -0.15}
-  onWeakPointHit:
-    m_PersistentCalls:
-      m_Calls: []
-  onBlockedHit:
-    m_PersistentCalls:
-      m_Calls: []
+  impulseSource: {fileID: 0}
 --- !u!50 &1811559539
 Rigidbody2D:
   serializedVersion: 5
@@ -21058,7 +21123,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!251 &1869550966
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -22095,7 +22160,7 @@ GameObject:
   - component: {fileID: 1958834212}
   - component: {fileID: 3000000301}
   m_Layer: 0
-  m_Name: Left Punch Attack
+  m_Name: Golem Quake Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22125,17 +22190,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1958834210}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 783af83518c22274d9b8ec6e1d08d391, type: 3}
+  m_Script: {fileID: 11500000, guid: 8ce44485399140f8a5664cb249e5dce8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusPunchAttack
-  <SkillData>k__BackingField: {fileID: 11400000, guid: 180c2d93d5a8fa04fad711d6c97864ff, type: 2}
-  <DamageCaster>k__BackingField: {fileID: 3000000301}
-  animationStateName: Inferno_Hand_Attack
-  dir: {x: -1, y: 0}
-  readyDuration: 0.55
-  punchDuration: 0.3
-  readyHeight: 2
-  damage: 75
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.GolemQuakeAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: fb50958f379e442689b5a76e4b9d5195, type: 2}
+  animationStateName: skill_2
+  readyDuration: 0.65
+  impactRadius: 3.2
+  impactDamage: 48
+  waveSpeed: 11
+  waveDamage: 28
+  waveLifeTime: 2.2
+  phaseTwoWaveDelay: 0.22
 --- !u!1 &1979661337
 GameObject:
   m_ObjectHideFlags: 0
@@ -23547,7 +23613,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7486273020ca51647942194b03f0ae22, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusPiece
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.Legacy.VolcanusPiece
   defaultAnimationStateName: IDLE
   defaultAnimationFadeDuration: 0.08
   destroyAnimationStateName: 
@@ -24129,7 +24195,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!251 &2134698994
 PlatformEffector2D:
   m_ObjectHideFlags: 0
@@ -24278,17 +24344,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 3000000210}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0e4c31dfd7a44e9a81bc65a2828fe84, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f3b9b1422474104af5345ccd2682190, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusSawSlamAttack
-  <SkillData>k__BackingField: {fileID: 11400000, guid: a1111111111141118111111111111112, type: 2}
-  <DamageCaster>k__BackingField: {fileID: 3000000302}
-  animationStateName: inferno_Saw_Attack
-  readyHeight: 6
-  readyDuration: 0.75
-  slamDuration: 0.16
-  waitDuration: 0.45
-  damage: 110
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.GolemLeapSlamAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: 8316631b75fd40a684d158b538540181, type: 2}
+  animationStateName: skill_2
+  warningDuration: 0.45
+  jumpDuration: 0.68
+  jumpHeight: 3.2
+  landingRadius: 2.6
+  landingDamage: 58
+  boulderLaunchVelocity: {x: 3, y: 8}
 --- !u!114 &3000000102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24298,26 +24364,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 3000000220}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0a44bad5f6b48a3a240bd24a4b1db97, type: 3}
+  m_Script: {fileID: 11500000, guid: 39ac3e635a0c43a1a8a14758b32af23a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusSideSlashAttack
-  <SkillData>k__BackingField: {fileID: 11400000, guid: a2222222222242228222222222222223, type: 2}
-  <DamageCaster>k__BackingField: {fileID: 3000000303}
-  animationStateName: 
-  sideMoveDuration: 0.8
-  slashDistance: 18
-  slashHeight: 3
-  slashRotation: -32
-  slashDuration: 1.5
-  sawDamage: 70
-  sawAnimationStateName: 
-  plusY: 4
-  readyHeight: 9
-  readyDuration: 0.42
-  slamDuration: 0.16
-  damage: 95
-  fistDamageCaster: {fileID: 3000000502}
-  fistAnimationStateName: Inferno_Hand_Attack2
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.GolemBoulderRainAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: 8e8a90b77cee4d94a727e8a09cce2a6b, type: 2}
+  animationStateName: skill_1
+  phaseOneCount: 8
+  phaseTwoCount: 12
+  warningDuration: 0.28
+  spawnInterval: 0.12
+  spawnHeight: 8
+  fallSpeed: 3
+  horizontalVelocity: 1.5
 --- !u!114 &3000000103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24329,7 +24387,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e373123d76f4028995b3310be26a473, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusFiveSlamAttack
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.Legacy.VolcanusFiveSlamAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a3333333333343338333333333333334, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000304}
   animationStateName: Inferno_Hand_Attack2
@@ -24351,7 +24409,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eaf3dbddbf2f43cc878fa74fae21ab68, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusLaserAttack
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.Legacy.VolcanusLaserAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4444444444444448444444444444445, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000305}
   animationStateName: 
@@ -24385,7 +24443,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da10d1adf9734cd7b21b1f2a173d41b1, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusMissileAttack
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.Legacy.VolcanusMissileAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a5555555555545558555555555555556, type: 2}
   <DamageCaster>k__BackingField: {fileID: 3000000306}
   animationStateName: 
@@ -24415,17 +24473,66 @@ MonoBehaviour:
   m_GameObject: {fileID: 1811559536}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97f9399f63e94b6599ac2b0552093369, type: 3}
+  m_Script: {fileID: 11500000, guid: 55b0994713de432aa9ce93e8e2219a33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusFeedback
   audioSource: {fileID: 0}
-  readyClip: {fileID: 0}
-  impactClip: {fileID: 0}
-  laserClip: {fileID: 0}
-  missileClip: {fileID: 0}
-  phaseClip: {fileID: 0}
-  damageClip: {fileID: 0}
-  volume: 0.65
+  ready:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  step:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  impact:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  quake:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  boulder:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  damaged:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  phaseTwo:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  death:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!114 &3000000108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24433,12 +24540,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1811559536}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 424b7860596541c393b95cf911677375, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.VolcanusTestHealthBars
-  boss: {fileID: 1811559538}
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Volcanus.Legacy.VolcanusTestHealthBars
+  boss: {fileID: 0}
   player: {fileID: 2636230306884800123}
   addTestPlayerHealth: 1
   testPlayerMaxHealth: 300
@@ -24473,7 +24580,7 @@ GameObject:
   - component: {fileID: 3000000101}
   - component: {fileID: 3000000302}
   m_Layer: 0
-  m_Name: Saw Slam Attack
+  m_Name: Golem Leap Slam Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24506,7 +24613,7 @@ GameObject:
   - component: {fileID: 3000000102}
   - component: {fileID: 3000000303}
   m_Layer: 0
-  m_Name: Side Slash Attack
+  m_Name: Golem Boulder Rain Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24545,7 +24652,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3000000231
 Transform:
   m_ObjectHideFlags: 0
@@ -24578,7 +24685,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3000000241
 Transform:
   m_ObjectHideFlags: 0
@@ -24611,7 +24718,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3000000251
 Transform:
   m_ObjectHideFlags: 0
@@ -24837,6 +24944,67 @@ MonoBehaviour:
   debugMode: 1
   debugColor: {r: 0.2, g: 1, b: 0.25, a: 0.95}
   debugRemainTime: 1.5
+--- !u!1 &3000000400
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3000000401}
+  - component: {fileID: 3000000402}
+  m_Layer: 0
+  m_Name: Moon Mini Dash
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3000000401
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3000000400}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1285843070}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3000000402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3000000400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88811398c0934cf79fe7d3f6290374ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonMiniDashAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: 54a1bcae83984334a269f42074f96d0f, type: 2}
+  animationStateName: 
+  shrinkScale: 0.42
+  shrinkDuration: 0.32
+  dashCount: 8
+  dashPeriod: 0.58
+  dashDuration: 0.16
+  dashAcceleration: 90
+  dashMaxSpeed: 35
+  contactRadius: 0.85
+  contactDamage: 38
+  lightEveryDash: 2
+  lightWarningDuration: 0.28
+  lightActiveDuration: 0.16
+  lightWidth: 0.3
+  lightDamage: 30
+  lightColor: {r: 0.65, g: 0.82, b: 1, a: 1}
 --- !u!1 &3000000500
 GameObject:
   m_ObjectHideFlags: 0
@@ -24899,6 +25067,184 @@ MonoBehaviour:
   debugMode: 1
   debugColor: {r: 0.7, g: 0.2, b: 1, a: 0.95}
   debugRemainTime: 1.5
+--- !u!114 &3000000600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1233974789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1e8f4a52d3946e788b4ac9e0fe83170, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonBossFeedback
+  audioSource: {fileID: 0}
+  jump:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  landing:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  strongLanding:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  fragment:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  rockExplosion:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  cloneThrow:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  laserFire:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  shrink:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  dash:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  phaseTwo:
+    effectPrefab: {fileID: 0}
+    audioClip: {fileID: 0}
+    volume: 1
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+--- !u!114 &3000000700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67787294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4878f9395a0343caa28f6f89238c572c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Agents.AgentRenderer
+  <FacingDirection>k__BackingField: 1
+--- !u!114 &3000000701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67787294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6fe4cd5db9e425fa5fe2c1b79222130, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Agents.AgentSensor
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  boxSize: {x: 1, y: 1}
+  boxOffset: {x: 0, y: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  groundCheckSize: {x: 1.5, y: 0.3}
+  groundCheckOffset: {x: 0, y: -1.6}
+  maxColliderCount: 5
+--- !u!1001 &4000000001
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 100000, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
+      propertyPath: arena
+      value: 
+      objectReference: {fileID: 3000000200}
+    - target: {fileID: 100002, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 2636230306884800123}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
 --- !u!1001 &2636230306884800122
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24907,13 +25253,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7767113650345186291, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
+      propertyPath: <MaxHealth>k__BackingField
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 7767113650345186291, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
+      propertyPath: <CurrentHealth>k__BackingField
+      value: 1000
+      objectReference: {fileID: 0}
     - target: {fileID: 7847070380472739339, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.29
       objectReference: {fileID: 0}
     - target: {fileID: 7847070380472739339, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 22.13
+      value: 17.72
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -25047,7 +25401,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d8daf2c48a83e1740916070c547f520e, type: 3}
---- !u!1 &3000000400
+--- !u!1 &3100000500
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -25055,59 +25409,109 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3000000401}
-  - component: {fileID: 3000000402}
+  - component: {fileID: 3100000501}
   m_Layer: 0
-  m_Name: Moon Mini Dash
+  m_Name: Volcanus Golem Motion Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3000000401
+--- !u!4 &3100000501
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3000000400}
+  m_GameObject: {fileID: 3100000500}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1285843070}
+  m_Children:
+  - {fileID: 3100000503}
+  m_Father: {fileID: 1811559537}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3000000402
-MonoBehaviour:
+--- !u!1001 &3100000502
+PrefabInstance:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3100000501}
+    m_Modifications:
+    - target: {fileID: 1000012809227162, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_Name
+      value: Boss Golem Visual
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000012809227162, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114929286076077286, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+--- !u!4 &3100000503 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+  m_PrefabInstance: {fileID: 3100000502}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3000000400}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88811398c0934cf79fe7d3f6290374ce, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonMiniDashAttack
-  <SkillData>k__BackingField: {fileID: 11400000, guid: 54a1bcae83984334a269f42074f96d0f, type: 2}
-  animationStateName:
-  shrinkScale: 0.42
-  shrinkDuration: 0.32
-  dashCount: 8
-  dashPeriod: 1
-  dashDuration: 0.2
-  dashSpeed: 35
-  homingStrength: 11
-  contactRadius: 0.85
-  contactDamage: 38
-  lightEveryDash: 2
-  lightWarningDuration: 0.28
-  lightActiveDuration: 0.16
-  lightWidth: 0.3
-  lightDamage: 30
-  lightColor: {r: 0.65, g: 0.82, b: 1, a: 1}
+--- !u!95 &3100000504 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 95000012371666680, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
+  m_PrefabInstance: {fileID: 3100000502}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -25152,3 +25556,4 @@ SceneRoots:
   - {fileID: 1110043855}
   - {fileID: 899358541}
   - {fileID: 571756352}
+  - {fileID: 4000000001}

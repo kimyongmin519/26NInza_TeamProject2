@@ -13,10 +13,10 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
 
         [Header("Dash")]
         [SerializeField] private int dashCount = 8;
-        [SerializeField] private float dashPeriod = 1f;
-        [SerializeField] private float dashDuration = 0.2f;
-        [SerializeField] private float dashSpeed = 35f;
-        [SerializeField] private float homingStrength = 11f;
+        [SerializeField] private float dashPeriod = 0.58f;
+        [SerializeField] private float dashDuration = 0.16f;
+        [SerializeField] private float dashAcceleration = 90f;
+        [SerializeField] private float dashMaxSpeed = 35f;
         [SerializeField] private float contactRadius = 0.85f;
         [SerializeField] private float contactDamage = 38f;
 
@@ -32,6 +32,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private Vector3 originPosition;
         private Vector3 originScale;
         private bool hasOrigin;
+        protected override bool UsesAmbientFloating => false;
 
         public override bool CanUseSkill(GameObject target = null)
         {
@@ -49,6 +50,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             originScale = Boss.transform.localScale;
             hasOrigin = true;
             Boss.transform.DOKill();
+            Boss.PlayShrinkFeedback(Boss.transform.position);
             yield return Boss.transform.DOScale(originScale * shrinkScale, shrinkDuration / DurationScale)
                 .SetEase(Ease.InBack)
                 .WaitForCompletion();
@@ -58,12 +60,18 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             {
                 float readyTime = Mathf.Max(0f, dashPeriod - dashDuration);
                 Boss.AttackReady(Boss.Target != null ? Boss.Target.position : Boss.transform.position);
-                yield return new WaitForSeconds(readyTime / DurationScale);
+                if (readyTime > 0f)
+                    yield return new WaitForSeconds(readyTime / DurationScale);
 
                 if (Boss.IsPhaseTwo && lightEveryDash > 0 && (i + 1) % lightEveryDash == 0)
                     FireLight();
 
-                yield return Dash();
+                yield return MoveWithAcceleration(
+                    dashDuration / DurationScale,
+                    dashAcceleration * DurationScale,
+                    dashMaxSpeed * DurationScale,
+                    true
+                );
             }
 
             contactCaster.DisableCasting();
@@ -75,32 +83,45 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             hasOrigin = false;
         }
 
-        private IEnumerator Dash()
+        private IEnumerator MoveWithAcceleration(
+            float duration,
+            float acceleration,
+            float maxSpeed,
+            bool damagingDash)
         {
             Vector2 direction = Boss.Target != null
                 ? ((Vector2)Boss.Target.position - (Vector2)Boss.transform.position).normalized
                 : Vector2.right;
-            float actualDuration = dashDuration / DurationScale;
-            contactCaster.transform.position = Boss.transform.position;
-            contactCaster.ConfigureCircle(contactRadius, Boss.PlayerLayer);
-            contactCaster.EnableCasting(
-                new DamageData(contactDamage, DamageType.Melee),
-                actualDuration
-            );
+            Vector2 velocity = direction * maxSpeed;
+            if (damagingDash)
+            {
+                contactCaster.transform.position = Boss.transform.position;
+                contactCaster.ConfigureCircle(contactRadius, Boss.PlayerLayer);
+                contactCaster.EnableCasting(
+                    new DamageData(contactDamage, DamageType.Melee),
+                    duration
+                );
+                Boss.PlayDashFeedback(Boss.transform.position);
+            }
 
             float elapsed = 0f;
-            while (elapsed < actualDuration && !Boss.IsDead)
+            while (elapsed < duration && !Boss.IsDead)
             {
                 float delta = Time.deltaTime;
-                if (Boss.Target != null)
-                {
-                    Vector2 desired = ((Vector2)Boss.Target.position - (Vector2)Boss.transform.position).normalized;
-                    float rate = 1f - Mathf.Exp(-homingStrength * delta);
-                    direction = Vector2.Lerp(direction, desired, rate).normalized;
-                }
+                direction = Boss.Target != null
+                    ? ((Vector2)Boss.Target.position - (Vector2)Boss.transform.position).normalized
+                    : (velocity.sqrMagnitude > Mathf.Epsilon ? velocity.normalized : Vector2.right);
+                Vector2 targetVelocity = direction * maxSpeed;
+                velocity = Vector2.MoveTowards(velocity, targetVelocity, acceleration * delta);
 
-                Vector3 next = Boss.transform.position + (Vector3)direction * dashSpeed * delta;
-                if (Boss.Arena != null) next = Boss.Arena.Clamp(next, contactRadius);
+                Vector3 next = Boss.transform.position + (Vector3)velocity * delta;
+                if (Boss.Arena != null)
+                {
+                    Vector3 clamped = Boss.Arena.Clamp(next, contactRadius);
+                    if (!Mathf.Approximately(clamped.x, next.x)) velocity.x = 0f;
+                    if (!Mathf.Approximately(clamped.y, next.y)) velocity.y = 0f;
+                    next = clamped;
+                }
                 next.z = Boss.transform.position.z;
                 Boss.transform.position = next;
                 contactCaster.transform.position = next;
@@ -108,8 +129,11 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 yield return null;
             }
 
-            contactCaster.DisableCasting();
-            Boss.AttackImpact(Boss.transform.position);
+            if (damagingDash)
+            {
+                contactCaster.DisableCasting();
+                Boss.AttackImpact(Boss.transform.position);
+            }
         }
 
         private void FireLight()
@@ -120,7 +144,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 Boss.ArenaHalfWidth * Boss.ArenaHalfWidth +
                 Boss.ArenaHalfHeight * Boss.ArenaHalfHeight
             ) * 2.5f;
-            MoonLaserShot.Spawn(
+            Boss.SpawnLaser(
                 Boss.transform.position,
                 direction,
                 length,
@@ -128,12 +152,11 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 lightWarningDuration / DurationScale,
                 lightActiveDuration / DurationScale,
                 lightDamage,
-                Boss.PlayerLayer,
                 lightColor
             );
         }
 
-        protected override void OnCancel()
+        protected override void OnMoonCancel()
         {
             contactCaster?.DisableCasting();
             if (Boss == null) return;

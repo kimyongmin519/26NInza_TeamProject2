@@ -11,6 +11,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [SerializeField] private float entryDuration = 0.55f;
         [SerializeField] private float legDuration = 1.15f;
         [SerializeField] private float returnDuration = 0.5f;
+        [SerializeField] private float travelFloatAmplitude = 0.55f;
+        [SerializeField] private float travelFloatCycles = 1.5f;
 
         [Header("Light Shot")]
         [SerializeField] private float shotInterval = 0.34f;
@@ -41,8 +43,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             Vector3 center = Boss.ArenaCenter;
             float left = center.x - Boss.ArenaHalfWidth + arenaPadding;
             float right = center.x + Boss.ArenaHalfWidth - arenaPadding;
-            float top = center.y + Boss.ArenaHalfHeight - arenaPadding;
-            float bottom = center.y - Boss.ArenaHalfHeight + arenaPadding;
+            float top = center.y + Boss.ArenaHalfHeight - arenaPadding + 3;
+            float bottom = center.y - Boss.ArenaHalfHeight + arenaPadding - 3;
             float z = Boss.transform.position.z;
             Vector3[] corners =
             {
@@ -71,7 +73,10 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                     float delta = Time.deltaTime * DurationScale;
                     elapsed += delta;
                     float rate = Mathf.Clamp01(elapsed / Mathf.Max(0.02f, legDuration));
-                    Boss.transform.position = Vector3.Lerp(start, end, Mathf.SmoothStep(0f, 1f, rate));
+                    Vector3 position = Vector3.Lerp(start, end, Mathf.SmoothStep(0f, 1f, rate));
+                    position.y += Mathf.Sin(rate * Mathf.PI * 2f * travelFloatCycles + i) *
+                                  travelFloatAmplitude;
+                    Boss.transform.position = position;
 
                     shotTimer -= delta;
                     if (shotTimer <= 0f)
@@ -114,7 +119,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 Boss.ArenaHalfWidth * Boss.ArenaHalfWidth +
                 Boss.ArenaHalfHeight * Boss.ArenaHalfHeight
             ) * 2.5f;
-            MoonLaserShot.Spawn(
+            Boss.SpawnLaser(
                 Boss.transform.position,
                 direction,
                 length,
@@ -122,7 +127,6 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 beamWarningDuration / DurationScale,
                 beamActiveDuration / DurationScale,
                 beamDamage,
-                Boss.PlayerLayer,
                 beamColor
             );
         }
@@ -132,23 +136,22 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             if (Boss.Target == null) return;
             SpriteRenderer source = Boss.GetComponentInChildren<SpriteRenderer>();
             Vector2 direction = (Boss.Target.position - Boss.transform.position).normalized;
-            MoonHazardProjectile clone = MoonHazardProjectile.Create(
+            MoonHazardProjectile clone = Boss.SpawnHazard(
                 Boss.transform.position,
                 direction * cloneSpeed,
                 MoonHazardProjectile.MoveMode.Homing,
                 Boss.Target,
                 cloneDamage,
                 5f,
-                Boss.PlayerLayer,
-                Boss.GroundLayer,
                 source != null ? source.sprite : null,
                 new Color(0.65f, 0.78f, 1f, 0.32f)
             );
-            if (source != null)
+            if (source != null && clone != null)
                 clone.transform.localScale = source.transform.lossyScale * 0.55f;
+            Boss.PlayCloneFeedback(Boss.transform.position);
         }
 
-        protected override void OnCancel()
+        protected override void OnMoonCancel()
         {
             if (Boss == null) return;
             Boss.transform.DOKill();

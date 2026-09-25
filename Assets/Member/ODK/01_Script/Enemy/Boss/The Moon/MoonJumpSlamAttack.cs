@@ -12,25 +12,30 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [SerializeField] private int slamCount = 9;
         [SerializeField] private float warningDuration = 0.38f;
         [SerializeField] private float jumpDuration = 0.48f;
-        [SerializeField] private float jumpHeight = 5f;
+        [SerializeField] private float jumpHeight = 2.6f;
         [SerializeField] private float landingDamage = 34f;
         [SerializeField] private float landingRadius = 1.8f;
-        [SerializeField] private float interval = 0.12f;
+        [SerializeField, Range(0f, 1f)] private float playerAreaChance = 0.65f;
+        [SerializeField] private float playerPositionSpread = 3.2f;
 
         [Header("Phase Two Strong Slam")]
-        [SerializeField] private float strongJumpHeightMultiplier = 1.65f;
+        [SerializeField] private float strongJumpHeightMultiplier = 1.4f;
         [SerializeField] private float strongDamageMultiplier = 1.7f;
         [SerializeField] private float sideProjectileSpeed = 13f;
         [SerializeField] private float sideProjectileDamage = 26f;
         [SerializeField] private float sideProjectileHeight = 0.75f;
 
         [Header("Rock")]
-        [SerializeField] private Vector2 rockLaunchVelocity = new Vector2(2.5f, 8f);
+        [SerializeField] private Vector2 rockLaunchVelocity = new Vector2(2.5f, 11.5f);
+        [SerializeField, Min(1)] private int normalRockCount = 3;
+        [SerializeField, Min(1)] private int strongRockCount = 6;
+        [SerializeField] private float rockHorizontalSpread = 1.25f;
 
         private DamageCaster landingCaster;
         private MoonTelegraphLine trajectoryLine;
         private Vector3 originPosition;
         private bool hasOrigin;
+        protected override bool UsesAmbientFloating => false;
 
         public override bool CanUseSkill(GameObject target = null)
         {
@@ -40,17 +45,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         protected override void OnMoonInitialize()
         {
             landingCaster = CreateCaster("Jump Slam Caster");
-            GameObject lineObject = new GameObject("Jump Trajectory");
-            lineObject.transform.SetParent(transform, false);
-            LineRenderer line = lineObject.AddComponent<LineRenderer>();
-            line.useWorldSpace = true;
-            line.widthMultiplier = 0.09f;
-            line.startColor = new Color(1f, 0.85f, 0.25f, 0.9f);
-            line.endColor = new Color(1f, 0.35f, 0.1f, 0.45f);
-            line.numCapVertices = 6;
-            Shader shader = Shader.Find("Sprites/Default");
-            if (shader != null) line.material = new Material(shader);
-            trajectoryLine = lineObject.AddComponent<MoonTelegraphLine>();
+            trajectoryLine = Boss.SpawnTelegraph(transform);
         }
 
         protected override IEnumerator ExecuteMoon(GameObject target)
@@ -62,9 +57,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             for (int i = 0; i < count && !Boss.IsDead; i++)
             {
                 bool strong = Boss.IsPhaseTwo && (i + 1) % 3 == 0;
-                float targetX = Boss.Target != null
-                    ? Boss.Target.position.x
-                    : Boss.ArenaCenter.x;
+                float targetX = ChooseLandingX();
                 targetX = Mathf.Clamp(
                     targetX,
                     Boss.ArenaCenter.x - Boss.ArenaHalfWidth,
@@ -80,14 +73,19 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 float height = jumpHeight * (strong ? strongJumpHeightMultiplier : 1f);
                 List<Vector3> path = BuildArc(Boss.transform.position, landingPoint, height);
 
-                trajectoryLine.Show(path, warningDuration * 0.75f / DurationScale);
+                float prepareDuration = i == 0 ? warningDuration / DurationScale : 0f;
+                float lineDuration = prepareDuration > 0f
+                    ? prepareDuration * 0.75f
+                    : jumpDuration * 0.75f / DurationScale;
+                trajectoryLine?.Show(path, lineDuration);
                 Boss.AttackReady(groundPoint);
-                yield return new WaitForSeconds(warningDuration / DurationScale);
-                trajectoryLine.Hide();
+                if (prepareDuration > 0f)
+                    yield return new WaitForSeconds(prepareDuration);
 
+                Boss.PlayJumpFeedback(Boss.transform.position);
                 yield return MoveArc(Boss.transform, Boss.transform.position, landingPoint, height, jumpDuration / DurationScale);
+                trajectoryLine?.Hide();
                 Land(groundPoint, strong);
-                yield return new WaitForSeconds(interval / DurationScale);
             }
 
             Boss.transform.DOKill();
@@ -95,6 +93,17 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 .SetEase(Ease.InOutSine)
                 .WaitForCompletion();
             hasOrigin = false;
+        }
+
+        private float ChooseLandingX()
+        {
+            float minimum = Boss.ArenaCenter.x - Boss.ArenaHalfWidth;
+            float maximum = Boss.ArenaCenter.x + Boss.ArenaHalfWidth;
+            bool usePlayerArea = Boss.Target != null && Random.value < playerAreaChance;
+            float targetX = usePlayerArea
+                ? Boss.Target.position.x + Random.Range(-playerPositionSpread, playerPositionSpread)
+                : Random.Range(minimum, maximum);
+            return Mathf.Clamp(targetX, minimum, maximum);
         }
 
         private void Land(Vector3 point, bool strong)
@@ -105,19 +114,22 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             landingCaster.SetWorldPosition(point);
             landingCaster.Cast(new DamageData(damage, DamageType.Melee));
 
-            int rockCount = strong ? 3 : 1;
+            int rockCount = strong ? strongRockCount : normalRockCount;
             for (int i = 0; i < rockCount; i++)
             {
-                float spread = rockCount == 1 ? 0f : Mathf.Lerp(-1f, 1f, i / (float)(rockCount - 1));
+                float spread = rockCount == 1
+                    ? 0f
+                    : Mathf.Lerp(-rockHorizontalSpread, rockHorizontalSpread, i / (float)(rockCount - 1));
                 Vector2 velocity = new Vector2(
                     rockLaunchVelocity.x * spread + Random.Range(-0.8f, 0.8f),
-                    rockLaunchVelocity.y * Random.Range(0.88f, 1.15f)
+                    rockLaunchVelocity.y * (strong ? 1.25f : 1f) * Random.Range(0.95f, 1.3f)
                 );
                 Boss.SpawnRock(point + Vector3.up * 0.55f, velocity, strong);
             }
 
             if (strong) SpawnSideProjectiles(point.y + sideProjectileHeight);
             Boss.ShakeImpact(strong);
+            Boss.PlayLandingFeedback(point, strong);
             Boss.AttackImpact(point);
         }
 
@@ -126,15 +138,15 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             Vector3 center = Boss.ArenaCenter;
             Vector3 left = new Vector3(center.x - Boss.ArenaHalfWidth, height, center.z);
             Vector3 right = new Vector3(center.x + Boss.ArenaHalfWidth, height, center.z);
-            MoonHazardProjectile.Create(
+            Boss.SpawnHazard(
                 left, Vector2.right * sideProjectileSpeed,
                 MoonHazardProjectile.MoveMode.Linear, null,
-                sideProjectileDamage, 4f, Boss.PlayerLayer, Boss.GroundLayer
+                sideProjectileDamage, 4f
             );
-            MoonHazardProjectile.Create(
+            Boss.SpawnHazard(
                 right, Vector2.left * sideProjectileSpeed,
                 MoonHazardProjectile.MoveMode.Linear, null,
-                sideProjectileDamage, 4f, Boss.PlayerLayer, Boss.GroundLayer
+                sideProjectileDamage, 4f
             );
         }
 
@@ -172,7 +184,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             yield return tween.WaitForCompletion();
         }
 
-        protected override void OnCancel()
+        protected override void OnMoonCancel()
         {
             trajectoryLine?.Hide();
             if (Boss == null) return;

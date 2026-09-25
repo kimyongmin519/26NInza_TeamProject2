@@ -1,0 +1,457 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &100000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 100001}
+  - component: {fileID: 100002}
+  - component: {fileID: 100003}
+  m_Layer: 0
+  m_Name: Swordmaster
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &100001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 110001}
+  - {fileID: 120001}
+  - {fileID: 130001}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &100002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb2c6337e5c7492385c20b4d51c8d503, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.Swordmaster
+  attackInterval: 1.15
+  playOnStart: 1
+  target: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  arena: {fileID: 0}
+  groundRayHeight: 20
+  groundRayDistance: 50
+  drawDebugGizmos: 1
+  healthModule: {fileID: 120002}
+  invincible: 0
+  rockVisualPrefabs: []
+  fistRockCount: 1
+  sawRockCount: 4
+  rockSpawnSpread: 1.2
+  rockSpawnHeight: 0.15
+  rockLaunchForce: 5
+  rockScale: 1.3
+  rockDamage: 80
+  rockLifeTime: 15
+  onAttackReady:
+    m_PersistentCalls:
+      m_Calls: []
+  onAttackImpact:
+    m_PersistentCalls:
+      m_Calls: []
+  onMissileSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onRockSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onRockBreak:
+    m_PersistentCalls:
+      m_Calls: []
+  onPhaseTwo:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  hazardGroundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  bodyHitboxSize: {x: 1.6, y: 3.4}
+  bodyHitboxOffset: {x: 0, y: 1.7}
+  swordCount: 8
+  swordPrefab: {fileID: 100005, guid: c1111111111141118111111111111111, type: 3}
+  telegraphPrefab: {fileID: 100003, guid: c2222222222242228222222222222222, type: 3}
+  orbitRadius: {x: 3.2, y: 1.45}
+  orbitDepth: 1.15
+  orbitSpeed: 42
+  orbitHeight: 2.1
+  swordPlayerDamage: 24
+  swordBossDamage: 70
+  bodyVisual: {fileID: 130001}
+  prefabFacesRight: 1
+  faceTarget: 1
+  onTeleport:
+    m_PersistentCalls:
+      m_Calls: []
+  onSwordLaunch:
+    m_PersistentCalls:
+      m_Calls: []
+  onSwordDispelled:
+    m_PersistentCalls:
+      m_Calls: []
+  onSwordRecalled:
+    m_PersistentCalls:
+      m_Calls: []
+  onDefeated:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!50 &100003
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 4
+--- !u!1 &110000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 110001}
+  - component: {fileID: 110002}
+  m_Layer: 0
+  m_Name: Skills
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &110001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 111001}
+  - {fileID: 112001}
+  - {fileID: 113001}
+  m_Father: {fileID: 100001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &110002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad4bda74cebe5fd42b7b32293321a575, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.EnemySkillModule
+--- !u!1 &111000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 111001}
+  - component: {fileID: 111002}
+  m_Layer: 0
+  m_Name: 0 Dash Volley
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &111001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 111000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 110001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &111002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 111000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 955d99ae6d5f4fe29cd949bd8bd6d306, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterDashVolleyAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: f6eb82387d73404183dd0463b621a109, type: 2}
+  teleportEdgePadding: 2.2
+  readyDuration: 0.35
+  dashDuration: 0.8
+  dashDamage: 38
+  dashHitbox: {x: 2.2, y: 3.2}
+  swordSpeed: 18
+  swordInterval: 0.09
+--- !u!1 &112000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 112001}
+  - component: {fileID: 112002}
+  m_Layer: 0
+  m_Name: 1 Triple Thrust
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &112001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 112000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 110001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &112002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 112000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2b306156d54339bcf06360877ef307, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterTripleThrustAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: 8d87f997814e48b0b9641f4f58cb8a0a, type: 2}
+  repeatCount: 3
+  sideDistance: 2.6
+  gatherDistance: 2.2
+  gatherDuration: 0.3
+  thrustDuration: 0.14
+  recoverDuration: 0.28
+  thrustHitbox: {x: 4.2, y: 2.1}
+  thrustDamage: 42
+--- !u!1 &113000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 113001}
+  - component: {fileID: 113002}
+  m_Layer: 0
+  m_Name: 2 Eight Sword Crossfire
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &113001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 113000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 110001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &113002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 113000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d16882f1fca47c492b8cfb74aace408, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterCrossfireAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: a27b98c3f329401f852a18e0a76d320b, type: 2}
+  readyDuration: 1
+  scatterDuration: 0.45
+  lineWarningDuration: 0.5
+  rapidInterval: 0.07
+  lineSwordSpeed: 28
+  finalSpawnRadius: 3.5
+  finalWarningDuration: 0.55
+  finalSwordSpeed: 12
+--- !u!1 &120000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 120001}
+  - component: {fileID: 120002}
+  m_Layer: 0
+  m_Name: HealthModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &120001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 120000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 100001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &120002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 120000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
+  <MaxHealth>k__BackingField: 1200
+  <CurrentHealth>k__BackingField: 1200
+--- !u!1 &130000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 130001}
+  - component: {fileID: 130002}
+  m_Layer: 0
+  m_Name: Swordmaster Visual Placeholder
+  m_TagString: Untagged
+  m_IsActive: 1
+--- !u!4 &130001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 100001}
+--- !u!120 &130002
+LineRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130000}
+  m_Enabled: 1
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_SortingOrder: 10
+  m_Positions:
+  - {x: -0.65, y: -1.65, z: 0}
+  - {x: -0.8, y: 0.55, z: 0}
+  - {x: 0, y: 1.65, z: 0}
+  - {x: 0.8, y: 0.55, z: 0}
+  - {x: 0.65, y: -1.65, z: 0}
+  m_Parameters:
+    serializedVersion: 3
+    widthMultiplier: 0.12
+    numCornerVertices: 0
+    numCapVertices: 3
+  m_UseWorldSpace: 0
+  m_Loop: 0
