@@ -14,10 +14,15 @@ public class StartBubbleDialogEvent : GameEvent
     public DialogDataSO DialogData;
     public Transform Target;
 
-    public StartBubbleDialogEvent InitData(DialogDataSO dialogData, Transform target)
+    public System.Action Completed;
+    public bool Accepted;
+
+    public StartBubbleDialogEvent InitData(DialogDataSO dialogData, Transform target, System.Action completed = null)
     {
         DialogData = dialogData;
         Target = target;
+        Completed = completed;
+        Accepted = false;
         return this;
     }
 }
@@ -49,4 +54,9 @@ public class SkipBubbleDialogLineEvent : GameEvent
 
 public class EndBubbleDialogEvent : GameEvent
 {
+}
+
+public class CancelBubbleDialogEvent : GameEvent
+{
+    public StartBubbleDialogEvent Request;
 }
