@@ -1,9 +1,8 @@
 using System.Collections;
 using Member.ODK.Scripts.Enemys.Bosses;
-using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
-namespace Member.ODK.Scripts.Enemys.MoonBoss
+namespace Member.ODK.Scripts.Enemys.MoonBoss.Legacy
 {
     public abstract class MoonSkill : ODKBossSkill
     {
@@ -15,7 +14,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         protected sealed override void OnInitialize()
         {
             Boss = Owner as MoonBoss;
-            Debug.Assert(Boss != null, "MoonSkill owner must be MoonBoss.", this);
+            Debug.Assert(Boss != null, "MoonSkill의 소유자가 MoonBoss가 아닙니다.", this);
             OnMoonInitialize();
         }
 
@@ -25,14 +24,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             yield return ExecuteMoon(target);
         }
 
-        protected DamageCaster CreateCaster(string casterName)
-        {
-            GameObject casterObject = new GameObject(casterName);
-            casterObject.transform.SetParent(transform, false);
-            return casterObject.AddComponent<DamageCaster>();
-        }
-
         protected virtual void OnMoonInitialize() { }
         protected abstract IEnumerator ExecuteMoon(GameObject target);
     }
 }
+

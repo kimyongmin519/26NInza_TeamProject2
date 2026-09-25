@@ -6,7 +6,7 @@ using Member.ODK.Scripts.Enemys.Combat;
 using System;
 using UnityEngine;
 
-namespace Member.ODK.Scripts.Enemys.MoonBoss
+namespace Member.ODK.Scripts.Enemys.MoonBoss.Legacy
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(Collider2D))]
@@ -271,3 +271,4 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         }
     }
 }
+

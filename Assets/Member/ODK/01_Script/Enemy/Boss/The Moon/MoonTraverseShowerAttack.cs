@@ -1,0 +1,149 @@
+using System.Collections;
+using DG.Tweening;
+using Member.ODK.Scripts.Enemys.Combat;
+using UnityEngine;
+
+namespace Member.ODK.Scripts.Enemys.MoonBoss
+{
+    public class MoonTraverseShowerAttack : MoonSkill
+    {
+        [Header("Traverse")]
+        [SerializeField] private int horizontalJumpCount = 6;
+        [SerializeField] private float edgePadding = 1.2f;
+        [SerializeField] private float smallJumpHeight = 3.2f;
+        [SerializeField] private float smallJumpDuration = 0.34f;
+        [SerializeField] private float jumpInterval = 0.06f;
+
+        [Header("Final Jump")]
+        [SerializeField] private float finalJumpHeight = 9f;
+        [SerializeField] private float finalJumpDuration = 1.25f;
+        [SerializeField] private float fragmentInterval = 0.08f;
+        [SerializeField] private float fragmentDamage = 22f;
+        [SerializeField] private float fragmentSpread = 4f;
+        [SerializeField] private float landingDamage = 52f;
+        [SerializeField] private float landingRadius = 2.2f;
+        [SerializeField] private float returnDuration = 0.45f;
+
+        private DamageCaster landingCaster;
+        private Vector3 originPosition;
+        private bool hasOrigin;
+
+        public override bool CanUseSkill(GameObject target = null)
+        {
+            return Boss != null && !Boss.IsDead;
+        }
+
+        protected override void OnMoonInitialize()
+        {
+            landingCaster = CreateCaster("Traverse Landing Caster");
+        }
+
+        protected override IEnumerator ExecuteMoon(GameObject target)
+        {
+            originPosition = Boss.transform.position;
+            hasOrigin = true;
+            float leftX = Boss.ArenaCenter.x - Boss.ArenaHalfWidth + edgePadding;
+            float rightX = Boss.ArenaCenter.x + Boss.ArenaHalfWidth - edgePadding;
+            int count = Mathf.Max(2, horizontalJumpCount);
+
+            for (int i = 0; i < count; i++)
+            {
+                float rate = i / (float)(count - 1);
+                Vector3 groundPoint = Boss.GetGroundPoint(Mathf.Lerp(leftX, rightX, rate));
+                groundPoint.z = Boss.transform.position.z;
+                Vector3 landing = Boss.GetImpactVisualPosition(
+                    Boss.transform,
+                    groundPoint,
+                    Vector2.zero
+                );
+                yield return MoonJumpSlamAttack.MoveArc(
+                    Boss.transform,
+                    Boss.transform.position,
+                    landing,
+                    smallJumpHeight,
+                    smallJumpDuration / DurationScale
+                );
+                Boss.ShakeImpact(false);
+                yield return new WaitForSeconds(jumpInterval / DurationScale);
+            }
+
+            Vector3 finalGroundPoint = Boss.GetGroundPoint(leftX);
+            finalGroundPoint.z = Boss.transform.position.z;
+            Vector3 finalLanding = Boss.GetImpactVisualPosition(
+                Boss.transform,
+                finalGroundPoint,
+                Vector2.zero
+            );
+            Boss.AttackReady(finalGroundPoint);
+            yield return FinalJumpWithFragments(finalLanding);
+
+            landingCaster.ConfigureCircle(landingRadius, Boss.PlayerLayer);
+            landingCaster.SetWorldPosition(finalGroundPoint);
+            landingCaster.Cast(new DamageData(landingDamage, DamageType.Melee));
+            Boss.ShakeImpact(true);
+            Boss.AttackImpact(finalGroundPoint);
+
+            Boss.transform.DOKill();
+            yield return Boss.transform.DOMove(originPosition, returnDuration / DurationScale)
+                .SetEase(Ease.InOutSine)
+                .WaitForCompletion();
+            hasOrigin = false;
+        }
+
+        private IEnumerator FinalJumpWithFragments(Vector3 landing)
+        {
+            Vector3 start = Boss.transform.position;
+            float progress = 0f;
+            Tween jump = DOTween.To(() => progress, value =>
+                {
+                    progress = value;
+                    Vector3 point = Vector3.Lerp(start, landing, value);
+                    point.y += 4f * finalJumpHeight * value * (1f - value);
+                    Boss.transform.position = point;
+                }, 1f, finalJumpDuration / DurationScale)
+                .SetEase(Ease.Linear)
+                .SetTarget(Boss.transform);
+
+            float fragmentTimer = 0f;
+            while (jump.IsActive() && jump.IsPlaying())
+            {
+                fragmentTimer -= Time.deltaTime * DurationScale;
+                if (fragmentTimer <= 0f)
+                {
+                    SpawnFragment();
+                    fragmentTimer = fragmentInterval;
+                }
+                yield return null;
+            }
+            Boss.transform.position = landing;
+        }
+
+        private void SpawnFragment()
+        {
+            Vector2 velocity = new Vector2(
+                Random.Range(-fragmentSpread, fragmentSpread),
+                Random.Range(-2.5f, -0.5f)
+            );
+            MoonHazardProjectile.Create(
+                Boss.transform.position,
+                velocity,
+                MoonHazardProjectile.MoveMode.Falling,
+                null,
+                fragmentDamage,
+                5f,
+                Boss.PlayerLayer,
+                Boss.GroundLayer,
+                null,
+                new Color(0.75f, 0.82f, 1f, 0.9f)
+            ).transform.localScale = Vector3.one * Random.Range(0.35f, 0.75f);
+        }
+
+        protected override void OnCancel()
+        {
+            if (Boss == null) return;
+            Boss.transform.DOKill();
+            if (hasOrigin) Boss.transform.position = originPosition;
+            hasOrigin = false;
+        }
+    }
+}

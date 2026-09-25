@@ -4,7 +4,7 @@ using DG.Tweening;
 using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
-namespace Member.ODK.Scripts.Enemys.MoonBoss
+namespace Member.ODK.Scripts.Enemys.MoonBoss.Legacy
 {
     public class MoonReflectionAttack : MoonSkill
     {
@@ -624,3 +624,4 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         }
     }
 }
+

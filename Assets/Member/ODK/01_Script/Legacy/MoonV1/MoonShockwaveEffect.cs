@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace Member.ODK.Scripts.Enemys.MoonBoss
+namespace Member.ODK.Scripts.Enemys.MoonBoss.Legacy
 {
     public class MoonShockwaveEffect : MonoBehaviour
     {
@@ -73,3 +73,4 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         }
     }
 }
+

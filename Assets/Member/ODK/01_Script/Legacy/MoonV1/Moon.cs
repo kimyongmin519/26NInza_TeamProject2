@@ -5,7 +5,7 @@ using Member.ODK.Scripts.Enemys.Bosses;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Member.ODK.Scripts.Enemys.MoonBoss
+namespace Member.ODK.Scripts.Enemys.MoonBoss.Legacy
 {
     public class MoonBoss : PhasedBossController, IDamageable
     {
@@ -233,3 +233,4 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         }
     }
 }
+

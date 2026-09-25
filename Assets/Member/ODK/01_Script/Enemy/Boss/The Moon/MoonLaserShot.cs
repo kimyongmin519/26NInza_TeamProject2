@@ -1,0 +1,173 @@
+using System.Collections;
+using DG.Tweening;
+using Member.ODK.Scripts.Enemys.Combat;
+using UnityEngine;
+
+namespace Member.ODK.Scripts.Enemys.MoonBoss
+{
+    public class MoonLaserShot : MonoBehaviour
+    {
+        private LineRenderer line;
+        private DamageCaster caster;
+        private Sequence visualSequence;
+        private LayerMask targetLayer;
+
+        public static MoonLaserShot Spawn(
+            Vector3 origin,
+            Vector2 direction,
+            float length,
+            float width,
+            float warningDuration,
+            float activeDuration,
+            float damage,
+            LayerMask playerLayer,
+            Color color)
+        {
+            GameObject laserObject = new GameObject("Moon Laser Shot");
+            MoonLaserShot shot = laserObject.AddComponent<MoonLaserShot>();
+            shot.Build(
+                origin,
+                direction,
+                length,
+                width,
+                warningDuration,
+                activeDuration,
+                damage,
+                playerLayer,
+                color
+            );
+            return shot;
+        }
+
+        private void Build(
+            Vector3 origin,
+            Vector2 direction,
+            float length,
+            float width,
+            float warningDuration,
+            float activeDuration,
+            float damage,
+            LayerMask playerLayer,
+            Color color)
+        {
+            Vector2 normalizedDirection = direction.sqrMagnitude > 0.001f
+                ? direction.normalized
+                : Vector2.down;
+            Vector3 end = origin + (Vector3)normalizedDirection * length;
+
+            line = gameObject.AddComponent<LineRenderer>();
+            line.useWorldSpace = true;
+            line.positionCount = 2;
+            line.SetPosition(0, origin);
+            line.SetPosition(1, end);
+            line.widthMultiplier = Mathf.Max(0.02f, width * 0.16f);
+            line.startColor = new Color(1f, 1f, 1f, 0.9f);
+            line.endColor = new Color(1f, 1f, 1f, 0.5f);
+            line.numCapVertices = 8;
+            line.textureMode = LineTextureMode.Tile;
+            line.sortingOrder = 60;
+            Shader warningShader = Shader.Find("Sprites/Default");
+            if (warningShader != null) line.material = new Material(warningShader);
+
+            caster = gameObject.AddComponent<DamageCaster>();
+            targetLayer = playerLayer;
+            float angle = Mathf.Atan2(normalizedDirection.y, normalizedDirection.x) * Mathf.Rad2Deg;
+            caster.ConfigureBox(new Vector2(length, width), playerLayer);
+            caster.SetWorldPose(Vector3.Lerp(origin, end, 0.5f), angle);
+            StartCoroutine(FireRoutine(width, warningDuration, activeDuration, damage, color));
+        }
+
+        private IEnumerator FireRoutine(
+            float width,
+            float warningDuration,
+            float activeDuration,
+            float damage,
+            Color color)
+        {
+            float warningWidth = line.widthMultiplier;
+            line.DOTweenWidth(warningWidth * 0.45f, Mathf.Max(0.06f, warningDuration * 0.28f))
+                .SetLoops(-1, LoopType.Yoyo);
+            yield return new WaitForSeconds(Mathf.Max(0f, warningDuration));
+            DOTween.Kill(line);
+
+            Material laserMaterial = Resources.Load<Material>("ODKLaser");
+            if (laserMaterial != null) line.sharedMaterial = laserMaterial;
+            else
+            {
+                Shader laserShader = Shader.Find("ODK/Laser");
+                if (laserShader != null) line.material = new Material(laserShader);
+            }
+
+            line.startColor = Color.white;
+            line.endColor = Color.white;
+            line.widthMultiplier = width * 1.8f;
+            caster.ConfigureBox(
+                new Vector2(
+                    Vector3.Distance(line.GetPosition(0), line.GetPosition(1)),
+                    width * 1.8f
+                ),
+                targetLayer
+            );
+            caster.EnableCasting(new DamageData(damage, DamageType.Beam), activeDuration);
+
+            float currentWidth = line.widthMultiplier;
+            float alpha = 1f;
+            visualSequence = DOTween.Sequence().SetTarget(this);
+            visualSequence.AppendInterval(Mathf.Min(0.05f, activeDuration * 0.25f));
+            visualSequence.AppendCallback(() => SetColor(color));
+            visualSequence.Append(DOTween.To(
+                () => currentWidth,
+                value =>
+                {
+                    currentWidth = value;
+                    line.widthMultiplier = value;
+                    caster.SetSize(new Vector2(
+                        Vector3.Distance(line.GetPosition(0), line.GetPosition(1)),
+                        value
+                    ));
+                },
+                0f,
+                Mathf.Max(0.02f, activeDuration - 0.05f)
+            ).SetEase(Ease.InQuad));
+            visualSequence.Join(DOTween.To(
+                () => alpha,
+                value =>
+                {
+                    alpha = value;
+                    Color faded = color;
+                    faded.a *= value;
+                    SetColor(faded);
+                },
+                0f,
+                Mathf.Max(0.02f, activeDuration - 0.05f)
+            ));
+            yield return visualSequence.WaitForCompletion();
+            Destroy(gameObject);
+        }
+
+        private void SetColor(Color color)
+        {
+            line.startColor = color;
+            line.endColor = color;
+        }
+
+        private void OnDestroy()
+        {
+            DOTween.Kill(line);
+            visualSequence?.Kill();
+        }
+    }
+
+    internal static class MoonLineRendererTweenExtensions
+    {
+        public static Tween DOTweenWidth(this LineRenderer line, float endValue, float duration)
+        {
+            return DOTween.To(
+                () => line.widthMultiplier,
+                value => line.widthMultiplier = value,
+                endValue,
+                duration
+            ).SetTarget(line);
+        }
+    }
+}
