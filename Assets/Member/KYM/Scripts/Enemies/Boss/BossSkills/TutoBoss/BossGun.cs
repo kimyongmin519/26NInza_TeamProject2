@@ -7,6 +7,7 @@ using KimLIb.ModuleSystems;
 using Member.KYM.Scripts.CombatSystems.Projectiles;
 using Member.KYM.Scripts.CombatSystems.WeaponSystems;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
@@ -62,7 +63,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
         [SerializeField] private Transform throwMotionTarget;
         [SerializeField] private ThrowMotionStep[] throwMotionSteps;
 
-        public event Action<GameObject> OnProjectileSpawned;
+        public UnityEvent OnShot;
 
         private Coroutine _fireRoutine;
         private Sequence _throwMotionSequence;
@@ -262,7 +263,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
 
             abstractProjectileObject.Shot(direction, owner);
 
-            OnProjectileSpawned?.Invoke(abstractProjectileObject.gameObject);
+            OnShot?.Invoke();
             return abstractProjectileObject.GetComponent<Collider2D>();
         }
 
@@ -290,7 +291,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
                 Owner,
                 thrownWeaponSpeed);
 
-            OnProjectileSpawned?.Invoke(thrownWeapon.gameObject);
+            OnShot?.Invoke();
         }
 
         private void HideThrownWeaponVisual()

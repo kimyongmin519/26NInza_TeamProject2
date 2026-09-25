@@ -2,7 +2,8 @@ namespace Member.KYM.Scripts.CoreSystems.PostProcessSystem
 {
     public enum PostProcessType
     {
-        HurtVignette
+        HurtVignette,
+        ParryImpact
     }
 
     public enum PostProcessCommand
