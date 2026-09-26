@@ -4,6 +4,7 @@ using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.CombatSystems.Projectiles;
 using Member.KYM.Scripts.CoreSystems;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 namespace Member.KYM.Scripts.Enemies
 {
@@ -76,7 +77,7 @@ namespace Member.KYM.Scripts.Enemies
         {
             gameObject.SetActive(true);
             _isFiring = true;
-            
+
             _nextAttackTime = Time.time + attackInterval;
         }
 
@@ -133,8 +134,6 @@ namespace Member.KYM.Scripts.Enemies
 
         private void StartFloating()
         {
-            if (floatingVisual == null)
-                return;
 
             StopFloating();
             floatingVisual.localPosition = _floatingStartLocalPosition;

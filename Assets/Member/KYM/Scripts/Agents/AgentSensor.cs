@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using KimLIb.ModuleSystems;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ namespace Member.KYM.Scripts.Agents
 
         [SerializeField] private int maxColliderCount = 5;
         private Collider[] _colliderResults;
+        private readonly List<RaycastHit2D> _travelHits = new(8);
         public Collider[] ColliderResults => _colliderResults;
 
         public bool IsGrounded { get; private set; }
@@ -94,6 +96,34 @@ namespace Member.KYM.Scripts.Agents
             hit = Physics2D.BoxCast((Vector2)transform.position + boxOffset, boxSize, 0, direction, distance, obstacleLayer);
             distance = hit ? hit.distance : distance;
             return distance;
+        }
+
+        public float GetClearTravelDistance(Collider2D bodyCollider, Vector2 direction, float maxDistance, float wallGap)
+        {
+            if (bodyCollider == null || direction.sqrMagnitude <= Mathf.Epsilon || maxDistance <= 0f)
+                return 0f;
+
+            direction.Normalize();
+            ContactFilter2D filter = new ContactFilter2D();
+            filter.SetLayerMask(obstacleLayer);
+            filter.useTriggers = false;
+
+            _travelHits.Clear();
+            bodyCollider.Cast(direction, filter, _travelHits, maxDistance);
+
+            float clearDistance = maxDistance;
+            foreach (RaycastHit2D hit in _travelHits)
+            {
+                // 발밑 바닥처럼 이동 방향을 막지 않는 면은 대시 장애물로 취급하지 않는다.
+                if (Vector2.Dot(hit.normal, -direction) <= 0.5f)
+                    continue;
+
+                clearDistance = Mathf.Min(clearDistance, hit.distance);
+            }
+
+            return clearDistance < maxDistance
+                ? Mathf.Max(0f, clearDistance - Mathf.Max(0f, wallGap))
+                : maxDistance;
         }
 
         public bool IsTargetInRange(float range, out Collider2D hitCollider)

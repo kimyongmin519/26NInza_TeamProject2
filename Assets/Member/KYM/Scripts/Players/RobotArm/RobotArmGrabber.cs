@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using GGMLib.ObjectPool.Runtime;
 using KimLIb.EventSystem;
 using KimLIb.ModuleSystems;
 using Member.KYM.Scripts.CombatSystems.Projectiles;
@@ -29,6 +30,9 @@ namespace Member.KYM.Scripts.Players.RobotArm
         [Header("잡기 연출")]
         [SerializeField] private float failedGrabCloseTime = 0.12f;
         [SerializeField] private EventChannelSO postProcessChannel;
+        [SerializeField] private EventChannelSO createChannel;
+        [SerializeField] private PoolItemSO enemyCatchEffectItem;
+        [SerializeField] private Vector3 enemyCatchEffectOffset;
 
         [Header("투척 조준선")]
         [SerializeField] private float aimLineLength = 15f;
@@ -174,6 +178,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
         {
             if (_heldObject != null ||
                 _throwRoutine != null ||
+                grabPoint == null ||
                 grabbable == null ||
                 grabbable.GrabTransform == null ||
                 !grabbable.CanBeGrabbed)
@@ -190,8 +195,18 @@ namespace Member.KYM.Scripts.Players.RobotArm
             _heldObject.Grab(grabPoint, throwOwner != null ? throwOwner.gameObject : null);
             fingerAnimator?.SetClosed(true);
             
-            if (postProcessChannel != null && caughtEnemyProjectile)
-                postProcessChannel.RaiseEvent(PostProcessEvents.ParryImpactEvent.Play());
+            if (caughtEnemyProjectile)
+            {
+                if (postProcessChannel != null)
+                    postProcessChannel.RaiseEvent(PostProcessEvents.ParryImpactEvent.Play());
+
+                if (createChannel != null && enemyCatchEffectItem != null)
+                {
+                    Vector3 effectPosition = grabPoint.TransformPoint(enemyCatchEffectOffset);
+                    createChannel.RaiseEvent(CreateEvents.ShowPoolingEffect.InitData(
+                        enemyCatchEffectItem, effectPosition, grabPoint.rotation));
+                }
+            }
             
             return true;
         }

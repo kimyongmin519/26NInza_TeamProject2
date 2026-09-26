@@ -6,9 +6,7 @@ namespace Member.KYM.Scripts.EffectSystems
     public sealed class SleepZzzEffect : MonoBehaviour
     {
         [Header("표시 위치와 글꼴")]
-        [SerializeField] private Transform followTarget;
         [SerializeField] private TMP_FontAsset font;
-        [SerializeField] private Vector3 spawnOffset = new(-0.25f, 0.8f, 0f);
         [SerializeField] private Color color = new(1f, 1f, 1f, 0.9f);
         [SerializeField] private string sortingLayerName = "Agent";
         [SerializeField] private int sortingOrder = 20;
@@ -35,9 +33,9 @@ namespace Member.KYM.Scripts.EffectSystems
 
         private void Awake()
         {
-            if (followTarget == null || font == null)
+            if (font == null)
             {
-                Debug.LogError("수면 Z 이펙트에 플레이어와 글꼴을 연결해야 합니다.", this);
+                Debug.LogError("수면 Z 이펙트에 글꼴을 연결해야 합니다.", this);
                 enabled = false;
                 return;
             }
@@ -123,8 +121,7 @@ namespace Member.KYM.Scripts.EffectSystems
 
                 particle.Age = 0f;
                 particle.SwayPhase = Random.Range(0f, Mathf.PI * 2f);
-                particle.StartPosition = followTarget.position + spawnOffset +
-                    Vector3.right * Random.Range(-0.08f, 0.08f);
+                particle.StartPosition = transform.position;
 
                 particle.Text.text = Random.value < 0.25f ? "z" : "Z";
                 particle.Text.transform.position = particle.StartPosition;
