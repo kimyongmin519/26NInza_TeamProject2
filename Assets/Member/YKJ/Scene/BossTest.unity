@@ -3807,6 +3807,7 @@ GameObject:
   - component: {fileID: 776689899}
   - component: {fileID: 776689898}
   - component: {fileID: 776689897}
+  - component: {fileID: 776689901}
   m_Layer: 0
   m_Name: TimelineDialogController
   m_TagString: Untagged
@@ -3831,6 +3832,7 @@ MonoBehaviour:
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 11400000, guid: ae14da8f3344e774089991b39fe242fa, type: 2}
+    - {fileID: 11400000, guid: ceae6917bb04f9e4387062ec8975b849, type: 2}
     m_Events:
     - m_PersistentCalls:
         m_Calls:
@@ -3857,6 +3859,20 @@ MonoBehaviour:
           m_Arguments:
             m_ObjectArgument: {fileID: 11400000, guid: 8081e09586d2d5c41b5198e0ba1826f8, type: 2}
             m_ObjectArgumentAssemblyTypeName: DialogDataSO, Assembly-CSharp
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 776689901}
+          m_TargetAssemblyTypeName: TimelineBubbleDialogSignal, Assembly-CSharp
+          m_MethodName: PlayBubbleDialogSignal
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: 
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
@@ -3913,6 +3929,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &776689901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 776689896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbbbd728e3c94c858a71d2a06b73e12c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TimelineBubbleDialogSignal
+  playableDirector: {fileID: 776689899}
+  bubbleDialogEventChannel: {fileID: 11400000, guid: b03dbe8eb5da45569f9288192a0387f3, type: 2}
+  cameraEventChannel: {fileID: 11400000, guid: 6aa65e035152473d98d0e27a69a4c43c, type: 2}
+  dialogData: {fileID: 0}
+  target: {fileID: 0}
+  pauseTimelineUntilDialogEnd: 1
 --- !u!1 &778759641
 GameObject:
   m_ObjectHideFlags: 0
