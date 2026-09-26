@@ -259,7 +259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 508510953401468d864e978638d663e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.UI.GameOverUI
-  playerObject: {fileID: 0}
+  uiChannel: {fileID: 11400000, guid: 34695c655ee7ea444a7b7763fe55bce9, type: 2}
   gameOverRoot: {fileID: 3518488904018119687}
   panelRectTrm: {fileID: 1414022345101798621}
   robotArmVisual: {fileID: 1919283665356275662}
@@ -670,7 +670,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 124.99994, y: 150}
+  m_AnchoredPosition: {x: 125, y: 150}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!1 &3427395415582436942

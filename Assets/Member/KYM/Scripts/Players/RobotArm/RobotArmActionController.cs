@@ -32,7 +32,6 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 return;
 
             playerInput.AttackPressed += HandleAttack;
-            playerInput.AttackCancelPressed += HandleCancel;
         }
 
         private void OnDisable()
@@ -41,7 +40,6 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 return;
 
             playerInput.AttackPressed -= HandleAttack;
-            playerInput.AttackCancelPressed -= HandleCancel;
         }
 
         public void SetSkillLocked(bool isLocked)
@@ -78,15 +76,5 @@ namespace Member.KYM.Scripts.Players.RobotArm
             grabber.PlayFailedAction();
         }
 
-        private void HandleCancel()
-        {
-            if (grappler.IsGrappling)
-            {
-                grappler.StopGrapple();
-                return;
-            }
-
-            grabber.Release();
-        }
     }
 }

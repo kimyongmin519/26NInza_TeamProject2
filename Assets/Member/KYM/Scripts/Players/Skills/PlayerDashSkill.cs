@@ -15,6 +15,9 @@ namespace Member.KYM.Scripts.Players.Skills
         [Header("재사용")]
         [SerializeField, Min(0f)] private float dashRechargeDelay = 0.25f;
 
+        [Header("대시 잔상 (직접 붙인 트레일 연결)")]
+        [SerializeField] private TrailRenderer dashTrail;
+
         private bool _canDash = true;
         private float _dashRechargeReadyTime;
         private Collider2D _bodyCollider;
@@ -33,6 +36,15 @@ namespace Member.KYM.Scripts.Players.Skills
 
                 float remainingTime = _dashRechargeReadyTime - Time.time;
                 return Mathf.Clamp01(1f - remainingTime / dashRechargeDelay);
+            }
+        }
+
+        private void Awake()
+        {
+            if (dashTrail != null)
+            {
+                dashTrail.emitting = false;
+                dashTrail.Clear();
             }
         }
 
@@ -71,6 +83,12 @@ namespace Member.KYM.Scripts.Players.Skills
             _mover.CanManualMovement = false;
             _mover.SetGravityScale(0);
             _mover.StopImmediately(true, true);
+
+            if (dashTrail != null)
+            {
+                dashTrail.Clear();
+                dashTrail.emitting = true;
+            }
             
             Vector3 destination = _player.transform.position + (Vector3)_dashDirection * _dashTravelDistance;
             float dashTime = _dashTravelDistance * dashDuration / dashDistance; //비례식을 이용하여 실제 이동거리만큼의 시간 구하기
@@ -80,6 +98,9 @@ namespace Member.KYM.Scripts.Players.Skills
 
         public override void StopSkill()
         {
+            if (dashTrail != null)
+                dashTrail.emitting = false;
+
             base.StopSkill();
             _player.transform.DOKill(); //나갈때 강제로 이 트랜스폼에 걸린 모든 트윈을 제거하는거야.
             
@@ -103,6 +124,15 @@ namespace Member.KYM.Scripts.Players.Skills
         {
             if (_mover != null)
                 _mover.OnGroundStatusChange -= HandleGroundStatusChange;
+        }
+
+        private void OnDisable()
+        {
+            if (dashTrail != null)
+            {
+                dashTrail.emitting = false;
+                dashTrail.Clear();
+            }
         }
 
         private void OnValidate()

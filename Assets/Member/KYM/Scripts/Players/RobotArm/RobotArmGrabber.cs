@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using GGMLib.ObjectPool.Runtime;
@@ -41,6 +42,8 @@ namespace Member.KYM.Scripts.Players.RobotArm
         public bool IsHolding => _heldObject != null;
         public bool IsBusy => _throwRoutine != null || _actionLocked;
         public Transform GrabPoint => grabPoint;
+        public IGrabbable HeldObject => _heldObject;
+        public event Action<IGrabbable> OnHeldObjectChanged;
 
         private IGrabbable _heldObject;
         private Coroutine _failedGrabRoutine;
@@ -162,6 +165,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
             IGrabbable objectToThrow = _heldObject;
             _heldObject = null;
+            OnHeldObjectChanged?.Invoke(null);
 
             robotArm?.ApplyRecoil(throwDirection);
             objectToThrow.Throw(context);
@@ -194,6 +198,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
             _heldObject = grabbable;
             _heldObject.Grab(grabPoint, throwOwner != null ? throwOwner.gameObject : null);
             fingerAnimator?.SetClosed(true);
+            OnHeldObjectChanged?.Invoke(_heldObject);
             
             if (caughtEnemyProjectile)
             {
@@ -261,6 +266,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
         {
             IGrabbable objectToRelease = _heldObject;
             _heldObject = null;
+            OnHeldObjectChanged?.Invoke(null);
 
             objectToRelease.Release();
             fingerAnimator?.SetClosed(false);

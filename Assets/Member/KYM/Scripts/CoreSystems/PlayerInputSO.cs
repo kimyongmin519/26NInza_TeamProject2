@@ -8,7 +8,6 @@ namespace Member.KYM.Scripts.CoreSystems
     public class PlayerInputSO : ScriptableObject, Controls.IPlayerActions
     {
         public event Action AttackPressed;
-        public event Action AttackCancelPressed;
         public event Action OnJumpKeyPressed;
         public event Action OnDashKeyPressed;
         public event Action<bool> OnInteractKeyPressed;
@@ -90,13 +89,7 @@ namespace Member.KYM.Scripts.CoreSystems
 
         public void OnAttackCancle(InputAction.CallbackContext context)
         {
-            if (IsInputLocked(global::LockKey.ATTACK))
-            {
-                return;
-            }
-
-            if (context.performed)
-                AttackCancelPressed?.Invoke();
+            // 공용 Controls 인터페이스 호환용. 우클릭 놓기 기능은 사용하지 않는다.
         }
 
         public void OnInteract(InputAction.CallbackContext context)
@@ -156,7 +149,7 @@ namespace Member.KYM.Scripts.CoreSystems
                 OnTakeOutKeyPressed?.Invoke();
         }
 
-        private bool IsInputLocked(global::LockKey lockKey)
+        public bool IsInputLocked(global::LockKey lockKey)
         {
             return (int)lockKey >= 0 && lockKey < global::LockKey.END && _inputLocks[(int)lockKey];
         }
@@ -177,7 +170,6 @@ namespace Member.KYM.Scripts.CoreSystems
                     break;
                 case global::LockKey.ATTACK:
                     SetActionLock(_controls.Player.Attack, isLocked);
-                    SetActionLock(_controls.Player.AttackCancle, isLocked);
                     SetActionLock(_controls.Player.TakeOut, isLocked);
                     break;
                 case global::LockKey.INTERACT:

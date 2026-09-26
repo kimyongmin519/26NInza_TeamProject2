@@ -26,12 +26,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
         protected virtual void Awake()
         {
-            if (!GrabbableLayer.TryApply(gameObject))
-            {
-                Debug.LogError(
-                    $"프로젝트에 {GrabbableLayer.Name} 레이어가 없습니다.",
-                    this);
-            }
+            GrabbableLayer.Validate(gameObject);
 
             Rigidbody = GetComponent<Rigidbody2D>();
             _colliders = GetComponentsInChildren<Collider2D>(true);
@@ -92,7 +87,6 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
         protected virtual void OnValidate()
         {
-            GrabbableLayer.TryApply(gameObject);
         }
 
         private void RestorePhysicsState()

@@ -14,12 +14,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
         private void Awake()
         {
-            if (!GrabbableLayer.TryApply(gameObject))
-            {
-                Debug.LogError(
-                    $"프로젝트에 {GrabbableLayer.Name} 레이어가 없습니다.",
-                    this);
-            }
+            GrabbableLayer.Validate(gameObject);
         }
 
         public void OnGrappleStarted(GameObject owner)
@@ -30,9 +25,5 @@ namespace Member.KYM.Scripts.Players.RobotArm
         {
         }
 
-        private void OnValidate()
-        {
-            GrabbableLayer.TryApply(gameObject);
-        }
     }
 }

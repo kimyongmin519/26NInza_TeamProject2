@@ -253,7 +253,8 @@ MonoBehaviour:
   darkBackground: {fileID: 6539170321654948764}
   koImage: {fileID: 2097658848687238706}
   backgroundAlpha: 0.7
-  backgroundFadeDuration: 0
   revealDuration: 0.25
+  holdDuration: 0.6
+  shakeDuration: 0.18
   shakeStrength: {x: 30, y: 30}
-  shakeVibrato: 25
+  shakeVibrato: 24

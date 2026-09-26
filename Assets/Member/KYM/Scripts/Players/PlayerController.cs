@@ -28,6 +28,14 @@ namespace Member.KYM.Scripts.Players
         [Header("피격 무적")]
         [SerializeField, Min(0f)] private float hitInvincibilityDuration = 1.5f;
         [SerializeField, Min(0.02f)] private float blinkInterval = 0.1f;
+
+        [Header("투사체 잡기 표시 거리")]
+        [SerializeField, Min(0f)] private float projectileCueRevealDistance = 2.8f;
+        [SerializeField, Min(0f)] private float projectileCueFullRevealDistance = 1.2f;
+
+        public float ProjectileCueRevealDistance => Mathf.Max(0f, projectileCueRevealDistance);
+        public float ProjectileCueFullRevealDistance => Mathf.Clamp(
+            projectileCueFullRevealDistance, 0f, ProjectileCueRevealDistance);
         
         public UnityEvent OnHit;
         public UnityEvent OnDeath;
@@ -38,6 +46,8 @@ namespace Member.KYM.Scripts.Players
         private StateMachine _stateMachine;
         private RobotArmGrappler _robotArmGrappler;
         private int _currentJumpCount;
+        private PlayerUIEventPublisher _uiPublisher;
+        public int RemainingJumpCount => Mathf.Max(0, MaxJumpCount - _currentJumpCount);
         private CapsuleCollider2D _bodyCollider;
         private Vector2 _standingColliderSize;
         private Vector2 _standingColliderOffset;
@@ -103,11 +113,13 @@ namespace Member.KYM.Scripts.Players
         {
             ChangeState(PlayerStateEnum.IDLE);
             
-            UIChannel.RaiseEvent(PlayerSubEvents.PlayerHealthSubEvent.InitData(HealthModule));
+            _uiPublisher = new PlayerUIEventPublisher(this);
+            _uiPublisher.Publish();
         }
 
         private void OnDestroy()
         {
+            _uiPublisher?.Dispose();
             StopInvincibilityBlink();
 
             if (PlayerInput != null)
@@ -209,11 +221,17 @@ namespace Member.KYM.Scripts.Players
             UpdateInvincibilityBlink();
         }
 
+        private void LateUpdate()
+        {
+            _uiPublisher?.Publish();
+        }
+
         private void HandleDeath()
         {
             StopInvincibilityBlink();
             StopCurrentAction();
             ChangeState(PlayerStateEnum.DEATH);
+            _uiPublisher?.Publish();
             
             OnDeath?.Invoke();
         }

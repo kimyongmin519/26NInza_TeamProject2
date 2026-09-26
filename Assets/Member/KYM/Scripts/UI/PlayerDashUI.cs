@@ -1,4 +1,5 @@
-using Member.KYM.Scripts.Players.Skills;
+using KimLIb.EventSystem;
+using Member.KYM.Scripts.CoreSystems.Events;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +8,7 @@ namespace Member.KYM.Scripts.UI
     public class PlayerDashUI : MonoBehaviour
     {
         [Header("대시 쿨타임 표시")]
-        [SerializeField] private PlayerDashSkill dashSkill;
+        [SerializeField] private EventChannelSO uiChannel;
         [SerializeField] private Image cooldownFillImage;
 
         private void Awake()
@@ -19,30 +20,26 @@ namespace Member.KYM.Scripts.UI
             }
         }
 
-        private void Update()
+        private void OnEnable()
+        {
+            if (cooldownFillImage != null) cooldownFillImage.fillAmount = 0f;
+            if (uiChannel == null) return;
+            uiChannel.AddListener<PlayerUIStateEvent>(HandleState);
+            uiChannel.RaiseEvent(new PlayerUIStateRequest());
+        }
+
+        private void OnDisable()
+        {
+            if (uiChannel != null)
+                uiChannel.RemoveListener<PlayerUIStateEvent>(HandleState);
+        }
+
+        private void HandleState(PlayerUIStateEvent evt)
         {
             if (cooldownFillImage == null)
                 return;
 
-            cooldownFillImage.fillAmount = dashSkill != null
-                ? dashSkill.NormalizedRecharge
-                : 0f;
-        }
-
-        public void Bind(PlayerDashSkill playerDashSkill)
-        {
-            dashSkill = playerDashSkill;
-            UpdateFillAmountImmediately();
-        }
-
-        private void UpdateFillAmountImmediately()
-        {
-            if (cooldownFillImage == null)
-                return;
-
-            cooldownFillImage.fillAmount = dashSkill != null
-                ? dashSkill.NormalizedRecharge
-                : 0f;
+            cooldownFillImage.fillAmount = evt.DashCharge;
         }
     }
 }

@@ -2,7 +2,6 @@ using System;
 using DG.Tweening;
 using KimLIb.EventSystem;
 using Member.KYM.Scripts.CoreSystems.Events;
-using Member.ODK.Scripts;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,14 +20,12 @@ namespace Member.KYM.Scripts.UI
         [SerializeField, Min(1)] private int shakeVibrato = 12;
 
         [SerializeField] private EventChannelSO uiChannel;
-        private HealthModule _playerHealthModule;
+        private float _displayedHealth = float.NaN;
         private Tween _heartShakeTween;
         private Vector2 _heartStartPosition;
 
         private void Awake()
         {
-            uiChannel.AddListener<PlayerHealthSubEvent>(HandleBindPlayerHealth);
-
             if (heartImage != null)
                 _heartStartPosition = heartImage.rectTransform.anchoredPosition;
         }
@@ -36,36 +33,28 @@ namespace Member.KYM.Scripts.UI
         private void OnDisable()
         {
             StopHeartShake();
+            if (uiChannel != null)
+                uiChannel.RemoveListener<PlayerUIStateEvent>(HandleState);
         }
 
-        private void OnDestroy()
+        private void OnEnable()
         {
-            StopHeartShake();
-            uiChannel.RemoveListener<PlayerHealthSubEvent>(HandleBindPlayerHealth);
-            if (_playerHealthModule != null)
-                _playerHealthModule.OnHealthChanged -= HandleHealthChange;
+            _displayedHealth = float.NaN;
+            if (uiChannel == null) return;
+            uiChannel.AddListener<PlayerUIStateEvent>(HandleState);
+            uiChannel.RaiseEvent(new PlayerUIStateRequest());
         }
 
-        private void HandleBindPlayerHealth(PlayerHealthSubEvent evt)
+        private void HandleState(PlayerUIStateEvent evt)
         {
-            if (_playerHealthModule != null)
-            {
-                _playerHealthModule.OnHealthChanged -= HandleHealthChange;
-            }
-            
-            _playerHealthModule = evt.PlayerHealthModule;
-            if (_playerHealthModule == null)
-                return;
-
-            _playerHealthModule.OnHealthChanged += HandleHealthChange;
-            HandleHealthChange(
-                _playerHealthModule.CurrentHealth,
-                _playerHealthModule.MaxHealth);
+            if (_displayedHealth == evt.Health) return;
+            _displayedHealth = evt.Health;
+            HandleHealthChange(evt.Health, evt.MaxHealth);
         }
 
         private void HandleHealthChange(float current, float max)
         {
-            healthText.SetText(current.ToString());
+            if (healthText != null) healthText.SetText(current.ToString());
             UpdateHeartSprite(current);
 
             if (current > 0f && current <= 1f)
