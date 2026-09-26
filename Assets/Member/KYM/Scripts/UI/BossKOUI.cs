@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Member.KYM.Scripts.CoreSystems.Managers;
 using Member.KYM.Scripts.Enemies.Boss;
 using Member.ODK.Scripts;
 using UnityEngine;
@@ -72,8 +73,7 @@ namespace Member.KYM.Scripts.UI
             if (_health.IsDead)
                 Show();
         }
-
-        [ContextMenu("KO 연출 미리보기")]
+        
         public void Show()
         {
             if (_isShown || overlayRoot == null || darkBackground == null || koImage == null)
@@ -87,19 +87,17 @@ namespace Member.KYM.Scripts.UI
             backgroundColor.a = 0f;
             darkBackground.color = backgroundColor;
 
-            koImage.type = Image.Type.Filled;
-            koImage.fillMethod = Image.FillMethod.Horizontal;
-            koImage.fillOrigin = (int)Image.OriginHorizontal.Left;
-            koImage.fillAmount = 0f;
-            koImage.rectTransform.anchoredPosition = _imageStartPosition;
-            koImage.enabled = koImage.sprite != null;
-
+            TimeManager.Instance.StopTimer();
             _sequence = DOTween.Sequence().SetUpdate(true);
             _sequence.Append(darkBackground.DOFade(backgroundAlpha, backgroundFadeDuration));
             _sequence.Append(koImage.DOFillAmount(1f, revealDuration).SetEase(Ease.OutCubic));
             _sequence.Join(koImage.rectTransform.DOShakeAnchorPos(
                 revealDuration, shakeStrength, shakeVibrato, 90f, false, true));
-            _sequence.OnComplete(() => koImage.rectTransform.anchoredPosition = _imageStartPosition);
+            _sequence.OnComplete(() =>
+            {
+                koImage.rectTransform.anchoredPosition = _imageStartPosition;
+                TimeManager.Instance.StartTimer();
+            });
         }
     }
 }

@@ -1,17 +1,15 @@
-using System;
 using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Member.KYM.Scripts.CoreSystems
 {
-    public sealed class SceneLoadManager : MonoBehaviour
+    public sealed class SceneLoadManager : KimLIb.MonoSingleton<SceneLoadManager>
     {
-        private const string PrefabPath = "SceneTransitionCanvas";
-        private static readonly int CircleSizeId = Shader.PropertyToID("_CircleSize");
-
-        [Header("팀원 전환 UI")]
+        [Header("씬에 배치된 전환 UI")]
+        [SerializeField] private GameObject transitionCanvas;
         [SerializeField] private Image fadeImage;
         [SerializeField] private float openCircleSize = 2.5f;
         [SerializeField] private float closedCircleSize;
@@ -20,70 +18,58 @@ namespace Member.KYM.Scripts.CoreSystems
         [SerializeField, Min(0f)] private float fadeOutDuration = 0.75f;
         [SerializeField, Min(0f)] private float fadeInDuration = 0.75f;
 
-        public static SceneLoadManager Instance { get; private set; }
         public bool IsTransitioning { get; private set; }
 
+        private static readonly int CircleSizeId = Shader.PropertyToID("_CircleSize");
         private Material _fadeMaterial;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetInstance() => Instance = null;
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void CreateInstance()
+        protected override void Awake()
         {
-            GameObject prefab = Resources.Load<GameObject>(PrefabPath);
-            if (prefab == null)
-            {
-                Debug.LogError($"Resources/{PrefabPath} 전환 UI 프리팹을 찾지 못했습니다.");
+            base.Awake();
+            if (!IsSingletonInstance)
                 return;
-            }
 
-            Instantiate(prefab);
-        }
-
-        private void Awake()
-        {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-
-            if (fadeImage == null || fadeImage.material == null ||
+            if (transitionCanvas == null || fadeImage == null ||
                 !fadeImage.material.HasProperty(CircleSizeId))
             {
-                Debug.LogError("씬 전환 Image에 팀원의 원형 페이드 머티리얼을 연결해야 합니다.", this);
+                Debug.LogError("TransitionCanvas와 전환 Image의 원형 페이드 머티리얼을 연결해주세요.", this);
                 enabled = false;
                 return;
             }
 
-            _fadeMaterial = new Material(fadeImage.material);
-            fadeImage.material = _fadeMaterial;
-            SetCircleSize(openCircleSize);
-            fadeImage.raycastTarget = false;
+            transform.SetParent(null);
+            DontDestroyOnLoad(gameObject);
+            transitionCanvas.transform.SetParent(null);
+            DontDestroyOnLoad(transitionCanvas);
         }
 
-        private void OnDestroy()
+        private void Start()
         {
-            if (Instance == this)
-                Instance = null;
+            if (!IsSingletonInstance)
+                return;
 
-            if (_fadeMaterial != null)
-                Destroy(_fadeMaterial);
+            // FadeScreenManager의 Awake가 이미지 머티리얼을 교체한 뒤 초기화한다.
+            _fadeMaterial = new Material(fadeImage.material);
+            fadeImage.material = _fadeMaterial;
+            _fadeMaterial.SetFloat(CircleSizeId, openCircleSize);
+            fadeImage.raycastTarget = false;
         }
 
         public static bool TryLoadScene(string sceneName)
         {
-            if (Instance == null || !Instance.isActiveAndEnabled)
+            if (Instance == null || !Instance.isActiveAndEnabled ||
+                Instance._fadeMaterial == null || Instance.IsTransitioning)
+                return false;
+
+            if (string.IsNullOrWhiteSpace(sceneName) ||
+                !Application.CanStreamedLevelBeLoaded(sceneName))
             {
-                Debug.LogError("씬 전환 매니저가 준비되지 않았습니다.");
+                Debug.LogError($"씬 '{sceneName}'을 빌드 씬 목록에 등록해주세요.");
                 return false;
             }
 
-            return Instance.BeginTransition(sceneName);
+            Instance.StartCoroutine(Instance.Transition(sceneName));
+            return true;
         }
 
         public static bool TryReloadCurrentScene()
@@ -91,20 +77,15 @@ namespace Member.KYM.Scripts.CoreSystems
             return TryLoadScene(SceneManager.GetActiveScene().path);
         }
 
-        private bool BeginTransition(string sceneName)
+        // UnityEvent에서 씬 이름을 입력해 연결한다.
+        public void LoadScene(string sceneName)
         {
-            if (IsTransitioning)
-                return false;
+            TryLoadScene(sceneName);
+        }
 
-            if (string.IsNullOrWhiteSpace(sceneName) ||
-                !Application.CanStreamedLevelBeLoaded(sceneName))
-            {
-                Debug.LogError($"전환할 씬 '{sceneName}'이 빌드 씬 목록에 없습니다.", this);
-                return false;
-            }
-
-            StartCoroutine(Transition(sceneName));
-            return true;
+        public void ReloadCurrentScene()
+        {
+            TryReloadCurrentScene();
         }
 
         private IEnumerator Transition(string sceneName)
@@ -112,62 +93,27 @@ namespace Member.KYM.Scripts.CoreSystems
             IsTransitioning = true;
             fadeImage.raycastTarget = true;
 
-            yield return Fade(openCircleSize, closedCircleSize, fadeOutDuration);
+            yield return _fadeMaterial.DOFloat(closedCircleSize, CircleSizeId, fadeOutDuration)
+                .SetEase(Ease.Linear).SetUpdate(true).WaitForCompletion();
 
-            AsyncOperation loadOperation = null;
-            try
-            {
-                loadOperation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
-            }
-            catch (Exception exception)
-            {
-                Debug.LogException(exception, this);
-            }
+            yield return SceneManager.LoadSceneAsync(sceneName);
 
-            if (loadOperation == null)
-            {
-                yield return Fade(closedCircleSize, openCircleSize, fadeInDuration);
-                FinishTransition();
-                yield break;
-            }
+            yield return _fadeMaterial.DOFloat(openCircleSize, CircleSizeId, fadeInDuration)
+                .SetEase(Ease.Linear).SetUpdate(true).WaitForCompletion();
 
-            while (!loadOperation.isDone)
-                yield return null;
-
-            yield return Fade(closedCircleSize, openCircleSize, fadeInDuration);
-            FinishTransition();
-        }
-
-        private IEnumerator Fade(float from, float to, float duration)
-        {
-            SetCircleSize(from);
-            if (duration <= 0f)
-            {
-                SetCircleSize(to);
-                yield break;
-            }
-
-            float elapsed = 0f;
-            while (elapsed < duration)
-            {
-                elapsed += Time.unscaledDeltaTime;
-                SetCircleSize(Mathf.Lerp(from, to, Mathf.Clamp01(elapsed / duration)));
-                yield return null;
-            }
-
-            SetCircleSize(to);
-        }
-
-        private void SetCircleSize(float value)
-        {
-            if (_fadeMaterial != null)
-                _fadeMaterial.SetFloat(CircleSizeId, value);
-        }
-
-        private void FinishTransition()
-        {
             fadeImage.raycastTarget = false;
             IsTransitioning = false;
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            if (_fadeMaterial != null)
+            {
+                _fadeMaterial.DOKill();
+                Destroy(_fadeMaterial);
+            }
         }
     }
 }
