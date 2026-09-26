@@ -106,7 +106,7 @@ namespace Member.YKJ.Bosses.Editor
             }
             arenaData.ApplyModifiedProperties();
 
-            Material tongueMaterial = AssetDatabase.LoadAssetAtPath<Material>(AssetFolder + "/MimicTongue.mat");
+            Material tongueMaterial = AssetDatabase.LoadAssetAtPath<Material>(AssetFolder + "/MimicPhaseOneLaser.mat");
             LineRenderer tongue = MakeLine("TongueLine", bossObject.transform, tongueMaterial, 0.18f, Color.magenta);
             LineRenderer warning = MakeLine("LandingWarning", arenaRoot, material, 0.09f, new Color(1f, 0.35f, 0.35f, 0.25f));
             var data = new SerializedObject(boss);
@@ -179,6 +179,7 @@ namespace Member.YKJ.Bosses.Editor
             jumpData.ApplyModifiedProperties();
             var tongueData = new SerializedObject(tonguePattern);
             tongueData.FindProperty("tongueLine").objectReferenceValue = tongue;
+            tongueData.FindProperty("attackColor").colorValue = new Color(1f, 0.02f, 0.02f, 1f);
             tongueData.FindProperty("chestRenderer").objectReferenceValue = visual;
             tongueData.FindProperty("openChestSprite").objectReferenceValue = LoadSprite(Icons + "Chest01OpenOutlined.png");
             tongueData.ApplyModifiedProperties();
