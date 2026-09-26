@@ -1,7 +1,9 @@
 using Member.KYM.Scripts.Players;
+using Member.KYM.Scripts.UI;
 using Unity.Behavior;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
@@ -14,6 +16,10 @@ namespace Member.KYM.Scripts.Enemies.Boss
         [Header("전투 대상")]
         [SerializeField] private BTAgentBoss boss;
         [SerializeField] private GameObject playerObject;
+
+        [Header("인트로 스킵")]
+        [SerializeField] private Key skipKey = Key.Escape;
+        [SerializeField] private CinematicViewUI cinematicView;
 
         [Header("인트로 스킵 시 전투 시작 위치")]
         [SerializeField] private Vector3 bossCombatPosition;
@@ -91,6 +97,7 @@ namespace Member.KYM.Scripts.Enemies.Boss
             if (_skipIntro)
             {
                 MoveToCombatStart();
+                RestoreIntroPresentation();
                 StartCombat();
                 return;
             }
@@ -109,6 +116,14 @@ namespace Member.KYM.Scripts.Enemies.Boss
 
         private void Update()
         {
+            Key activeSkipKey = skipKey == Key.None ? Key.Escape : skipKey;
+            if (_introStarted && !_combatStarted && !_playerDied &&
+                Keyboard.current != null && Keyboard.current[activeSkipKey].wasPressedThisFrame)
+            {
+                SkipIntro();
+                return;
+            }
+
             // Hold 모드는 마지막 프레임을 유지하므로 stopped 이벤트만으로는 종료를 보장할 수 없다.
             if (_introStarted && !_combatStarted && !_playerDied &&
                 _director.time >= _director.duration - 0.001d)
@@ -140,6 +155,29 @@ namespace Member.KYM.Scripts.Enemies.Boss
             if (_director.state == PlayState.Playing)
                 _director.Stop();
             _behavior.enabled = false;
+        }
+
+        // 버튼의 OnClick에서도 호출할 수 있다. 잠긴 PlayerInputSO와 무관하게 Escape로도 호출된다.
+        public void SkipIntro()
+        {
+            // 대화 시스템은 별도로 종료해야 하므로 대화 도중에는 인트로만 건너뛰지 않는다.
+            if (!_introStarted || _combatStarted || _playerDied || DialogManager.Talking)
+                return;
+
+            _introStarted = false;
+
+            // 타임라인의 마지막 포즈와 전투 카메라를 적용한다. 중간 신호는 건너뛰므로
+            // 입력 잠금과 시네마틱 바는 별도로 원상 복구한다.
+            _director.time = System.Math.Max(0d, _director.duration - 0.0001d);
+            _director.Evaluate();
+            RestoreIntroPresentation();
+            StartCombat();
+        }
+
+        private void RestoreIntroPresentation()
+        {
+            _player.PlayerInput?.AllInputLock(false);
+            cinematicView?.HideImmediately();
         }
 
         private void StartCombat()

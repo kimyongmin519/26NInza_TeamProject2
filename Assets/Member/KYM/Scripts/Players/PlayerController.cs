@@ -34,6 +34,7 @@ namespace Member.KYM.Scripts.Players
         
         public AgentSensor Sensor { get; private set; }
         public ISkillModule SkillModule { get; private set; }
+        private IMover _mover;
         private StateMachine _stateMachine;
         private RobotArmGrappler _robotArmGrappler;
         private int _currentJumpCount;
@@ -59,6 +60,7 @@ namespace Member.KYM.Scripts.Players
             }
 
             _stateMachine = new StateMachine(this, stateList.states);
+            _mover = GetModule<IMover>();
             Sensor = GetModule<AgentSensor>();
             SkillModule = GetModule<ISkillModule>();
             _robotArmGrappler = GetComponentInChildren<RobotArmGrappler>(true);
@@ -69,6 +71,8 @@ namespace Member.KYM.Scripts.Players
             base.AfterInitializeModules();
             PlayerInput.OnJumpKeyPressed += HandleJumpKeyPressed;
             PlayerInput.OnDashKeyPressed += HandleDashKeyPressed;
+            if (_mover != null)
+                _mover.OnGroundStatusChange += HandleGroundStatusChange;
 
             if (HealthModule != null)
                 HealthModule.OnDeath += HandleDeath;
@@ -115,6 +119,9 @@ namespace Member.KYM.Scripts.Players
             if (HealthModule != null)
                 HealthModule.OnDeath -= HandleDeath;
 
+            if (_mover != null)
+                _mover.OnGroundStatusChange -= HandleGroundStatusChange;
+
             if (_robotArmGrappler != null)
             {
                 _robotArmGrappler.GrappleStarted -= HandleGrappleStarted;
@@ -152,6 +159,12 @@ namespace Member.KYM.Scripts.Players
         }
         
         public void ResetJumpCount() => _currentJumpCount = 0;
+
+        private void HandleGroundStatusChange(bool isGrounded)
+        {
+            if (isGrounded)
+                ResetJumpCount();
+        }
 
         public void SetCrouching(bool isCrouching)
         {

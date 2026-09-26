@@ -69,7 +69,7 @@ namespace Member.KYM.Scripts.CoreSystems.PostProcessSystem
             KillSequence();
             volume.weight = 1f;
 
-            TimeManager.Instance.StopTime(stopDuration);
+            TimeManager.Instance.StopTimer(stopDuration);
             _sequence = DOTween.Sequence().SetUpdate(true);
 
             if (duration > 0f)
