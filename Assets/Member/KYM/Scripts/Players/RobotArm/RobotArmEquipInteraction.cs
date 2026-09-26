@@ -1,3 +1,4 @@
+/*
 using Member.KYM.Scripts.CoreSystems.InteractSystems;
 using UnityEngine;
 
@@ -36,3 +37,4 @@ namespace Member.KYM.Scripts.Players.RobotArm
         }
     }
 }
+*/

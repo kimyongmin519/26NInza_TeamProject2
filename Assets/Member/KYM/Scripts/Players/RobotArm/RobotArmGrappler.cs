@@ -22,6 +22,9 @@ namespace Member.KYM.Scripts.Players.RobotArm
         [SerializeField] private float swingForce = 30f;
         [SerializeField] private float maximumSwingSpeed = 12f;
 
+        [Header("해제 시 스윙 관성")]
+        [SerializeField, Min(0f)] private float releaseSpeedMultiplier = 1.5f;
+
         [Header("제어 복귀")]
         [SerializeField] private float controlReturnDelay = 0.12f;
 
@@ -123,7 +126,27 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
         public void StopGrapple()
         {
+            if (IsGrappling && TryGetAnchorPoint(out Transform point))
+                ApplyReleaseForce(point);
+
             StopGrappleInternal(true);
+        }
+
+        private void ApplyReleaseForce(Transform point)
+        {
+            Rigidbody2D body = _mover.RigidBody;
+            Vector2 radius = robotArm.ArmBasePosition - (Vector2)point.position;
+            if (radius.sqrMagnitude < 0.0001f)
+                return;
+
+            Vector2 tangent = new Vector2(-radius.y, radius.x).normalized;
+            Vector2 anchorVelocity = _connectedBody != null
+                ? _connectedBody.GetPointVelocity(point.position)
+                : Vector2.zero;
+            float tangentSpeed = Vector2.Dot(body.linearVelocity - anchorVelocity, tangent);
+            // 기존 스윙 속도를 유지한 채, 진행하는 접선 방향으로 추가 충격량을 준다.
+            Vector2 impulse = tangent * (tangentSpeed * releaseSpeedMultiplier);
+            _mover.AddForceToAgent(impulse);
         }
 
         private void StopGrappleInternal(bool delayControl)
@@ -353,6 +376,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
             hangGravityScale = Mathf.Max(0f, hangGravityScale);
             swingForce = Mathf.Max(0f, swingForce);
             maximumSwingSpeed = Mathf.Max(0f, maximumSwingSpeed);
+            releaseSpeedMultiplier = Mathf.Max(0f, releaseSpeedMultiplier);
             controlReturnDelay = Mathf.Max(0f, controlReturnDelay);
         }
     }

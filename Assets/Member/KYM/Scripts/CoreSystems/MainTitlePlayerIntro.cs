@@ -4,7 +4,6 @@ using Member.KYM.Scripts.Agents.FSM;
 using Member.KYM.Scripts.Players;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 namespace Member.KYM.Scripts.CoreSystems
 {
@@ -19,6 +18,9 @@ namespace Member.KYM.Scripts.CoreSystems
         [Header("연출 이벤트")]
         [SerializeField] private UnityEvent onSitStarted;
         [SerializeField] private UnityEvent onIntroFinished;
+
+        [Header("플레이 상")]
+        [SerializeField] private float wakeUpToInputUnLockDelay;
 
         private PlayerInputSO _playerInput;
         private IAnimateRenderer _renderer;
@@ -79,6 +81,14 @@ namespace Member.KYM.Scripts.CoreSystems
             RestoreInput();
             onIntroFinished?.Invoke();
         }
+
+        public async void WakeUpToInputUnLock()
+        {
+            WakeUp();
+            await Awaitable.WaitForSecondsAsync(wakeUpToInputUnLockDelay);
+            CompleteWakeUp();
+        }
+        
 
         private void OnDisable()
         {
