@@ -9,6 +9,8 @@ namespace Member.KYM.Scripts.UI
     {
         [Header("보스")]
         [SerializeField] private BTAgentBoss boss;
+        [Tooltip("Optional health source for bosses that do not use BTAgentBoss.")]
+        [SerializeField] private HealthModule healthSource;
 
         [Header("막대 마스크")]
         [SerializeField] private RectTransform fillMask;
@@ -37,7 +39,8 @@ namespace Member.KYM.Scripts.UI
 
         private void Start()
         {
-            Bind(boss);
+            if (healthSource != null) BindHealth(healthSource);
+            else Bind(boss);
         }
 
         private void OnEnable()
@@ -59,12 +62,18 @@ namespace Member.KYM.Scripts.UI
 
         public void Bind(BTAgentBoss target)
         {
+            boss = target;
+            BindHealth(target != null ? target.HealthModule : null);
+        }
+
+        public void BindHealth(HealthModule target)
+        {
             if (_health != null)
                 _health.OnHealthChanged -= HandleHealthChanged;
 
             StopLagTween();
-            boss = target;
-            _health = boss != null ? boss.HealthModule : null;
+            healthSource = target;
+            _health = target;
 
             if (_health == null)
             {
