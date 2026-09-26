@@ -95,6 +95,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             if (consumed) return;
             consumed = true;
             owner?.PlayFeedback(VolcanusFeedbackType.Boulder, transform.position);
+            owner?.ShakeCamera(thrown ? 0.7f : 0.52f);
             Destroy(gameObject);
         }
     }

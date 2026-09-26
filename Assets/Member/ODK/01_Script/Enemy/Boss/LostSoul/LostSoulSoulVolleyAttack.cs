@@ -6,34 +6,35 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
     public class LostSoulSoulVolleyAttack : LostSoulSkill
     {
         [SerializeField] private float sideDistance = 5.2f;
-        [SerializeField] private float airHeight = 2.8f;
         [SerializeField] private int waveCount = 3;
-        [SerializeField] private int bulletsPerWave = 4;
+        [SerializeField] private int bulletsPerWave = 2;
         [SerializeField] private float bulletSpeed = 15f;
         [SerializeField] private float waveInterval = 0.18f;
         [SerializeField] private float laneSpacing = 0.46f;
 
         protected override IEnumerator ExecuteLostSoul(GameObject target)
         {
-            Boss.TeleportToTarget(sideDistance, airHeight);
+            Boss.TeleportToTarget(sideDistance);
             yield return new WaitForSeconds(0.1f * DurationScale);
 
             for (int wave = 0; wave < waveCount; wave++)
             {
-                ReplayAnimation();
-                Vector2 direction = ((Vector2)target.transform.position - (Vector2)Boss.transform.position).normalized;
-                Vector2 normal = new Vector2(-direction.y, direction.x);
+                Boss.PlayAnimation("attack", 0f, 0.34f);
+                Boss.PlaySlashFeedback();
+                float horizontalDirection = target.transform.position.x >= Boss.transform.position.x ? 1f : -1f;
+                Vector3 ground = Boss.GetGroundPoint(target.transform.position.x);
+                bool jumpLane = wave % 2 == 0;
+                float laneY = ground.y + (jumpLane ? 0.62f : 1.72f);
+                Vector3 laneOrigin = new Vector3(Boss.transform.position.x, laneY, Boss.transform.position.z);
+                Vector2 direction = Vector2.right * horizontalDirection;
                 for (int i = 0; i < bulletsPerWave; i++)
                 {
-                    float offset = (i - (bulletsPerWave - 1) * 0.5f) * laneSpacing;
-                    Boss.SpawnSoul(Boss.transform.position + (Vector3)(normal * offset), direction * bulletSpeed);
+                    float offset = (i - (bulletsPerWave - 1) * 0.5f) * laneSpacing * 0.18f;
+                    Boss.SpawnSoul(laneOrigin + Vector3.up * offset, direction * bulletSpeed);
                 }
 
-                if (wave == 1)
-                {
-                    Vector2 weakDirection = Quaternion.Euler(0f, 0f, Random.Range(-7f, 7f)) * direction;
-                    Boss.SpawnWeakSoul(Boss.transform.position, weakDirection * (bulletSpeed * 0.58f));
-                }
+                Vector3 weakOrigin = new Vector3(Boss.transform.position.x, ground.y + 1.12f, Boss.transform.position.z);
+                Boss.SpawnWeakSoul(weakOrigin, direction * (bulletSpeed * 0.52f));
                 yield return new WaitForSeconds(waveInterval * DurationScale);
             }
         }

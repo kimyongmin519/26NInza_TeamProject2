@@ -65,6 +65,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 yield return new WaitForSeconds(thrustDuration / DurationScale);
                 thrustCaster.DisableCasting();
                 Boss.AttackImpact(targetPoint);
+                Boss.ShakeCamera(0.58f);
                 Boss.ReturnControlledSwords();
                 yield return new WaitForSeconds(recoverDuration / DurationScale);
             }

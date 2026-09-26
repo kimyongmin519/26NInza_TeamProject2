@@ -72,6 +72,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             yield return dashTween.WaitForCompletion();
             dashCaster.DisableCasting();
             Boss.AttackImpact(Boss.transform.position);
+            Boss.ShakeCamera(0.75f);
         }
 
         protected override void OnSwordmasterCancel()

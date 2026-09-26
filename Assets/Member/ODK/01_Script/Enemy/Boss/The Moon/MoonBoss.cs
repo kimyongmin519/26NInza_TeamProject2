@@ -228,8 +228,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
 
         public void ShakeImpact(bool strong)
         {
-            if (impulseSource == null) return;
-            impulseSource.GenerateImpulse(strong ? strongImpactImpulse : normalImpactImpulse);
+            ShakeCamera(strong ? strongImpactImpulse : normalImpactImpulse);
         }
 
         public void PlayJumpFeedback(Vector3 position) => feedback?.PlayJump(position);
@@ -253,7 +252,10 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             PlayAnimation(phaseTwoAnimationState);
             feedback?.PlayPhaseTwo(transform.position);
             onPhaseTwoVisual?.Invoke();
+            ShakeCamera(0.9f);
         }
+
+        protected override void OnBossDeath() => ShakeCamera(1.25f);
 
         protected override void OnDestroy()
         {

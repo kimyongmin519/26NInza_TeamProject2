@@ -1,4 +1,5 @@
 using System;
+using KimLIb.SoundSystem;
 using Member.ODK.Scripts.Enemys.Bosses;
 using UnityEngine;
 
@@ -20,11 +21,10 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
     public class VolcanusFeedbackSlot
     {
         [SerializeField] private GameObject effectPrefab;
-        [SerializeField] private AudioClip audioClip;
-        [SerializeField, Range(0f, 1f)] private float volume = 1f;
+        [SerializeField] private SoundClipSO soundClip;
         [SerializeField] private BossPositionEvent onPlayed;
 
-        public void Play(AudioSource source, Vector3 position)
+        public void Play(Vector3 position)
         {
             if (effectPrefab != null)
             {
@@ -35,7 +35,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
                 );
                 UnityEngine.Object.Destroy(effect, GetLifeTime(effect));
             }
-            if (source != null && audioClip != null) source.PlayOneShot(audioClip, volume);
+            ODKSoundPlayback.Play(soundClip, position);
             onPlayed?.Invoke(position);
         }
 
@@ -54,7 +54,6 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
     [DisallowMultipleComponent]
     public class VolcanusFeedback : MonoBehaviour
     {
-        [SerializeField] private AudioSource audioSource;
         [SerializeField] private VolcanusFeedbackSlot ready = new VolcanusFeedbackSlot();
         [SerializeField] private VolcanusFeedbackSlot step = new VolcanusFeedbackSlot();
         [SerializeField] private VolcanusFeedbackSlot impact = new VolcanusFeedbackSlot();
@@ -64,16 +63,9 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         [SerializeField] private VolcanusFeedbackSlot phaseTwo = new VolcanusFeedbackSlot();
         [SerializeField] private VolcanusFeedbackSlot death = new VolcanusFeedbackSlot();
 
-        private void Awake()
-        {
-            if (audioSource == null) audioSource = GetComponent<AudioSource>();
-            if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.playOnAwake = false;
-        }
-
         public void Play(VolcanusFeedbackType type, Vector3 position)
         {
-            GetSlot(type)?.Play(audioSource, position);
+            GetSlot(type)?.Play(position);
         }
 
         private VolcanusFeedbackSlot GetSlot(VolcanusFeedbackType type)

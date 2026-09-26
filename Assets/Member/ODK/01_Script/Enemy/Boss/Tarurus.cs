@@ -88,6 +88,10 @@ namespace Member.ODK.Scripts.Enemys.Zodiac
                 bull.OnFinished += HandleBullFinished;
             }
 
+            yield return Wait(splitDuration + aimDuration);
+
+            Boss.ShakeCamera(0.68f);
+
             while (activeBullCount > 0)
             {
                 yield return null;

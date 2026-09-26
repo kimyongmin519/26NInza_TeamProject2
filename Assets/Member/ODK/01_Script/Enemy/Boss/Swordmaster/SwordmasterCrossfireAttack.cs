@@ -65,6 +65,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             );
             yield return new WaitForSeconds(lineWarningDuration / DurationScale);
             DestroyWarning(warning);
+            Boss.ShakeCamera(0.36f);
 
             float travelTime = Boss.ArenaHalfWidth * 2f / lineSwordSpeed + 0.18f;
             for (int i = 0; i < swords.Count; i++)
@@ -90,6 +91,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             );
             yield return new WaitForSeconds(lineWarningDuration / DurationScale);
             DestroyWarning(warning);
+            Boss.ShakeCamera(0.36f);
 
             List<EnchantedSword> swords = Boss.TakeSwords(8);
             float travelTime = Boss.ArenaHalfHeight * 2f / lineSwordSpeed + 0.18f;
@@ -145,6 +147,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 sword.FireDispelled(direction, finalSwordSpeed);
             }
             Boss.AttackImpact(center);
+            Boss.ShakeCamera(0.9f);
             yield return new WaitForSeconds(0.25f / DurationScale);
         }
 

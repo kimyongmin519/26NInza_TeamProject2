@@ -1,4 +1,5 @@
 using System;
+using KimLIb.SoundSystem;
 using Member.ODK.Scripts.Enemys.Bosses;
 using UnityEngine;
 
@@ -8,11 +9,10 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
     public class MoonFeedbackSlot
     {
         [SerializeField] private GameObject effectPrefab;
-        [SerializeField] private AudioClip audioClip;
-        [SerializeField, Range(0f, 1f)] private float volume = 1f;
+        [SerializeField] private SoundClipSO soundClip;
         [SerializeField] private BossPositionEvent onPlayed;
 
-        public void Play(MonoBehaviour owner, AudioSource audioSource, Vector3 position)
+        public void Play(Vector3 position)
         {
             if (effectPrefab != null)
             {
@@ -24,8 +24,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 UnityEngine.Object.Destroy(effect, GetEffectLifeTime(effect));
             }
 
-            if (audioSource != null && audioClip != null)
-                audioSource.PlayOneShot(audioClip, volume);
+            ODKSoundPlayback.Play(soundClip, position);
 
             onPlayed?.Invoke(position);
         }
@@ -47,9 +46,6 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
     [DisallowMultipleComponent]
     public class MoonBossFeedback : MonoBehaviour
     {
-        [Header("Audio Output")]
-        [SerializeField] private AudioSource audioSource;
-
         [Header("Jump")]
         [SerializeField] private MoonFeedbackSlot jump = new MoonFeedbackSlot();
         [SerializeField] private MoonFeedbackSlot landing = new MoonFeedbackSlot();
@@ -68,25 +64,18 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [Header("Phase")]
         [SerializeField] private MoonFeedbackSlot phaseTwo = new MoonFeedbackSlot();
 
-        private void Awake()
-        {
-            if (audioSource == null) audioSource = GetComponent<AudioSource>();
-            if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.playOnAwake = false;
-        }
-
-        public void PlayJump(Vector3 position) => jump?.Play(this, audioSource, position);
+        public void PlayJump(Vector3 position) => jump?.Play(position);
         public void PlayLanding(Vector3 position, bool strong)
         {
-            if (strong) strongLanding?.Play(this, audioSource, position);
-            else landing?.Play(this, audioSource, position);
+            if (strong) strongLanding?.Play(position);
+            else landing?.Play(position);
         }
-        public void PlayFragment(Vector3 position) => fragment?.Play(this, audioSource, position);
-        public void PlayRockExplosion(Vector3 position) => rockExplosion?.Play(this, audioSource, position);
-        public void PlayCloneThrow(Vector3 position) => cloneThrow?.Play(this, audioSource, position);
-        public void PlayLaserFire(Vector3 position) => laserFire?.Play(this, audioSource, position);
-        public void PlayShrink(Vector3 position) => shrink?.Play(this, audioSource, position);
-        public void PlayDash(Vector3 position) => dash?.Play(this, audioSource, position);
-        public void PlayPhaseTwo(Vector3 position) => phaseTwo?.Play(this, audioSource, position);
+        public void PlayFragment(Vector3 position) => fragment?.Play(position);
+        public void PlayRockExplosion(Vector3 position) => rockExplosion?.Play(position);
+        public void PlayCloneThrow(Vector3 position) => cloneThrow?.Play(position);
+        public void PlayLaserFire(Vector3 position) => laserFire?.Play(position);
+        public void PlayShrink(Vector3 position) => shrink?.Play(position);
+        public void PlayDash(Vector3 position) => dash?.Play(position);
+        public void PlayPhaseTwo(Vector3 position) => phaseTwo?.Play(position);
     }
 }

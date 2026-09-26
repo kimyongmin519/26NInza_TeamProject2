@@ -126,6 +126,9 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 }
             }
 
+            owner?.ShakeCamera(isThrown ? 0.78f : 0.62f);
+            owner?.PlayRockExplosionFeedback(transform.position);
+
             Destroy(gameObject);
         }
 

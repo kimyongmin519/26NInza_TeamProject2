@@ -2,6 +2,7 @@ using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using Member.ODK.Scripts.Enemys.Skills;
 using System;
 using System.Collections;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,6 +21,10 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [SerializeField] private float groundRayHeight = 20f;
         [SerializeField] private float groundRayDistance = 50f;
         [SerializeField] private bool drawDebugGizmos = true;
+
+        [Header("Camera Impulse")]
+        [SerializeField] private CinemachineImpulseSource cameraImpulseSource;
+        [SerializeField, Min(0f)] private float cameraShakeMinimumInterval = 0.07f;
 
         [Header("Health / Phase")]
         [SerializeField] private HealthModule healthModule;
@@ -57,12 +62,20 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         public bool IsDead { get; private set; }
         protected virtual bool HasPhaseTwo => true;
         protected virtual float PhaseTransitionDelay => 1.1f;
+        private float nextCameraShakeTime;
+        private float lastCameraShakePower;
 
         protected override void Awake()
         {
             base.Awake();
             originPos = transform.position;
             if (arena == null) arena = FindFirstObjectByType<BossArena>();
+            if (cameraImpulseSource == null)
+                cameraImpulseSource = GetComponent<CinemachineImpulseSource>();
+            if (cameraImpulseSource == null)
+                cameraImpulseSource = gameObject.AddComponent<CinemachineImpulseSource>();
+            ConfigureImpulseSource();
+            EnsureImpulseListener();
             if (healthModule == null) healthModule = GetModule<HealthModule>();
             if (healthModule != null) healthModule.OnDeath += HandleHealthDeath;
         }
@@ -237,6 +250,43 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         {
             onMissileSpawn?.Invoke(position);
             OnMissileSpawn(position);
+        }
+
+        public void ShakeCamera(float power)
+        {
+            if (cameraImpulseSource == null || power <= 0f) return;
+            if (Time.time < nextCameraShakeTime && power <= lastCameraShakePower) return;
+            lastCameraShakePower = power;
+            nextCameraShakeTime = Time.time + cameraShakeMinimumInterval;
+            cameraImpulseSource.GenerateImpulse(power);
+        }
+
+        private static void EnsureImpulseListener()
+        {
+            CinemachineCamera camera = FindFirstObjectByType<CinemachineCamera>();
+            if (camera == null) return;
+
+            CinemachineImpulseListener listener = camera.GetComponent<CinemachineImpulseListener>();
+            if (listener == null) listener = camera.gameObject.AddComponent<CinemachineImpulseListener>();
+            listener.ApplyAfter = CinemachineCore.Stage.Noise;
+            listener.ChannelMask = 1;
+            listener.Gain = 1f;
+            listener.Use2DDistance = true;
+            listener.UseCameraSpace = true;
+        }
+
+        private void ConfigureImpulseSource()
+        {
+            if (cameraImpulseSource == null) return;
+            if (cameraImpulseSource.ImpulseDefinition == null)
+                cameraImpulseSource.ImpulseDefinition = new CinemachineImpulseDefinition();
+
+            CinemachineImpulseDefinition definition = cameraImpulseSource.ImpulseDefinition;
+            definition.ImpulseChannel = 1;
+            definition.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Bump;
+            definition.ImpulseDuration = 0.2f;
+            definition.ImpulseType = CinemachineImpulseDefinition.ImpulseTypes.Uniform;
+            cameraImpulseSource.DefaultVelocity = Vector3.down;
         }
 
         public void SpawnFistRocks(Vector3 position) => SpawnRocks(position, fistRockCount);

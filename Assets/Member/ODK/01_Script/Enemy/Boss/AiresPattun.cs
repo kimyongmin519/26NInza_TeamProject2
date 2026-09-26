@@ -37,9 +37,11 @@ namespace Member.ODK.Scripts.Enemys.Zodiac
                     SpawnBeam(Arena.RandomPoint());
                 }
 
-                yield return Wait(
-                    telegraphTime + beamDuration
-                );
+                yield return Wait(telegraphTime);
+
+                Boss.ShakeCamera(0.42f);
+
+                yield return Wait(beamDuration);
 
                 yield return Wait(0.25f);
             }

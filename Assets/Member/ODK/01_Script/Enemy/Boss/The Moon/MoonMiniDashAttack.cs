@@ -133,6 +133,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             {
                 contactCaster.DisableCasting();
                 Boss.AttackImpact(Boss.transform.position);
+                Boss.ShakeCamera(0.48f);
             }
         }
 

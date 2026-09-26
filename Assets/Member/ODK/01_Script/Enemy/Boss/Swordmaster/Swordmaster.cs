@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using KimLIb.SoundSystem;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts.Enemys.Bosses;
 using UnityEngine;
@@ -32,6 +33,15 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private bool prefabFacesRight = true;
         [SerializeField] private bool faceTarget = true;
 
+        [Header("Sound")]
+        [SerializeField] private SoundClipSO teleportSound;
+        [SerializeField] private SoundClipSO swordLaunchSound;
+        [SerializeField] private SoundClipSO swordDispelledSound;
+        [SerializeField] private SoundClipSO swordRecallSound;
+        [SerializeField] private SoundClipSO hitSound;
+        [SerializeField] private SoundClipSO deathSound;
+        [SerializeField] private float swordSoundInterval = 0.06f;
+
         [Header("Hooks")]
         [SerializeField] private BossPositionEvent onTeleport;
         [SerializeField] private BossPositionEvent onSwordLaunch;
@@ -48,6 +58,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         private readonly List<EnchantedSword> controlledSwords = new List<EnchantedSword>();
         private Vector3 bodyVisualScale;
         private int lastAttackIndex = -1;
+        private float nextSwordSoundTime;
 
         protected override void Awake()
         {
@@ -155,15 +166,30 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             return telegraphPrefab != null ? Instantiate(telegraphPrefab) : null;
         }
 
-        public void NotifySwordLaunch(Vector3 position) => onSwordLaunch?.Invoke(position);
-        public void NotifySwordDispelled(Vector3 position) => onSwordDispelled?.Invoke(position);
-        public void NotifySwordRecalled(Vector3 position) => onSwordRecalled?.Invoke(position);
+        public void NotifySwordLaunch(Vector3 position)
+        {
+            PlaySwordSound(swordLaunchSound, position);
+            onSwordLaunch?.Invoke(position);
+        }
+
+        public void NotifySwordDispelled(Vector3 position)
+        {
+            PlaySwordSound(swordDispelledSound, position);
+            onSwordDispelled?.Invoke(position);
+        }
+
+        public void NotifySwordRecalled(Vector3 position)
+        {
+            PlaySwordSound(swordRecallSound, position);
+            onSwordRecalled?.Invoke(position);
+        }
 
         public void Teleport(Vector3 destination)
         {
             transform.DOKill();
             destination = Arena != null ? Arena.Clamp(destination, 1f) : destination;
             transform.position = destination;
+            ODKSoundPlayback.Play(teleportSound, destination);
             onTeleport?.Invoke(destination);
         }
 
@@ -176,6 +202,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         public void TakeDamage(DamageData damage)
         {
             if (IsDead) return;
+            ODKSoundPlayback.Play(hitSound, transform.position);
             ApplyBossDamage(damage);
         }
 
@@ -185,7 +212,16 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         {
             StopMotion();
             ReturnEverySword();
+            ODKSoundPlayback.Play(deathSound, transform.position);
+            ShakeCamera(1.15f);
             onDefeated?.Invoke();
+        }
+
+        private void PlaySwordSound(SoundClipSO clip, Vector3 position)
+        {
+            if (Time.time < nextSwordSoundTime) return;
+            nextSwordSoundTime = Time.time + swordSoundInterval;
+            ODKSoundPlayback.Play(clip, position);
         }
 
         protected override void OnDrawGizmosSelected()

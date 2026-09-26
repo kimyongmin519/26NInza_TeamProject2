@@ -14,6 +14,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         protected override IEnumerator ExecuteLostSoul(GameObject target)
         {
             Boss.TeleportToTarget();
+            Boss.PlayAnimation("teleport attack", 0f);
             yield return new WaitForSeconds(appearDelay * DurationScale);
 
             float direction = target.transform.position.x >= Boss.transform.position.x ? 1f : -1f;
@@ -21,8 +22,10 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             Caster.ConfigureBox(hitboxSize, Boss.PlayerLayer);
             Caster.SetWorldPose(center, 0f);
             Boss.AttackReady(center);
+            Boss.PlaySlashFeedback();
             Caster.EnableCasting(new DamageData(damage, DamageType.Melee), activeDuration * DurationScale);
             Boss.AttackImpact(center);
+            Boss.ShakeCamera(0.72f);
             yield return new WaitForSeconds(activeDuration * DurationScale);
         }
     }

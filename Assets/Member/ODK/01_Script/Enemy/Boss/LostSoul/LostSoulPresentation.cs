@@ -22,6 +22,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         {
             if (animator == null) animator = GetComponentInChildren<Animator>(true);
             if (rigidBody == null) rigidBody = owner.GetComponent<Rigidbody2D>();
+            OnGroundStatusChange?.Invoke(false);
         }
 
         public void PlayClip(int clipHash)

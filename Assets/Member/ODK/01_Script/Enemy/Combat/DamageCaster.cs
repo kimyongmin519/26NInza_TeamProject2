@@ -23,6 +23,9 @@ namespace Member.ODK.Scripts.Enemys.Combat
 
     public class DamageCaster : MonoBehaviour
     {
+        private const float BossPlayerDamage = 1f;
+        private const float PlayerHitInvincibilityDuration = 2f;
+
         [Header("Cast Setting")]
         [SerializeField] private DamageCastMode castMode;
         [SerializeField] private Transform referenceTransform;
@@ -166,20 +169,27 @@ namespace Member.ODK.Scripts.Enemys.Combat
                 if (castMode == DamageCastMode.Sector && !IsInsideSector(hit.bounds.center, center, castAngle))
                     continue;
 
+                bool isPlayer = IsPlayerTarget(hit.transform);
+                HealthModule targetHealth = FindHealthModule(hit.transform);
+                if (isPlayer && targetHealth != null && targetHealth.IsInvisible)
+                    continue;
+                DamageData appliedDamage = isPlayer ? AsBossPlayerDamage(damage) : damage;
+
                 IDamageable damageable = hit.GetComponentInParent<IDamageable>();
                 if (damageable == null) damageable = hit.GetComponentInChildren<IDamageable>();
                 if (damageable != null)
                 {
                     if (!damagedTargets.Add(damageable)) continue;
-                    damageable.TakeDamage(damage);
+                    damageable.TakeDamage(appliedDamage);
+                    GrantPlayerInvincibility(isPlayer, targetHealth);
                     applied = true;
                     continue;
                 }
 
-                HealthModule health = hit.GetComponentInParent<HealthModule>();
-                if (health == null) health = hit.GetComponentInChildren<HealthModule>();
+                HealthModule health = targetHealth;
                 if (health == null || !damagedHealthModules.Add(health)) continue;
-                health.ApplyDamage(damage);
+                health.ApplyDamage(appliedDamage);
+                GrantPlayerInvincibility(isPlayer, health);
                 applied = true;
             }
 
@@ -230,19 +240,57 @@ namespace Member.ODK.Scripts.Enemys.Combat
         {
             if (target == null) return false;
 
+            bool isPlayer = IsPlayerTarget(target);
+            HealthModule targetHealth = FindHealthModule(target);
+            if (isPlayer && targetHealth != null && targetHealth.IsInvisible)
+                return false;
+            DamageData appliedDamage = isPlayer ? AsBossPlayerDamage(damage) : damage;
+
             IDamageable damageable = target.GetComponentInParent<IDamageable>();
             if (damageable == null) damageable = target.GetComponentInChildren<IDamageable>();
             if (damageable != null)
             {
-                damageable.TakeDamage(damage);
+                damageable.TakeDamage(appliedDamage);
+                GrantPlayerInvincibility(isPlayer, targetHealth);
                 return true;
             }
 
+            HealthModule health = targetHealth;
+            if (health == null) return false;
+            health.ApplyDamage(appliedDamage);
+            GrantPlayerInvincibility(isPlayer, health);
+            return true;
+        }
+
+        private static DamageData AsBossPlayerDamage(DamageData damage)
+        {
+            damage.Amount = BossPlayerDamage;
+            return damage;
+        }
+
+        private static bool IsPlayerTarget(Transform target)
+        {
+            if (target == null) return false;
+            Transform root = target.root;
+            if (root != null && root.CompareTag("Player")) return true;
+            int playerLayer = LayerMask.NameToLayer("Player");
+            return playerLayer >= 0 && (target.gameObject.layer == playerLayer || root != null && root.gameObject.layer == playerLayer);
+        }
+
+        private static HealthModule FindHealthModule(Transform target)
+        {
+            if (target == null) return null;
             HealthModule health = target.GetComponentInParent<HealthModule>();
             if (health == null) health = target.GetComponentInChildren<HealthModule>();
-            if (health == null) return false;
-            health.ApplyDamage(damage);
-            return true;
+            if (health == null && target.root != null)
+                health = target.root.GetComponentInChildren<HealthModule>(true);
+            return health;
+        }
+
+        private static void GrantPlayerInvincibility(bool isPlayer, HealthModule health)
+        {
+            if (!isPlayer || health == null || health.IsDead) return;
+            health.SettingInvisibleTime(PlayerHitInvincibilityDuration);
         }
 
         private Collider2D[] GetHits(Vector3 center, float castAngle)

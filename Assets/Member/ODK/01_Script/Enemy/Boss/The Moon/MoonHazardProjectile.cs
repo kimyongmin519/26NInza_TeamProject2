@@ -1,3 +1,5 @@
+using KimLIb.SoundSystem;
+using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
@@ -7,6 +9,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
     public class MoonHazardProjectile : MonoBehaviour
     {
         [SerializeField] private Vector2 fallingAngularSpeedRange = new Vector2(-320f, 320f);
+        [SerializeField] private SoundClipSO impactSound;
 
         public enum MoveMode
         {
@@ -99,12 +102,16 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                     other.transform,
                     new DamageData(damage, DamageType.Projectile)
                 );
+                ODKSoundPlayback.Play(impactSound, transform.position);
                 Consume();
                 return;
             }
 
             if (mode != MoveMode.Linear && (groundLayer.value & mask) != 0)
+            {
+                ODKSoundPlayback.Play(impactSound, transform.position);
                 Consume();
+            }
         }
 
         private void Consume()

@@ -335,7 +335,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
 
         public void Shake(bool strong)
         {
-            impulseSource?.GenerateImpulse(strong ? 2.4f : 1.1f);
+            ShakeCamera(strong ? 2.4f : 1.1f);
         }
 
         public void PlayFeedback(VolcanusFeedbackType type, Vector3 position)
@@ -380,6 +380,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
                 Ease.InQuad
             );
             feedback?.Play(VolcanusFeedbackType.Death, transform.position);
+            ShakeCamera(1.5f);
         }
 
         protected override void OnDestroy()

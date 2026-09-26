@@ -96,6 +96,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             yield return new WaitForSeconds(Mathf.Max(0f, warningDuration));
             DOTween.Kill(line);
             owner?.PlayLaserFeedback(line.GetPosition(0));
+            owner?.ShakeCamera(0.3f);
 
             Material laserMaterial = Resources.Load<Material>("ODKLaser");
             if (laserMaterial != null) line.sharedMaterial = laserMaterial;
