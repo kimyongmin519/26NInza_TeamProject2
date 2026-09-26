@@ -1,5 +1,4 @@
 using DG.Tweening;
-using Member.KYM.Scripts.Enemies.Boss;
 using Member.ODK.Scripts;
 using UnityEngine;
 
@@ -7,8 +6,8 @@ namespace Member.KYM.Scripts.UI
 {
     public class BossHealthBarUI : MonoBehaviour
     {
-        [Header("보스")]
-        [SerializeField] private BTAgentBoss boss;
+        [Header("표시할 체력 모듈")]
+        [SerializeField] private HealthModule healthModule;
 
         [Header("막대 마스크")]
         [SerializeField] private RectTransform fillMask;
@@ -37,7 +36,7 @@ namespace Member.KYM.Scripts.UI
 
         private void Start()
         {
-            Bind(boss);
+            Bind(healthModule);
         }
 
         private void OnEnable()
@@ -57,18 +56,18 @@ namespace Member.KYM.Scripts.UI
             StopLagTween();
         }
 
-        public void Bind(BTAgentBoss target)
+        public void Bind(HealthModule target)
         {
             if (_health != null)
                 _health.OnHealthChanged -= HandleHealthChanged;
 
             StopLagTween();
-            boss = target;
-            _health = boss != null ? boss.HealthModule : null;
+            healthModule = target;
+            _health = target;
 
             if (_health == null)
             {
-                Debug.LogWarning("보스의 HealthModule을 찾지 못했습니다.", this);
+                Debug.LogWarning("체력바에 HealthModule을 연결해야 합니다.", this);
                 return;
             }
 

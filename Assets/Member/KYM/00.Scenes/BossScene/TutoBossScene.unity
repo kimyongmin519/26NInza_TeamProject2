@@ -10723,6 +10723,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cabea89121f6d15428be8d9021426bf9, type: 3}
+--- !u!114 &5704851716760664170 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4910654518867590521, guid: cabea89121f6d15428be8d9021426bf9, type: 3}
+  m_PrefabInstance: {fileID: 5704851716760664169}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
 --- !u!1001 &6288762770576386904
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11135,6 +11146,10 @@ PrefabInstance:
       propertyPath: boss
       value: 
       objectReference: {fileID: 8444165542683116537}
+    - target: {fileID: 6892375597747435309, guid: 463f81a9fd084b4449acdda9e03384db, type: 3}
+      propertyPath: healthModule
+      value: 
+      objectReference: {fileID: 5704851716760664170}
     - target: {fileID: 7134993082002601247, guid: 463f81a9fd084b4449acdda9e03384db, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
