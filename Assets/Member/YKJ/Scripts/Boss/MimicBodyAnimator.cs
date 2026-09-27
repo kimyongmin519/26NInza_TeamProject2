@@ -19,6 +19,12 @@ namespace Member.YKJ.Bosses
         [SerializeField] private Vector2 tongueAnticipation = new Vector2(1.12f, 0.8f);
         [SerializeField] private Vector2 tongueExtension = new Vector2(0.88f, 1.12f);
         [SerializeField] private Vector2 tongueRecovery = new Vector2(1.12f, 0.9f);
+        [Header("Laser Scale Multipliers")]
+        [SerializeField] private Vector2 laserCharge = new Vector2(1.2f, 0.78f);
+        [SerializeField] private Vector2 laserOpen = new Vector2(0.88f, 1.2f);
+        [SerializeField] private Vector2 laserRecoil = new Vector2(1.22f, 0.85f);
+        [SerializeField] private Vector2 laserPulse = new Vector2(0.94f, 1.12f);
+        [SerializeField, Min(0.01f)] private float laserPulseTime = 0.18f;
 
         private Transform _visual;
         private Vector3 _restScale;
@@ -71,7 +77,8 @@ namespace Member.YKJ.Bosses
         public void PrepareJump(float duration)
         {
             if (BeginPose())
-                _pose.Append(ScaleTo(jumpAnticipation, duration, Ease.InQuad));
+                _pose.Append(ScaleTo(jumpAnticipation, duration * 0.75f, Ease.InQuad))
+                    .AppendInterval(duration * 0.25f);
         }
 
         public void Jump(float duration)
@@ -85,21 +92,23 @@ namespace Member.YKJ.Bosses
         public void Land(float duration)
         {
             if (!BeginPose()) return;
-            _pose.Append(ScaleTo(landingSquash, duration * 0.2f, Ease.OutQuad))
-                .Append(ScaleTo(Vector2.one, duration * 0.8f, Ease.OutBack));
+            _pose.Append(ScaleTo(landingSquash, duration * 0.15f, Ease.OutExpo))
+                .AppendInterval(duration * 0.15f)
+                .Append(ScaleTo(Vector2.one, duration * 0.7f, Ease.OutBack));
         }
 
         public void PrepareTreasure(float duration)
         {
             if (BeginPose())
-                _pose.Append(ScaleTo(treasureAnticipation, duration, Ease.InOutSine));
+                _pose.Append(ScaleTo(treasureAnticipation, duration * 0.8f, Ease.InOutSine))
+                    .AppendInterval(duration * 0.2f);
         }
 
         public void Spit(float interval)
         {
             if (!BeginPose()) return;
             float duration = SpitDuration(interval);
-            _pose.Append(ScaleTo(spitRecoil, duration * 0.3f, Ease.OutQuad))
+            _pose.Append(ScaleTo(spitRecoil, duration * 0.3f, Ease.OutExpo))
                 .Append(ScaleTo(Vector2.one, duration * 0.7f, Ease.OutBack));
         }
 
@@ -122,6 +131,28 @@ namespace Member.YKJ.Bosses
             if (!BeginPose()) return;
             _pose.Append(ScaleTo(tongueRecovery, duration * 0.35f, Ease.OutQuad))
                 .Append(ScaleTo(Vector2.one, duration * 0.65f, Ease.OutBack));
+        }
+
+        public void PrepareLaser(float duration)
+        {
+            if (!BeginPose()) return;
+            _pose.Append(ScaleTo(laserCharge, duration * 0.65f, Ease.InQuad))
+                .Append(ScaleTo(laserOpen, duration * 0.35f, Ease.OutBack));
+        }
+
+        public void FireLaser(float interval)
+        {
+            if (!BeginPose()) return;
+            _pose.Append(ScaleTo(laserRecoil, interval * 0.3f, Ease.OutQuad))
+                .Append(ScaleTo(laserOpen, interval * 0.7f, Ease.OutBack));
+        }
+
+        public void HoldLaser()
+        {
+            if (!BeginPose()) return;
+            _pose.Append(ScaleTo(laserPulse, laserPulseTime, Ease.InOutSine))
+                .Append(ScaleTo(laserOpen, laserPulseTime, Ease.InOutSine))
+                .SetLoops(-1, LoopType.Restart);
         }
 
         public void ResetPose()

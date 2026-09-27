@@ -86,6 +86,7 @@ namespace Member.YKJ.Bosses
             if (Boss.EmitTreasureWeapon(_heights.Next(), arcHeight) != null)
             {
                 Boss.BodyAnimator?.Spit(interval);
+                Boss.CombatVfx?.Spit();
                 if (feedbackChannel != null && spitFeedback != null)
                     feedbackChannel.RaiseEvent(new PlayFeedBack().Init(spitFeedback.FeedBackId));
                 if (Boss.Patterns.Current != this)

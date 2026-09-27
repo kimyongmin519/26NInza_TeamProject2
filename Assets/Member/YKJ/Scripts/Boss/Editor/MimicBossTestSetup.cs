@@ -81,6 +81,16 @@ namespace Member.YKJ.Bosses.Editor
             var bodyData = new SerializedObject(bodyAnimator);
             bodyData.FindProperty("chestRenderer").objectReferenceValue = visual;
             bodyData.ApplyModifiedProperties();
+            var combatVfx = Undo.AddComponent<MimicCombatVfx>(bossObject);
+            var vfxData = new SerializedObject(combatVfx);
+            vfxData.FindProperty("boss").objectReferenceValue = boss;
+            vfxData.FindProperty("chestRenderer").objectReferenceValue = visual;
+            vfxData.FindProperty("bodyCollider").objectReferenceValue = collider;
+            vfxData.FindProperty("glowMaterial").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<Material>(AssetFolder + "/MimicCombatGlow.mat");
+            vfxData.FindProperty("cameraChannel").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<KimLIb.EventSystem.EventChannelSO>("Assets/Member/KYM/03.GameAssets/Channels/_KIM_CameraChannel.asset");
+            vfxData.ApplyModifiedProperties();
             Transform mouth = Marker("Mouth", bossObject.transform, bossObject.transform.position + Vector3.up * 0.35f);
 
             Transform arenaRoot = Marker("MimicArena", null, Vector3.zero);
@@ -111,6 +121,7 @@ namespace Member.YKJ.Bosses.Editor
             LineRenderer warning = MakeLine("LandingWarning", arenaRoot, material, 0.09f, new Color(1f, 0.35f, 0.35f, 0.25f));
             var data = new SerializedObject(boss);
             data.FindProperty("bodyAnimator").objectReferenceValue = bodyAnimator;
+            data.FindProperty("combatVfx").objectReferenceValue = combatVfx;
             data.FindProperty("boomPrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<ParticleSystem>(
                 "Assets/Epic Toon FX/Prefabs/Combat/Explosions (Text)/Boom.prefab");
             data.FindProperty("boomCamera").objectReferenceValue = Camera.main;
@@ -162,11 +173,13 @@ namespace Member.YKJ.Bosses.Editor
             for (int i = 0; i < ordered.Length; i++)
                 fallingPlatforms.GetArrayElementAtIndex(i).objectReferenceValue = ordered[i];
             fallingData.FindProperty("flightCamera").objectReferenceValue = Camera.main;
+            fallingData.FindProperty("warningMaterial").objectReferenceValue = material;
             fallingData.ApplyModifiedProperties();
             MimicLaserPattern laserPattern = MakePattern<MimicLaserPattern>("Laser", patterns, 6);
             var laserData = new SerializedObject(laserPattern);
-            laserData.FindProperty("laserMaterial").objectReferenceValue =
-                AssetDatabase.LoadAssetAtPath<Material>(AssetFolder + "/MimicLaser.mat");
+            laserData.FindProperty("laserMaterial").objectReferenceValue = tongueMaterial;
+            laserData.FindProperty("chestRenderer").objectReferenceValue = visual;
+            laserData.FindProperty("openChestSprite").objectReferenceValue = LoadSprite(Icons + "Chest01OpenOutlined.png");
             laserData.ApplyModifiedProperties();
             var jumpData = new SerializedObject(jumpPattern);
             jumpData.FindProperty("landingWarning").objectReferenceValue = warning;

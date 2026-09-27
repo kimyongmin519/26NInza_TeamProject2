@@ -18,6 +18,7 @@ namespace Member.YKJ.Bosses
         [SerializeField, Min(0f)] private float patternInterval = 1f;
         [SerializeField] private UnityEvent onDeath;
         [SerializeField] private MimicBodyAnimator bodyAnimator;
+        [SerializeField] private MimicCombatVfx combatVfx;
 
         [Header("Half Health Boom")]
         [SerializeField] private ParticleSystem boomPrefab;
@@ -65,6 +66,7 @@ namespace Member.YKJ.Bosses
 
         public MimicPatternRunner Patterns { get; } = new MimicPatternRunner();
         public MimicBodyAnimator BodyAnimator => bodyAnimator;
+        public MimicCombatVfx CombatVfx => combatVfx;
         public MimicTonguePattern Tongue => GetPattern(tongueSkillId) as MimicTonguePattern;
         public Transform Target => target;
         public MimicArena Arena => arena;
@@ -143,6 +145,7 @@ namespace Member.YKJ.Bosses
 
             _nextPattern = 0;
             _idleTimer = 0f;
+            combatVfx?.Clear();
             _coinRainStarted = false;
             _halfHealthTriggered = false;
             Phase = EncounterPhase.PhaseOne;
@@ -222,10 +225,17 @@ namespace Member.YKJ.Bosses
             StopEncounter();
         }
 
-        public void TakeDamage(DamageData damage)
+        public void TakeDamage(DamageData damage) => ApplyDamageWithFeedback(damage, MouthPosition);
+
+        public void TakeWeaponDamage(DamageData damage, Vector3 hitPosition) => ApplyDamageWithFeedback(damage, hitPosition);
+
+        private void ApplyDamageWithFeedback(DamageData damage, Vector3 hitPosition)
         {
-            if (_encounterActive && damage.Amount > 0f)
-                HealthModule.ApplyDamage(damage);
+            if (!_encounterActive || damage.Amount <= 0f) return;
+            float previousHealth = HealthModule.CurrentHealth;
+            HealthModule.ApplyDamage(damage);
+            if (this != null && _encounterActive && HealthModule.CurrentHealth < previousHealth && !HealthModule.IsDead)
+                combatVfx?.Hit(hitPosition);
         }
 
         private void HandleHealthChanged(float current, float maximum)
@@ -237,6 +247,7 @@ namespace Member.YKJ.Bosses
             Phase = EncounterPhase.Transition;
             Patterns.Cancel();
             bodyAnimator?.ResetPose();
+            combatVfx?.PhaseBreak();
             _boomsRemaining = Mathf.Max(1, boomCount);
             _boomTimer = 0f;
         }
@@ -378,6 +389,7 @@ namespace Member.YKJ.Bosses
             _encounterActive = false;
             Patterns.Cancel();
             bodyAnimator?.ResetPose();
+            combatVfx?.Clear();
             ClearWeapons();
         }
 
@@ -388,6 +400,7 @@ namespace Member.YKJ.Bosses
             Patterns.Cancel(true);
             bodyAnimator?.ResetPose();
             ClearWeapons();
+            combatVfx?.DeathBurst();
             onDeath?.Invoke();
         }
 
