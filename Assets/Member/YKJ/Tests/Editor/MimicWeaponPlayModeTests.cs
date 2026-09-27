@@ -328,11 +328,11 @@ namespace Member.YKJ.Tests
                 SetField(treasure, "chestRenderer", visual);
                 SetField(treasure, "openChestSprite", open);
                 Assert.That(boss.Patterns.Start(treasure), Is.True);
-                Assert.That(visual.sprite, Is.SameAs(open));
+                Assert.That(visual.sprite, Is.SameAs(closed));
                 Assert.That(boss.Patterns.Interrupt(treasure, boss.Tongue), Is.True);
                 Assert.That(visual.sprite, Is.SameAs(open));
                 boss.Patterns.Complete(boss.Tongue);
-                Assert.That(visual.sprite, Is.SameAs(open));
+                Assert.That(visual.sprite, Is.SameAs(closed));
                 boss.Patterns.Complete(treasure);
                 Assert.That(visual.sprite, Is.SameAs(closed));
                 boss.Patterns.Start(treasure);
@@ -342,6 +342,95 @@ namespace Member.YKJ.Tests
             }
             finally
             {
+                Object.Destroy(closed);
+                Object.Destroy(open);
+            }
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator SpitPresentationDoesNotChangeBallisticsAndResetsWhenGrabbed()
+        {
+            MimicWeapon prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<MimicWeapon>(
+                "Assets/Member/YKJ/MimicTestAssets/MimicTreasureWeapon.prefab");
+            MimicWeapon weapon = Object.Instantiate(prefab);
+            _objects.Add(weapon.gameObject);
+            var presentation = weapon.GetComponent<MimicSpitPresentation>();
+            var body = weapon.GetComponent<Rigidbody2D>();
+            var collider = weapon.GetComponent<BoxCollider2D>();
+            var visual = weapon.GetComponentInChildren<SpriteRenderer>();
+            Material material = visual.sharedMaterial;
+            Vector3 visualScale = visual.transform.localScale;
+            Quaternion visualRotation = visual.transform.localRotation;
+            weapon.LaunchToSurfaceFromBoss(null, new Vector2(5f, 2f), 1f, false);
+            Vector3 position = weapon.transform.position;
+            Vector3 scale = weapon.transform.localScale;
+            Vector2 velocity = body.linearVelocity;
+            Vector2 size = collider.size;
+            presentation.Play(position + Vector3.up * 0.1f);
+            Assert.That(body.linearVelocity, Is.EqualTo(velocity));
+            Assert.That(weapon.transform.position, Is.EqualTo(position));
+            Assert.That(weapon.transform.localScale, Is.EqualTo(scale));
+            Assert.That(collider.size, Is.EqualTo(size));
+            Assert.That(visual.sharedMaterial, Is.Not.SameAs(material));
+            Assert.That(visual.transform.localScale, Is.Not.EqualTo(visualScale));
+            var sequence = (DG.Tweening.Sequence)typeof(MimicSpitPresentation)
+                .GetField("_reveal", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(presentation);
+            DG.Tweening.TweenExtensions.Complete(sequence, true);
+            Assert.That(visual.transform.localScale, Is.EqualTo(visualScale));
+            weapon.Grab(Create("Hand", Vector2.zero).transform, null);
+            typeof(MimicSpitPresentation).GetMethod("LateUpdate", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(presentation, null);
+            Assert.That(visual.sharedMaterial, Is.SameAs(material));
+            Assert.That(visual.transform.localScale, Is.EqualTo(visualScale));
+            Assert.That(visual.transform.localRotation, Is.EqualTo(visualRotation));
+            weapon.Release();
+            weapon.Retire();
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator TreasureOpensForEachShotAndFinishesRecoilBeforeTongueInterrupt()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(-20f, 0f));
+            Transform target = Create("Target", new Vector2(12f, 0f)).transform;
+            MimicBoss boss = CreateBoss(Vector2.zero, target, weapon);
+            var treasure = boss.GetComponentInChildren<MimicTreasurePattern>();
+            SpriteRenderer visual = Create("Chest", Vector2.zero).AddComponent<SpriteRenderer>();
+            visual.transform.SetParent(boss.transform, false);
+            Sprite closed = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), Vector2.one * 0.5f);
+            Sprite open = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), Vector2.one * 0.5f);
+            visual.sprite = closed;
+            SetField(treasure, "chestRenderer", visual);
+            SetField(treasure, "openChestSprite", open);
+            try
+            {
+                Assert.That(boss.Patterns.Start(treasure), Is.True);
+                Assert.That(visual.sprite, Is.SameAs(closed));
+                boss.Patterns.Tick(0.36f);
+                Assert.That(treasure.EmittedCount, Is.Zero);
+                boss.Patterns.Tick(0.14f);
+                Assert.That(treasure.EmittedCount, Is.EqualTo(1));
+                Assert.That(visual.sprite, Is.SameAs(open));
+                boss.Patterns.Tick(0.2f);
+                Assert.That(visual.sprite, Is.SameAs(closed));
+                boss.Patterns.Tick(0.3f);
+                Assert.That(treasure.EmittedCount, Is.EqualTo(2));
+                for (int i = 0; i < 3; i++) boss.Patterns.Tick(0.5f);
+                Assert.That(treasure.EmittedCount, Is.EqualTo(5));
+                Assert.That(boss.Patterns.Current, Is.SameAs(treasure));
+                boss.Patterns.Tick(0.2f);
+                Assert.That(boss.Patterns.Current, Is.SameAs(boss.Tongue));
+                boss.Patterns.Complete(boss.Tongue);
+                Assert.That(visual.sprite, Is.SameAs(closed));
+                boss.Patterns.Tick(0.5f);
+                Assert.That(treasure.EmittedCount, Is.EqualTo(6));
+                boss.Patterns.Cancel();
+                Assert.That(visual.sprite, Is.SameAs(closed));
+            }
+            finally
+            {
+                boss.StopEncounter();
                 Object.Destroy(closed);
                 Object.Destroy(open);
             }
@@ -818,6 +907,59 @@ namespace Member.YKJ.Tests
             Assert.That(weapon.transform.position.x, Is.GreaterThan(2.5f));
             Assert.That(weapon.State, Is.EqualTo(MimicWeapon.WeaponState.BossFlight));
             Assert.That(weapon.CanBeGrabbed, Is.True);
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator JumpAfterimagesStayInWorldSpaceFadeOnLandingAndClearOnCancel()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(-20f, 0f));
+            Transform target = Create("Target", new Vector2(12f, 0f)).transform;
+            MimicBoss boss = CreateBoss(Vector2.zero, target, weapon);
+            MimicJumpPattern jump = ConfigureJump(boss);
+            var source = boss.gameObject.AddComponent<SpriteRenderer>();
+            Sprite sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), Vector2.one * 0.5f, 1f);
+            source.sprite = sprite;
+            var afterimage = boss.gameObject.AddComponent<MimicJumpAfterimage>();
+            SetField(afterimage, "sourceRenderer", source);
+            SetField(jump, "afterimage", afterimage);
+            MethodInfo tick = typeof(MimicJumpAfterimage).GetMethod("Tick", BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo imagesField = typeof(MimicJumpAfterimage).GetField("_images", BindingFlags.Instance | BindingFlags.NonPublic);
+            try
+            {
+                boss.Patterns.Start(jump);
+                tick.Invoke(afterimage, new object[] { 0.1f });
+                Assert.That(imagesField.GetValue(afterimage), Is.Null, "No afterimages during anticipation.");
+                boss.Patterns.Tick(0.35f);
+                boss.Patterns.Tick(0.2f);
+                Vector3 airbornePosition = boss.transform.position;
+                tick.Invoke(afterimage, new object[] { 0.05f });
+                var images = (SpriteRenderer[])imagesField.GetValue(afterimage);
+                Assert.That(images.Length, Is.EqualTo(8));
+                Assert.That(images[0].enabled, Is.True);
+                Assert.That(images[0].sprite, Is.SameAs(sprite));
+                Assert.That(images[0].transform.position, Is.EqualTo(airbornePosition));
+                Assert.That(boss.transform.position, Is.EqualTo(airbornePosition));
+                boss.Patterns.Tick(0.55f);
+                Assert.That(jump.LandedCount, Is.EqualTo(1));
+                Assert.That(images[0].transform.position, Is.EqualTo(airbornePosition));
+                Assert.That(images[0].enabled, Is.True, "Landing allows the last snapshots to fade.");
+                tick.Invoke(afterimage, new object[] { 0.3f });
+                foreach (SpriteRenderer image in images) Assert.That(image.enabled, Is.False);
+
+                boss.Patterns.Cancel();
+                boss.Patterns.Start(jump);
+                boss.Patterns.Tick(0.35f);
+                for (int i = 0; i < 12; i++) tick.Invoke(afterimage, new object[] { 0.05f });
+                Assert.That(imagesField.GetValue(afterimage), Is.SameAs(images), "The fixed pool must be reused.");
+                boss.Patterns.Cancel();
+                foreach (SpriteRenderer image in images) Assert.That(image.enabled, Is.False);
+                afterimage.Begin();
+                tick.Invoke(afterimage, new object[] { 0.05f });
+                afterimage.enabled = false;
+                foreach (SpriteRenderer image in images) Assert.That(image.enabled, Is.False);
+            }
+            finally { Object.Destroy(sprite); }
             yield return null;
         }
 

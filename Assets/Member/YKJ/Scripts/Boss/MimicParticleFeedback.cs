@@ -72,7 +72,7 @@ namespace Member.YKJ.Bosses
                 main.startColor = color;
                 var renderer = particles.GetComponent<ParticleSystemRenderer>();
                 if (renderer == null) continue;
-                renderer.sharedMaterial = particles == effect ? sparkMaterial : cloudMaterial;
+                renderer.sharedMaterial = particles == effect || particles.name == "Sparks" ? sparkMaterial : cloudMaterial;
                 renderer.sortingLayerName = "Weapon";
                 renderer.sortingOrder = 40;
             }

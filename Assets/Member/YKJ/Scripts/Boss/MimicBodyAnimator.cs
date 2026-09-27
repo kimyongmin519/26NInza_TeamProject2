@@ -15,6 +15,11 @@ namespace Member.YKJ.Bosses
         [SerializeField] private Vector2 treasureAnticipation = new Vector2(1.08f, 1.15f);
         [SerializeField] private Vector2 spitRecoil = new Vector2(1.18f, 0.82f);
         [SerializeField, Min(0.01f)] private float spitRecoilTime = 0.18f;
+        [Header("Weapon Spit")]
+        [SerializeField] private Vector2 weaponCharge = new Vector2(1.16f, 0.78f);
+        [SerializeField] private Vector2 weaponRelease = new Vector2(0.85f, 1.22f);
+        [SerializeField, Min(0f)] private float weaponKick = 0.12f;
+        private float _spitKick;
         [Header("Tongue Scale Multipliers")]
         [SerializeField] private Vector2 tongueAnticipation = new Vector2(1.12f, 0.8f);
         [SerializeField] private Vector2 tongueExtension = new Vector2(0.88f, 1.12f);
@@ -54,6 +59,7 @@ namespace Member.YKJ.Bosses
             if (!isActiveAndEnabled || !CaptureRestPose())
                 return false;
             _pose?.Kill();
+            _spitKick = 0f;
             _pose = DOTween.Sequence();
             return true;
         }
@@ -70,6 +76,7 @@ namespace Member.YKJ.Bosses
             if (_visual == null || chestRenderer == null || chestRenderer.sprite == null)
                 return;
             Vector3 position = _restPosition;
+            position.x += _spitKick;
             position.y = _restBottom - chestRenderer.sprite.bounds.min.y * _visual.localScale.y;
             _visual.localPosition = position;
         }
@@ -113,6 +120,34 @@ namespace Member.YKJ.Bosses
         }
 
         public float SpitDuration(float interval) => Mathf.Min(spitRecoilTime, Mathf.Max(0.01f, interval));
+
+        public void PrepareWeaponSpit(float duration)
+        {
+            if (!BeginPose()) return;
+            _pose.Append(ScaleTo(weaponCharge, duration * 0.8f, Ease.InQuad))
+                .AppendInterval(duration * 0.2f);
+        }
+
+        public void SpitWeapon(Vector2 direction, float interval)
+        {
+            if (!BeginPose()) return;
+            float duration = SpitDuration(interval);
+            float kick = -direction.normalized.x * weaponKick;
+            _pose.Append(ScaleTo(weaponRelease, duration * 0.25f, Ease.OutExpo))
+                .Join(DOTween.To(() => _spitKick, value => _spitKick = value, kick, duration * 0.25f).OnUpdate(AlignFeet))
+                .Append(ScaleTo(Vector2.one, duration * 0.75f, Ease.OutBack))
+                .Join(DOTween.To(() => _spitKick, value => _spitKick = value, 0f, duration * 0.75f).OnUpdate(AlignFeet));
+        }
+
+        public Vector3 AnimatedMouthPosition(Vector3 stableWorldPosition)
+        {
+            if (!CaptureRestPose() || Mathf.Abs(_restScale.x * _restScale.y * _restScale.z) < 0.000001f)
+                return stableWorldPosition;
+            AlignFeet();
+            Vector3 point = _visual.parent.InverseTransformPoint(stableWorldPosition) - _restPosition;
+            point = new Vector3(point.x / _restScale.x, point.y / _restScale.y, point.z / _restScale.z);
+            return _visual.TransformPoint(point);
+        }
 
         public void PrepareTongue(float duration)
         {
@@ -159,6 +194,7 @@ namespace Member.YKJ.Bosses
         {
             _pose?.Kill();
             _pose = null;
+            _spitKick = 0f;
             if (_visual == null)
                 return;
             _visual.localScale = _restScale;

@@ -331,6 +331,8 @@ namespace Member.YKJ.Bosses
                     platformEdgeInset, UnityEngine.Random.value);
             }
             weapon.LaunchToSurfaceFromBoss(this, landing, arcHeight, false);
+            weapon.GetComponent<MimicSpitPresentation>()?.Play(
+                bodyAnimator != null ? bodyAnimator.AnimatedMouthPosition(MouthPosition) : MouthPosition);
             _spawnedWeapons.RemoveAll(item => item == null);
             _spawnedWeapons.Add(weapon);
             return weapon;

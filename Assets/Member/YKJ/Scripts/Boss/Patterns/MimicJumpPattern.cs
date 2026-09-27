@@ -25,6 +25,8 @@ namespace Member.YKJ.Bosses
         [Header("Ground Contact")]
         [SerializeField] private Collider2D groundSurface;
         [SerializeField] private Collider2D bossCollider;
+        [Header("Jump Afterimage")]
+        [SerializeField] private MimicJumpAfterimage afterimage;
 
         private enum Step { Warning, Flight, Landed }
         private Step _step;
@@ -109,6 +111,7 @@ namespace Member.YKJ.Bosses
                         _elapsed = 0f;
                         _step = Step.Flight;
                         Boss.BodyAnimator?.Jump(flightTime);
+                        afterimage?.Begin();
                     }
                     break;
                 case Step.Flight:
@@ -117,7 +120,7 @@ namespace Member.YKJ.Bosses
                         Mathf.Clamp01(flightProgress.Evaluate(t)) : t;
                     Boss.transform.position = Vector3.Lerp(_start, _landing, progress) +
                         Vector3.up * (4f * jumpHeight * progress * (1f - progress));
-                    if (t < 1f) Boss.CombatVfx?.JumpAfterimage();
+                    if (t < 1f && afterimage == null) Boss.CombatVfx?.JumpAfterimage();
                     if (t >= 1f)
                         Land();
                     break;
@@ -140,6 +143,7 @@ namespace Member.YKJ.Bosses
 
         private void Land()
         {
+            afterimage?.Stop();
             _landedCount++;
             _step = Step.Landed;
             _elapsed = 0f;
@@ -157,10 +161,22 @@ namespace Member.YKJ.Bosses
                 _pendingTongue = true;
         }
 
-        public override void OnPause() => Boss.BodyAnimator?.ResetPose();
+        public override void OnPause()
+        {
+            afterimage?.Stop(true);
+            Boss.BodyAnimator?.ResetPose();
+        }
+
+        public override void OnResume()
+        {
+            if (_step == Step.Flight) afterimage?.Begin();
+        }
+
+        private void OnDisable() => afterimage?.Stop(true);
 
         public override void OnEnd()
         {
+            afterimage?.Stop(true);
             Boss.BodyAnimator?.ResetPose();
             if (landingWarning != null)
                 landingWarning.enabled = false;
