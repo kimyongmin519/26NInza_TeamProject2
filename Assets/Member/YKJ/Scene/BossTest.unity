@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 32943288}
   - component: {fileID: 32943287}
   - component: {fileID: 32943286}
+  - component: {fileID: 2051100000}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4152,6 +4153,7 @@ GameObject:
   - component: {fileID: 841339998}
   - component: {fileID: 841339997}
   - component: {fileID: 2051000042}
+  - component: {fileID: 2051200000}
   m_Layer: 8
   m_Name: Mimic
   m_TagString: Untagged
@@ -13910,17 +13912,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.YKJ.Bosses.MimicLaserPattern
   skillId: 6
   laserMaterial: {fileID: 2100000, guid: 3b135b8d8a0745e5bfdd0b697e0e21bc, type: 2}
-  shotCount: 10
+  shotCount: 5
   angleRange: {x: 0, y: 0}
-  warningTime: 0.6
+  warningTime: 1
   shotInterval: 0.12
-  rotationWarningTime: 0.6
+  rotationWarningTime: 1.2
   rotationWarningColor: {r: 1, g: 0.85, b: 0.1, a: 1}
-  rotationDuration: 10
+  rotationDuration: 14
   clockwise: 1
   length: 40
-  width: 0.65
-  damage: 15
+  width: 0.35
+  damage: 1
   playerLayers:
     serializedVersion: 2
     m_Bits: 64
@@ -14154,6 +14156,181 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7847070380472739339, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
   m_PrefabInstance: {fileID: 505932362}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2051100000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 32943285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c11265b855408d42af33d62691f5194, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineExternalImpulseListener
+  ChannelMask: 1
+  Gain: 1
+  Use2DDistance: 1
+  UseLocalSpace: 1
+  ReactionSettings:
+    SecondaryNoise: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    Duration: 1
+--- !u!1001 &2051100100
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4401565639005453807, guid: 463f81a9fd084b4449acdda9e03384db, type: 3}
+      propertyPath: m_Name
+      value: PlayerCombatCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 1386471769492366299, guid: 463f81a9fd084b4449acdda9e03384db, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5989076581725319715, guid: 463f81a9fd084b4449acdda9e03384db, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5268423436349286298, guid: 463f81a9fd084b4449acdda9e03384db, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1168002041013029279, guid: 463f81a9fd084b4449acdda9e03384db, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 463f81a9fd084b4449acdda9e03384db, type: 3}
+--- !u!1001 &2051100200
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1461123983170014624, guid: 7ebf2f922f8e2054ca2d148c7293a874, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1461123983170014624, guid: 7ebf2f922f8e2054ca2d148c7293a874, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7623046250766386164, guid: 7ebf2f922f8e2054ca2d148c7293a874, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2773509164285571286, guid: 7ebf2f922f8e2054ca2d148c7293a874, type: 3}
+      propertyPath: priority
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 573541175216789732, guid: 7ebf2f922f8e2054ca2d148c7293a874, type: 3}
+      propertyPath: priority
+      value: 30
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7ebf2f922f8e2054ca2d148c7293a874, type: 3}
+--- !u!1001 &2051100300
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4035959084908991902, guid: 37f7b9d85a98fbf4b9e89fa0f92ea602, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4035959084908991902, guid: 37f7b9d85a98fbf4b9e89fa0f92ea602, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 37f7b9d85a98fbf4b9e89fa0f92ea602, type: 3}
+--- !u!1001 &2051100400
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3028986915963687807, guid: d35cf6abc6a3b57428f6cbf23f58027c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3028986915963687807, guid: d35cf6abc6a3b57428f6cbf23f58027c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d35cf6abc6a3b57428f6cbf23f58027c, type: 3}
+--- !u!1001 &2051100500
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5479175241967728943, guid: 8af236cfafa52b645ac43281fcc9519a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5479175241967728943, guid: 8af236cfafa52b645ac43281fcc9519a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8af236cfafa52b645ac43281fcc9519a, type: 3}
+--- !u!114 &2051200000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841339995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 917f3c698eb04f74b24c469a205562db, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.YKJ.Bosses.MimicParticleFeedback
+  boss: {fileID: 841339997}
+  bodyCollider: {fileID: 841340000}
+  feedbackChannel: {fileID: 11400000, guid: 5a23db34f07f17642a77e08053379041, type: 2}
+  spitFeedback: {fileID: 11400000, guid: 6becc873dfeb73948a71ea43f90cae0f, type: 2}
+  landingFeedback: {fileID: 11400000, guid: 160b2b6194d2c4c4bafc7a0702b263d9, type: 2}
+  dustPrefab: {fileID: 19875214, guid: 146d2ff25be0f824fa285b16b2915ff3, type: 3}
+  sparkMaterial: {fileID: 2100000, guid: 768b1725f5534aada14154280ebc1ae5, type: 2}
+  cloudMaterial: {fileID: 2100000, guid: 4662576cbeef42c8916ff8d348d39ee8, type: 2}
+  spitOffset: {x: 0, y: 0.1, z: 0}
+  spitScale: 0.4
+  spitColor: {r: 1, g: 0.88, b: 0.58, a: 0.85}
+  landingScale: 0.6
+  landingColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.8}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -14172,3 +14349,8 @@ SceneRoots:
   - {fileID: 790701835}
   - {fileID: 80012329}
   - {fileID: 2104317261}
+  - {fileID: 2051100100}
+  - {fileID: 2051100200}
+  - {fileID: 2051100300}
+  - {fileID: 2051100400}
+  - {fileID: 2051100500}
