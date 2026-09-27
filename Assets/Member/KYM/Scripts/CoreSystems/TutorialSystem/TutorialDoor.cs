@@ -12,6 +12,7 @@ namespace Member.KYM.Scripts.CoreSystems.TutorialSystem
         [SerializeField] private Vector3 openLocalOffset = new(0f, 3f, 0f);
 
         [Header("열리기 전 떨림")]
+        [SerializeField, Min(0f)] private float shakeStartDelay = 0f;
         [SerializeField, Min(0f)] private float shakeDuration = 0.4f;
         [SerializeField] private Vector3 shakeStrength = new(0.08f, 0.04f, 0f);
         [SerializeField, Min(1)] private int shakeVibrato = 18;
@@ -47,6 +48,9 @@ namespace Member.KYM.Scripts.CoreSystems.TutorialSystem
             Vector3 openPosition = _closedLocalPosition + openLocalOffset;
 
             _sequence = DOTween.Sequence();
+            if (shakeStartDelay > 0f)
+                _sequence.AppendInterval(shakeStartDelay);
+
             if (shakeDuration > 0f && shakeStrength.sqrMagnitude > 0f)
             {
                 _sequence.Append(doorBody.DOShakePosition(
@@ -95,6 +99,7 @@ namespace Member.KYM.Scripts.CoreSystems.TutorialSystem
 
         private void OnValidate()
         {
+            shakeStartDelay = Mathf.Max(0f, shakeStartDelay);
             shakeDuration = Mathf.Max(0f, shakeDuration);
             shakeVibrato = Mathf.Max(1, shakeVibrato);
             openDuration = Mathf.Max(0f, openDuration);

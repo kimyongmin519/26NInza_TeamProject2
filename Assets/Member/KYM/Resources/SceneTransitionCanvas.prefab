@@ -112,9 +112,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000000001}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e753a1f678647dca07840d559e46ae5, type: 3}
+  m_Script: {fileID: 11500000, guid: ed1345993b61442790b72e71365285ad, type: 3}
   m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.SceneTransitionManager
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.TransitionUIController
+  transitionChannel: {fileID: 11400000, guid: 7005849eaf054b1e91212b09e5c40b71, type: 2}
   fadeImage: {fileID: 1000000010}
   openCircleSize: 2.5
   closedCircleSize: 0

@@ -675,56 +675,17 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!1 &638709435
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 638709436}
-  - component: {fileID: 638709437}
-  m_Layer: 0
-  m_Name: SceneLoadManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &638709436
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 638709435}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.30661, y: -0.78279, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &638709437
+--- !u!114 &638709437 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 4366109518597234762, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+  m_PrefabInstance: {fileID: 6557968170753347634}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 638709435}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8e753a1f678647dca07840d559e46ae5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.SceneTransitionManager
-  transitionCanvas: {fileID: 226042060}
-  fadeImage: {fileID: 703188346}
-  openCircleSize: 2.5
-  closedCircleSize: 0
-  fadeOutDuration: 0.75
-  fadeInDuration: 0.75
 --- !u!114 &703188346 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7372610172872804182, guid: 6ed5dc3094bb19a40b177389b00a0a0c, type: 3}
@@ -5468,6 +5429,71 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
+--- !u!1001 &6557968170753347634
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3067262535969865518, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: m_Name
+      value: SceneLoadManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 4366109518597234762, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: fadeImage
+      value: 
+      objectReference: {fileID: 703188346}
+    - target: {fileID: 4366109518597234762, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: transitionCanvas
+      value: 
+      objectReference: {fileID: 226042060}
+    - target: {fileID: 5674432924238014603, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.30661
+      objectReference: {fileID: 0}
+    - target: {fileID: 5674432924238014603, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.78279
+      objectReference: {fileID: 0}
+    - target: {fileID: 5674432924238014603, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5674432924238014603, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5674432924238014603, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5674432924238014603, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5674432924238014603, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5674432924238014603, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5674432924238014603, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5674432924238014603, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
 --- !u!1001 &7574200008696160783
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5551,7 +5577,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 915966514634738292, guid: b712384313abfab499b37909e2220c6a, type: 3}
       propertyPath: OnSuccess.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
-      value: TutoBossScene
+      value: TutorialRunScene
       objectReference: {fileID: 0}
     - target: {fileID: 4728847659239795164, guid: b712384313abfab499b37909e2220c6a, type: 3}
       propertyPath: m_Name
@@ -5679,4 +5705,4 @@ SceneRoots:
   - {fileID: 1624026192}
   - {fileID: 7574200008696160783}
   - {fileID: 39640016}
-  - {fileID: 638709436}
+  - {fileID: 6557968170753347634}

@@ -175,7 +175,7 @@ HingeJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0, y: -0.18799973}
+  m_ConnectedAnchor: {x: 0, y: -0.18800068}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -360,7 +360,7 @@ HingeJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0, y: -0.19600105}
+  m_ConnectedAnchor: {x: 0, y: -0.1960001}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -545,7 +545,7 @@ HingeJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0, y: -0.19000053}
+  m_ConnectedAnchor: {x: 0, y: -0.18999958}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -915,7 +915,7 @@ HingeJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0, y: -0.19599915}
+  m_ConnectedAnchor: {x: 0, y: -0.1960001}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -986,7 +986,7 @@ Transform:
   m_GameObject: {fileID: 3238657179653327525}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.2235918, y: -0.21725059, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1132,7 +1132,7 @@ HingeJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 7.562592, y: 19.96575}
+  m_ConnectedAnchor: {x: 91.54, y: 11.22}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -1282,7 +1282,7 @@ HingeJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0.028999805, y: -0.5317497}
+  m_ConnectedAnchor: {x: 0.028999329, y: -0.5317497}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -1352,6 +1352,19 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: 99ceb6916940e364a9fc412701342f47, type: 2}
           m_ObjectArgumentAssemblyTypeName: KimLIb.AnimatorSystems.AnimParamSO, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: Member.KYM.Scripts.CoreSystems.TutorialSystem.TutorialDoor,
+          Assembly-CSharp
+        m_MethodName: Open
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1583,7 +1596,7 @@ HingeJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0, y: -0.1970005}
+  m_ConnectedAnchor: {x: 0, y: -0.19699955}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
@@ -1953,7 +1966,7 @@ HingeJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0, y: -0.19199944}
+  m_ConnectedAnchor: {x: 0, y: -0.19200039}
   m_UseConnectedAnchor: 1
   m_UseMotor: 0
   m_Motor:
