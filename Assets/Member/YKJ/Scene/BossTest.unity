@@ -13672,7 +13672,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   landingDelay: 0.1
-  landingDamage: 20
+  landingDamage: 1
   playerLayers:
     serializedVersion: 2
     m_Bits: 64
@@ -13732,9 +13732,9 @@ MonoBehaviour:
   warningTime: 0.5
   extendTime: 0.2
   retractTime: 0.35
-  reach: 15
+  reach: 30
   width: 1
-  damage: 15
+  damage: 1
   playerLayers:
     serializedVersion: 2
     m_Bits: 64
@@ -13826,7 +13826,7 @@ MonoBehaviour:
   flightCamera: {fileID: 32943289}
   heightAboveScreen: {x: 2, y: 4}
   gravity: 2
-  damage: 10
+  damage: 1
   lifetime: 10
 --- !u!1 &2051000060
 GameObject:
