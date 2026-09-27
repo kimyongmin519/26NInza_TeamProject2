@@ -11,6 +11,7 @@ namespace Member.YKJ.Bosses
 
         public int Count { get; private set; }
         public bool Finished => Count >= _total;
+        public float TimeUntilEmission => Math.Max(0f, _interval - _elapsed);
 
         public MimicEmissionProgress(int total, float interval)
         {

@@ -4152,6 +4152,7 @@ GameObject:
   - component: {fileID: 841339998}
   - component: {fileID: 841339997}
   - component: {fileID: 2051000042}
+  - component: {fileID: 2051200010}
   m_Layer: 8
   m_Name: Mimic
   m_TagString: Untagged
@@ -13608,6 +13609,7 @@ MonoBehaviour:
   weaponCount: 15
   interval: 0.5
   arcHeight: 0.75
+  anticipationTime: 0.14
   chestRenderer: {fileID: 459868791}
   openChestSprite: {fileID: 21300000, guid: b4f1c0a0e5e9c2f4b95a141d9fc5354a, type: 3}
   feedbackChannel: {fileID: 11400000, guid: 5a23db34f07f17642a77e08053379041, type: 2}
@@ -13672,6 +13674,7 @@ MonoBehaviour:
   landingFeedback: {fileID: 11400000, guid: 160b2b6194d2c4c4bafc7a0702b263d9, type: 2}
   groundSurface: {fileID: 1511765764}
   bossCollider: {fileID: 841340000}
+  afterimage: {fileID: 2051200010}
 --- !u!1 &2051000030
 GameObject:
   m_ObjectHideFlags: 0
@@ -13731,6 +13734,24 @@ MonoBehaviour:
   attackColor: {r: 1, g: 0.02, b: 0.02, a: 1}
   chestRenderer: {fileID: 459868791}
   openChestSprite: {fileID: 21300000, guid: b4f1c0a0e5e9c2f4b95a141d9fc5354a, type: 3}
+--- !u!114 &2051200010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841339995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c35fa190d0b45aa9b3c34c128ee1ed2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.YKJ.Bosses.MimicJumpAfterimage
+  sourceRenderer: {fileID: 459868791}
+  afterimageMaterial: {fileID: 2100000, guid: bafdb1b4884d3b9449bde9db6f62dff1, type: 2}
+  emissionInterval: 0.05
+  lifetime: 0.22
+  tint: {r: 1, g: 0.18, b: 0.12, a: 0.38}
+  poolSize: 8
 --- !u!114 &2051000042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13750,6 +13771,9 @@ MonoBehaviour:
   treasureAnticipation: {x: 1.08, y: 1.15}
   spitRecoil: {x: 1.18, y: 0.82}
   spitRecoilTime: 0.18
+  weaponCharge: {x: 1.16, y: 0.78}
+  weaponRelease: {x: 0.85, y: 1.22}
+  weaponKick: 0.12
   tongueAnticipation: {x: 1.12, y: 0.8}
   tongueExtension: {x: 0.88, y: 1.12}
   tongueRecovery: {x: 1.12, y: 0.9}

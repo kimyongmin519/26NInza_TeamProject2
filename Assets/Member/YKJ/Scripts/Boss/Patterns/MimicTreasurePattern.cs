@@ -11,6 +11,7 @@ namespace Member.YKJ.Bosses
         [SerializeField, Min(0.01f)] private float interval = 0.5f;
         [Tooltip("Extra arc height above the higher endpoint, not the landing height.")]
         [SerializeField, Min(0.05f)] private float arcHeight = 0.75f;
+        [SerializeField, Min(0.01f)] private float anticipationTime = 0.14f;
         [Header("Chest Appearance")]
         [SerializeField] private SpriteRenderer chestRenderer;
         [SerializeField] private Sprite openChestSprite;
@@ -22,17 +23,19 @@ namespace Member.YKJ.Bosses
         private MimicEmissionProgress _progress;
         private MimicTreasureHeightCycle _heights;
         private float _finishRemaining;
+        private bool _preparing;
+        private bool _pendingTongue;
 
         public int EmittedCount => _progress?.Count ?? 0;
         public override bool CanStart() => Boss != null && Boss.CanEmitWeapons;
 
         public override void OnStart()
         {
-            Boss.BodyAnimator?.PrepareTreasure(interval);
-            OpenChest();
+            RestoreChest();
             _progress = new MimicEmissionProgress(Mathf.Max(1, weaponCount), Mathf.Max(0.01f, interval));
             _heights = new MimicTreasureHeightCycle();
             _finishRemaining = 0f;
+            _preparing = _pendingTongue = false;
         }
 
         public override void OnPause()
@@ -42,15 +45,19 @@ namespace Member.YKJ.Bosses
         }
         public override void OnResume()
         {
-            OpenChest();
-            Boss.BodyAnimator?.PrepareTreasure(interval);
+            RestoreChest();
+            _preparing = false;
         }
         public override void OnEnd()
         {
             RestoreChest();
             Boss.BodyAnimator?.ResetPose();
         }
-        private void OnDisable() => RestoreChest();
+        private void OnDisable()
+        {
+            RestoreChest();
+            Boss?.BodyAnimator?.ResetPose();
+        }
 
         private void OpenChest()
         {
@@ -69,23 +76,44 @@ namespace Member.YKJ.Bosses
                 chestRenderer.sprite = _previousSprite;
             _previousSprite = null;
             _spriteChanged = false;
+            Boss?.BodyAnimator?.ResetPose();
         }
 
         public override void OnUpdate(float deltaTime)
         {
-            if (_progress.Finished)
+            if (_progress.Finished || _pendingTongue)
             {
                 _finishRemaining -= deltaTime;
                 if (_finishRemaining <= 0f)
-                    EndPattern();
+                {
+                    if (_pendingTongue)
+                    {
+                        _pendingTongue = false;
+                        InterruptWith(Boss.Tongue);
+                    }
+                    else EndPattern();
+                }
                 return;
+            }
+            _finishRemaining -= deltaTime;
+            if (_finishRemaining <= 0f) RestoreChest();
+            float preparation = Mathf.Min(anticipationTime, interval * 0.45f);
+            if (!_preparing && _progress.TimeUntilEmission <= preparation + deltaTime)
+            {
+                _preparing = true;
+                RestoreChest();
+                Boss.BodyAnimator?.PrepareWeaponSpit(Mathf.Min(preparation, _progress.TimeUntilEmission));
             }
             if (!_progress.Advance(deltaTime))
                 return;
 
-            if (Boss.EmitTreasureWeapon(_heights.Next(), arcHeight) != null)
+            OpenChest();
+            MimicWeapon weapon = Boss.EmitTreasureWeapon(_heights.Next(), arcHeight);
+            _preparing = false;
+            _finishRemaining = Boss.BodyAnimator != null ? Boss.BodyAnimator.SpitDuration(interval) : 0.18f;
+            if (weapon != null)
             {
-                Boss.BodyAnimator?.Spit(interval);
+                Boss.BodyAnimator?.SpitWeapon(weapon.GetComponent<Rigidbody2D>().linearVelocity, interval);
                 if (feedbackChannel != null && spitFeedback != null)
                     feedbackChannel.RaiseEvent(new PlayFeedBack().Init(spitFeedback.FeedBackId));
                 if (Boss.Patterns.Current != this)
@@ -93,14 +121,13 @@ namespace Member.YKJ.Bosses
             }
             if (_progress.Finished)
             {
-                _finishRemaining = Boss.BodyAnimator != null ? Boss.BodyAnimator.SpitDuration(interval) : 0f;
                 if (_finishRemaining <= 0f)
                     EndPattern();
                 return;
             }
 
             if (_progress.IsTongueCheckpoint)
-                InterruptWith(Boss.Tongue);
+                _pendingTongue = true;
         }
     }
 }
