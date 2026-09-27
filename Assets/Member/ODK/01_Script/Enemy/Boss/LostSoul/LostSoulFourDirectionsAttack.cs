@@ -17,10 +17,13 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float arrowDuration = 0.78f;
         [SerializeField] private float arrowStartScale = 0.62f;
         [SerializeField] private float arrowPeakScale = 1.05f;
-        [SerializeField] private int arrowSortingOrder = 100;
+        [SerializeField] private int arrowSortingOrder = 500;
+        [SerializeField] private string arrowSortingLayer = "UI";
+        [SerializeField] private float arrowMoveDistance = 0.7f;
         [SerializeField] private float responseTime = 0.12f;
         [SerializeField] private float slashRevealDuration = 0.18f;
-        [SerializeField] private float betweenCuts = 0.09f;
+        [SerializeField] private float betweenCuts = 0.05f;
+        [SerializeField] private Vector2Int cutCountRange = new Vector2Int(3, 7);
 
         [Header("Avoid Check")]
         [SerializeField] private float moveDistance = 1.35f;
@@ -29,19 +32,25 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float damage = 1f;
         [SerializeField] private float damageRadius = 1.35f;
 
+        private static readonly Vector3[] Directions =
+        {
+            Vector3.left,
+            Vector3.right,
+            Vector3.up,
+            Vector3.down
+        };
+
         protected override IEnumerator ExecuteLostSoul(GameObject target)
         {
             Boss.MoveToArenaCenter();
-            yield return PlayEyeSparkle();
             Boss.SetDarkness(true, darknessFadeDuration, 1f);
             yield return new WaitForSeconds(darknessFadeDuration / DurationScale);
 
-            int[] order = { 0, 1, 2, 3 };
-            for (int i = order.Length - 1; i > 0; i--)
-            {
-                int swap = Random.Range(0, i + 1);
-                (order[i], order[swap]) = (order[swap], order[i]);
-            }
+            int minimumCuts = Mathf.Max(1, Mathf.Min(cutCountRange.x, cutCountRange.y));
+            int maximumCuts = Mathf.Max(minimumCuts, Mathf.Max(cutCountRange.x, cutCountRange.y));
+            int[] order = new int[Random.Range(minimumCuts, maximumCuts + 1)];
+            for (int i = 0; i < order.Length; i++)
+                order[i] = Random.Range(0, Directions.Length);
 
             Collider2D targetCollider = target.GetComponentInChildren<Collider2D>();
             for (int i = 0; i < order.Length; i++)
@@ -55,7 +64,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 yield return new WaitForSeconds(responseTime / DurationScale);
 
                 MoveBossToCue(cue);
-                Boss.PlayAnimation("attack", 0f, 0.38f);
+                Boss.PlaySwing("attack", 0f);
                 Boss.PlayFadeSlashFeedback();
                 Boss.ShakeCamera(0.82f);
                 StartCoroutine(Boss.PulseOutline(slashRevealDuration / DurationScale));
@@ -132,19 +141,23 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
             SpriteRenderer arrow = directionArrows[cue];
             Vector3 center = GetScreenCenter();
+            Vector3 direction = Directions[cue];
             float duration = arrowDuration / DurationScale;
             Color transparent = new Color(0.88f, 0.52f, 1f, 0f);
             Color visible = new Color(0.98f, 0.84f, 1f, 0.82f);
 
-            arrow.transform.position = center;
+            arrow.transform.position = center - direction * (arrowMoveDistance * 0.35f);
             arrow.transform.rotation = Quaternion.identity;
             arrow.transform.localScale = Vector3.one * arrowStartScale;
+            arrow.sortingLayerName = arrowSortingLayer;
             arrow.sortingOrder = arrowSortingOrder;
             arrow.color = transparent;
             arrow.enabled = true;
 
             Sequence sequence = DOTween.Sequence().SetTarget(arrow);
             sequence.Append(arrow.transform.DOScale(arrowPeakScale, duration * 0.38f).SetEase(Ease.OutBack));
+            sequence.Join(arrow.transform.DOMove(center + direction * arrowMoveDistance,
+                duration * 0.72f).SetEase(Ease.OutCubic));
             sequence.Join(arrow.DOColor(visible, duration * 0.2f));
             sequence.Append(arrow.transform.DOScale(arrowPeakScale * 0.76f, duration * 0.24f).SetEase(Ease.InOutSine));
             sequence.Append(arrow.transform.DOScale(arrowPeakScale * 0.94f, duration * 0.18f).SetEase(Ease.OutQuad));

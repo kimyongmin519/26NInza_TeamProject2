@@ -15,23 +15,24 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         protected override IEnumerator ExecuteLostSoul(GameObject target)
         {
             Boss.TeleportToTarget(sideDistance);
-            ReplayAnimation();
+            float warning = warningDuration / DurationScale;
+            float active = activeDuration / DurationScale;
             float y = target.transform.position.y;
             Vector3 start = new Vector3(Boss.ArenaCenter.x - Boss.ArenaHalfWidth, y, Boss.transform.position.z);
             float length = Boss.ArenaHalfWidth * 2f;
             Boss.AttackReady(start + Vector3.right * (length * 0.5f));
-            Boss.PlaySlashFeedback();
+            SwingAt(warning);
             Boss.SpawnSlashBeam(
                 start,
                 Vector2.right,
                 length,
                 riftHeight,
-                warningDuration / DurationScale,
-                activeDuration / DurationScale,
+                warning,
+                active,
                 damage,
                 beamColor
             );
-            yield return new WaitForSeconds((warningDuration + activeDuration) / DurationScale);
+            yield return new WaitForSeconds(warning + active);
         }
     }
 }

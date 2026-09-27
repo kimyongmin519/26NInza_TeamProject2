@@ -9,13 +9,15 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
     public class SwordmasterTripleThrustAttack : SwordmasterSkill
     {
         [SerializeField] private int repeatCount = 3;
-        [SerializeField] private float sideDistance = 2.6f;
-        [SerializeField] private float gatherDistance = 2.2f;
+        [SerializeField] private float sideDistance = 4.4f;
+        [SerializeField] private float gatherDistance = 3.6f;
         [SerializeField] private float gatherDuration = 0.3f;
         [SerializeField] private float thrustDuration = 0.14f;
         [SerializeField] private float recoverDuration = 0.28f;
-        [SerializeField] private Vector2 thrustHitbox = new Vector2(4.2f, 2.1f);
+        [SerializeField] private Vector2 thrustHitbox = new Vector2(5.6f, 2.1f);
         [SerializeField] private float thrustDamage = 42f;
+        [SerializeField] private float thrustOvershoot = 2.8f;
+        [SerializeField] private float gatherSpread = 0.8f;
 
         private DamageCaster thrustCaster;
 
@@ -41,21 +43,27 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             for (int repeat = 0; repeat < repeatCount && !Boss.IsDead; repeat++)
             {
                 List<EnchantedSword> thrustSwords = Boss.TakeSwords(3);
-                Vector2 direction = (Boss.Target.position - Boss.transform.position).normalized;
+                Vector3 targetPoint = Boss.Target.position;
+                Vector2 direction = (targetPoint - Boss.transform.position).normalized;
+                Vector3 thrustEnd = targetPoint + (Vector3)direction * thrustOvershoot;
+                float pathDuration = (gatherDuration + thrustDuration) / DurationScale;
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                 for (int i = 0; i < thrustSwords.Count; i++)
                 {
                     Vector2 perpendicular = new Vector2(-direction.y, direction.x);
                     Vector3 gatherPoint = Boss.transform.position - (Vector3)direction * gatherDistance +
-                                          (Vector3)perpendicular * (i - 1) * 0.55f + Vector3.up * 1.5f;
+                                          (Vector3)perpendicular * (i - 1) * gatherSpread + Vector3.up * 1.5f;
                     thrustSwords[i].MoveTo(gatherPoint, angle, gatherDuration / DurationScale);
+                    thrustSwords[i].ShowPathLine(gatherPoint, thrustEnd, pathDuration);
                 }
-                Boss.AttackReady(Boss.Target.position);
+                Boss.AttackReady(targetPoint);
+                Boss.PlayAnimation(Swordmaster.JumpState);
+                Boss.Cue(SwordmasterCue.ThrustGather, Boss.transform.position);
                 yield return new WaitForSeconds(gatherDuration / DurationScale);
 
-                Vector3 targetPoint = Boss.Target.position;
+                Boss.PlayAnimation(Swordmaster.Attack2State);
                 foreach (EnchantedSword sword in thrustSwords)
-                    sword.MoveTo(targetPoint + (Vector3)direction * 1.4f, angle, thrustDuration / DurationScale, Ease.InExpo);
+                    sword.MoveTo(thrustEnd, angle, thrustDuration / DurationScale, Ease.InExpo);
 
                 thrustCaster.SetWorldPose(targetPoint, angle);
                 thrustCaster.EnableCasting(
@@ -65,7 +73,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 yield return new WaitForSeconds(thrustDuration / DurationScale);
                 thrustCaster.DisableCasting();
                 Boss.AttackImpact(targetPoint);
-                Boss.ShakeCamera(0.58f);
+                Boss.Cue(SwordmasterCue.ThrustStrike, targetPoint);
                 Boss.ReturnControlledSwords();
                 yield return new WaitForSeconds(recoverDuration / DurationScale);
             }

@@ -13,12 +13,13 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
 
         [Header("Dash")]
         [SerializeField] private int dashCount = 8;
-        [SerializeField] private float dashPeriod = 0.58f;
-        [SerializeField] private float dashDuration = 0.16f;
-        [SerializeField] private float dashAcceleration = 90f;
-        [SerializeField] private float dashMaxSpeed = 35f;
+        [SerializeField, Min(1)] private int dashCountCap = 6;
         [SerializeField] private float contactRadius = 0.85f;
         [SerializeField] private float contactDamage = 38f;
+        [SerializeField] private MoonDashMotion motion = new MoonDashMotion();
+
+        [Header("Dash Feel")]
+        [SerializeField, Range(0f, 1f)] private float wallBounceKeep = 0.55f;
 
         [Header("Phase Two Light")]
         [SerializeField] private int lightEveryDash = 2;
@@ -31,6 +32,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private DamageCaster contactCaster;
         private Vector3 originPosition;
         private Vector3 originScale;
+        private Vector3 shrunkScale;
         private bool hasOrigin;
         protected override bool UsesAmbientFloating => false;
 
@@ -48,99 +50,88 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         {
             originPosition = Boss.transform.position;
             originScale = Boss.transform.localScale;
+            shrunkScale = originScale * shrinkScale;
             hasOrigin = true;
             Boss.transform.DOKill();
             Boss.PlayShrinkFeedback(Boss.transform.position);
-            yield return Boss.transform.DOScale(originScale * shrinkScale, shrinkDuration / DurationScale)
-                .SetEase(Ease.InBack)
+            yield return Boss.transform.DOScale(shrunkScale, shrinkDuration / DurationScale)
+                .SetEase(Ease.InQuad)
                 .WaitForCompletion();
 
-            int count = Mathf.Max(1, dashCount);
-            for (int i = 0; i < count && !Boss.IsDead; i++)
+            motion.Begin(Vector2.zero, DurationScale, Boss.DashPowerScale, Boss.DashIntervalScale);
+            contactCaster.transform.position = Boss.transform.position;
+            contactCaster.ConfigureCircle(contactRadius, Boss.PlayerLayer);
+
+            int total = Mathf.Clamp(dashCount, 1, Mathf.Max(1, dashCountCap));
+            int dashed = 0;
+            float tail = motion.DashInterval / DurationScale;
+            float tailTimer = 0f;
+            while (!Boss.IsDead && (dashed < total || tailTimer < tail))
             {
-                float readyTime = Mathf.Max(0f, dashPeriod - dashDuration);
-                Boss.AttackReady(Boss.Target != null ? Boss.Target.position : Boss.transform.position);
-                if (readyTime > 0f)
-                    yield return new WaitForSeconds(readyTime / DurationScale);
+                float delta = Time.deltaTime;
+                Vector2 position = Boss.transform.position;
+                Vector2 targetPosition = Boss.Target != null ? (Vector2)Boss.Target.position : position;
 
-                if (Boss.IsPhaseTwo && lightEveryDash > 0 && (i + 1) % lightEveryDash == 0)
-                    FireLight();
+                bool dashNow = motion.Tick(position, targetPosition, delta);
+                if (dashNow && dashed < total)
+                {
+                    dashed++;
+                    OnDash(dashed);
+                }
+                else if (dashNow)
+                {
+                    motion.Stop();
+                }
 
-                yield return MoveWithAcceleration(
-                    dashDuration / DurationScale,
-                    dashAcceleration * DurationScale,
-                    dashMaxSpeed * DurationScale,
-                    true
-                );
+                if (dashed >= total) tailTimer += delta;
+
+                Vector3 next = Boss.transform.position + (Vector3)(motion.Velocity * delta);
+                Vector3 clamped = ClampToArena(next);
+                Vector2 wallNormal = new Vector2(
+                    Mathf.Approximately(clamped.x, next.x) ? 0f : Mathf.Sign(clamped.x - next.x),
+                    Mathf.Approximately(clamped.y, next.y) ? 0f : Mathf.Sign(clamped.y - next.y));
+                if (wallNormal != Vector2.zero)
+                {
+                    motion.Bounce(wallNormal, wallBounceKeep);
+                    Boss.ShakeCamera(0.35f);
+                }
+                clamped.z = Boss.transform.position.z;
+                Boss.transform.position = clamped;
+                contactCaster.transform.position = clamped;
+                yield return null;
             }
 
             contactCaster.DisableCasting();
             Boss.transform.DOKill();
-            Sequence restore = DOTween.Sequence();
-            restore.Join(Boss.transform.DOScale(originScale, 0.35f / DurationScale).SetEase(Ease.OutBack));
+            Sequence restore = DOTween.Sequence().SetTarget(Boss.transform);
+            restore.Join(Boss.transform.DOScale(originScale, 0.35f / DurationScale).SetEase(Ease.OutQuad));
             restore.Join(Boss.transform.DOMove(originPosition, 0.45f / DurationScale).SetEase(Ease.InOutSine));
             yield return restore.WaitForCompletion();
             hasOrigin = false;
         }
 
-        private IEnumerator MoveWithAcceleration(
-            float duration,
-            float acceleration,
-            float maxSpeed,
-            bool damagingDash)
+        private void OnDash(int index)
         {
-            Vector2 direction = Boss.Target != null
-                ? ((Vector2)Boss.Target.position - (Vector2)Boss.transform.position).normalized
-                : Vector2.right;
-            Vector2 velocity = direction * maxSpeed;
-            if (damagingDash)
-            {
-                contactCaster.transform.position = Boss.transform.position;
-                contactCaster.ConfigureCircle(contactRadius, Boss.PlayerLayer);
-                contactCaster.EnableCasting(
-                    new DamageData(contactDamage, DamageType.Melee),
-                    duration
-                );
-                Boss.PlayDashFeedback(Boss.transform.position);
-            }
+            contactCaster.DisableCasting();
+            contactCaster.EnableCasting(
+                new DamageData(contactDamage * Boss.DashDamageScale, DamageType.Melee),
+                motion.DashInterval / DurationScale);
+            Boss.PlayDashFeedback(Boss.transform.position);
+            Boss.AttackImpact(Boss.transform.position);
+            Boss.ShakeCamera(0.42f);
+            if (Boss.IsPhaseTwo && lightEveryDash > 0 && index % lightEveryDash == 0)
+                FireLight();
+        }
 
-            float elapsed = 0f;
-            while (elapsed < duration && !Boss.IsDead)
-            {
-                float delta = Time.deltaTime;
-                direction = Boss.Target != null
-                    ? ((Vector2)Boss.Target.position - (Vector2)Boss.transform.position).normalized
-                    : (velocity.sqrMagnitude > Mathf.Epsilon ? velocity.normalized : Vector2.right);
-                Vector2 targetVelocity = direction * maxSpeed;
-                velocity = Vector2.MoveTowards(velocity, targetVelocity, acceleration * delta);
-
-                Vector3 next = Boss.transform.position + (Vector3)velocity * delta;
-                if (Boss.Arena != null)
-                {
-                    Vector3 clamped = Boss.Arena.Clamp(next, contactRadius);
-                    if (!Mathf.Approximately(clamped.x, next.x)) velocity.x = 0f;
-                    if (!Mathf.Approximately(clamped.y, next.y)) velocity.y = 0f;
-                    next = clamped;
-                }
-                next.z = Boss.transform.position.z;
-                Boss.transform.position = next;
-                contactCaster.transform.position = next;
-                elapsed += delta;
-                yield return null;
-            }
-
-            if (damagingDash)
-            {
-                contactCaster.DisableCasting();
-                Boss.AttackImpact(Boss.transform.position);
-                Boss.ShakeCamera(0.48f);
-            }
+        private Vector3 ClampToArena(Vector3 position)
+        {
+            return Boss.Arena != null ? Boss.Arena.Clamp(position, contactRadius) : position;
         }
 
         private void FireLight()
         {
             if (Boss.Target == null) return;
-            Vector2 direction = Boss.Target.position - Boss.transform.position;
+            Vector2 direction = Boss.GetLaserAimDirection(Boss.transform.position);
             float length = Mathf.Sqrt(
                 Boss.ArenaHalfWidth * Boss.ArenaHalfWidth +
                 Boss.ArenaHalfHeight * Boss.ArenaHalfHeight
@@ -160,6 +151,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         protected override void OnMoonCancel()
         {
             contactCaster?.DisableCasting();
+            motion.Stop();
             if (Boss == null) return;
             Boss.transform.DOKill();
             if (hasOrigin)

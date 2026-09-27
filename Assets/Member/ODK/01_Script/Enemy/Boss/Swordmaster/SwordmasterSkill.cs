@@ -18,6 +18,8 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
         protected sealed override IEnumerator Execute(GameObject target)
         {
+            Boss?.SetActing(true);
+            if (Boss != null) yield return Boss.SummonSwords(DurationScale);
             yield return ExecuteSwordmaster(target);
         }
 
@@ -28,6 +30,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         {
             if (ReturnSwordsOnComplete)
                 Boss?.ReturnControlledSwords();
+            Boss?.SetActing(false);
         }
 
         protected override void OnCancel()
@@ -35,6 +38,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             Boss?.StopMotion();
             Boss?.ReturnControlledSwords();
             OnSwordmasterCancel();
+            Boss?.SetActing(false);
         }
 
         protected virtual void OnSwordmasterCancel() { }

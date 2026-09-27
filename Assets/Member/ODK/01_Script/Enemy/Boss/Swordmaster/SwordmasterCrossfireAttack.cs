@@ -1,110 +1,173 @@
 using System.Collections;
 using System.Collections.Generic;
-using DG.Tweening;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Swordmaster
 {
     public class SwordmasterCrossfireAttack : SwordmasterSkill
     {
-        [SerializeField] private float readyDuration = 1f;
-        [SerializeField] private float scatterDuration = 0.45f;
+        [Header("Ready")]
+        [SerializeField] private float readyDuration = 0.7f;
+        [SerializeField] private float turnGap = 0.35f;
+
+        [Header("Turn 1-2 Sword Wall")]
+        [SerializeField, Min(2)] private int wallSwordCount = 7;
+        [SerializeField] private float wallDistance = 9f;
+        [SerializeField] private float wallHalfSpan = 6f;
+        [SerializeField] private float rowHeight = 7f;
+        [SerializeField] private float rowSwordSpeed = 58f;
+        [SerializeField] private float wallFormDuration = 0.32f;
+        [SerializeField] private float wallHoldDuration = 0.38f;
+        [SerializeField] private float wallSwordSpeed = 36f;
+        [SerializeField] private float wallFireStagger = 0.03f;
+
+        [Header("Turn 3-4 Axis Alternating")]
+        [SerializeField, Min(1)] private int axisShotCount = 6;
+        [SerializeField] private float axisFormDuration = 0.14f;
+        [SerializeField] private float axisAimDuration = 0.26f;
+        [SerializeField] private float axisInterval = 0.1f;
+        [SerializeField] private float axisSwordSpeed = 30f;
+        [SerializeField] private float axisDistance = 7f;
+
+        [Header("Turn 5 Final Cross")]
         [SerializeField] private float lineWarningDuration = 0.5f;
-        [SerializeField] private float rapidInterval = 0.07f;
-        [SerializeField] private float lineSwordSpeed = 28f;
-        [SerializeField] private float finalSpawnRadius = 3.5f;
+        [SerializeField] private float finalSpawnRadius = 6.5f;
         [SerializeField] private float finalWarningDuration = 0.55f;
-        [SerializeField] private float finalSwordSpeed = 12f;
+        [SerializeField] private float finalSwordSpeed = 15f;
 
         protected override bool ReturnSwordsOnComplete => false;
 
         private readonly List<SwordmasterTelegraph> warnings = new List<SwordmasterTelegraph>();
+
+        private float MinX => Boss.ArenaCenter.x - Boss.ArenaHalfWidth;
+        private float MaxX => Boss.ArenaCenter.x + Boss.ArenaHalfWidth;
+        private float MinY => Boss.ArenaCenter.y - Boss.ArenaHalfHeight;
+        private float MaxY => Boss.ArenaCenter.y + Boss.ArenaHalfHeight;
 
         public override bool CanUseSkill(GameObject target = null) =>
             Boss != null && Boss.Target != null && !Boss.IsDead;
 
         protected override IEnumerator ExecuteSwordmaster(GameObject target)
         {
-            Vector3 initialTarget = Boss.Target.position;
-            Boss.AttackReady(initialTarget);
-            yield return new WaitForSeconds(readyDuration / DurationScale);
+            Boss.AttackReady(Boss.Target.position);
+            Boss.PlayAnimation(Swordmaster.JumpState);
+            Boss.Cue(SwordmasterCue.CrossfireReady, Boss.transform.position);
+            yield return Wait(readyDuration);
 
-            List<EnchantedSword> swords = Boss.TakeSwords(8);
-            for (int i = 0; i < swords.Count; i++)
-            {
-                float angle = i / (float)Mathf.Max(1, swords.Count) * 360f;
-                float radians = angle * Mathf.Deg2Rad;
-                Vector3 scatterPoint = Boss.ArenaCenter + new Vector3(
-                    Mathf.Cos(radians) * (Boss.ArenaHalfWidth - 1f),
-                    Mathf.Sin(radians) * (Boss.ArenaHalfHeight - 1f),
-                    Mathf.Sin(radians) * 0.8f
-                );
-                swords[i].MoveTo(scatterPoint, angle, scatterDuration / DurationScale);
-            }
-            yield return new WaitForSeconds(scatterDuration / DurationScale);
+            yield return FireSwordWall(true);
+            yield return Wait(turnGap);
+            if (Boss.IsDead) yield break;
 
-            yield return FireHorizontalVolley(swords);
-            Boss.ReturnControlledSwords();
-            yield return new WaitForSeconds(0.38f / DurationScale);
+            yield return FireSwordWall(false);
+            yield return Wait(turnGap);
+            if (Boss.IsDead) yield break;
 
-            yield return FireVerticalVolley();
-            Boss.ReturnControlledSwords();
-            yield return new WaitForSeconds(0.38f / DurationScale);
+            yield return FireAxisAlternating(true);
+            yield return Wait(turnGap);
+            if (Boss.IsDead) yield break;
+
+            yield return FireAxisAlternating(false);
+            yield return Wait(turnGap);
+            if (Boss.IsDead) yield break;
 
             yield return FireDispelledCross();
         }
 
-        private IEnumerator FireHorizontalVolley(List<EnchantedSword> swords)
-        {
-            float y = Boss.Target.position.y;
-            float minX = Boss.ArenaCenter.x - Boss.ArenaHalfWidth;
-            float maxX = Boss.ArenaCenter.x + Boss.ArenaHalfWidth;
-            SwordmasterTelegraph warning = CreateWarning(
-                new Vector3(minX, y),
-                new Vector3(maxX, y)
-            );
-            yield return new WaitForSeconds(lineWarningDuration / DurationScale);
-            DestroyWarning(warning);
-            Boss.ShakeCamera(0.36f);
+        private WaitForSeconds Wait(float seconds) => new WaitForSeconds(Mathf.Max(0f, seconds) / DurationScale);
 
-            float travelTime = Boss.ArenaHalfWidth * 2f / lineSwordSpeed + 0.18f;
+        private IEnumerator FireSwordWall(bool verticalColumn)
+        {
+            List<EnchantedSword> swords = Boss.TakeSwords(wallSwordCount);
+            if (swords.Count == 0) yield break;
+
+            bool fromNegative = Random.value < 0.5f;
+            Vector2 direction;
+            float faceAngle;
+            if (verticalColumn)
+            {
+                direction = fromNegative ? Vector2.right : Vector2.left;
+                faceAngle = fromNegative ? 0f : 180f;
+            }
+            else
+            {
+                direction = Vector2.down;
+                faceAngle = -90f;
+            }
+
+            Vector3 player = Boss.Target != null ? Boss.Target.position : Boss.transform.position;
+            float center = verticalColumn ? player.y : player.x;
+            float spanMin = center - wallHalfSpan;
+            float spanMax = center + wallHalfSpan;
+            float spacing = (spanMax - spanMin) / swords.Count;
+            float offset = Random.Range(0.2f, 0.8f) * spacing;
+            float z = Boss.transform.position.z;
+
+            Boss.PlayAnimation(Swordmaster.JumpState);
+            Boss.Cue(SwordmasterCue.VolleyWarning, Boss.transform.position);
             for (int i = 0; i < swords.Count; i++)
             {
-                bool fromLeft = i % 2 == 0;
-                Vector3 start = new Vector3(fromLeft ? minX : maxX, y, (i - 3.5f) * 0.08f);
-                swords[i].MoveTo(start, fromLeft ? 0f : 180f, 0.02f);
-                yield return new WaitForSeconds(0.025f / DurationScale);
-                swords[i].FireMagic(fromLeft ? Vector2.right : Vector2.left, lineSwordSpeed, travelTime);
-                yield return new WaitForSeconds(rapidInterval / DurationScale);
+                float along = spanMin + offset + spacing * i;
+                Vector3 formPoint = verticalColumn
+                    ? new Vector3(player.x + (fromNegative ? -wallDistance : wallDistance), along, z)
+                    : new Vector3(along, player.y + rowHeight, z);
+                swords[i].MoveTo(formPoint, faceAngle, wallFormDuration / DurationScale);
             }
-            yield return new WaitForSeconds(travelTime / DurationScale);
+            yield return Wait(wallFormDuration + wallHoldDuration);
+
+            Boss.PlayAnimation(Swordmaster.Attack1State);
+            Boss.Cue(SwordmasterCue.VolleyFire, Boss.transform.position);
+            float speed = verticalColumn ? wallSwordSpeed : rowSwordSpeed;
+            float travel = (verticalColumn ? wallDistance : rowHeight) * 2f / speed + 0.2f;
+            foreach (EnchantedSword sword in swords)
+            {
+                if (sword == null) continue;
+                sword.FireMagic(direction, speed, travel, false);
+                if (wallFireStagger > 0f) yield return Wait(wallFireStagger);
+            }
+            yield return Wait(travel * 0.5f);
         }
 
-        private IEnumerator FireVerticalVolley()
+        private IEnumerator FireAxisAlternating(bool alongPlayerX)
         {
-            float x = Boss.Target.position.x;
-            float minY = Boss.ArenaCenter.y - Boss.ArenaHalfHeight;
-            float maxY = Boss.ArenaCenter.y + Boss.ArenaHalfHeight;
-            SwordmasterTelegraph warning = CreateWarning(
-                new Vector3(x, minY),
-                new Vector3(x, maxY)
-            );
-            yield return new WaitForSeconds(lineWarningDuration / DurationScale);
-            DestroyWarning(warning);
-            Boss.ShakeCamera(0.36f);
-
-            List<EnchantedSword> swords = Boss.TakeSwords(8);
-            float travelTime = Boss.ArenaHalfHeight * 2f / lineSwordSpeed + 0.18f;
-            for (int i = 0; i < swords.Count; i++)
+            float z = Boss.transform.position.z;
+            for (int shot = 0; shot < axisShotCount && !Boss.IsDead && Boss.Target != null; shot++)
             {
-                bool fromBottom = i % 2 == 0;
-                Vector3 start = new Vector3(x, fromBottom ? minY : maxY, (i - 3.5f) * 0.08f);
-                swords[i].MoveTo(start, fromBottom ? 90f : -90f, 0.02f);
-                yield return new WaitForSeconds(0.025f / DurationScale);
-                swords[i].FireMagic(fromBottom ? Vector2.up : Vector2.down, lineSwordSpeed, travelTime);
-                yield return new WaitForSeconds(rapidInterval / DurationScale);
+                List<EnchantedSword> taken = Boss.TakeSwords(1);
+                if (taken.Count == 0) yield break;
+                EnchantedSword sword = taken[0];
+
+                bool firstSide = shot % 2 == 0;
+                Vector3 player = Boss.Target.position;
+                Vector3 start;
+                Vector3 end;
+                if (alongPlayerX)
+                {
+                    Vector3 top = new Vector3(player.x, player.y + axisDistance, z);
+                    Vector3 bottom = new Vector3(player.x, player.y - axisDistance, z);
+                    start = firstSide ? top : bottom;
+                    end = firstSide ? bottom : top;
+                }
+                else
+                {
+                    Vector3 left = new Vector3(player.x - axisDistance, player.y, z);
+                    Vector3 right = new Vector3(player.x + axisDistance, player.y, z);
+                    start = firstSide ? left : right;
+                    end = firstSide ? right : left;
+                }
+
+                Vector2 direction = (end - start).normalized;
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                float travel = Vector3.Distance(start, end) / axisSwordSpeed + 0.15f;
+                sword.MoveTo(start, angle, axisFormDuration / DurationScale);
+                sword.ShowPathLine(start, end, (axisFormDuration + axisAimDuration) / DurationScale);
+                Boss.Cue(SwordmasterCue.VolleyWarning, start);
+                yield return Wait(axisFormDuration + axisAimDuration);
+
+                Boss.PlayAnimation(firstSide ? Swordmaster.Attack1State : Swordmaster.Attack2State);
+                Boss.Cue(SwordmasterCue.VolleyFire, start);
+                sword.FireMagic(direction, axisSwordSpeed, travel);
+                yield return Wait(axisInterval);
             }
-            yield return new WaitForSeconds(travelTime / DurationScale);
         }
 
         private IEnumerator FireDispelledCross()
@@ -147,7 +210,8 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 sword.FireDispelled(direction, finalSwordSpeed);
             }
             Boss.AttackImpact(center);
-            Boss.ShakeCamera(0.9f);
+            Boss.PlayAnimation(Swordmaster.Attack2State);
+            Boss.Cue(SwordmasterCue.FinalCross, center);
             yield return new WaitForSeconds(0.25f / DurationScale);
         }
 
@@ -157,6 +221,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             if (warning == null) return null;
             warning.Show(start, end, lineWarningDuration / DurationScale);
             warnings.Add(warning);
+            Boss.Cue(SwordmasterCue.VolleyWarning, Vector3.Lerp(start, end, 0.5f));
             return warning;
         }
 
@@ -164,13 +229,13 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         {
             if (warning == null) return;
             warnings.Remove(warning);
-            Destroy(warning.gameObject);
+            Boss.ReleaseTelegraph(warning);
         }
 
         private void ClearWarnings()
         {
             foreach (SwordmasterTelegraph warning in warnings)
-                if (warning != null) Destroy(warning.gameObject);
+                if (warning != null) Boss?.ReleaseTelegraph(warning);
             warnings.Clear();
         }
 

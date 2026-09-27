@@ -1,16 +1,41 @@
 using System.Collections;
 using DG.Tweening;
+using GGMLib.ObjectPool.Runtime;
+using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.MoonBoss
 {
-    public class MoonLaserShot : MonoBehaviour
+    public class MoonLaserShot : AbstractMonoPoolable
     {
         private LineRenderer line;
         private DamageCaster caster;
         private Sequence visualSequence;
         private LayerMask targetLayer;
+        private Material warningMaterial;
+        private Coroutine fireRoutine;
+
+        public override void ResetItem()
+        {
+            StopShot();
+            if (line == null) line = GetComponent<LineRenderer>();
+            if (line != null)
+            {
+                line.widthMultiplier = 0f;
+                line.enabled = true;
+            }
+        }
+
+        private void StopShot()
+        {
+            if (fireRoutine != null) StopCoroutine(fireRoutine);
+            fireRoutine = null;
+            if (line != null) DOTween.Kill(line);
+            visualSequence?.Kill();
+            visualSequence = null;
+            caster?.DisableCasting();
+        }
 
         public void Initialize(
             MoonBoss owner,
@@ -59,9 +84,10 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             caster = GetComponent<DamageCaster>();
             if (line == null || caster == null)
             {
-                Destroy(gameObject);
+                ODKPool.Despawn(this);
                 return;
             }
+            StopShot();
             line.useWorldSpace = true;
             line.positionCount = 2;
             line.SetPosition(0, origin);
@@ -72,14 +98,18 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             line.numCapVertices = 8;
             line.textureMode = LineTextureMode.Tile;
             line.sortingOrder = 60;
-            Shader warningShader = Shader.Find("Sprites/Default");
-            if (warningShader != null) line.material = new Material(warningShader);
+            if (warningMaterial == null)
+            {
+                Shader warningShader = Shader.Find("Sprites/Default");
+                if (warningShader != null) warningMaterial = new Material(warningShader);
+            }
+            if (warningMaterial != null) line.sharedMaterial = warningMaterial;
 
             targetLayer = playerLayer;
             float angle = Mathf.Atan2(normalizedDirection.y, normalizedDirection.x) * Mathf.Rad2Deg;
             caster.ConfigureBox(new Vector2(length, width), playerLayer);
             caster.SetWorldPose(Vector3.Lerp(origin, end, 0.5f), angle);
-            StartCoroutine(FireRoutine(width, warningDuration, activeDuration, damage, color, owner));
+            fireRoutine = StartCoroutine(FireRoutine(width, warningDuration, activeDuration, damage, color, owner));
         }
 
         private IEnumerator FireRoutine(
@@ -150,7 +180,10 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 Mathf.Max(0.02f, activeDuration - 0.05f)
             ));
             yield return visualSequence.WaitForCompletion();
-            Destroy(gameObject);
+            fireRoutine = null;
+            visualSequence = null;
+            caster.DisableCasting();
+            ODKPool.Despawn(this);
         }
 
         private void SetColor(Color color)
@@ -159,10 +192,19 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             line.endColor = color;
         }
 
+        private void OnDisable()
+        {
+            if (line != null) DOTween.Kill(line);
+            visualSequence?.Kill();
+            visualSequence = null;
+            fireRoutine = null;
+        }
+
         private void OnDestroy()
         {
-            DOTween.Kill(line);
+            if (line != null) DOTween.Kill(line);
             visualSequence?.Kill();
+            if (warningMaterial != null) Destroy(warningMaterial);
         }
     }
 

@@ -120,7 +120,8 @@ MonoBehaviour:
   weakSoulProjectilePrefab: {fileID: 100005, guid: a3000000000000000000000000000002, type: 3}
   slashBeamPrefab: {fileID: 100004, guid: a3000000000000000000000000000004, type: 3}
   projectileDamage: 26
-  thrownSoulDamage: 85
+  thrownSoulDamage: 1
+  phaseTwoHealthRatio: 0.25
   idleState: ready
   hitState: hit
   deathState: dead
@@ -531,9 +532,9 @@ MonoBehaviour:
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4000000000000000000000000000000, type: 2}
   damageCaster: {fileID: 131003}
   animationStateName: teleport attack
-  startupDelay: 0.05
-  recoveryDelay: 0.14
-  appearDelay: 0.42
+  startupDelay: 0.18
+  recoveryDelay: 0.24
+  appearDelay: 0.55
   activeDuration: 0.12
   hitboxSize: {x: 3.8, y: 2.5}
   hitboxForwardOffset: 1.2
@@ -608,14 +609,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.LostSoul.LostSoulSoulVolleyAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4000000000000000000000000000001, type: 2}
   damageCaster: {fileID: 132003}
-  animationStateName: attack
-  startupDelay: 0.12
-  recoveryDelay: 0.16
+  animationStateName: cast
+  startupDelay: 0.32
+  recoveryDelay: 0.28
   sideDistance: 5.2
   waveCount: 3
   bulletsPerWave: 2
   bulletSpeed: 15
-  waveInterval: 0.18
+  waveInterval: 0.24
   laneSpacing: 0.46
 --- !u!114 &132003
 MonoBehaviour:
@@ -682,15 +683,15 @@ MonoBehaviour:
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4000000000000000000000000000002, type: 2}
   damageCaster: {fileID: 133003}
   animationStateName: cast
-  startupDelay: 0.12
-  recoveryDelay: 0.18
+  startupDelay: 0.3
+  recoveryDelay: 0.28
   castDistance: 8.5
-  castDelay: 1
+  castDelay: 1.25
   bulletCount: 14
   bulletSpeed: 12
-  shotInterval: 0.08
+  shotInterval: 0.1
   randomAngle: 32
-  attackAnimationInterval: 4
+  castAnimationInterval: 4
 --- !u!114 &133003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -754,10 +755,10 @@ MonoBehaviour:
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4000000000000000000000000000003, type: 2}
   damageCaster: {fileID: 0}
   animationStateName: attack
-  startupDelay: 0.12
-  recoveryDelay: 0.18
+  startupDelay: 0.3
+  recoveryDelay: 0.28
   sideDistance: 5.5
-  warningDuration: 0.42
+  warningDuration: 0.62
   activeDuration: 0.18
   riftHeight: 0.65
   damage: 42
@@ -804,13 +805,13 @@ MonoBehaviour:
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4000000000000000000000000000004, type: 2}
   damageCaster: {fileID: 0}
   animationStateName: attack
-  startupDelay: 0.12
-  recoveryDelay: 0.18
-  warningDuration: 0.28
+  startupDelay: 0.3
+  recoveryDelay: 0.28
+  warningDuration: 0.5
   activeDuration: 0.16
   cutThickness: 0.62
   damage: 30
-  betweenCuts: 0.1
+  betweenCuts: 0.16
   beamColor: {r: 0.82, g: 0.24, b: 1, a: 1}
 --- !u!1 &136000
 GameObject:
@@ -862,8 +863,8 @@ MonoBehaviour:
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4000000000000000000000000000005, type: 2}
   damageCaster: {fileID: 136003}
   animationStateName: ready
-  startupDelay: 0.12
-  recoveryDelay: 0.18
+  startupDelay: 0.3
+  recoveryDelay: 0.28
   directionArrows:
   - {fileID: 136102}
   - {fileID: 136112}
@@ -873,15 +874,17 @@ MonoBehaviour:
   slashEffect: {fileID: 136008}
   slashGlowEffect: {fileID: 136010}
   eyeOffset: {x: 0, y: 2.25}
-  eyeSparkleDuration: 0.34
-  darknessFadeDuration: 0.18
-  arrowDuration: 0.78
+  eyeSparkleDuration: 0.45
+  darknessFadeDuration: 0.1
+  arrowDuration: 0.42
   arrowStartScale: 0.62
   arrowPeakScale: 1.05
-  arrowSortingOrder: 100
-  responseTime: 0.12
-  slashRevealDuration: 0.18
-  betweenCuts: 0.09
+  arrowSortingOrder: 500
+  arrowSortingLayer: UI
+  arrowMoveDistance: 0.7
+  responseTime: 0.1
+  slashRevealDuration: 0.14
+  betweenCuts: 0.05
   moveDistance: 1.35
   jumpDistance: 0.85
   crouchHeightRatio: 0.82
@@ -995,8 +998,9 @@ SpriteRenderer:
   - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 0.88, g: 0.52, b: 1, a: 0}
   m_Sprite: {fileID: 21300000, guid: 75956f45c5bee4c48ad57322178154bf, type: 3}
-  m_SortingLayerID: 0
-  m_SortingOrder: 58
+  m_SortingLayerID: 794792467
+  m_SortingLayer: 7
+  m_SortingOrder: 500
 --- !u!1 &136110
 GameObject:
   m_ObjectHideFlags: 0
@@ -1036,8 +1040,9 @@ SpriteRenderer:
   - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 0.88, g: 0.52, b: 1, a: 0}
   m_Sprite: {fileID: 21300000, guid: 4667747b5b18b7c42914b101cbd4779c, type: 3}
-  m_SortingLayerID: 0
-  m_SortingOrder: 58
+  m_SortingLayerID: 794792467
+  m_SortingLayer: 7
+  m_SortingOrder: 500
 --- !u!1 &136120
 GameObject:
   m_ObjectHideFlags: 0
@@ -1077,8 +1082,9 @@ SpriteRenderer:
   - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 0.88, g: 0.52, b: 1, a: 0}
   m_Sprite: {fileID: 21300000, guid: 95360d9ebe48db748bbf325e76587b0b, type: 3}
-  m_SortingLayerID: 0
-  m_SortingOrder: 58
+  m_SortingLayerID: 794792467
+  m_SortingLayer: 7
+  m_SortingOrder: 500
 --- !u!1 &136130
 GameObject:
   m_ObjectHideFlags: 0
@@ -1118,8 +1124,9 @@ SpriteRenderer:
   - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 0.88, g: 0.52, b: 1, a: 0}
   m_Sprite: {fileID: 21300000, guid: 2d8f07d1deb749f4abe9bad1a5656ab4, type: 3}
-  m_SortingLayerID: 0
-  m_SortingOrder: 58
+  m_SortingLayerID: 794792467
+  m_SortingLayer: 7
+  m_SortingOrder: 500
 --- !u!1 &137000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1162,25 +1169,25 @@ MonoBehaviour:
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4000000000000000000000000000006, type: 2}
   damageCaster: {fileID: 0}
   animationStateName: attack
-  startupDelay: 0.08
+  startupDelay: 0.35
   recoveryDelay: 0
   arenaPadding: 1.25
-  moveDuration: 0.24
-  slashReadyTime: 0.12
+  moveDuration: 0.34
+  slashReadyTime: 0.28
   weakSoulInterval: 0.34
   weakSoulSpeed: 8.5
   weakSoulSpawnMargin: 1.2
-  slashWarningDuration: 0.42
+  slashWarningDuration: 0.62
   slashActiveDuration: 0.16
   slashWidth: 0.52
   slashDamage: 1
   slashColor: {r: 0.82, g: 0.24, b: 1, a: 1}
   rotatingSlashHealth: 0.2
   rotatingDegrees: 145
-  cycleIntervalAt25: 0.72
-  cycleIntervalAt10: 0.34
+  cycleIntervalAt25: 0.92
+  cycleIntervalAt10: 0.5
   enrageHealth: 0.1
-  enrageSlashInterval: 0.055
-  enrageWarningDuration: 0.2
+  enrageSlashInterval: 0.08
+  enrageWarningDuration: 0.32
   enrageMinimumDistance: 0.8
   enrageMaximumDistance: 8.5

@@ -65,7 +65,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                     Boss.transform.position,
                     landing,
                     smallJumpHeight,
-                    smallJumpDuration / DurationScale
+                    smallJumpDuration * Boss.JumpTimeScale / DurationScale
                 );
                 Boss.ShakeImpact(false);
                 Boss.PlayLandingFeedback(groundPoint, false);
@@ -106,7 +106,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                     Vector3 point = Vector3.Lerp(start, landing, value);
                     point.y += 4f * finalJumpHeight * value * (1f - value);
                     Boss.transform.position = point;
-                }, 1f, finalJumpDuration / DurationScale)
+                }, 1f, finalJumpDuration * Boss.JumpTimeScale / DurationScale)
                 .SetEase(Ease.Linear)
                 .SetTarget(Boss.transform);
 
@@ -117,7 +117,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 if (fragmentTimer <= 0f)
                 {
                     SpawnFragmentBurst();
-                    fragmentTimer = fragmentInterval;
+                    fragmentTimer = fragmentInterval * Boss.JumpTimeScale;
                 }
                 yield return null;
             }

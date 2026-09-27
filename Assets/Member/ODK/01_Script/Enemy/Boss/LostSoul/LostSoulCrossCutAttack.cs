@@ -15,25 +15,24 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         protected override IEnumerator ExecuteLostSoul(GameObject target)
         {
             Boss.TeleportToTarget(3.8f);
-            ReplayAnimation();
             Vector3 center = target.transform.position;
             yield return TelegraphAndCut(center, 45f, -45f);
-            ReplayAnimation();
             center = target.transform.position;
             yield return TelegraphAndCut(center, 0f, 90f);
-            yield return new WaitForSeconds(0.14f * DurationScale);
-            ReplayAnimation();
+            yield return new WaitForSeconds(0.14f / DurationScale);
             center = target.transform.position;
             yield return TelegraphAndCut(center, 90f);
-            yield return new WaitForSeconds(betweenCuts * DurationScale);
+            yield return new WaitForSeconds(betweenCuts / DurationScale);
             yield return TelegraphAndCut(center, 0f);
         }
 
         private IEnumerator TelegraphAndCut(Vector3 center, params float[] angles)
         {
             Boss.AttackReady(center);
+            float warning = warningDuration / DurationScale;
+            float active = activeDuration / DurationScale;
             float length = Mathf.Max(Boss.ArenaHalfWidth * 2.8f, Boss.ArenaHalfHeight * 2.8f);
-            Boss.PlaySlashFeedback();
+            SwingAt(warning);
             foreach (float angle in angles)
             {
                 Vector3 direction = Quaternion.Euler(0f, 0f, angle) * Vector3.right;
@@ -42,13 +41,13 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                     direction,
                     length,
                     cutThickness,
-                    warningDuration / DurationScale,
-                    activeDuration / DurationScale,
+                    warning,
+                    active,
                     damage,
                     beamColor
                 );
             }
-            yield return new WaitForSeconds((warningDuration + activeDuration) / DurationScale);
+            yield return new WaitForSeconds(warning + active);
         }
     }
 }

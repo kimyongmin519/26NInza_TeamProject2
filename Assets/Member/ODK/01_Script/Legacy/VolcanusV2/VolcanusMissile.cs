@@ -30,8 +30,9 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
             if (damageCaster == null) damageCaster = GetComponent<DamageCaster>();
             if (damageCaster == null)
             {
-                damageCaster = gameObject.AddComponent<DamageCaster>();
-                damageCaster.SetRange(1.2f);
+                Debug.LogError("Volcanus missile prefab is missing DamageCaster.", this);
+                Destroy(gameObject);
+                return;
             }
             Vector2 direction = target != null ? ((Vector2)target.position - (Vector2)transform.position).normalized : Vector2.down;
             velocity = direction * startSpeed;

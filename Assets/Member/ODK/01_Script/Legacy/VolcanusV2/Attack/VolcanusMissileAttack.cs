@@ -21,7 +21,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
 
         public override bool CanUseSkill(GameObject target = null)
         {
-            return Boss != null && Boss.Target != null;
+            return Boss != null && Boss.Target != null && missilePrefab != null;
         }
 
         protected override IEnumerator Execute(GameObject target)
@@ -37,10 +37,14 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
 
         private void SpawnMissile(int index)
         {
+            if (missilePrefab == null) return;
+
             Vector3 spawnPosition = GetSpawnPosition(index);
-            VolcanusMissile missile = missilePrefab != null
-                ? Instantiate(missilePrefab, spawnPosition, Quaternion.identity)
-                : new GameObject($"Volcanus Missile {index + 1}").AddComponent<VolcanusMissile>();
+            VolcanusMissile missile = Instantiate(
+                missilePrefab,
+                spawnPosition,
+                Quaternion.identity
+            );
             missile.transform.position = spawnPosition;
             missile.Launch(Boss.Target, startSpeed, acceleration, maxSpeed, lifeTime, damage);
             missile.OnExplode += Boss.AttackImpact;

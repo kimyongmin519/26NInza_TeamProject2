@@ -69,10 +69,11 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 .WaitForCompletion();
 
             if (!running || target == null) yield break;
-            ReplayAnimation();
-            Boss.PlaySlashFeedback();
+            float readyTime = slashReadyTime / DurationScale;
+            float warningTime = slashWarningDuration / DurationScale;
+            SwingAt(readyTime + warningTime);
             Boss.AttackReady(target.position);
-            yield return new WaitForSeconds(slashReadyTime / DurationScale);
+            yield return new WaitForSeconds(readyTime);
 
             int directionCount = GetDirectionCount();
             bool rotating = Boss.HealthRatio <= rotatingSlashHealth;
@@ -83,6 +84,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 cycleIntervalAt25,
                 Mathf.InverseLerp(enrageHealth, 0.25f, Boss.HealthRatio)
             ) / DurationScale;
+            waitDuration = Mathf.Max(waitDuration, warningTime + slashActiveDuration * 0.5f / DurationScale);
             yield return WaitCycle(target, waitDuration);
         }
 
@@ -156,7 +158,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             float pressure = Mathf.InverseLerp(0.25f, enrageHealth, Boss.HealthRatio);
             float lowHealthBias = Mathf.Lerp(2.4f, 0.55f, pressure);
             float roll = Mathf.Pow(Random.value, lowHealthBias);
-            return Mathf.Clamp(3 + Mathf.FloorToInt(roll * 2f), 3, 6);
+            return Mathf.Clamp(3 + Mathf.FloorToInt(roll * 6f), 3, 8);
         }
 
         private Vector3 GetRandomGroundPosition()

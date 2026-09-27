@@ -1,3 +1,5 @@
+using GGMLib.ObjectPool.Runtime;
+using KimLIb.ObjectPool.Runtime;
 using KimLIb.SoundSystem;
 using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK.Scripts.Enemys.Bosses;
@@ -7,33 +9,67 @@ using UnityEngine;
 namespace Member.ODK.Scripts.Enemys.LostSoul
 {
     [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-    public class LostSoulGrabbableProjectile : GrabbableRigidbody
+    public class LostSoulGrabbableProjectile : GrabbableRigidbody, IPoolable
     {
         [SerializeField] private float lifeTime = 9f;
         [SerializeField] private float homingDegreesPerSecond = 75f;
         [SerializeField] private float thrownHomingDegreesPerSecond = 150f;
         [SerializeField] private float visualAngleOffset = 180f;
         [SerializeField] private SoundClipSO impactSound;
+        [SerializeField, Min(1f)] private float maximumThrownDistance = 18f;
         private LostSoul owner;
         private float bossDamage;
         private Transform target;
         private float speed;
         private bool thrown;
         private bool consumed;
+        private Vector2 thrownOrigin;
+        private float lifeRemaining;
+
+        public PoolItemSO PoolItem { get; set; }
+        public GameObject GameObject => this != null ? gameObject : null;
+
+        public void ResetItem()
+        {
+            owner = null;
+            target = null;
+            thrown = false;
+            consumed = false;
+            speed = 0f;
+            Rigidbody.simulated = true;
+            Rigidbody.linearVelocity = Vector2.zero;
+            Rigidbody.angularVelocity = 0f;
+        }
 
         public void Initialize(LostSoul boss, Vector2 velocity, float damageToBoss, Transform homingTarget)
         {
             owner = boss;
-            bossDamage = damageToBoss;
+            bossDamage = Mathf.Clamp(damageToBoss, 0f, 1f);
             target = homingTarget;
             speed = velocity.magnitude;
             Rigidbody.linearVelocity = velocity;
             SetVisualDirection(velocity);
-            Destroy(gameObject, lifeTime);
+            thrown = false;
+            consumed = false;
+            lifeRemaining = lifeTime;
+        }
+
+        private void Update()
+        {
+            if (consumed || IsHeld) return;
+            lifeRemaining -= Time.deltaTime;
+            if (lifeRemaining <= 0f) Consume();
         }
 
         private void FixedUpdate()
         {
+            if (thrown && !IsHeld && !consumed &&
+                Vector2.Distance(thrownOrigin, Rigidbody.position) >= maximumThrownDistance)
+            {
+                Consume();
+                return;
+            }
+
             if (Rigidbody == null || target == null || IsHeld || consumed || speed <= 0.01f) return;
             Vector2 current = Rigidbody.linearVelocity.sqrMagnitude > 0.01f
                 ? Rigidbody.linearVelocity.normalized
@@ -51,6 +87,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         protected override void OnThrown(ThrowData throwData)
         {
             thrown = true;
+            thrownOrigin = Rigidbody.position;
             target = owner != null ? owner.transform : null;
             speed = Rigidbody != null ? Rigidbody.linearVelocity.magnitude : throwData.ArmThrowSpeed;
             SetVisualDirection(throwData.Direction);
@@ -78,15 +115,13 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 }
             }
 
-            // The colored weak soul is intentionally harmless to the player.
-            // It remains in play until grabbed and thrown back into its owner or until its lifetime ends.
         }
 
         private void Consume()
         {
             if (consumed) return;
             consumed = true;
-            Destroy(gameObject);
+            ODKPool.Despawn(this);
         }
     }
 }

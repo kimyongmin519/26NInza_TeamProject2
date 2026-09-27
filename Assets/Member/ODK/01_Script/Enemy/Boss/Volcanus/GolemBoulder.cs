@@ -1,4 +1,5 @@
 using Member.KYM.Scripts.Players.RobotArm;
+using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
     [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
     public class GolemBoulder : GrabbableRigidbody
     {
+        [SerializeField, Min(1f)] private float maximumThrownDistance = 18f;
+
         private Volcanus owner;
         private float bossDamage;
         private float playerDamage;
@@ -16,6 +19,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         private bool consumed;
         private float armTime;
         private Vector2 previousPosition;
+        private Vector2 thrownOrigin;
 
         public void Initialize(
             Volcanus boss,
@@ -26,7 +30,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             LayerMask groundMask)
         {
             owner = boss;
-            bossDamage = damageToBoss;
+            bossDamage = Mathf.Clamp(damageToBoss, 0f, 1f);
             playerDamage = damageToPlayer;
             playerLayer = playerMask;
             groundLayer = groundMask;
@@ -44,6 +48,11 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
                 previousPosition = Rigidbody.position;
                 return;
             }
+            if (Vector2.Distance(thrownOrigin, Rigidbody.position) >= maximumThrownDistance)
+            {
+                Break();
+                return;
+            }
             Vector2 current = Rigidbody.position;
             foreach (RaycastHit2D hit in Physics2D.LinecastAll(previousPosition, current))
             {
@@ -58,6 +67,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         protected override void OnThrown(ThrowData throwData)
         {
             thrown = true;
+            thrownOrigin = Rigidbody.position;
             armTime = Time.time;
             previousPosition = Rigidbody.position;
         }

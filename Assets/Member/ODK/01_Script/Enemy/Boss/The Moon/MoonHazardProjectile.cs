@@ -1,3 +1,5 @@
+using DG.Tweening;
+using GGMLib.ObjectPool.Runtime;
 using KimLIb.SoundSystem;
 using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
@@ -6,7 +8,7 @@ using UnityEngine;
 namespace Member.ODK.Scripts.Enemys.MoonBoss
 {
     [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-    public class MoonHazardProjectile : MonoBehaviour
+    public class MoonHazardProjectile : AbstractMonoPoolable
     {
         [SerializeField] private Vector2 fallingAngularSpeedRange = new Vector2(-320f, 320f);
         [SerializeField] private SoundClipSO impactSound;
@@ -15,7 +17,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         {
             Linear,
             Falling,
-            Homing
+            Homing,
+            Dash
         }
 
         private Rigidbody2D body;
@@ -28,6 +31,41 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private float turnSpeed;
         private float lifeRemaining;
         private bool consumed;
+        private MoonDashMotion dashMotion;
+        private Vector3 dashBaseScale = Vector3.one;
+        private SpriteRenderer spriteRenderer;
+        private Sprite defaultSprite;
+        private CircleCollider2D circle;
+        private float defaultRadius = 0.35f;
+
+        public override void ResetItem()
+        {
+            transform.DOKill();
+            consumed = false;
+            dashMotion = null;
+            target = null;
+            if (body == null) CacheComponents();
+            body.linearVelocity = Vector2.zero;
+            body.angularVelocity = 0f;
+            body.gravityScale = 0f;
+            if (spriteRenderer != null) spriteRenderer.sprite = defaultSprite;
+            if (circle != null) circle.radius = defaultRadius;
+        }
+
+        private void CacheComponents()
+        {
+            body = GetComponent<Rigidbody2D>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null && defaultSprite == null) defaultSprite = spriteRenderer.sprite;
+            circle = GetComponent<CircleCollider2D>();
+            if (circle != null) defaultRadius = circle.radius;
+        }
+
+        public void SetDashBaseScale(Vector3 scale)
+        {
+            dashBaseScale = scale;
+            transform.localScale = scale;
+        }
 
         public void Initialize(
             Vector2 velocity,
@@ -38,8 +76,12 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             LayerMask playerMask,
             LayerMask groundMask,
             Sprite sprite = null,
-            Color? color = null)
+            Color? color = null,
+            float fallingGravity = 1.2f)
         {
+            if (body == null) CacheComponents();
+            consumed = false;
+            dashMotion = null;
             name = $"Moon {moveMode} Projectile";
             target = homingTarget;
             mode = moveMode;
@@ -49,7 +91,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             speed = Mathf.Max(0.1f, velocity.magnitude);
             turnSpeed = 3.5f;
             lifeRemaining = Mathf.Max(0.2f, lifeTime);
-            body.gravityScale = moveMode == MoveMode.Falling ? 2.2f : 0f;
+            body.gravityScale = moveMode == MoveMode.Falling ? Mathf.Max(0.05f, fallingGravity) : 0f;
             body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             body.linearVelocity = velocity;
             body.angularVelocity = moveMode == MoveMode.Falling
@@ -58,30 +100,53 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                     Mathf.Max(fallingAngularSpeedRange.x, fallingAngularSpeedRange.y)
                 )
                 : 0f;
-            CircleCollider2D circle = GetComponent<CircleCollider2D>();
-            if (circle != null) circle.radius = moveMode == MoveMode.Homing ? 0.65f : 0.35f;
-            SpriteRenderer renderer = GetComponent<SpriteRenderer>();
-            if (renderer != null)
+            if (circle != null) circle.radius = moveMode == MoveMode.Homing || moveMode == MoveMode.Dash ? 0.65f : defaultRadius;
+            if (spriteRenderer != null)
             {
-                if (sprite != null) renderer.sprite = sprite;
-                renderer.color = color ?? new Color(0.75f, 0.85f, 1f, 0.9f);
+                spriteRenderer.sprite = sprite != null ? sprite : defaultSprite;
+                spriteRenderer.color = color ?? new Color(0.75f, 0.85f, 1f, 0.9f);
             }
+        }
+
+        public void UseDashMotion(MoonDashMotion settings, float speedScale = 1f, float power = 1f, float interval = 1f)
+        {
+            mode = MoveMode.Dash;
+            body.gravityScale = 0f;
+            body.angularVelocity = 0f;
+            dashMotion = new MoonDashMotion(settings);
+            dashBaseScale = transform.localScale;
+            dashMotion.Begin(body.linearVelocity, speedScale, power, interval);
+            if (circle != null) circle.radius = 0.65f;
         }
 
         private void Awake()
         {
-            if (body == null) body = GetComponent<Rigidbody2D>();
+            if (body == null) CacheComponents();
         }
 
         private void Update()
         {
+            if (consumed) return;
             lifeRemaining -= Time.deltaTime;
             if (lifeRemaining <= 0f) Consume();
         }
 
         private void FixedUpdate()
         {
-            if (consumed || mode != MoveMode.Homing || target == null) return;
+            if (consumed) return;
+            if (mode == MoveMode.Dash && dashMotion != null)
+            {
+                Vector2 targetPosition = target != null ? (Vector2)target.position : body.position + body.linearVelocity;
+                dashMotion.Tick(body.position, targetPosition, Time.fixedDeltaTime);
+                body.linearVelocity = dashMotion.Velocity;
+                if (body.linearVelocity.sqrMagnitude > 0.01f)
+                {
+                    float angle = Mathf.Atan2(body.linearVelocity.y, body.linearVelocity.x) * Mathf.Rad2Deg - 90f;
+                    body.MoveRotation(angle);
+                }
+                return;
+            }
+            if (mode != MoveMode.Homing || target == null) return;
             Vector2 desired = ((Vector2)target.position - body.position).normalized;
             Vector2 current = body.linearVelocity.sqrMagnitude > 0.01f
                 ? body.linearVelocity.normalized
@@ -107,7 +172,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 return;
             }
 
-            if (mode != MoveMode.Linear && (groundLayer.value & mask) != 0)
+            if (mode == MoveMode.Falling && (groundLayer.value & mask) != 0)
             {
                 ODKSoundPlayback.Play(impactSound, transform.position);
                 Consume();
@@ -118,7 +183,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         {
             if (consumed) return;
             consumed = true;
-            Destroy(gameObject);
+            transform.DOKill();
+            ODKPool.Despawn(this);
         }
     }
 }

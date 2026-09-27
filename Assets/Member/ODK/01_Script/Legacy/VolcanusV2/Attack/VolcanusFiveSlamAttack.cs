@@ -14,6 +14,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
         [SerializeField] private float slamDuration = 0.16f;
         [SerializeField] private float slamInterval = 0.25f;
         [SerializeField] private float damage = 42f;
+        [SerializeField, Range(0.2f, 1.2f)] private float hitRadiusRatio = 0.65f;
 
         private Sequence sequence;
 
@@ -32,42 +33,39 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
 
             Boss.RightHand.SetAnotherMoving(true);
 
-            for (int i = 0; i < slamCount; i++)
+            for (int i = 0; i < slamCount && !Boss.IsDead; i++)
             {
                 float rate = slamCount <= 1 ? 0f : (float)i / (slamCount - 1);
                 Vector3 groundPoint = Boss.GetGroundPoint(Mathf.Lerp(startX, endX, rate));
                 Vector3 readyPosition = groundPoint + Vector3.up * readyHeight;
-                Vector3 hitPosition = Boss.GetImpactVisualPosition(fist, groundPoint, Boss.FistImpactVisualOffset);
-                Vector3 damagePoint = groundPoint;
+                readyPosition.z = fist.position.z;
 
                 Boss.AttackReady(groundPoint);
                 Boss.ReactPieces(Boss.RightHand, Vector2.down);
                 sequence = DOTween.Sequence();
-                sequence.Append(fist.DOMove(readyPosition, readyDuration * DurationScale).SetEase(Ease.OutBack));
-                sequence.Join(fist.DORotate(new Vector3(0f, 0f, Boss.FistDownAngle), readyDuration * DurationScale).SetEase(Ease.OutQuad));
+                sequence.Append(fist.DOMove(readyPosition, Scaled(readyDuration)).SetEase(Ease.OutBack));
+                sequence.Join(fist.DORotate(new Vector3(0f, 0f, Boss.FistDownAngle), Scaled(readyDuration)).SetEase(Ease.OutQuad));
                 yield return sequence.WaitForCompletion();
 
+                Vector3 hitPosition = Boss.GetImpactVisualPosition(fist, groundPoint, Boss.FistImpactVisualOffset);
                 PlayAttackAnimation(Boss.RightHand);
-                DamageCaster?.EnableCasting(
-                    new DamageData(damage, DamageType.Melee),
-                    slamDuration * DurationScale + Time.fixedDeltaTime
-                );
+                StartCoroutine(StrikeWindow(DamageCaster, Volcanus.StrikePart.Fist,
+                    Scaled(slamDuration) + 0.06f, damage, DamageType.Melee, hitRadiusRatio));
 
                 sequence = DOTween.Sequence();
-                sequence.Append(fist.DOMove(hitPosition, slamDuration * DurationScale).SetEase(Ease.InExpo));
+                sequence.Append(fist.DOMove(hitPosition, Scaled(slamDuration)).SetEase(Ease.InExpo));
                 yield return sequence.WaitForCompletion();
-                Boss.AttackImpact(damagePoint);
-                Boss.SpawnFistRocks(damagePoint);
-                DamageCaster?.DisableCasting();
-
+                Boss.AttackImpact(groundPoint);
+                Boss.SpawnFistRocks(groundPoint);
 
                 if (i < slamCount - 1)
                 {
-                    yield return new WaitForSeconds(slamInterval * DurationScale);
+                    yield return new WaitForSeconds(Scaled(slamInterval));
                     EndAttackAnimation();
                 }
             }
 
+            DamageCaster?.DisableCasting();
             Boss.RightHand.SetAnotherMoving(false);
         }
 

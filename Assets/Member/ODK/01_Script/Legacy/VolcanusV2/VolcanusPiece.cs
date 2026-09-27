@@ -25,20 +25,40 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
         [Header("Falling")]
         [SerializeField] private float fallingGravityScale = 0.6f;
 
+        [Header("Idle Motion")]
+        [SerializeField] private bool idleMotionEnabled = true;
+        [SerializeField] private Vector2 idleMove = new Vector2(0f, 0.18f);
+        [SerializeField] private float idleRotation = 2f;
+        [SerializeField, Min(0.2f)] private float idleDuration = 1.6f;
+        [SerializeField, Min(0f)] private float idlePhaseDelay;
+        [SerializeField, Range(0f, 0.1f)] private float idleScalePulse = 0.015f;
+
         private Vector3 originLocalPos;
         private Quaternion originLocalRot;
+        private Vector3 originLocalScale;
         private Rigidbody2D rb;
         private Volcanus owner;
+        private VolcanusPixelAnimator pixelAnimator;
         private Sequence returnSequence;
         private Sequence reactionSequence;
+        private Sequence idleSequence;
+        private bool hasStarted;
 
         private void Awake()
         {
             originLocalPos = transform.localPosition;
             originLocalRot = transform.localRotation;
+            originLocalScale = transform.localScale;
             Animator = GetComponentInChildren<Animator>();
+            pixelAnimator = GetComponentInChildren<VolcanusPixelAnimator>();
             rb = GetComponentInChildren<Rigidbody2D>();
             owner = GetComponentInParent<Volcanus>();
+        }
+
+        private void Start()
+        {
+            hasStarted = true;
+            StartIdleMotion();
         }
 
         [ContextMenu("Death")]
@@ -47,6 +67,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
             if (IsDestroyed) return;
             IsDestroyed = true;
             KillTween();
+            pixelAnimator?.Stop();
             if (Animator != null && !string.IsNullOrWhiteSpace(destroyAnimationStateName))
                 Animator.Play(destroyAnimationStateName, 0, 0f);
         }
@@ -68,7 +89,11 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
         {
             IsAnotherMoving = isMoving;
             KillTween();
-            if (isMoving) return;
+            if (isMoving)
+            {
+                RestoreIdlePose();
+                return;
+            }
 
             if (rb != null)
             {
@@ -84,7 +109,9 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
             if (this == movingPiece || IsDestroyed || IsAnotherMoving) return;
 
             reactionSequence?.Kill();
+            StopIdleMotion(false);
             transform.DOKill();
+            transform.localScale = originLocalScale;
             reactionSequence = DOTween.Sequence();
             reactionSequence.Append(transform.DOLocalMove(originLocalPos - (Vector3)offset * 0.4f, reactionDuration * 0.45f).SetEase(Ease.InOutSine));
             reactionSequence.Join(transform.DOLocalRotateQuaternion(originLocalRot * Quaternion.Euler(0f, 0f, -angle * 0.35f), reactionDuration * 0.45f).SetEase(Ease.InOutSine));
@@ -94,7 +121,12 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
             reactionSequence.Join(transform.DOLocalRotateQuaternion(originLocalRot * Quaternion.Euler(0f, 0f, -angle * 0.2f), reactionReturnDuration * 0.35f).SetEase(Ease.InOutQuad));
             reactionSequence.Append(transform.DOLocalMove(originLocalPos, reactionReturnDuration).SetEase(Ease.OutBack));
             reactionSequence.Join(transform.DOLocalRotateQuaternion(originLocalRot, reactionReturnDuration).SetEase(Ease.OutBack));
-            reactionSequence.OnComplete(() => reactionSequence = null);
+            reactionSequence.Join(transform.DOScale(originLocalScale, reactionReturnDuration).SetEase(Ease.OutBack));
+            reactionSequence.OnComplete(() =>
+            {
+                reactionSequence = null;
+                StartIdleMotion();
+            });
         }
 
         public void TakeDamage(DamageData damage)
@@ -106,9 +138,27 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
 
         public void SetOriginRotation(float angle)
         {
+            StopIdleMotion(true);
             originLocalRot = Quaternion.Euler(0f, 0f, angle);
             if (!IsAnotherMoving)
                 transform.localRotation = originLocalRot;
+            if (hasStarted) StartIdleMotion();
+        }
+
+        public void SetOriginScale(Vector3 scale)
+        {
+            StopIdleMotion(false);
+            originLocalScale = scale;
+            if (!IsAnotherMoving) transform.localScale = scale;
+            if (hasStarted) StartIdleMotion();
+        }
+
+        public void SetOriginPosition(Vector3 localPosition)
+        {
+            StopIdleMotion(false);
+            originLocalPos = localPosition;
+            if (!IsAnotherMoving) transform.localPosition = localPosition;
+            if (hasStarted) StartIdleMotion();
         }
 
         private void ReturnToOrigin()
@@ -117,12 +167,66 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
             returnSequence = DOTween.Sequence();
             returnSequence.Append(transform.DOLocalMove(originLocalPos, returnDuration).SetEase(returnEase));
             returnSequence.Join(transform.DOLocalRotateQuaternion(originLocalRot, returnDuration).SetEase(returnEase));
-            returnSequence.OnComplete(() => returnSequence = null);
+            returnSequence.Join(transform.DOScale(originLocalScale, returnDuration).SetEase(returnEase));
+            returnSequence.OnComplete(() =>
+            {
+                returnSequence = null;
+                StartIdleMotion();
+            });
+        }
+
+        private void StartIdleMotion()
+        {
+            if (!idleMotionEnabled || IsDestroyed || IsAnotherMoving || !isActiveAndEnabled)
+                return;
+
+            StopIdleMotion(false);
+            Vector3 halfMove = new Vector3(idleMove.x, idleMove.y, 0f) * 0.5f;
+            Vector3 upperScale = new Vector3(
+                originLocalScale.x * (1f + idleScalePulse),
+                originLocalScale.y * (1f - idleScalePulse),
+                originLocalScale.z
+            );
+
+            transform.localPosition = originLocalPos - halfMove;
+            transform.localRotation = originLocalRot * Quaternion.Euler(0f, 0f, -idleRotation);
+            transform.localScale = originLocalScale;
+
+            idleSequence = DOTween.Sequence();
+            if (idlePhaseDelay > 0f) idleSequence.AppendInterval(idlePhaseDelay);
+            idleSequence.Append(
+                transform.DOLocalMove(originLocalPos + halfMove, idleDuration)
+                    .SetEase(Ease.InOutSine)
+            );
+            idleSequence.Join(
+                transform.DOLocalRotateQuaternion(
+                    originLocalRot * Quaternion.Euler(0f, 0f, idleRotation),
+                    idleDuration
+                ).SetEase(Ease.InOutSine)
+            );
+            idleSequence.Join(transform.DOScale(upperScale, idleDuration).SetEase(Ease.InOutSine));
+            idleSequence.SetLoops(-1, LoopType.Yoyo);
+        }
+
+        private void StopIdleMotion(bool restorePose)
+        {
+            idleSequence?.Kill();
+            idleSequence = null;
+            if (restorePose) RestoreIdlePose();
+        }
+
+        private void RestoreIdlePose()
+        {
+            transform.localPosition = originLocalPos;
+            transform.localRotation = originLocalRot;
+            transform.localScale = originLocalScale;
         }
 
         public bool PlayAttackAnimation(string stateName)
         {
-            if (IsDestroyed || Animator == null || Animator.runtimeAnimatorController == null || string.IsNullOrWhiteSpace(stateName))
+            if (IsDestroyed) return false;
+            if (pixelAnimator != null) return pixelAnimator.Play(stateName);
+            if (Animator == null || Animator.runtimeAnimatorController == null || string.IsNullOrWhiteSpace(stateName))
                 return false;
 
             int stateHash = UnityEngine.Animator.StringToHash(stateName);
@@ -133,6 +237,11 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
 
         public void PlayDefaultAnimation()
         {
+            if (pixelAnimator != null)
+            {
+                pixelAnimator.PlayDefault();
+                return;
+            }
             if (IsDestroyed || Animator == null || Animator.runtimeAnimatorController == null || string.IsNullOrWhiteSpace(defaultAnimationStateName)) return;
             int stateHash = UnityEngine.Animator.StringToHash(defaultAnimationStateName);
             if (Animator.HasState(0, stateHash))
@@ -145,6 +254,9 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
         {
             returnSequence?.Kill();
             reactionSequence?.Kill();
+            returnSequence = null;
+            reactionSequence = null;
+            StopIdleMotion(false);
             transform.DOKill();
         }
 

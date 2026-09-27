@@ -72,7 +72,7 @@ namespace Member.ODK.Scripts.Enemys.Combat
                 if (hasWorldPositionOverride) return worldPositionOverride;
                 Transform basis = ReferenceTransform;
                 Vector2 offset = rotateOffsetWithReference
-                    ? basis.TransformDirection(positionOffset)
+                    ? (Vector2)basis.TransformDirection(positionOffset)
                     : positionOffset;
                 return basis.position + (Vector3)offset;
             }
@@ -233,6 +233,14 @@ namespace Member.ODK.Scripts.Enemys.Combat
         {
             castMode = DamageCastMode.Box;
             size = new Vector2(Mathf.Abs(castSize.x), Mathf.Abs(castSize.y));
+            targetLayer = layer;
+        }
+
+        public void ConfigureOutsideBox(Vector2 safeSize, float outerRange, LayerMask layer)
+        {
+            castMode = DamageCastMode.OutsideBox;
+            size = new Vector2(Mathf.Abs(safeSize.x), Mathf.Abs(safeSize.y));
+            range = Mathf.Max(0f, outerRange);
             targetLayer = layer;
         }
 

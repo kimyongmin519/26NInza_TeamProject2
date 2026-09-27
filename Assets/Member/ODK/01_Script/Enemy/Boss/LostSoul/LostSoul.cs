@@ -38,19 +38,32 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private LostSoulGrabbableProjectile weakSoulProjectilePrefab;
         [SerializeField] private LostSoulSlashBeam slashBeamPrefab;
         [SerializeField] private float projectileDamage = 26f;
-        [SerializeField] private float thrownSoulDamage = 85f;
+        [SerializeField] private float thrownSoulDamage = 1f;
+
+        [Header("Phase Two")]
+        [SerializeField, Range(0f, 1f)] private float phaseTwoHealthRatio = 0.25f;
 
         [Header("Animation State")]
         [SerializeField] private string idleState = "ready";
         [SerializeField] private string hitState = "hit";
         [SerializeField] private string deathState = "dead";
 
+        [Header("Swing Timing")]
+        [SerializeField, Range(0f, 1f)] private float attackImpactNormalized = 0.5f;
+        [SerializeField, Range(0f, 1f)] private float teleportAttackImpactNormalized = 0.5f;
+        [SerializeField, Range(0f, 1f)] private float hitAnimationChance = 1f;
+
         public LayerMask PlayerLayer => playerLayer;
         public float HealthRatio => MaxHealth > 0f ? CurrentHealth / MaxHealth : 0f;
+        public bool IsActing { get; private set; }
         protected override bool HasPhaseTwo => true;
 
         private Vector3 visualScale;
         private int lastAttackIndex = -1;
+        private bool phaseTwoRequested;
+        private string loopState;
+        private Coroutine oneShotRoutine;
+        private Coroutine swingRoutine;
 
         protected override void Awake()
         {
@@ -71,6 +84,12 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         protected override IEnumerator PhaseOneLoop()
         {
+            if (phaseTwoRequested)
+            {
+                EnterPhaseTwo();
+                yield break;
+            }
+
             int index;
             do index = Random.Range(0, 6);
             while (index == lastAttackIndex);
@@ -87,8 +106,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         protected override void Update()
         {
             base.Update();
-            if (!IsDead && !IsPhaseTwo && HealthRatio <= 0.25f)
-                EnterPhaseTwo();
+            if (!IsDead && !IsPhaseTwo && HealthRatio <= phaseTwoHealthRatio)
+                phaseTwoRequested = true;
         }
 
         private void LateUpdate()
@@ -128,8 +147,114 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         public void PlayAnimation(string stateName, float fade = 0.04f, float normalizedTime = 0f)
         {
-            if (animator == null || string.IsNullOrWhiteSpace(stateName)) return;
-            RuntimeAnimatorController controller = stateName switch
+            if (string.IsNullOrWhiteSpace(stateName)) return;
+            if (IsOneShotState(stateName))
+            {
+                PlayOneShot(stateName, normalizedTime);
+                return;
+            }
+
+            CancelSwing();
+            CancelOneShot();
+            loopState = stateName;
+            PlayRaw(stateName, fade, normalizedTime);
+        }
+
+        public void PlayIdle(bool force = true)
+        {
+            loopState = idleState;
+            if (!force && oneShotRoutine != null) return;
+            CancelSwing();
+            CancelOneShot();
+            PlayRaw(idleState, 0.04f, 0f);
+        }
+
+        public void SetActing(bool acting)
+        {
+            IsActing = acting;
+        }
+
+        public void PlaySwing(string stateName = "attack", float timeUntilImpact = 0f, System.Action onImpact = null)
+        {
+            CancelSwing();
+            swingRoutine = StartCoroutine(SwingRoutine(stateName, Mathf.Max(0f, timeUntilImpact), onImpact));
+        }
+
+        public float GetImpactDelay(string stateName = "attack")
+        {
+            return GetStateDuration(stateName) * GetImpactNormalized(stateName);
+        }
+
+        private IEnumerator SwingRoutine(string stateName, float timeUntilImpact, System.Action onImpact)
+        {
+            float duration = GetStateDuration(stateName);
+            float impactNormalized = GetImpactNormalized(stateName);
+            float impactOffset = duration * impactNormalized;
+
+            if (timeUntilImpact >= impactOffset)
+            {
+                float lead = timeUntilImpact - impactOffset;
+                if (lead > 0f) yield return new WaitForSeconds(lead);
+                PlayOneShot(stateName, 0f);
+                if (impactOffset > 0f) yield return new WaitForSeconds(impactOffset);
+            }
+            else
+            {
+                float startNormalized = duration > 0f
+                    ? Mathf.Clamp01((impactOffset - timeUntilImpact) / duration)
+                    : impactNormalized;
+                PlayOneShot(stateName, startNormalized);
+                if (timeUntilImpact > 0f) yield return new WaitForSeconds(timeUntilImpact);
+            }
+
+            swingRoutine = null;
+            onImpact?.Invoke();
+        }
+
+        private void PlayOneShot(string stateName, float normalizedTime)
+        {
+            CancelOneShot();
+            if (string.IsNullOrEmpty(loopState)) loopState = idleState;
+            PlayRaw(stateName, 0f, normalizedTime);
+            float remaining = GetStateDuration(stateName) * (1f - Mathf.Clamp01(normalizedTime));
+            oneShotRoutine = StartCoroutine(ReturnToLoop(remaining));
+        }
+
+        private IEnumerator ReturnToLoop(float delay)
+        {
+            if (delay > 0f) yield return new WaitForSeconds(delay);
+            oneShotRoutine = null;
+            if (IsDead) yield break;
+            PlayRaw(string.IsNullOrEmpty(loopState) ? idleState : loopState, 0.03f, 0f);
+        }
+
+        private void CancelOneShot()
+        {
+            if (oneShotRoutine == null) return;
+            StopCoroutine(oneShotRoutine);
+            oneShotRoutine = null;
+        }
+
+        private void CancelSwing()
+        {
+            if (swingRoutine == null) return;
+            StopCoroutine(swingRoutine);
+            swingRoutine = null;
+        }
+
+        private static bool IsOneShotState(string stateName)
+        {
+            return stateName == "attack" || stateName == "teleport attack" || stateName == "hit";
+        }
+
+        private float GetImpactNormalized(string stateName)
+        {
+            return stateName == "teleport attack" ? teleportAttackImpactNormalized : attackImpactNormalized;
+        }
+
+        private RuntimeAnimatorController GetController(string stateName)
+        {
+            return stateName switch
             {
                 "flying" => flyingController,
                 "attack" => attackController,
@@ -142,6 +267,23 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 "dead" => deathController,
                 _ => null
             };
+        }
+
+        private float GetStateDuration(string stateName)
+        {
+            RuntimeAnimatorController controller = GetController(stateName);
+            if (controller == null) controller = animator != null ? animator.runtimeAnimatorController : null;
+            if (controller == null || controller.animationClips == null || controller.animationClips.Length == 0)
+                return 0.5f;
+            float length = controller.animationClips[0].length;
+            float speed = animator != null ? Mathf.Max(0.01f, animator.speed) : 1f;
+            return length / speed;
+        }
+
+        private void PlayRaw(string stateName, float fade, float normalizedTime)
+        {
+            if (animator == null || string.IsNullOrWhiteSpace(stateName)) return;
+            RuntimeAnimatorController controller = GetController(stateName);
             bool controllerChanged = controller != null && animator.runtimeAnimatorController != controller;
             if (controllerChanged)
                 animator.runtimeAnimatorController = controller;
@@ -159,8 +301,6 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
             animator.CrossFade(hash, fade, 0, startTime);
         }
-
-        public void PlayIdle() => PlayAnimation(idleState);
 
         public Vector3 TeleportToTarget(float sideDistance = 0f)
         {
@@ -188,7 +328,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         public LostSoulProjectile SpawnSoul(Vector3 position, Vector2 velocity, float damageScale = 1f)
         {
             if (soulProjectilePrefab == null) return null;
-            LostSoulProjectile soul = Instantiate(soulProjectilePrefab, position, Quaternion.identity);
+            LostSoulProjectile soul = ODKPool.Spawn(soulProjectilePrefab, position, Quaternion.identity);
+            if (soul == null) return null;
             soul.Initialize(velocity, projectileDamage * damageScale, playerLayer, Target);
             feedback?.PlaySoulProjectile();
             return soul;
@@ -197,7 +338,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         public LostSoulGrabbableProjectile SpawnWeakSoul(Vector3 position, Vector2 velocity)
         {
             if (weakSoulProjectilePrefab == null) return null;
-            LostSoulGrabbableProjectile soul = Instantiate(weakSoulProjectilePrefab, position, Quaternion.identity);
+            LostSoulGrabbableProjectile soul = ODKPool.Spawn(weakSoulProjectilePrefab, position, Quaternion.identity);
+            if (soul == null) return null;
             soul.Initialize(this, velocity, thrownSoulDamage, Target);
             feedback?.PlayWeakSoul();
             return soul;
@@ -215,7 +357,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             float preFireRotationDegrees = 0f)
         {
             if (slashBeamPrefab == null) return null;
-            LostSoulSlashBeam beam = Instantiate(slashBeamPrefab, origin, Quaternion.identity);
+            LostSoulSlashBeam beam = ODKPool.Spawn(slashBeamPrefab, origin, Quaternion.identity);
+            if (beam == null) return null;
             beam.Initialize(this, origin, direction, length, width, warningDuration, activeDuration, damage, color, preFireRotationDegrees);
             return beam;
         }
@@ -285,11 +428,20 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             if (!IsDead)
             {
                 feedback?.PlayHit();
-                PlayAnimation(hitState, 0.02f);
+                if (!IsActing && oneShotRoutine == null && swingRoutine == null && Random.value <= hitAnimationChance)
+                    PlayOneShot(hitState, 0f);
             }
         }
 
-        protected override void OnPhaseTwoEntered() => ShakeCamera(0.9f);
+        protected override void OnPhaseTwoEntered()
+        {
+            phaseTwoRequested = false;
+            IsActing = false;
+            swingRoutine = null;
+            oneShotRoutine = null;
+            PlayIdle();
+            ShakeCamera(0.9f);
+        }
 
         [ContextMenu("Enter Lost Soul Phase Two (25%)")]
         private void EnterPhaseTwoFromContext() => EnterPhaseTwoAtHealth(0.25f);
@@ -308,11 +460,14 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 float amount = CurrentHealth - targetHealth;
                 HealthModule.ApplyDamage(new DamageData(amount, DamageType.Special));
             }
-            EnterPhaseTwo();
+            phaseTwoRequested = true;
         }
 
         protected override void OnBossDeath()
         {
+            IsActing = false;
+            swingRoutine = null;
+            oneShotRoutine = null;
             transform.DOKill();
             SetDarkness(false, 0.08f);
             if (outlineRenderer != null) outlineRenderer.enabled = false;

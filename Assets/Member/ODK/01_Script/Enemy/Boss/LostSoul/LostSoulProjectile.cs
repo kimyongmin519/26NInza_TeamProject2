@@ -1,3 +1,4 @@
+using GGMLib.ObjectPool.Runtime;
 using KimLIb.SoundSystem;
 using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
@@ -6,7 +7,7 @@ using UnityEngine;
 namespace Member.ODK.Scripts.Enemys.LostSoul
 {
     [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-    public class LostSoulProjectile : MonoBehaviour
+    public class LostSoulProjectile : AbstractMonoPoolable
     {
         [SerializeField] private float lifeTime = 6f;
         [SerializeField] private float acceleration = 9f;
@@ -21,6 +22,18 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         private float maxSpeed;
         private Vector2 launchDirection;
         private bool consumed;
+        private float lifeRemaining;
+
+        public override void ResetItem()
+        {
+            consumed = false;
+            target = null;
+            speed = 0f;
+            maxSpeed = 0f;
+            if (body == null) body = GetComponent<Rigidbody2D>();
+            body.linearVelocity = Vector2.zero;
+            body.angularVelocity = 0f;
+        }
 
         public void Initialize(Vector2 velocity, float amount, LayerMask targetLayer, Transform homingTarget)
         {
@@ -33,7 +46,23 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             launchDirection = velocity.sqrMagnitude > 0.01f ? velocity.normalized : Vector2.right;
             body.linearVelocity = Vector2.zero;
             SetVisualDirection(launchDirection);
-            Destroy(gameObject, lifeTime);
+            consumed = false;
+            lifeRemaining = lifeTime;
+        }
+
+        private void Update()
+        {
+            if (consumed) return;
+            lifeRemaining -= Time.deltaTime;
+            if (lifeRemaining <= 0f) Consume();
+        }
+
+        private void Consume()
+        {
+            if (consumed) return;
+            consumed = true;
+            if (body != null) body.linearVelocity = Vector2.zero;
+            ODKPool.Despawn(this);
         }
 
         private void FixedUpdate()
@@ -66,10 +95,9 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             if (consumed || other == null) return;
             int mask = 1 << other.gameObject.layer;
             if ((playerLayer.value & mask) == 0 && !other.transform.root.CompareTag("Player")) return;
-            consumed = true;
             DamageCaster.ApplyDamage(other.transform, new DamageData(damage, DamageType.Projectile));
             ODKSoundPlayback.Play(impactSound, transform.position);
-            Destroy(gameObject);
+            Consume();
         }
     }
 }

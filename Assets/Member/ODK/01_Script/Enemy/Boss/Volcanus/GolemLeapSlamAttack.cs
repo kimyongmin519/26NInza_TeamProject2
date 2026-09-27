@@ -19,6 +19,8 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         private Vector3 originPosition;
         private bool hasOrigin;
 
+        protected override string DefaultActionState => Volcanus.SlamState;
+
         public override bool CanUseSkill(GameObject target = null) =>
             Boss != null && Boss.Target != null && !Boss.IsDead;
 
@@ -32,41 +34,38 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         {
             originPosition = Boss.transform.position;
             hasOrigin = true;
-            float x = Mathf.Clamp(
-                Boss.Target.position.x,
-                Boss.ArenaCenter.x - Boss.ArenaHalfWidth + 1f,
-                Boss.ArenaCenter.x + Boss.ArenaHalfWidth - 1f
-            );
+            float x = ClampToArena(Boss.Target.position.x);
             Vector3 groundPoint = Boss.GetGroundPoint(x);
             groundPoint.z = Boss.transform.position.z;
-            DrawTrajectory(Boss.transform.position, groundPoint, jumpHeight);
+            float height = jumpHeight * Scale * (Boss.IsPhaseTwo ? 1.25f : 1f);
+            DrawTrajectory(Boss.transform.position, groundPoint, height);
             Boss.AttackReady(groundPoint);
             Boss.PlayFeedback(VolcanusFeedbackType.Ready, groundPoint);
-            Boss.PoseVisual(
-                new Vector2(0f, -0.35f),
-                0f,
-                new Vector2(1.12f, 0.8f),
-                warningDuration / DurationScale,
-                Ease.InBack
-            );
-            yield return new WaitForSeconds(warningDuration / DurationScale);
 
-            Boss.PoseVisual(
-                new Vector2(0f, 0.3f),
-                0f,
-                new Vector2(0.86f, 1.18f),
-                jumpDuration * 0.32f / DurationScale,
-                Ease.OutExpo
-            );
-            yield return MoveArc(
-                Boss.transform.position,
-                groundPoint,
-                jumpHeight * (Boss.IsPhaseTwo ? 1.25f : 1f),
-                jumpDuration / DurationScale
-            );
+            Boss.PlayIdle();
+            yield return new WaitForSeconds(warningDuration * 0.5f / ActionSpeed);
+
+            float speed = ActionSpeed;
+            float length = Boss.PlayAction(ActionState, speed);
+            float impactTime = GetFirstImpactTime(ActionState);
+            float airTime = Mathf.Min(jumpDuration / speed, impactTime);
+            float windup = impactTime - airTime;
+            if (windup > 0f) yield return new WaitForSeconds(windup);
+
+            Boss.PlayFeedback(VolcanusFeedbackType.Step, Boss.transform.position);
+            yield return MoveArc(Boss.transform.position, groundPoint, height, airTime);
             if (trajectory != null) trajectory.enabled = false;
 
-            DamageCaster.ConfigureCircle(landingRadius, Boss.PlayerLayer);
+            Land(groundPoint);
+            hasOrigin = false;
+
+            float recovery = length * 0.85f - impactTime;
+            if (recovery > 0f) yield return new WaitForSeconds(recovery);
+        }
+
+        private void Land(Vector3 groundPoint)
+        {
+            DamageCaster.ConfigureCircle(landingRadius * Scale, Boss.PlayerLayer);
             DamageCaster.SetWorldPosition(groundPoint);
             DamageCaster.Cast(new DamageData(
                 landingDamage * (Boss.IsPhaseTwo ? 1.2f : 1f),
@@ -77,20 +76,23 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             {
                 float rate = boulderCount <= 1 ? 0f : Mathf.Lerp(-1f, 1f, i / (float)(boulderCount - 1));
                 Boss.SpawnBoulder(
-                    groundPoint + Vector3.up * 0.7f,
+                    groundPoint + Vector3.up * 0.7f * Scale,
                     new Vector2(boulderLaunchVelocity.x * rate, boulderLaunchVelocity.y * Random.Range(0.85f, 1.15f))
                 );
             }
+            Boss.ImpactVisual(Vector2.down, 0.3f * Scale, 0.22f / ActionSpeed);
             Boss.Shake(true);
             Boss.PlayFeedback(VolcanusFeedbackType.Impact, groundPoint);
             Boss.AttackImpact(groundPoint);
-            Boss.ImpactVisual(Vector2.down, 0.5f, 0.24f / DurationScale);
-            yield return new WaitForSeconds(0.25f / DurationScale);
-            hasOrigin = false;
         }
 
         private IEnumerator MoveArc(Vector3 start, Vector3 end, float height, float duration)
         {
+            if (duration <= 0.01f)
+            {
+                Boss.transform.position = end;
+                yield break;
+            }
             float progress = 0f;
             Tween tween = DOTween.To(() => progress, value =>
                 {

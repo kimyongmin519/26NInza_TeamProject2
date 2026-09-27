@@ -15,6 +15,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         protected LostSoul Boss { get; private set; }
         protected DamageCaster Caster => damageCaster;
+        protected string AnimationStateName => animationStateName;
 
         public override bool CanUseSkill(GameObject target = null)
         {
@@ -31,30 +32,59 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         protected sealed override IEnumerator Execute(GameObject target)
         {
-            Boss.PlayAnimation(animationStateName);
+            Boss.SetActing(true);
+            if (IsSwingState(animationStateName)) Boss.PlayIdle();
+            else Boss.PlayAnimation(animationStateName);
             if (startupDelay > 0f)
-                yield return new WaitForSeconds(startupDelay * DurationScale);
+                yield return new WaitForSeconds(startupDelay / DurationScale);
             yield return ExecuteLostSoul(target);
             if (recoveryDelay > 0f)
-                yield return new WaitForSeconds(recoveryDelay * DurationScale);
+                yield return new WaitForSeconds(recoveryDelay / DurationScale);
         }
 
-        protected void ReplayAnimation() => Boss.PlayAnimation(animationStateName, 0.02f);
+        protected void ReplayAnimation()
+        {
+            if (IsSwingState(animationStateName)) Boss.PlaySwing(animationStateName, Boss.GetImpactDelay(animationStateName));
+            else Boss.PlayAnimation(animationStateName, 0.02f);
+        }
+
+        protected void SwingAt(float timeUntilImpact, bool playSlashSound = true)
+        {
+            string state = IsSwingState(animationStateName) ? animationStateName : "attack";
+            System.Action feedback = playSlashSound
+                ? new System.Action(Boss.PlaySlashFeedback)
+                : null;
+            Boss.PlaySwing(state, timeUntilImpact, feedback);
+        }
+
+        private static bool IsSwingState(string stateName)
+        {
+            return stateName == "attack" || stateName == "teleport attack";
+        }
+
         protected virtual void OnLostSoulInitialize() { }
         protected abstract IEnumerator ExecuteLostSoul(GameObject target);
 
         protected override void OnCompleted()
         {
             Caster?.DisableCasting();
-            Boss?.PlayIdle();
+            if (Boss != null)
+            {
+                Boss.SetActing(false);
+                Boss.PlayIdle(false);
+            }
             OnLostSoulCompleted();
         }
 
         protected override void OnCancel()
         {
             Caster?.DisableCasting();
-            Boss?.SetDarkness(false, 0.05f);
-            Boss?.PlayIdle();
+            if (Boss != null)
+            {
+                Boss.SetActing(false);
+                Boss.SetDarkness(false, 0.05f);
+                Boss.PlayIdle();
+            }
             OnLostSoulCancelled();
         }
 

@@ -27,6 +27,9 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [SerializeField] private float cloneInterval = 0.85f;
         [SerializeField] private float cloneSpeed = 8f;
         [SerializeField] private float cloneDamage = 32f;
+        [SerializeField] private float cloneDuration = 9f;
+        [SerializeField] private Color cloneColor = new Color(0.72f, 0.82f, 1f, 0.8f);
+        [SerializeField] private MoonDashMotion cloneMotion = new MoonDashMotion();
 
         private Vector3 originPosition;
         private bool hasOrigin;
@@ -108,13 +111,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private void FireLight()
         {
             if (Boss.Target == null) return;
-            Vector2 direction = Boss.Target.position - Boss.transform.position;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg +
-                Random.Range(-randomAngle, randomAngle);
-            direction = new Vector2(
-                Mathf.Cos(angle * Mathf.Deg2Rad),
-                Mathf.Sin(angle * Mathf.Deg2Rad)
-            );
+            Vector2 direction = Boss.GetLaserAimDirection(Boss.transform.position, randomAngle);
             float length = Mathf.Sqrt(
                 Boss.ArenaHalfWidth * Boss.ArenaHalfWidth +
                 Boss.ArenaHalfHeight * Boss.ArenaHalfHeight
@@ -142,12 +139,15 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 MoonHazardProjectile.MoveMode.Homing,
                 Boss.Target,
                 cloneDamage,
-                5f,
+                cloneDuration,
                 source != null ? source.sprite : null,
-                new Color(0.65f, 0.78f, 1f, 0.32f)
+                cloneColor
             );
-            if (source != null && clone != null)
-                clone.transform.localScale = source.transform.lossyScale * 0.55f;
+            if (clone != null)
+            {
+                clone.UseDashMotion(cloneMotion, DurationScale, Boss.DashPowerScale, Boss.DashIntervalScale);
+                if (source != null) clone.SetDashBaseScale(source.transform.lossyScale * 0.55f);
+            }
             Boss.PlayCloneFeedback(Boss.transform.position);
         }
 

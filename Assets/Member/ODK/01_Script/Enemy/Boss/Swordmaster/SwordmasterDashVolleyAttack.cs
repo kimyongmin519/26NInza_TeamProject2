@@ -8,16 +8,21 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 {
     public class SwordmasterDashVolleyAttack : SwordmasterSkill
     {
-        [SerializeField] private float teleportEdgePadding = 2.2f;
-        [SerializeField] private float readyDuration = 0.35f;
-        [SerializeField] private float dashDuration = 0.8f;
-        [SerializeField] private float dashDamage = 38f;
-        [SerializeField] private Vector2 dashHitbox = new Vector2(2.2f, 3.2f);
-        [SerializeField] private float swordSpeed = 18f;
-        [SerializeField] private float swordInterval = 0.09f;
+        [SerializeField] private float teleportEdgePadding = 1.4f;
+        [SerializeField] private float readyDuration = 0.8f;
+        [SerializeField] private float dashDuration = 1.25f;
+        [SerializeField] private float dashDamage = 16f;
+        [SerializeField] private float dashKnockback = 2f;
+        [SerializeField] private Vector2 dashHitbox = new Vector2(1.4f, 2.6f);
+        [SerializeField] private float swordSpeed = 11f;
+        [SerializeField] private float swordInterval = 0.2f;
+        [SerializeField, Min(0)] private int volleyCount = 1;
+        [SerializeField] private float dashDistanceScale = 1.3f;
+        [SerializeField] private float swordFlightTime = 1.6f;
 
         private DamageCaster dashCaster;
         private Tween dashTween;
+        private SwordmasterTelegraph dashTelegraph;
 
         public override bool CanUseSkill(GameObject target = null) =>
             Boss != null && Boss.Target != null && !Boss.IsDead;
@@ -39,46 +44,59 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             teleportPoint.z = Boss.transform.position.z;
             Boss.Teleport(teleportPoint);
             Boss.AttackReady(teleportPoint);
-            yield return new WaitForSeconds(readyDuration / DurationScale);
+            Boss.PlayAnimation(Swordmaster.JumpState);
+            Boss.Cue(SwordmasterCue.DashReady, teleportPoint);
 
             Vector2 direction = (Boss.Target.position - Boss.transform.position).normalized;
             Vector3 dashEnd = Boss.Arena != null
-                ? Boss.Arena.Clamp(Boss.transform.position + (Vector3)direction * Boss.ArenaHalfWidth * 1.7f, 1f)
+                ? Boss.Arena.Clamp(Boss.transform.position + (Vector3)direction * Boss.ArenaHalfWidth * dashDistanceScale, 1f)
                 : Boss.transform.position + (Vector3)direction * 16f;
-            List<EnchantedSword> volley = Boss.TakeSwords(3);
+            dashTelegraph = Boss.SpawnTelegraph();
+            Vector3 lineOffset = Vector3.up * Boss.GetHitCenter().y - Vector3.up * Boss.transform.position.y;
+            dashTelegraph?.Show(Boss.transform.position + lineOffset, dashEnd + lineOffset, readyDuration / DurationScale);
+            yield return new WaitForSeconds(readyDuration / DurationScale);
+            Boss.ReleaseTelegraph(dashTelegraph);
+            dashTelegraph = null;
+
+            List<EnchantedSword> volley = volleyCount > 0 ? Boss.TakeSwords(volleyCount) : new List<EnchantedSword>();
 
             dashCaster.EnableCasting(
-                new DamageData(dashDamage, DamageType.Melee, knockbackForce: direction * 5f),
+                new DamageData(dashDamage, DamageType.Melee, knockbackForce: direction * dashKnockback),
                 dashDuration / DurationScale
             );
+            Boss.PlayAnimation(Swordmaster.RunState);
+            Boss.Cue(SwordmasterCue.DashStart, Boss.transform.position);
             float progress = 0f;
             Vector3 start = Boss.transform.position;
             dashTween = DOTween.To(() => progress, value =>
                 {
                     progress = value;
-                    Boss.transform.position = Vector3.Lerp(start, dashEnd, value * value);
+                    Boss.transform.position = Vector3.Lerp(start, dashEnd, value);
                 }, 1f, dashDuration / DurationScale)
-                .SetEase(Ease.InQuad)
+                .SetEase(Ease.InOutSine)
                 .SetTarget(Boss.transform);
 
             foreach (EnchantedSword sword in volley)
             {
                 if (sword == null) continue;
                 Vector2 aim = (Boss.Target.position - sword.transform.position).normalized;
-                sword.FireMagic(aim, swordSpeed, dashDuration + 0.35f);
+                sword.FireMagic(aim, swordSpeed, swordFlightTime);
                 yield return new WaitForSeconds(swordInterval / DurationScale);
             }
 
             yield return dashTween.WaitForCompletion();
             dashCaster.DisableCasting();
             Boss.AttackImpact(Boss.transform.position);
-            Boss.ShakeCamera(0.75f);
+            Boss.PlayAnimation(Swordmaster.Attack1State);
+            Boss.Cue(SwordmasterCue.DashEnd, Boss.transform.position);
         }
 
         protected override void OnSwordmasterCancel()
         {
             dashTween?.Kill();
             dashCaster?.DisableCasting();
+            Boss?.ReleaseTelegraph(dashTelegraph);
+            dashTelegraph = null;
         }
 
         private void OnDrawGizmosSelected()

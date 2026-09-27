@@ -304,11 +304,12 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
                 float centerRate = count <= 1 ? 0f : (float)i / (count - 1) - 0.5f;
                 Vector3 spawnPosition = groundPoint + Vector3.up * rockSpawnHeight;
-                GameObject rockObject = Instantiate(
+                GameObject rockObject = ODKPool.Spawn(
                     visualPrefab,
                     spawnPosition,
                     Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(-25f, 25f))
                 );
+                if (rockObject == null) continue;
                 rockObject.name = name + " Rock";
                 int propLayer = LayerMask.NameToLayer("Prop");
                 if (propLayer >= 0) rockObject.layer = propLayer;
@@ -334,9 +335,23 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                     }
                 }
 
+                // The supplied point is the ground contact point.  Keep the spawned
+                // collider completely above it so the physics solver cannot pin the
+                // rock under the floor before its first upward step.
+                Collider2D rockCollider2D = rockObject.GetComponent<Collider2D>();
+                if (rockCollider2D != null)
+                {
+                    float bottomOffset = rockObject.transform.position.y - rockCollider2D.bounds.min.y;
+                    spawnPosition.y = Mathf.Max(
+                        spawnPosition.y,
+                        groundPoint.y + bottomOffset + 0.08f
+                    );
+                    rockObject.transform.position = spawnPosition;
+                }
+
                 Vector2 launchDirection = new Vector2(
                     centerRate * rockSpawnSpread + UnityEngine.Random.Range(-0.25f, 0.25f),
-                    1f
+                    1.2f
                 ).normalized;
                 Vector2 launchVelocity = launchDirection * UnityEngine.Random.Range(
                     rockLaunchForce * 0.75f,
@@ -401,9 +416,21 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             IsPhaseTwo = true;
             StopAllCoroutines();
             CancelAttacks();
-            OnPhaseTwoEntered();
-            onPhaseTwo?.Invoke();
+            SafeInvoke(OnPhaseTwoEntered);
+            SafeInvoke(() => onPhaseTwo?.Invoke());
             StartCoroutine(PhaseTwoRestart());
+        }
+
+        private void SafeInvoke(Action action)
+        {
+            try
+            {
+                action?.Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e, this);
+            }
         }
 
         private IEnumerator PhaseTwoRestart()
@@ -432,8 +459,8 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             IsDead = true;
             StopAllCoroutines();
             CancelAttacks();
-            OnBossDeath();
-            onDeath?.Invoke();
+            SafeInvoke(OnBossDeath);
+            SafeInvoke(() => onDeath?.Invoke());
         }
 
         protected virtual void OnDrawGizmosSelected()

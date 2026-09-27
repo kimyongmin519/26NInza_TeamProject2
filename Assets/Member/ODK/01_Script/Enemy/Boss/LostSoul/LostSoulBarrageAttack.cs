@@ -11,7 +11,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float bulletSpeed = 12f;
         [SerializeField] private float shotInterval = 0.08f;
         [SerializeField] private float randomAngle = 32f;
-        [SerializeField] private int attackAnimationInterval = 4;
+        [SerializeField] private int castAnimationInterval = 4;
 
         protected override IEnumerator ExecuteLostSoul(GameObject target)
         {
@@ -21,8 +21,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             yield return new WaitForSeconds(castDelay * DurationScale);
             for (int i = 0; i < bulletCount; i++)
             {
-                if (i % Mathf.Max(1, attackAnimationInterval) == 0)
-                    Boss.PlayAnimation("attack", 0f, 0.34f);
+                if (i % Mathf.Max(1, castAnimationInterval) == 0)
+                    Boss.PlayAnimation("cast", 0.02f, 0.18f);
                 Vector2 aimed = ((Vector2)target.transform.position - (Vector2)Boss.transform.position).normalized;
                 Vector2 direction = Quaternion.Euler(0f, 0f, Random.Range(-randomAngle, randomAngle)) * aimed;
                 Boss.SpawnSoul(Boss.transform.position, direction * Random.Range(bulletSpeed * 0.82f, bulletSpeed * 1.18f));

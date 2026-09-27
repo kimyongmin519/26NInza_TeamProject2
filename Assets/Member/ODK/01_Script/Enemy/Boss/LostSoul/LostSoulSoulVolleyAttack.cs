@@ -19,8 +19,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
             for (int wave = 0; wave < waveCount; wave++)
             {
-                Boss.PlayAnimation("attack", 0f, 0.34f);
-                Boss.PlaySlashFeedback();
+                Boss.PlayAnimation("cast", 0.02f, 0.18f);
+                Boss.PlayCastFeedback();
                 float horizontalDirection = target.transform.position.x >= Boss.transform.position.x ? 1f : -1f;
                 Vector3 ground = Boss.GetGroundPoint(target.transform.position.x);
                 bool jumpLane = wave % 2 == 0;

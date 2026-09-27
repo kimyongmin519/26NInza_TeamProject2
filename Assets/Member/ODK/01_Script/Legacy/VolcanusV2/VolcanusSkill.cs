@@ -1,3 +1,4 @@
+using System.Collections;
 using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
@@ -13,7 +14,9 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
         [SerializeField] private string animationStateName;
 
         protected Volcanus Boss => _volcanus;
+        protected float Speed => Mathf.Max(0.01f, DurationScale);
         private VolcanusPiece animatedPiece;
+        private Volcanus _volcanus;
 
         protected sealed override void OnInitialize()
         {
@@ -38,6 +41,8 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
         protected virtual void OnVolcanusInitialize() { }
         protected virtual void OnVolcanusCancel() { }
 
+        protected float Scaled(float duration) => duration / Speed;
+
         protected void CastDamage(float damage, DamageType type)
         {
             CastDamage(DamageCaster, damage, type);
@@ -47,6 +52,41 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
         {
             if (damageCaster == null) return;
             damageCaster.Cast(new DamageData(damage, type));
+        }
+
+        protected IEnumerator StrikeWindow(
+            DamageCaster caster,
+            Volcanus.StrikePart part,
+            float duration,
+            float damage,
+            DamageType type,
+            float radiusRatio = 0.6f)
+        {
+            if (caster == null || Boss == null)
+            {
+                yield return new WaitForSeconds(duration);
+                yield break;
+            }
+
+            caster.SetRange(Boss.GetStrikeRadius(part, radiusRatio));
+            caster.SetWorldPosition(Boss.GetStrikeCenter(part));
+            caster.EnableCasting(new DamageData(damage, type), duration);
+            float elapsed = 0f;
+            while (elapsed < duration && caster.IsCasting)
+            {
+                caster.SetWorldPosition(Boss.GetStrikeCenter(part));
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            caster.DisableCasting();
+        }
+
+        protected void CastAtStrike(DamageCaster caster, Volcanus.StrikePart part, float damage, DamageType type, float radiusRatio = 0.6f)
+        {
+            if (caster == null || Boss == null) return;
+            caster.SetRange(Boss.GetStrikeRadius(part, radiusRatio));
+            caster.SetWorldPosition(Boss.GetStrikeCenter(part));
+            caster.Cast(new DamageData(damage, type));
         }
 
         protected void PlayAttackAnimation(VolcanusPiece piece, string stateName = null)
@@ -62,7 +102,5 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
             if (animatedPiece != null) animatedPiece.PlayDefaultAnimation();
             animatedPiece = null;
         }
-
-        private Volcanus _volcanus;
     }
 }

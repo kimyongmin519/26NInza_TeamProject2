@@ -1,12 +1,14 @@
 using System.Collections;
 using DG.Tweening;
+using GGMLib.ObjectPool.Runtime;
+using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.LostSoul
 {
     [RequireComponent(typeof(LineRenderer), typeof(DamageCaster))]
-    public class LostSoulSlashBeam : MonoBehaviour
+    public class LostSoulSlashBeam : AbstractMonoPoolable
     {
         [SerializeField] private LineRenderer line;
         [SerializeField] private DamageCaster caster;
@@ -17,6 +19,25 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         private Vector2 initialDirection;
         private float halfLength;
         private Tween rotationTween;
+        private Coroutine fireRoutine;
+        private Material defaultMaterial;
+
+        public override void ResetItem()
+        {
+            StopBeam();
+        }
+
+        private void StopBeam()
+        {
+            if (fireRoutine != null) StopCoroutine(fireRoutine);
+            fireRoutine = null;
+            if (line != null) DOTween.Kill(line);
+            rotationTween?.Kill();
+            rotationTween = null;
+            visualSequence?.Kill();
+            visualSequence = null;
+            if (caster != null) caster.DisableCasting();
+        }
 
         public void Initialize(
             LostSoul owner,
@@ -34,9 +55,12 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             if (caster == null) caster = GetComponent<DamageCaster>();
             if (line == null || caster == null)
             {
-                Destroy(gameObject);
+                ODKPool.Despawn(this);
                 return;
             }
+            StopBeam();
+            if (defaultMaterial == null) defaultMaterial = line.sharedMaterial;
+            else line.sharedMaterial = defaultMaterial;
 
             Vector2 normalized = direction.sqrMagnitude > 0.001f ? direction.normalized : Vector2.right;
             Vector3 end = origin + (Vector3)normalized * length;
@@ -60,7 +84,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             caster.SetWorldPose(Vector3.Lerp(origin, end, 0.5f), angle);
             owner.PlayBeamWarningFeedback();
             StartPreFireRotation(preFireRotationDegrees, warningDuration);
-            StartCoroutine(FireRoutine(owner, width, warningDuration, activeDuration, damage, color));
+            fireRoutine = StartCoroutine(FireRoutine(owner, width, warningDuration, activeDuration, damage, color));
         }
 
         private void StartPreFireRotation(float degrees, float warningDuration)
@@ -153,13 +177,24 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 Mathf.Max(0.02f, activeDuration - 0.05f)
             ));
             yield return visualSequence.WaitForCompletion();
-            Destroy(gameObject);
+            fireRoutine = null;
+            visualSequence = null;
+            caster.DisableCasting();
+            ODKPool.Despawn(this);
         }
 
         private void SetColor(Color color)
         {
             line.startColor = color;
             line.endColor = color;
+        }
+
+        private void OnDisable()
+        {
+            if (line != null) DOTween.Kill(line);
+            rotationTween?.Kill();
+            visualSequence?.Kill();
+            fireRoutine = null;
         }
 
         private void OnDestroy()

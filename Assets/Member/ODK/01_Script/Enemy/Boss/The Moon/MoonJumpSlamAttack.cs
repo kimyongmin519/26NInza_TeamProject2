@@ -21,9 +21,17 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [Header("Phase Two Strong Slam")]
         [SerializeField] private float strongJumpHeightMultiplier = 1.4f;
         [SerializeField] private float strongDamageMultiplier = 1.7f;
-        [SerializeField] private float sideProjectileSpeed = 13f;
-        [SerializeField] private float sideProjectileDamage = 26f;
-        [SerializeField] private float sideProjectileHeight = 0.75f;
+
+        [Header("Phase Two Upward Lasers")]
+        [SerializeField, Min(1)] private int upwardLasersPerSide = 4;
+        [SerializeField] private float upwardLaserSpacing = 2.2f;
+        [SerializeField] private float upwardLaserStartOffset = 1.6f;
+        [SerializeField] private float upwardLaserStagger = 0.07f;
+        [SerializeField] private float upwardLaserWarningDuration = 0.35f;
+        [SerializeField] private float upwardLaserActiveDuration = 0.2f;
+        [SerializeField] private float upwardLaserWidth = 0.42f;
+        [SerializeField] private float upwardLaserDamage = 30f;
+        [SerializeField] private Color upwardLaserColor = new Color(0.65f, 0.82f, 1f, 1f);
 
         [Header("Rock")]
         [SerializeField] private Vector2 rockLaunchVelocity = new Vector2(2.5f, 11.5f);
@@ -76,14 +84,14 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 float prepareDuration = i == 0 ? warningDuration / DurationScale : 0f;
                 float lineDuration = prepareDuration > 0f
                     ? prepareDuration * 0.75f
-                    : jumpDuration * 0.75f / DurationScale;
+                    : jumpDuration * Boss.JumpTimeScale * 0.75f / DurationScale;
                 trajectoryLine?.Show(path, lineDuration);
                 Boss.AttackReady(groundPoint);
                 if (prepareDuration > 0f)
                     yield return new WaitForSeconds(prepareDuration);
 
                 Boss.PlayJumpFeedback(Boss.transform.position);
-                yield return MoveArc(Boss.transform, Boss.transform.position, landingPoint, height, jumpDuration / DurationScale);
+                yield return MoveArc(Boss.transform, Boss.transform.position, landingPoint, height, jumpDuration * Boss.JumpTimeScale / DurationScale);
                 trajectoryLine?.Hide();
                 Land(groundPoint, strong);
             }
@@ -127,27 +135,39 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 Boss.SpawnRock(point + Vector3.up * 0.55f, velocity, strong);
             }
 
-            if (strong) SpawnSideProjectiles(point.y + sideProjectileHeight);
+            if (strong) FireUpwardLasers(point);
             Boss.ShakeImpact(strong);
             Boss.PlayLandingFeedback(point, strong);
             Boss.AttackImpact(point);
         }
 
-        private void SpawnSideProjectiles(float height)
+        private void FireUpwardLasers(Vector3 point)
         {
-            Vector3 center = Boss.ArenaCenter;
-            Vector3 left = new Vector3(center.x - Boss.ArenaHalfWidth, height, center.z);
-            Vector3 right = new Vector3(center.x + Boss.ArenaHalfWidth, height, center.z);
-            Boss.SpawnHazard(
-                left, Vector2.right * sideProjectileSpeed,
-                MoonHazardProjectile.MoveMode.Linear, null,
-                sideProjectileDamage, 4f
-            );
-            Boss.SpawnHazard(
-                right, Vector2.left * sideProjectileSpeed,
-                MoonHazardProjectile.MoveMode.Linear, null,
-                sideProjectileDamage, 4f
-            );
+            float minX = Boss.ArenaCenter.x - Boss.ArenaHalfWidth;
+            float maxX = Boss.ArenaCenter.x + Boss.ArenaHalfWidth;
+            float length = Boss.ArenaHalfHeight * 2.6f;
+            float baseY = point.y - 0.2f;
+            for (int i = 0; i < upwardLasersPerSide; i++)
+            {
+                float distance = upwardLaserStartOffset + upwardLaserSpacing * i;
+                float warning = (upwardLaserWarningDuration + upwardLaserStagger * i) / DurationScale;
+                float active = upwardLaserActiveDuration / DurationScale;
+                for (int side = -1; side <= 1; side += 2)
+                {
+                    float x = point.x + distance * side;
+                    if (x < minX || x > maxX) continue;
+                    Boss.SpawnLaser(
+                        new Vector3(x, baseY, point.z),
+                        Vector2.up,
+                        length,
+                        upwardLaserWidth,
+                        warning,
+                        active,
+                        upwardLaserDamage,
+                        upwardLaserColor
+                    );
+                }
+            }
         }
 
         private static List<Vector3> BuildArc(Vector3 start, Vector3 end, float height)

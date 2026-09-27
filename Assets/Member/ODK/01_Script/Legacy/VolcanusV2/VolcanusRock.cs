@@ -1,10 +1,13 @@
+using GGMLib.ObjectPool.Runtime;
+using KimLIb.ObjectPool.Runtime;
 using Member.KYM.Scripts.Players.RobotArm;
+using Member.ODK.Scripts.Enemys.Bosses;
 using System;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
 {
-    public class VolcanusRock : GrabbableRigidbody
+    public class VolcanusRock : GrabbableRigidbody, IPoolable
     {
         public event Action<Vector3> OnBreak;
 
@@ -14,10 +17,29 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
         private bool isBroken;
         private Vector2 previousPosition;
 
+        public PoolItemSO PoolItem { get; set; }
+        public GameObject GameObject => this != null ? gameObject : null;
+
+        public void ResetItem()
+        {
+            OnBreak = null;
+            isThrown = false;
+            isBroken = false;
+            Rigidbody.bodyType = RigidbodyType2D.Dynamic;
+            Rigidbody.simulated = true;
+            Rigidbody.linearVelocity = Vector2.zero;
+            Rigidbody.angularVelocity = 0f;
+        }
+
         public void Setting(Vector2 startVelocity, float startAngularVelocity, float damage, float lifeTime)
         {
             this.damage = damage;
             currentLifeTime = lifeTime;
+            isThrown = false;
+            isBroken = false;
+            Rigidbody.bodyType = RigidbodyType2D.Dynamic;
+            Rigidbody.simulated = true;
+            Rigidbody.WakeUp();
             Rigidbody.linearVelocity = startVelocity;
             Rigidbody.angularVelocity = startAngularVelocity;
             previousPosition = Rigidbody.position;
@@ -94,10 +116,19 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
                 return false;
 
             VolcanusPiece hitPiece = targetCollider.GetComponentInParent<VolcanusPiece>();
-            if (hitPiece == null)
+            if (hitPiece != null)
+            {
+                hitPiece.TakeDamage(new DamageData(damage, DamageType.Projectile));
+                Break();
+                return true;
+            }
+
+            global::Member.ODK.Scripts.Enemys.Volcanus.Volcanus activeBoss =
+                targetCollider.GetComponentInParent<global::Member.ODK.Scripts.Enemys.Volcanus.Volcanus>();
+            if (activeBoss == null)
                 return false;
 
-            hitPiece.TakeDamage(new DamageData(damage, DamageType.Projectile));
+            activeBoss.TakeDamage(new DamageData(damage, DamageType.Projectile));
             Break();
             return true;
         }
@@ -109,7 +140,8 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
 
             isBroken = true;
             OnBreak?.Invoke(transform.position);
-            Destroy(gameObject);
+            OnBreak = null;
+            ODKPool.Despawn(this);
         }
     }
 }

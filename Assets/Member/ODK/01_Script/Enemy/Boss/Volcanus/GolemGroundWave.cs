@@ -15,7 +15,8 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             float moveSpeed,
             float damage,
             float lifeTime,
-            LayerMask playerLayer)
+            LayerMask playerLayer,
+            float sizeScale = 1f)
         {
             direction = moveDirection.normalized;
             speed = moveSpeed;
@@ -26,7 +27,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
                 Destroy(gameObject);
                 return;
             }
-            caster.ConfigureBox(new Vector2(1.5f, 1.1f), playerLayer);
+            caster.ConfigureBox(new Vector2(1.5f, 1.1f) * Mathf.Max(0.1f, sizeScale), playerLayer);
             caster.EnableCasting(new DamageData(damage, DamageType.Special), lifeTime);
         }
 

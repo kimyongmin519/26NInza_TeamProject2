@@ -12,6 +12,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
         [SerializeField] private float punchDuration = 0.2f;
         [SerializeField] private float readyHeight = 2f;
         [SerializeField] private float damage = 75f;
+        [SerializeField, Range(0.2f, 1.2f)] private float hitRadiusRatio = 0.6f;
 
         private Sequence sequence;
 
@@ -36,19 +37,17 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
             Boss.ReactPieces(handPiece, new Vector2(direction, 0.2f));
 
             sequence = DOTween.Sequence();
-            sequence.Append(hand.DOMove(readyPosition, readyDuration).SetEase(Ease.OutBack));
-            sequence.Join(hand.DORotate(new Vector3(0f, 0f, punchAngle), readyDuration).SetEase(Ease.OutCubic));
+            sequence.Append(hand.DOMove(readyPosition, Scaled(readyDuration)).SetEase(Ease.OutBack));
+            sequence.Join(hand.DORotate(new Vector3(0f, 0f, punchAngle), Scaled(readyDuration)).SetEase(Ease.OutCubic));
             yield return sequence.WaitForCompletion();
 
-            DamageCaster?.EnableCasting(
-                new DamageData(damage, DamageType.Melee),
-                punchDuration + 0.08f
-            );
+            float strikeTime = Scaled(punchDuration) + 0.08f;
+            StartCoroutine(StrikeWindow(DamageCaster, Volcanus.StrikePart.Fist, strikeTime, damage, DamageType.Melee, hitRadiusRatio));
             sequence = DOTween.Sequence();
-            sequence.Append(hand.DOMove(punchPosition, punchDuration).SetEase(Ease.InQuart));
+            sequence.Append(hand.DOMove(punchPosition, Scaled(punchDuration)).SetEase(Ease.InQuart));
             sequence.AppendInterval(0.08f);
             yield return sequence.WaitForCompletion();
-            Boss.AttackImpact(hand.position);
+            Boss.AttackImpact(Boss.GetStrikeCenter(Volcanus.StrikePart.Fist));
             DamageCaster?.DisableCasting();
             EndAttackAnimation();
             handPiece.SetAnotherMoving(false);
