@@ -4153,6 +4153,8 @@ GameObject:
   - component: {fileID: 841339997}
   - component: {fileID: 2051000042}
   - component: {fileID: 2051200010}
+  - component: {fileID: 2051200011}
+  - component: {fileID: 2051200012}
   m_Layer: 8
   m_Name: Mimic
   m_TagString: Untagged
@@ -4198,6 +4200,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   bodyAnimator: {fileID: 2051000042}
+  combatVfx: {fileID: 2051200011}
   boomPrefab: {fileID: 198728934711372066, guid: 0898b572f28fb32439fbe4be9a9beb52, type: 3}
   boomCamera: {fileID: 32943289}
   boomCount: 5
@@ -13734,6 +13737,56 @@ MonoBehaviour:
   attackColor: {r: 1, g: 0.02, b: 0.02, a: 1}
   chestRenderer: {fileID: 459868791}
   openChestSprite: {fileID: 21300000, guid: b4f1c0a0e5e9c2f4b95a141d9fc5354a, type: 3}
+--- !u!114 &2051200011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841339995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f681b4369ba64e92b857b3e9289d16cf, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.YKJ.Bosses.MimicCombatVfx
+  boss: {fileID: 841339997}
+  chestRenderer: {fileID: 459868791}
+  bodyCollider: {fileID: 841340000}
+  glowMaterial: {fileID: 2100000, guid: b7cfa3e7ae264d20bc756c2424d1c152, type: 2}
+  cameraChannel: {fileID: 11400000, guid: 6aa65e035152473d98d0e27a69a4c43c, type: 2}
+  attackColor: {r: 3, g: 0.06, b: 0.03, a: 1}
+  counterColor: {r: 0.15, g: 2.3, b: 2.5, a: 1}
+  mouthSize: 0.65
+  impactSize: 1.4
+  hitShakePower: 0.16
+  hitFlashTime: 0.11
+  afterimageInterval: 0.065
+  maxStrokes: 80
+--- !u!114 &2051200012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841339995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 917f3c698eb04f74b24c469a205562db, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.YKJ.Bosses.MimicParticleFeedback
+  boss: {fileID: 841339997}
+  bodyCollider: {fileID: 841340000}
+  feedbackChannel: {fileID: 11400000, guid: 5a23db34f07f17642a77e08053379041, type: 2}
+  spitFeedback: {fileID: 11400000, guid: 6becc873dfeb73948a71ea43f90cae0f, type: 2}
+  landingFeedback: {fileID: 11400000, guid: 160b2b6194d2c4c4bafc7a0702b263d9, type: 2}
+  dustPrefab: {fileID: 2712700381257934115, guid: 30538aa757d5768459b127b9b70d4362, type: 3}
+  sparkMaterial: {fileID: 2100000, guid: 768b1725f5534aada14154280ebc1ae5, type: 2}
+  cloudMaterial: {fileID: 2100000, guid: 4662576cbeef42c8916ff8d348d39ee8, type: 2}
+  spitOffset: {x: 0, y: 0.1, z: 0}
+  spitScale: 0.4
+  spitColor: {r: 1, g: 0.88, b: 0.58, a: 0.85}
+  landingScale: 0.6
+  landingColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.8}
 --- !u!114 &2051200010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13888,6 +13941,11 @@ MonoBehaviour:
   spawnOutsideScreen: 1
   spawnHeight: 1
   arcHeight: 0.6
+  warningMaterial: {fileID: 2100000, guid: b7cfa3e7ae264d20bc756c2424d1c152, type: 2}
+  warningTime: 0.65
+  warningColor: {r: 1, g: 0.02, b: 0.02, a: 1}
+  warningScreenSize: 0.065
+  warningScreenInset: 0.06
 --- !u!1 &2051000070
 GameObject:
   m_ObjectHideFlags: 0
@@ -13933,7 +13991,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.YKJ.Bosses.MimicLaserPattern
   skillId: 6
-  laserMaterial: {fileID: 2100000, guid: 3b135b8d8a0745e5bfdd0b697e0e21bc, type: 2}
+  laserMaterial: {fileID: 2100000, guid: 3ae6e8b76bf6493e857c1d561e9c9234, type: 2}
   shotCount: 10
   angleRange: {x: 0, y: 0}
   warningTime: 0.6
@@ -13950,6 +14008,8 @@ MonoBehaviour:
     m_Bits: 64
   warningColor: {r: 1, g: 0.25, b: 0.25, a: 0.35}
   fireColor: {r: 1, g: 0.05, b: 0.05, a: 1}
+  chestRenderer: {fileID: 459868791}
+  openChestSprite: {fileID: 21300000, guid: b4f1c0a0e5e9c2f4b95a141d9fc5354a, type: 3}
 --- !u!1 &2064026179
 GameObject:
   m_ObjectHideFlags: 0
@@ -14178,6 +14238,39 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7847070380472739339, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
   m_PrefabInstance: {fileID: 505932362}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &2051200020
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3523904033758943879, guid: 2821ec8d0f624174a97e287a35819a0b, type: 3}
+      propertyPath: healthModule
+      value:
+      objectReference: {fileID: 841339998}
+    - target: {fileID: 3817400460507317098, guid: 2821ec8d0f624174a97e287a35819a0b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3817400460507317098, guid: 2821ec8d0f624174a97e287a35819a0b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3817400460507317098, guid: 2821ec8d0f624174a97e287a35819a0b, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8421389570925461677, guid: 2821ec8d0f624174a97e287a35819a0b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2821ec8d0f624174a97e287a35819a0b, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -14196,3 +14289,4 @@ SceneRoots:
   - {fileID: 790701835}
   - {fileID: 80012329}
   - {fileID: 2104317261}
+  - {fileID: 2051200020}

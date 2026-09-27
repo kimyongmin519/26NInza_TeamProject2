@@ -114,6 +114,7 @@ namespace Member.YKJ.Bosses
             if (weapon != null)
             {
                 Boss.BodyAnimator?.SpitWeapon(weapon.GetComponent<Rigidbody2D>().linearVelocity, interval);
+                Boss.CombatVfx?.Spit();
                 if (feedbackChannel != null && spitFeedback != null)
                     feedbackChannel.RaiseEvent(new PlayFeedBack().Init(spitFeedback.FeedBackId));
                 if (Boss.Patterns.Current != this)

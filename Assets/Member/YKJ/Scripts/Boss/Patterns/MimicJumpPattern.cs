@@ -120,7 +120,7 @@ namespace Member.YKJ.Bosses
                         Mathf.Clamp01(flightProgress.Evaluate(t)) : t;
                     Boss.transform.position = Vector3.Lerp(_start, _landing, progress) +
                         Vector3.up * (4f * jumpHeight * progress * (1f - progress));
-                    if (t < 1f) Boss.CombatVfx?.JumpAfterimage();
+                    if (t < 1f && afterimage == null) Boss.CombatVfx?.JumpAfterimage();
                     if (t >= 1f)
                         Land();
                     break;
