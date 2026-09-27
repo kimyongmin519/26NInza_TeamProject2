@@ -465,6 +465,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 180
       objectReference: {fileID: 0}
+    - target: {fileID: 8916131142041387356, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8916131142041387356, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8916131142041387356, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
+      objectReference: {fileID: 0}
     - target: {fileID: 9088893378534672122, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
       propertyPath: equippedOnStart
       value: 0
@@ -685,7 +697,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8e753a1f678647dca07840d559e46ae5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.SceneTransitionManager
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.SceneLoadManager
 --- !u!114 &703188346 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7372610172872804182, guid: 6ed5dc3094bb19a40b177389b00a0a0c, type: 3}

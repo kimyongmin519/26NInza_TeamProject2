@@ -66,7 +66,9 @@ namespace Member.KYM.Scripts.CoreSystems.InteractSystems
                 promptRenderer.sprite = pressed ? pressedSprite : promptSprite;
 
             if (pressed)
+            {
                 OnSuccess.Invoke();
+            }
         }
 
         private void OnDisable()

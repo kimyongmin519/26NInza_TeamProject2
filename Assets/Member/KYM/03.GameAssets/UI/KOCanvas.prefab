@@ -248,12 +248,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a0b39770a4e46f1890b64fce337cf3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.UI.BossKOUI
-  boss: {fileID: 0}
+  healthModule: {fileID: 0}
   overlayRoot: {fileID: 8421389570925461677}
   darkBackground: {fileID: 6539170321654948764}
   koImage: {fileID: 2097658848687238706}
   backgroundAlpha: 0.7
-  revealDuration: 0.25
+  revealDuration: 0.5
   holdDuration: 0.6
   shakeDuration: 0.18
   shakeStrength: {x: 30, y: 30}

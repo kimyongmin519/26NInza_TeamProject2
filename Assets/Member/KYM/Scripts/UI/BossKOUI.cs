@@ -1,6 +1,5 @@
 using DG.Tweening;
 using Member.KYM.Scripts.CoreSystems.Managers;
-using Member.KYM.Scripts.Enemies.Boss;
 using Member.ODK.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,8 +8,8 @@ namespace Member.KYM.Scripts.UI
 {
     public sealed class BossKOUI : MonoBehaviour
     {
-        [Header("대상")]
-        [SerializeField] private BTAgentBoss boss;
+        [Header("처치 연출을 표시할 체력 모듈")]
+        [SerializeField] private HealthModule healthModule;
 
         [Header("UI")]
         [SerializeField] private GameObject overlayRoot;
@@ -48,7 +47,14 @@ namespace Member.KYM.Scripts.UI
 
         private void Start()
         {
-            Bind(boss);
+            Bind(healthModule);
+        }
+
+        private void OnEnable()
+        {
+            if (_health == null) return;
+            _health.OnDeath += Show;
+            if (_health.IsDead) Show();
         }
 
         private void OnDestroy()
@@ -60,22 +66,23 @@ namespace Member.KYM.Scripts.UI
             RestoreTime();
         }
 
-        public void Bind(BTAgentBoss target)
+        public void Bind(HealthModule target)
         {
             if (_health != null)
                 _health.OnDeath -= Show;
 
-            boss = target;
-            _health = boss != null ? boss.HealthModule : null;
+            healthModule = target;
+            _health = target;
 
             if (_health == null)
             {
-                Debug.LogWarning("KO UI에 보스의 HealthModule이 연결되지 않았습니다.", this);
+                Debug.LogWarning("KO UI에 HealthModule을 연결해주세요.", this);
                 return;
             }
 
-            _health.OnDeath += Show;
-            if (_health.IsDead)
+            if (isActiveAndEnabled)
+                _health.OnDeath += Show;
+            if (isActiveAndEnabled && _health.IsDead)
                 Show();
         }
         
@@ -109,6 +116,8 @@ namespace Member.KYM.Scripts.UI
 
         private void OnDisable()
         {
+            if (_health != null)
+                _health.OnDeath -= Show;
             _sequence?.Kill();
             RestoreTime();
         }
