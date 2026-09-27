@@ -130,6 +130,9 @@ MonoBehaviour:
     m_Bits: 1032
   weaponRenderer: {fileID: 7777104069700440753}
   visualSize: 1
+  trailMaterial: {fileID: 2100000, guid: b7cfa3e7ae264d20bc756c2424d1c152, type: 2}
+  trailTime: 0.12
+  trailWidth: 0.1
   weaponSprites:
   - {fileID: 21300000, guid: 8ffa59be6f5b048cab42ac44d2501330, type: 3}
   - {fileID: 21300000, guid: 21e56234be9754d5b8f250d54a1dc791, type: 3}

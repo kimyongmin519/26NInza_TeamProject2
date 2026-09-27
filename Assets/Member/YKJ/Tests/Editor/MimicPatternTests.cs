@@ -46,6 +46,26 @@ namespace Member.YKJ.Tests
         }
 
         [Test]
+        public void PolishedJumpCurveIsMonotonicAndKeepsBothEndpoints()
+        {
+            var root = new GameObject("Jump timing test");
+            _objects.Add(root);
+            var jump = root.AddComponent<MimicJumpPattern>();
+            var curve = (AnimationCurve)typeof(MimicJumpPattern)
+                .GetField("flightProgress", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(jump);
+            Assert.That(curve.Evaluate(0f), Is.Zero);
+            Assert.That(curve.Evaluate(1f), Is.EqualTo(1f));
+            float previous = 0f;
+            for (int i = 1; i <= 100; i++)
+            {
+                float value = curve.Evaluate(i / 100f);
+                Assert.That(value, Is.InRange(previous, 1f));
+                previous = value;
+            }
+            Assert.That(curve.Evaluate(0.58f) - curve.Evaluate(0.38f), Is.LessThan(0.1f));
+        }
+
+        [Test]
         public void ThreeZonesCoverTheWholeWidthWithoutGaps()
         {
             Vector2 horizontal = new Vector2(-12.444445f, 12.444445f);
