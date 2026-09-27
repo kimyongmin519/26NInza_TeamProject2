@@ -503,6 +503,302 @@ namespace Member.YKJ.Tests
         }
 
         [UnityTest]
+        public IEnumerator LaserOpensChestAnimatesOnlyVisualAndRestoresAfterAllExitPaths()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(-20f, 0f));
+            Transform target = Create("Laser target", new Vector2(12f, 0f)).transform;
+            MimicBoss boss = CreateBoss(Vector2.zero, target, weapon);
+            var collider = boss.gameObject.AddComponent<BoxCollider2D>();
+            SpriteRenderer visual = Create("Laser chest", Vector2.zero).AddComponent<SpriteRenderer>();
+            visual.transform.SetParent(boss.transform, false);
+            Sprite closed = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), Vector2.one * 0.5f, 1f);
+            Sprite open = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), Vector2.one * 0.5f, 0.75f);
+            visual.sprite = closed;
+            var animator = boss.gameObject.AddComponent<MimicBodyAnimator>();
+            SetField(animator, "chestRenderer", visual);
+            SetField(boss, "bodyAnimator", animator);
+            var laser = CreatePattern<MimicLaserPattern>(boss, 6);
+            SetField(laser, "laserMaterial", UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(
+                "Assets/Member/YKJ/MimicTestAssets/MimicPhaseOneLaser.mat"));
+            SetField(laser, "chestRenderer", visual);
+            SetField(laser, "openChestSprite", open);
+            boss.InitializePatternDictionary();
+            Physics2D.SyncTransforms();
+            Bounds bodyBounds = collider.bounds;
+            float feet = visual.bounds.min.y;
+            try
+            {
+                for (int exit = 0; exit < 4; exit++)
+                {
+                    laser.enabled = true;
+                    Assert.That(boss.Patterns.Start(laser), Is.True);
+                    Assert.That(visual.sprite, Is.SameAs(closed));
+                    boss.Patterns.Tick(1f);
+                    Assert.That(visual.sprite, Is.SameAs(open));
+                    var recoil = (DG.Tweening.Sequence)typeof(MimicBodyAnimator)
+                        .GetField("_pose", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(animator);
+                    DG.Tweening.TweenExtensions.Complete(recoil, true);
+                    Assert.That(visual.transform.localScale.x, Is.EqualTo(0.88f).Within(0.001f));
+                    Assert.That(visual.transform.localScale.y, Is.EqualTo(1.2f).Within(0.001f));
+                    Assert.That(visual.bounds.min.y, Is.EqualTo(feet).Within(0.001f));
+                    Physics2D.SyncTransforms();
+                    Assert.That(collider.bounds, Is.EqualTo(bodyBounds));
+                    for (int i = 1; i < 5; i++) boss.Patterns.Tick(0.12f);
+                    boss.Patterns.Tick(1.2f);
+                    var hold = (DG.Tweening.Sequence)typeof(MimicBodyAnimator)
+                        .GetField("_pose", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(animator);
+                    Assert.That(DG.Tweening.TweenExtensions.IsActive(hold), Is.True);
+                    Assert.That(visual.sprite, Is.SameAs(open));
+
+                    if (exit == 0) boss.Patterns.Tick(14f);
+                    else if (exit == 1) boss.Patterns.Cancel();
+                    else if (exit == 2) laser.enabled = false;
+                    else boss.Patterns.Cancel(true);
+
+                    Assert.That(visual.sprite, Is.SameAs(closed));
+                    Assert.That(visual.transform.localScale, Is.EqualTo(Vector3.one));
+                    Assert.That(visual.transform.localPosition, Is.EqualTo(Vector3.zero));
+                    Assert.That(DG.Tweening.TweenExtensions.IsActive(hold), Is.False);
+                    foreach (LineRenderer line in laser.GetComponentsInChildren<LineRenderer>())
+                        Assert.That(line.enabled, Is.False);
+                    boss.Patterns.Cancel();
+                }
+            }
+            finally
+            {
+                boss.StopEncounter();
+                Object.Destroy(closed);
+                Object.Destroy(open);
+            }
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator FallingWeaponsWarnOnCorrectScreenEdgeBeforeEveryShotAndCleanUp()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(-30f, 0f));
+            Transform target = Create("Target", new Vector2(12f, 0f)).transform;
+            MimicBoss boss = CreateBoss(Vector2.zero, target, weapon);
+            Camera view = Create("Warning camera", Vector2.zero).AddComponent<Camera>();
+            view.transform.position = new Vector3(0f, 0f, -10f);
+            view.orthographic = true;
+            view.orthographicSize = 8f;
+            view.aspect = 16f / 9f;
+            var platforms = new Collider2D[4];
+            Vector2[] positions = { new Vector2(-6f, -2f), new Vector2(-6f, 2f),
+                new Vector2(6f, 2f), new Vector2(6f, -2f) };
+            for (int i = 0; i < platforms.Length; i++)
+            {
+                var platform = Create("Warning platform " + i, positions[i]).AddComponent<BoxCollider2D>();
+                platform.size = new Vector2(4f, 0.2f);
+                platforms[i] = platform;
+            }
+            var falling = CreatePattern<MimicFallingWeaponsPattern>(boss, 5);
+            SetField(falling, "platforms", platforms);
+            SetField(falling, "flightCamera", view);
+            SetField(falling, "warningMaterial", UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(
+                "Assets/Member/YKJ/MimicTestAssets/MimicUnlit.mat"));
+            boss.InitializePatternDictionary();
+            Physics2D.SyncTransforms();
+            try
+            {
+                foreach (bool reverse in new[] { false, true })
+                {
+                    Assert.That(boss.Patterns.Start(falling), Is.True);
+                    SetField(falling, "_reverse", reverse);
+                    var line = falling.GetComponentInChildren<LineRenderer>();
+                    Assert.That(line.enabled, Is.True);
+                    for (int shot = 0; shot < 4; shot++)
+                    {
+                        if (shot > 0) boss.Patterns.Tick(0.2f);
+                        boss.Patterns.Tick(0.01f);
+                        Assert.That(falling.IsWarning, Is.True);
+                        Assert.That(falling.EmittedCount, Is.EqualTo(shot));
+                        int index = MimicFallingWeaponsPattern.PlatformIndex(shot, reverse);
+                        bool left = index < 2;
+                        Vector3 tip = view.WorldToViewportPoint(line.GetPosition(1));
+                        Assert.That(tip.x, left ? Is.LessThan(0.2f) : Is.GreaterThan(0.8f));
+                        Assert.That((line.GetPosition(1).x - line.GetPosition(0).x) * (left ? 1f : -1f), Is.GreaterThan(0f));
+                        Assert.That(line.startColor.r, Is.EqualTo(1f));
+                        Assert.That(line.startColor.g, Is.LessThan(0.1f));
+                        view.transform.position += Vector3.right;
+                        boss.Patterns.Tick(0.3f);
+                        Vector3 movedTip = view.WorldToViewportPoint(line.GetPosition(1));
+                        Assert.That(movedTip.x, Is.EqualTo(tip.x).Within(0.001f));
+                        boss.Patterns.Tick(0.31f);
+                        Assert.That(falling.EmittedCount, Is.EqualTo(shot));
+                        boss.Patterns.Tick(0.04f);
+                        Assert.That(falling.EmittedCount, Is.EqualTo(shot + 1));
+                        Assert.That(falling.IsWarning, Is.False);
+                        var wave = (MimicWeapon[])typeof(MimicFallingWeaponsPattern)
+                            .GetField("_wave", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(falling);
+                        Assert.That(wave[shot].transform.position.y, Is.EqualTo(platforms[index].bounds.max.y + 1f).Within(0.001f));
+                        float spawnX = view.WorldToViewportPoint(wave[shot].transform.position).x;
+                        Assert.That(spawnX, left ? Is.LessThan(0f) : Is.GreaterThan(1f));
+                        wave[shot].Retire();
+                    }
+                    boss.Patterns.Tick(0.1f);
+                    Assert.That(boss.Patterns.IsRunning, Is.False);
+                    Assert.That(line.enabled, Is.False);
+                    Assert.That(boss.Patterns.Start(falling), Is.True);
+                    Assert.That(falling.IsWarning, Is.True);
+                    boss.Patterns.Cancel(true);
+                    Assert.That(line.enabled, Is.False);
+                    Assert.That(boss.Patterns.Start(falling), Is.True);
+                    falling.enabled = false;
+                    Assert.That(line.enabled, Is.False);
+                    boss.Patterns.Cancel();
+                    falling.enabled = true;
+                    Assert.That(falling.GetComponentsInChildren<LineRenderer>().Length, Is.EqualTo(1));
+                }
+            }
+            finally { boss.StopEncounter(); }
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator CombatPolishIsCosmeticBoundedReusableAndCleansUp()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(-20f, 0f));
+            Transform target = Create("Target", new Vector2(12f, 0f)).transform;
+            MimicBoss boss = CreateBoss(Vector2.zero, target, weapon);
+            MimicCombatVfx vfx = ConfigureCombatVfx(boss);
+            SetField(vfx, "maxStrokes", 8);
+            float health = boss.HealthModule.CurrentHealth;
+            float timeScale = Time.timeScale;
+            Random.State random = Random.state;
+            vfx.SetCharge(0.5f);
+            for (int i = 0; i < 20; i++)
+            {
+                vfx.LaserShot();
+                vfx.Spit();
+                vfx.Land();
+                vfx.Catch(Vector3.zero);
+                vfx.Hit(Vector3.zero);
+            }
+            vfx.JumpAfterimage();
+            vfx.PhaseBreak();
+            vfx.DeathBurst();
+            Assert.That(Random.state, Is.EqualTo(random));
+            Assert.That(Time.timeScale, Is.EqualTo(timeScale));
+            Assert.That(boss.HealthModule.CurrentHealth, Is.EqualTo(health));
+            Transform root = (Transform)typeof(MimicCombatVfx)
+                .GetField("_root", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(vfx);
+            Assert.That(root.GetComponentsInChildren<LineRenderer>().Length, Is.LessThanOrEqualTo(10));
+            Assert.That(root.GetComponentsInChildren<Collider2D>().Length, Is.Zero);
+            int count = root.childCount;
+            vfx.Clear();
+            foreach (Renderer renderer in root.GetComponentsInChildren<Renderer>())
+                Assert.That(renderer.enabled, Is.False);
+            vfx.LaserShot();
+            Assert.That(root.childCount, Is.EqualTo(count));
+            vfx.enabled = false;
+            foreach (Renderer renderer in root.GetComponentsInChildren<Renderer>())
+                Assert.That(renderer.enabled, Is.False);
+            Object.Destroy(vfx);
+            yield return null;
+            Assert.That(root == null, Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator BossHitPolishOnlyRunsForAcceptedDamage()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(-20f, 0f));
+            Transform target = Create("Target", new Vector2(12f, 0f)).transform;
+            MimicBoss boss = CreateBoss(Vector2.zero, target, weapon);
+            MimicCombatVfx vfx = ConfigureCombatVfx(boss);
+            var channel = ScriptableObject.CreateInstance<KimLIb.EventSystem.EventChannelSO>();
+            SetField(vfx, "cameraChannel", channel);
+            int count = 0;
+            channel.AddListener<Member.KYM.Scripts.CoreSystems.Events.CameraShakeEvent>(_ => count++);
+            try
+            {
+                boss.BeginEncounter();
+                var damage = new DamageData(10f, Member.ODK.Scripts.DamageType.Projectile);
+                boss.TakeWeaponDamage(damage, Vector3.right);
+                Assert.That(count, Is.EqualTo(1));
+                boss.HealthModule.SettingInvisibleTime(1f);
+                boss.TakeWeaponDamage(damage, Vector3.right);
+                Assert.That(count, Is.EqualTo(1));
+                boss.StopEncounter();
+                boss.HealthModule.SettingInvisibleTime(0f);
+                boss.TakeDamage(damage);
+                Assert.That(count, Is.EqualTo(1));
+            }
+            finally
+            {
+                boss.StopEncounter();
+                channel.Clear();
+                Object.Destroy(channel);
+            }
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator BossCapturingItsOwnWeaponDoesNotPlayPlayerCatchEffect()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(-2f, 0f));
+            Transform target = Create("Target", new Vector2(12f, 0f)).transform;
+            MimicBoss boss = CreateBoss(Vector2.zero, target, weapon);
+            MimicCombatVfx vfx = ConfigureCombatVfx(boss);
+            FieldInfo effectsRoot = typeof(MimicCombatVfx).GetField("_root", BindingFlags.Instance | BindingFlags.NonPublic);
+            weapon.LaunchFromBoss(boss, Vector2.right * 2f, 0.8f, false);
+            weapon.Grab(boss.transform, boss.gameObject);
+            Assert.That(effectsRoot.GetValue(vfx), Is.Null);
+            weapon.Release();
+            weapon.LaunchFromBoss(boss, Vector2.right * 2f, 0.8f, false);
+            weapon.Grab(target, target.gameObject);
+            Assert.That(effectsRoot.GetValue(vfx), Is.Not.Null);
+            weapon.Release();
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator WeaponTrailChangesForThrowAndClearsWhenHeldOrRetired()
+        {
+            var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<MimicWeapon>(
+                "Assets/Member/YKJ/MimicTestAssets/MimicTreasureWeapon.prefab");
+            MimicWeapon weapon = Object.Instantiate(prefab, Vector3.zero, Quaternion.identity);
+            _objects.Add(weapon.gameObject);
+            TrailRenderer trail = weapon.GetComponentInChildren<TrailRenderer>();
+            Assert.That(trail, Is.Not.Null);
+            Vector3 originalScale = weapon.transform.localScale;
+            float mass = weapon.GetComponent<Rigidbody2D>().mass;
+            weapon.LaunchFromBoss(null, new Vector2(2f, 0f), 0.8f, false);
+            Assert.That(trail.emitting, Is.True);
+            Assert.That(trail.startColor.r, Is.GreaterThan(trail.startColor.b));
+            Transform hand = Create("Hand", Vector2.zero).transform;
+            var owner = Create("Owner", Vector2.zero).AddComponent<Agent>();
+            weapon.Grab(hand, owner.gameObject);
+            Assert.That(trail.emitting, Is.False);
+            Assert.That(trail.positionCount, Is.Zero);
+            weapon.Throw(new ThrowData(Vector2.right, owner, 20f));
+            Assert.That(trail.emitting, Is.True);
+            Assert.That(trail.startColor.b, Is.GreaterThan(trail.startColor.r));
+            Assert.That(weapon.transform.localScale, Is.EqualTo(originalScale));
+            Assert.That(weapon.GetComponent<Rigidbody2D>().mass, Is.EqualTo(mass));
+            weapon.Retire();
+            Assert.That(trail.emitting, Is.False);
+            Assert.That(trail.positionCount, Is.Zero);
+            yield return null;
+        }
+
+        private MimicCombatVfx ConfigureCombatVfx(MimicBoss boss)
+        {
+            SpriteRenderer visual = Create("Polished chest", Vector2.zero).AddComponent<SpriteRenderer>();
+            visual.transform.SetParent(boss.transform, false);
+            var collider = boss.gameObject.AddComponent<BoxCollider2D>();
+            var vfx = boss.gameObject.AddComponent<MimicCombatVfx>();
+            SetField(vfx, "boss", boss);
+            SetField(vfx, "chestRenderer", visual);
+            SetField(vfx, "bodyCollider", collider);
+            SetField(vfx, "glowMaterial", UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(
+                "Assets/Member/YKJ/MimicTestAssets/MimicCombatGlow.mat"));
+            SetField(boss, "combatVfx", vfx);
+            return vfx;
+        }
+
+        [UnityTest]
         public IEnumerator BossWeaponExcludesPlayerButStillCanBeGrabbed()
         {
             MimicWeapon weapon = CreateWeapon(new Vector2(-3f, 0f));
