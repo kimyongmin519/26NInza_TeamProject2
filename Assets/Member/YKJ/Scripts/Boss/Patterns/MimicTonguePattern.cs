@@ -40,6 +40,7 @@ namespace Member.YKJ.Bosses
         public override void OnStart()
         {
             Boss.BodyAnimator?.PrepareTongue(warningTime);
+            Boss.CombatVfx?.SetCharge(0f);
             if (chestRenderer != null && openChestSprite != null)
             {
                 _previousSprite = chestRenderer.sprite;
@@ -70,11 +71,13 @@ namespace Member.YKJ.Bosses
             switch (_step)
             {
                 case Step.Warning:
+                    Boss.CombatVfx?.SetCharge(_elapsed / Mathf.Max(0.01f, warningTime));
                     if (_elapsed < warningTime)
                         return;
                     _elapsed = 0f;
                     _step = Step.Extending;
                     Boss.BodyAnimator?.ExtendTongue(extendTime);
+                    Boss.CombatVfx?.LaserShot();
                     DrawLine(_origin, false);
                     break;
                 case Step.Extending:
@@ -167,6 +170,7 @@ namespace Member.YKJ.Bosses
         {
             RestoreChestSprite();
             Boss.BodyAnimator?.ResetPose();
+            Boss.CombatVfx?.EndMuzzle();
             ReleaseCaptured(false);
             if (_capturePoint != null)
                 Object.Destroy(_capturePoint.gameObject);
@@ -185,6 +189,10 @@ namespace Member.YKJ.Bosses
             _spriteChanged = false;
         }
 
-        private void OnDisable() => RestoreChestSprite();
+        private void OnDisable()
+        {
+            RestoreChestSprite();
+            Boss?.CombatVfx?.EndMuzzle();
+        }
     }
 }

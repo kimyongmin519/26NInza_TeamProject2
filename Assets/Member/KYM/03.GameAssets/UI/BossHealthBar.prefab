@@ -537,7 +537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0d260f946e24e4b8f7997ad8f8aa9da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.UI.BossHealthBarUI
-  boss: {fileID: 0}
+  healthModule: {fileID: 0}
   fillMask: {fileID: 1135553032787976259}
   lagMask: {fileID: 6380803916232303618}
   lagDelay: 0.2

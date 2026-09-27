@@ -1,14 +1,15 @@
 using DG.Tweening;
 using KimLIb.AnimatorSystems;
 using Member.KYM.Scripts.CoreSystems;
-using Member.KYM.Scripts.Players;
+using KimLIb.EventSystem;
+using Member.KYM.Scripts.CoreSystems.Events;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.UI
 {
     public class GameOverUI : MonoBehaviour
     {
-        [SerializeField] private GameObject playerObject;
+        [SerializeField] private EventChannelSO uiChannel;
         [SerializeField] private GameObject gameOverRoot;
         [SerializeField] private RectTransform panelRectTrm;
         [SerializeField] private Transform robotArmVisual;
@@ -20,24 +21,25 @@ namespace Member.KYM.Scripts.UI
         
         private Animator _robotArmAnimator;
         private AnimatorTrigger _robotArmTrigger;
-        private PlayerController _player;
         private bool _isShown;
 
         private void Awake()
         {
-            _player = playerObject.GetComponent<PlayerController>();
             _robotArmAnimator = robotArmVisual.GetComponent<Animator>();
             _robotArmTrigger = robotArmVisual.GetComponent<AnimatorTrigger>();
         }
 
         private void OnEnable()
         {
-            _player.OnDeath.AddListener(ShowGameOverUI);
+            if (uiChannel == null) return;
+            uiChannel.AddListener<PlayerUIStateEvent>(HandleState);
+            uiChannel.RaiseEvent(new PlayerUIStateRequest());
         }
 
         private void OnDisable()
         {
-            _player.OnDeath.RemoveListener(ShowGameOverUI);
+            if (uiChannel != null)
+                uiChannel.RemoveListener<PlayerUIStateEvent>(HandleState);
             _robotArmTrigger.OnSpecialEvent -= HandlePanelShow;
         }
 
@@ -51,6 +53,11 @@ namespace Member.KYM.Scripts.UI
             gameOverRoot.SetActive(true);
             _robotArmTrigger.OnSpecialEvent += HandlePanelShow;
             _robotArmAnimator.Play(robotArmAnimParam.ParamHash);
+        }
+
+        private void HandleState(PlayerUIStateEvent evt)
+        {
+            if (evt.IsDead) ShowGameOverUI();
         }
 
         private void HandlePanelShow()

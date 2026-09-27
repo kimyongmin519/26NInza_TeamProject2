@@ -22,7 +22,8 @@ namespace Member.KYM.Scripts.Players.RobotArm
         [SerializeField] private float swingForce = 30f;
         [SerializeField] private float maximumSwingSpeed = 12f;
 
-        [Header("해제 시 스윙 관성")]
+        [Header("해제 시 실제 이동 관성")]
+        [Tooltip("현재 이동 속도에 추가할 배율입니다. 0이면 관성만 유지하고, 1이면 추가 힘 적용 직후 속도가 약 2배가 됩니다.")]
         [SerializeField, Min(0f)] private float releaseSpeedMultiplier = 1.5f;
 
         [Header("제어 복귀")]
@@ -126,26 +127,26 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
         public void StopGrapple()
         {
-            if (IsGrappling && TryGetAnchorPoint(out Transform point))
-                ApplyReleaseForce(point);
+            if (IsGrappling)
+                ApplyReleaseForce();
 
             StopGrappleInternal(true);
         }
 
-        private void ApplyReleaseForce(Transform point)
+        private void ApplyReleaseForce()
         {
-            Rigidbody2D body = _mover.RigidBody;
-            Vector2 radius = robotArm.ArmBasePosition - (Vector2)point.position;
-            if (radius.sqrMagnitude < 0.0001f)
+            if (_mover == null || _mover.RigidBody == null)
                 return;
 
-            Vector2 tangent = new Vector2(-radius.y, radius.x).normalized;
-            Vector2 anchorVelocity = _connectedBody != null
-                ? _connectedBody.GetPointVelocity(point.position)
-                : Vector2.zero;
-            float tangentSpeed = Vector2.Dot(body.linearVelocity - anchorVelocity, tangent);
-            // 기존 스윙 속도를 유지한 채, 진행하는 접선 방향으로 추가 충격량을 준다.
-            Vector2 impulse = tangent * (tangentSpeed * releaseSpeedMultiplier);
+            Rigidbody2D body = _mover.RigidBody;
+            Vector2 releaseVelocity = body.linearVelocity;
+            if (releaseVelocity.sqrMagnitude < 0.0001f || releaseSpeedMultiplier <= 0f)
+                return;
+
+            // 월드 속도에는 체인과 고리의 움직임도 이미 포함되어 있다.
+            // 고리 속도를 빼거나 다시 더하지 않고 실제 진행 방향으로 강화한다.
+            // 충격량 = 질량 × 추가 속도이므로 플레이어 질량이 달라도 배율은 같다.
+            Vector2 impulse = releaseVelocity * (body.mass * releaseSpeedMultiplier);
             _mover.AddForceToAgent(impulse);
         }
 

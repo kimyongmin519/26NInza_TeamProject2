@@ -1033,6 +1033,7 @@ GameObject:
   - component: {fileID: 1125613386144436869}
   - component: {fileID: 2445554094898525855}
   - component: {fileID: 8777586490380460461}
+  - component: {fileID: 429622974361999882}
   m_Layer: 5
   m_Name: TransitionCanvas
   m_TagString: Untagged
@@ -1138,6 +1139,24 @@ MonoBehaviour:
   fadeImage: {fileID: 7372610172872804182}
   fadeInValue: 2.5
   UiEventChannel: {fileID: 11400000, guid: 6fb4af2337fad444399b1c39daed72c0, type: 2}
+--- !u!114 &429622974361999882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5811941245351825139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed1345993b61442790b72e71365285ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.TransitionUIController
+  transitionChannel: {fileID: 11400000, guid: 7005849eaf054b1e91212b09e5c40b71, type: 2}
+  fadeImage: {fileID: 7372610172872804182}
+  openCircleSize: 2.5
+  closedCircleSize: 0
+  fadeOutDuration: 0.75
+  fadeInDuration: 0.75
 --- !u!1 &6572285552895682675
 GameObject:
   m_ObjectHideFlags: 0

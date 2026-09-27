@@ -1,6 +1,5 @@
 using DG.Tweening;
 using Member.KYM.Scripts.CoreSystems.Managers;
-using Member.KYM.Scripts.Enemies.Boss;
 using Member.ODK.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,8 +8,8 @@ namespace Member.KYM.Scripts.UI
 {
     public sealed class BossKOUI : MonoBehaviour
     {
-        [Header("대상")]
-        [SerializeField] private BTAgentBoss boss;
+        [Header("처치 연출을 표시할 체력 모듈")]
+        [SerializeField] private HealthModule healthModule;
 
         [Header("UI")]
         [SerializeField] private GameObject overlayRoot;
@@ -19,15 +18,19 @@ namespace Member.KYM.Scripts.UI
 
         [Header("등장 연출")]
         [SerializeField, Range(0f, 1f)] private float backgroundAlpha = 0.7f;
-        [SerializeField, Min(0f)] private float backgroundFadeDuration = 0.2f;
         [SerializeField, Min(0f)] private float revealDuration = 0.65f;
-        [SerializeField] private Vector2 shakeStrength = new(18f, 8f);
-        [SerializeField, Min(1)] private int shakeVibrato = 18;
+        [SerializeField, Min(0f)] private float holdDuration = 0.6f;
+
+        [Header("짧고 강한 KO 흔들림")]
+        [SerializeField, Min(0f)] private float shakeDuration = 0.18f;
+        [SerializeField] private Vector2 shakeStrength = new(30f, 30f);
+        [SerializeField, Min(1)] private int shakeVibrato = 24;
 
         private HealthModule _health;
         private Sequence _sequence;
         private Vector2 _imageStartPosition;
         private bool _isShown;
+        private bool _ownsTimeStop;
 
         private void Awake()
         {
@@ -44,7 +47,14 @@ namespace Member.KYM.Scripts.UI
 
         private void Start()
         {
-            Bind(boss);
+            Bind(healthModule);
+        }
+
+        private void OnEnable()
+        {
+            if (_health == null) return;
+            _health.OnDeath += Show;
+            if (_health.IsDead) Show();
         }
 
         private void OnDestroy()
@@ -53,24 +63,26 @@ namespace Member.KYM.Scripts.UI
                 _health.OnDeath -= Show;
 
             _sequence?.Kill();
+            RestoreTime();
         }
 
-        public void Bind(BTAgentBoss target)
+        public void Bind(HealthModule target)
         {
             if (_health != null)
                 _health.OnDeath -= Show;
 
-            boss = target;
-            _health = boss != null ? boss.HealthModule : null;
+            healthModule = target;
+            _health = target;
 
             if (_health == null)
             {
-                Debug.LogWarning("KO UI에 보스의 HealthModule이 연결되지 않았습니다.", this);
+                Debug.LogWarning("KO UI에 HealthModule을 연결해주세요.", this);
                 return;
             }
 
-            _health.OnDeath += Show;
-            if (_health.IsDead)
+            if (isActiveAndEnabled)
+                _health.OnDeath += Show;
+            if (isActiveAndEnabled && _health.IsDead)
                 Show();
         }
         
@@ -83,21 +95,41 @@ namespace Member.KYM.Scripts.UI
             _sequence?.Kill();
             overlayRoot.SetActive(true);
 
-            Color backgroundColor = darkBackground.color;
-            backgroundColor.a = 0f;
-            darkBackground.color = backgroundColor;
+            darkBackground.color = new Color(0f, 0f, 0f, backgroundAlpha);
+            koImage.fillAmount = 0f;
+            koImage.rectTransform.anchoredPosition = _imageStartPosition;
 
             TimeManager.Instance.StopTimer();
+            _ownsTimeStop = true;
             _sequence = DOTween.Sequence().SetUpdate(true);
-            _sequence.Append(darkBackground.DOFade(backgroundAlpha, backgroundFadeDuration));
             _sequence.Append(koImage.DOFillAmount(1f, revealDuration).SetEase(Ease.OutCubic));
             _sequence.Join(koImage.rectTransform.DOShakeAnchorPos(
-                revealDuration, shakeStrength, shakeVibrato, 90f, false, true));
+                shakeDuration, shakeStrength, shakeVibrato, 180f, false, true));
+            _sequence.AppendInterval(holdDuration);
             _sequence.OnComplete(() =>
             {
                 koImage.rectTransform.anchoredPosition = _imageStartPosition;
-                TimeManager.Instance.StartTimer();
+                RestoreTime();
+                overlayRoot.SetActive(false);
             });
+        }
+
+        private void OnDisable()
+        {
+            if (_health != null)
+                _health.OnDeath -= Show;
+            _sequence?.Kill();
+            RestoreTime();
+        }
+
+        private void RestoreTime()
+        {
+            if (!_ownsTimeStop)
+                return;
+
+            _ownsTimeStop = false;
+            if (TimeManager.Instance != null)
+                TimeManager.Instance.StartTimer();
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             if (_collider != null)
             {
                 _collider.isTrigger = true;
-                GrabbableLayer.TryApply(_collider.gameObject);
+                GrabbableLayer.Validate(_collider.gameObject);
             }
         }
 
@@ -328,7 +328,6 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             if (projectileCollider != null)
             {
                 projectileCollider.isTrigger = true;
-                GrabbableLayer.TryApply(projectileCollider.gameObject);
             }
         }
     }
