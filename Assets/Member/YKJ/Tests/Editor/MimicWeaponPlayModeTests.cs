@@ -465,29 +465,35 @@ namespace Member.YKJ.Tests
             for (int i = 0; i < 5; i++)
             {
                 Assert.That(laser.FiredCount, Is.EqualTo(i));
-                boss.Patterns.Tick(i == 0 ? 0.6f : 0.12f);
+                boss.Patterns.Tick(i == 0 ? 1f : 0.12f);
                 Assert.That(laser.FiredCount, Is.EqualTo(i + 1));
                 for (int beam = 0; beam <= i; beam++)
                 {
                     Assert.That(lines[beam].enabled, Is.True);
-                    Assert.That(lines[beam].startWidth, Is.EqualTo(0.65f).Within(0.001f));
+                    Assert.That(lines[beam].startWidth, Is.EqualTo(0.35f).Within(0.001f));
                 }
-                Assert.That(before - receiver.HealthModule.CurrentHealth, Is.EqualTo(15f));
+                Assert.That(receiver.HealthModule.CurrentHealth, Is.EqualTo(before));
+                Assert.That(laser.IsDamaging, Is.False);
                 Assert.That(laser.RotationDegrees, Is.Zero);
             }
-            boss.Patterns.Tick(0.3f);
+            boss.Patterns.Tick(0.6f);
             Assert.That(laser.RotationDegrees, Is.Zero);
+            Assert.That(laser.IsDamaging, Is.False);
+            Assert.That(receiver.HealthModule.CurrentHealth, Is.EqualTo(before));
             Assert.That(boss.Patterns.IsRunning, Is.True);
             foreach (LineRenderer line in lines) Assert.That(line.enabled, Is.True);
-            boss.Patterns.Tick(0.3f);
+            boss.Patterns.Tick(0.6f);
             Assert.That(laser.RotationDegrees, Is.Zero);
-            boss.Patterns.Tick(1.5f);
+            Assert.That(laser.IsDamaging, Is.True);
+            Assert.That(before - receiver.HealthModule.CurrentHealth, Is.EqualTo(1f));
+            boss.Patterns.Tick(7f);
             Assert.That(laser.RotationDegrees, Is.EqualTo(-180f).Within(0.001f));
             foreach (LineRenderer line in lines) Assert.That(line.enabled, Is.True);
-            boss.Patterns.Tick(1.5f);
+            boss.Patterns.Tick(7f);
             Assert.That(laser.RotationDegrees, Is.EqualTo(-360f).Within(0.001f));
             Assert.That(boss.Patterns.IsRunning, Is.False);
-            Assert.That(before - receiver.HealthModule.CurrentHealth, Is.EqualTo(75f));
+            Assert.That(before - receiver.HealthModule.CurrentHealth, Is.EqualTo(5f));
+            Assert.That(laser.IsDamaging, Is.False);
             foreach (LineRenderer line in lines) Assert.That(line.enabled, Is.False);
             boss.Patterns.Start(laser);
             boss.Patterns.Cancel();

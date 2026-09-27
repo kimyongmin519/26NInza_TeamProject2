@@ -4,6 +4,7 @@ using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Member.YKJ.Bosses
 {
@@ -20,6 +21,9 @@ namespace Member.YKJ.Bosses
         [Header("Appearance")]
         [SerializeField] private SpriteRenderer weaponRenderer;
         [SerializeField] private List<Sprite> weaponSprites = new List<Sprite>();
+        [FormerlySerializedAs("maxVisualSize")]
+        [Tooltip("Longest sprite dimension in weapon-local units; keeps different sprite import scales consistent.")]
+        [SerializeField, Min(0.1f)] private float visualSize = 1f;
 
         private readonly List<Collider2D> _ignoredColliders = new List<Collider2D>();
         private Collider2D _collider;
@@ -45,6 +49,7 @@ namespace Member.YKJ.Bosses
             Rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             _launchPosition = transform.position;
             SetRandomSprite();
+            FitAppearance();
         }
 
         private void SetRandomSprite()
@@ -59,6 +64,28 @@ namespace Member.YKJ.Bosses
             List<Sprite> available = weaponSprites.FindAll(sprite => sprite != null);
             if (available.Count > 0)
                 weaponRenderer.sprite = available[UnityEngine.Random.Range(0, available.Count)];
+        }
+
+        private void FitAppearance()
+        {
+            if (weaponRenderer == null || weaponRenderer.sprite == null ||
+                weaponRenderer.transform == transform || !weaponRenderer.transform.IsChildOf(transform))
+                return;
+
+            Transform visual = weaponRenderer.transform;
+            Bounds spriteBounds = weaponRenderer.sprite.bounds;
+            Vector3 right = transform.InverseTransformVector(visual.TransformVector(Vector3.right * spriteBounds.size.x));
+            Vector3 up = transform.InverseTransformVector(visual.TransformVector(Vector3.up * spriteBounds.size.y));
+            Vector2 size = new Vector2(Mathf.Abs(right.x) + Mathf.Abs(up.x), Mathf.Abs(right.y) + Mathf.Abs(up.y));
+            float factor = Mathf.Max(0.1f, visualSize) / Mathf.Max(0.001f, Mathf.Max(size.x, size.y));
+            visual.localScale *= factor;
+
+            // Keep the physics root unchanged so throws and platform landing calculations remain valid.
+            if (_collider is BoxCollider2D box)
+            {
+                box.offset = transform.InverseTransformPoint(visual.TransformPoint(spriteBounds.center));
+                box.size = new Vector2(Mathf.Max(0.05f, size.x * factor), Mathf.Max(0.05f, size.y * factor));
+            }
         }
 
         public void LaunchFromBoss(MimicBoss boss, Vector2 landing, float flightTime, bool hurtsPlayer)
