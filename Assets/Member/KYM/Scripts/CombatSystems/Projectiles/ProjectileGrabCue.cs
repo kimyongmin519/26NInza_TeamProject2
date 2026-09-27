@@ -11,8 +11,6 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
         [SerializeField] private SpriteRenderer cueRenderer;
 
         [Header("잡기 표시")]
-        [SerializeField, Min(0f)] private float revealDistance = 5f;
-        [SerializeField, Min(0f)] private float fullRevealDistance = 2.5f;
         [SerializeField, Range(0f, 1f)] private float maxOpacity = 0.5f;
 
         private GrabbableProjectile _projectile;
@@ -45,6 +43,8 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             }
 
             float distance = Vector2.Distance(transform.position, _player.transform.position);
+            float revealDistance = _player.ProjectileCueRevealDistance;
+            float fullRevealDistance = _player.ProjectileCueFullRevealDistance;
             if (distance >= revealDistance)
             {
                 HideCue();
@@ -77,10 +77,5 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
                 cueRenderer.enabled = false;
         }
 
-        private void OnValidate()
-        {
-            revealDistance = Mathf.Max(0f, revealDistance);
-            fullRevealDistance = Mathf.Clamp(fullRevealDistance, 0f, revealDistance);
-        }
     }
 }

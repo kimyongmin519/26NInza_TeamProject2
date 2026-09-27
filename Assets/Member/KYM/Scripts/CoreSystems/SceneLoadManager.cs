@@ -92,7 +92,6 @@ namespace Member.KYM.Scripts.CoreSystems
         {
             IsTransitioning = true;
             fadeImage.raycastTarget = true;
-
             yield return _fadeMaterial.DOFloat(closedCircleSize, CircleSizeId, fadeOutDuration)
                 .SetEase(Ease.Linear).SetUpdate(true).WaitForCompletion();
 
