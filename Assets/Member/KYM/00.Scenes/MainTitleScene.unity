@@ -687,17 +687,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &638709437 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4366109518597234762, guid: 5cc9b12d01b987149a35df95f104bbf8, type: 3}
-  m_PrefabInstance: {fileID: 6557968170753347634}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e753a1f678647dca07840d559e46ae5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.SceneLoadManager
 --- !u!114 &703188346 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7372610172872804182, guid: 6ed5dc3094bb19a40b177389b00a0a0c, type: 3}
@@ -5126,8 +5115,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2070016510998470205, guid: 8f344500f50194247aab4b8144d87c3d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 512289012170468193}
   m_SourcePrefab: {fileID: 100100000, guid: 8f344500f50194247aab4b8144d87c3d, type: 3}
+--- !u!1 &512289012170468192 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2070016510998470205, guid: 8f344500f50194247aab4b8144d87c3d, type: 3}
+  m_PrefabInstance: {fileID: 512289012170468191}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &512289012170468193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 512289012170468192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 327e1c1c70ed9fc4dbfc9172e8e96954, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Npc
+  BubbleDialogEventChannel: {fileID: 11400000, guid: b03dbe8eb5da45569f9288192a0387f3, type: 2}
+  CameraEventChannel: {fileID: 11400000, guid: 6aa65e035152473d98d0e27a69a4c43c, type: 2}
+  CameraFocusTarget: {fileID: 512289012170468194}
+  dialogData: {fileID: 11400000, guid: 8081e09586d2d5c41b5198e0ba1826f8, type: 2}
+--- !u!4 &512289012170468194 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8444165542295184830, guid: 8f344500f50194247aab4b8144d87c3d, type: 3}
+  m_PrefabInstance: {fileID: 512289012170468191}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5361426297959833186
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5572,24 +5590,32 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 915966514634738292, guid: b712384313abfab499b37909e2220c6a, type: 3}
+      propertyPath: OnSuccess.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 915966514634738292, guid: b712384313abfab499b37909e2220c6a, type: 3}
       propertyPath: OnSuccess.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 915966514634738292, guid: b712384313abfab499b37909e2220c6a, type: 3}
       propertyPath: OnSuccess.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 638709437}
+      objectReference: {fileID: 512289012170468193}
     - target: {fileID: 915966514634738292, guid: b712384313abfab499b37909e2220c6a, type: 3}
       propertyPath: OnSuccess.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: LoadScene
+      value: Interaction
       objectReference: {fileID: 0}
     - target: {fileID: 915966514634738292, guid: b712384313abfab499b37909e2220c6a, type: 3}
       propertyPath: OnSuccess.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: Member.KYM.Scripts.CoreSystems.SceneLoadManager, Assembly-CSharp
+      value: Npc, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 915966514634738292, guid: b712384313abfab499b37909e2220c6a, type: 3}
       propertyPath: OnSuccess.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
       value: TutorialRunScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 915966514634738292, guid: b712384313abfab499b37909e2220c6a, type: 3}
+      propertyPath: OnSuccess.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Member.KYM.Scripts.Agents.Agent, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4728847659239795164, guid: b712384313abfab499b37909e2220c6a, type: 3}
       propertyPath: m_Name

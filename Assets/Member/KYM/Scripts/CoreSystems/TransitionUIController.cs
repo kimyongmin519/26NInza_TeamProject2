@@ -13,6 +13,8 @@ namespace Member.KYM.Scripts.CoreSystems
         [Header("공용 전환 채널과 이미지")]
         [SerializeField] private EventChannelSO transitionChannel;
         [SerializeField] private Image fadeImage;
+        [Header("다른 UI보다 위에 표시할 순서")]
+        [SerializeField] private int sortingOrder = 1000;
         [Header("원형 전환 크기와 시간")]
         [SerializeField] private float openCircleSize = 2.5f;
         [SerializeField] private float closedCircleSize;
@@ -27,6 +29,15 @@ namespace Member.KYM.Scripts.CoreSystems
 
         private void Awake()
         {
+            // 기존 시스템 프리팹의 페이드가 같은 이미지를 동시에 열지 않도록 한다.
+            // 런타임 컴포넌트만 제거하며 팀원 스크립트/프리팹은 수정하지 않는다.
+            foreach (var legacyFade in GetComponents<global::FadeScreenManager>())
+            {
+                legacyFade.StopAllCoroutines();
+                legacyFade.enabled = false;
+                Destroy(legacyFade);
+            }
+
             if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
@@ -49,6 +60,12 @@ namespace Member.KYM.Scripts.CoreSystems
             _originalMaterial = fadeImage.material;
             _material = new Material(_originalMaterial);
             fadeImage.material = _material;
+            var canvas = fadeImage.GetComponentInParent<Canvas>();
+            if (canvas != null)
+            {
+                canvas.overrideSorting = true;
+                canvas.sortingOrder = sortingOrder;
+            }
             ResetScreen();
             transitionChannel.AddListener<TransitionRequest>(Handle);
         }
@@ -70,6 +87,14 @@ namespace Member.KYM.Scripts.CoreSystems
                 yield return _material.DOFloat(closedCircleSize, CircleSizeId, fadeOutDuration)
                     .SetEase(Ease.Linear).SetUpdate(true).WaitForCompletion();
                 if (request.Operation != null) yield return request.Operation();
+
+                // 로딩으로 길어진 프레임을 열기 트윈의 첫 deltaTime으로 사용하지 않는다.
+                // 새 씬의 Start가 끝난 뒤에도 완전히 가린 화면을 한 프레임 표시한다.
+                _material.SetFloat(CircleSizeId, closedCircleSize);
+                yield return null;
+                _material.SetFloat(CircleSizeId, closedCircleSize);
+                yield return null;
+
                 yield return _material.DOFloat(openCircleSize, CircleSizeId, fadeInDuration)
                     .SetEase(Ease.Linear).SetUpdate(true).WaitForCompletion();
             }
