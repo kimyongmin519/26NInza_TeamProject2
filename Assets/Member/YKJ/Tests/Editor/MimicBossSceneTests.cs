@@ -13,6 +13,31 @@ namespace Member.YKJ.Tests
     public sealed class MimicBossSceneTests
     {
         [Test]
+        public void SavedBossTestHealthUIUsesMimicHealthAndPlayerUIChannel()
+        {
+            var scene = EditorSceneManager.OpenPreviewScene("Assets/Member/YKJ/Scene/BossTest.unity");
+            try
+            {
+                var roots = scene.GetRootGameObjects();
+                var boss = roots.SelectMany(root => root.GetComponentsInChildren<MimicBoss>(true)).Single();
+                var bar = roots.SelectMany(root => root.GetComponentsInChildren<Member.KYM.Scripts.UI.BossHealthBarUI>(true)).Single();
+                Assert.That(bar.isActiveAndEnabled, Is.True);
+                RequireReferences(bar, "healthModule", "fillMask", "lagMask");
+                Assert.That(new SerializedObject(bar).FindProperty("healthModule").objectReferenceValue,
+                    Is.SameAs(boss.GetComponent<Member.ODK.Scripts.HealthModule>()));
+                var heart = roots.SelectMany(root => root.GetComponentsInChildren<Member.KYM.Scripts.UI.PlayerHealthUI>(true)).Single();
+                var player = roots.SelectMany(root => root.GetComponentsInChildren<Member.KYM.Scripts.Players.PlayerController>(true)).Single();
+                Assert.That(heart.isActiveAndEnabled, Is.True);
+                RequireReferences(heart, "healthText", "heartImage", "uiChannel");
+                Assert.That(new SerializedObject(heart).FindProperty("uiChannel").objectReferenceValue,
+                    Is.SameAs(player.UIChannel));
+                Assert.That(heart.GetComponentInParent<Canvas>(), Is.Not.Null);
+                Assert.That(bar.GetComponentInParent<Canvas>(), Is.Not.Null);
+            }
+            finally { EditorSceneManager.ClosePreviewScene(scene); }
+        }
+
+        [Test]
         public void SavedBossTestKOUIIsBoundToMimicAndHiddenUntilDeath()
         {
             var scene = EditorSceneManager.OpenPreviewScene("Assets/Member/YKJ/Scene/BossTest.unity");
