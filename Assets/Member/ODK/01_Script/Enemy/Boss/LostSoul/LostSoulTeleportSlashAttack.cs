@@ -1,4 +1,5 @@
 using System.Collections;
+using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.LostSoul
@@ -9,7 +10,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float activeDuration = 0.12f;
         [SerializeField] private Vector2 hitboxSize = new Vector2(3.8f, 2.5f);
         [SerializeField] private float hitboxForwardOffset = 1.2f;
-        [SerializeField] private float damage = 34f;
+        [SerializeField] private float damage = DamageCaster.BossPlayerDamage;
         [SerializeField] private bool waitForFullWindup = true;
 
         protected override IEnumerator ExecuteLostSoul(GameObject target)

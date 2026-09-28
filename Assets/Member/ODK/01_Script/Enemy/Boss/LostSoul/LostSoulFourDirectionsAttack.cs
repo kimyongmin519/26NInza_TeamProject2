@@ -43,6 +43,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         protected override IEnumerator ExecuteLostSoul(GameObject target)
         {
             Boss.MoveToArenaCenter();
+            yield return PlayEyeSparkle();
             Boss.SetDarkness(true, darknessFadeDuration, 1f);
             yield return new WaitForSeconds(darknessFadeDuration / DurationScale);
 

@@ -118,6 +118,11 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         private void FixedUpdate()
         {
             if (state != SwordState.PlayerThrown || thrownHit || owner == null) return;
+            if (Vector2.Distance(thrownOrigin, body.position) >= maximumThrownDistance)
+            {
+                Recall();
+                return;
+            }
             Vector2 toBoss = owner.GetHitCenter() - body.position;
             if (toBoss.sqrMagnitude < 0.0001f) return;
             Vector2 current = body.linearVelocity.sqrMagnitude > 0.01f ? body.linearVelocity.normalized : toBoss.normalized;
@@ -166,6 +171,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             StopStateRoutine();
             transform.DOKill();
             state = SwordState.BossControlled;
+            ClearTrail();
             SetEnchanted(true);
             SetPhysics(false, Vector2.zero);
         }
@@ -227,6 +233,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             StopStateRoutine();
             transform.DOKill();
             state = SwordState.MagicFlight;
+            ClearTrail();
             transform.SetParent(null, true);
             SetEnchanted(true);
             SetPhysics(true, direction.normalized * speed);
@@ -243,6 +250,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             StopStateRoutine();
             transform.DOKill();
             state = SwordState.Dispelled;
+            ClearTrail();
             transform.SetParent(null, true);
             SetEnchanted(false);
             SetPhysics(true, direction.normalized * speed);
@@ -261,6 +269,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             transform.DOKill();
             HidePath();
             state = SwordState.Recalling;
+            ClearTrail();
             SetEnchanted(true);
             SetPhysics(false, Vector2.zero);
             transform.SetParent(originalParent, true);
@@ -275,6 +284,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         {
             transform.DOKill();
             state = SwordState.Orbiting;
+            ClearTrail();
             SetEnchanted(true);
             SetPhysics(false, Vector2.zero);
             transform.SetParent(originalParent, true);
@@ -536,6 +546,13 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             if (trail != null) trail.emitting = enchanted;
         }
 
+        private void ClearTrail()
+        {
+            if (trail == null) return;
+            trail.emitting = false;
+            trail.Clear();
+        }
+
         private void StopStateRoutine()
         {
             if (stateRoutine == null) return;
@@ -548,6 +565,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             transform.DOKill();
             StopStateRoutine();
             HidePath();
+            ClearTrail();
         }
     }
 }

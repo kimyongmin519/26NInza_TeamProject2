@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Member.ODK.Scripts.Enemys.MoonBoss
 {
     [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-    public class MoonRock : GrabbableRigidbody, IPoolable
+    public class MoonRock : GrabbableRigidbody, IPoolable, ICancellableBossSpawn
     {
         [SerializeField] private float armDelay = 0.18f;
         [SerializeField, Min(1f)] private float maximumThrownDistance = 18f;
@@ -34,6 +34,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private Collider2D bodyCollider;
         private CircleCollider2D grabSensor;
         private CollisionDetectionMode2D defaultDetectionMode;
+        private float defaultGravityScale;
+        private Vector3 defaultScale;
 
         protected override void Awake()
         {
@@ -41,6 +43,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             CreateGrabSensor();
             base.Awake();
             defaultDetectionMode = Rigidbody.collisionDetectionMode;
+            defaultGravityScale = Rigidbody.gravityScale;
+            defaultScale = transform.localScale;
         }
 
         private void CreateGrabSensor()
@@ -72,6 +76,10 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             Rigidbody.collisionDetectionMode = defaultDetectionMode;
             Rigidbody.linearVelocity = Vector2.zero;
             Rigidbody.angularVelocity = 0f;
+            Rigidbody.gravityScale = defaultGravityScale;
+            transform.localScale = defaultScale;
+            transform.rotation = Quaternion.identity;
+            explosionCaster?.DisableCasting();
             if (bodyCollider != null) bodyCollider.enabled = true;
             if (grabSensor != null) grabSensor.enabled = true;
         }
@@ -219,6 +227,19 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
 
         private void Despawn()
         {
+            ODKPool.Despawn(this);
+        }
+
+        public void CancelBossSpawn()
+        {
+            if (exploded) return;
+            exploded = true;
+            explosionCaster?.DisableCasting();
+            if (Rigidbody != null)
+            {
+                Rigidbody.linearVelocity = Vector2.zero;
+                Rigidbody.angularVelocity = 0f;
+            }
             ODKPool.Despawn(this);
         }
 

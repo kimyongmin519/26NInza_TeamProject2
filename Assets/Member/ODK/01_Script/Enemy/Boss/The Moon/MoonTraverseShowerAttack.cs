@@ -20,9 +20,9 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [SerializeField] private Vector2Int fragmentsPerBurst = new Vector2Int(2, 4);
         [SerializeField] private Vector2 fragmentScaleRange = new Vector2(0.35f, 1.25f);
         [SerializeField] private float fragmentSpawnSpread = 1.5f;
-        [SerializeField] private float fragmentDamage = 22f;
+        [SerializeField] private float fragmentDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float fragmentSpread = 4f;
-        [SerializeField] private float landingDamage = 52f;
+        [SerializeField] private float landingDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float landingRadius = 2.2f;
         [SerializeField] private float returnDuration = 0.45f;
 

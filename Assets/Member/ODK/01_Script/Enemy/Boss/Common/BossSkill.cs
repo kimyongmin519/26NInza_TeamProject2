@@ -65,6 +65,9 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         public override void StopSkill()
         {
+            bool wasRunning = attackCoroutine != null || IsUsing;
+            if (!wasRunning) return;
+
             if (attackCoroutine != null)
             {
                 StopCoroutine(attackCoroutine);

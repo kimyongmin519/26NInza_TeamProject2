@@ -12,7 +12,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         [SerializeField] private float jumpDuration = 0.68f;
         [SerializeField] private float jumpHeight = 3.2f;
         [SerializeField] private float landingRadius = 2.6f;
-        [SerializeField] private float landingDamage = 58f;
+        [SerializeField] private float landingDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private Vector2 boulderLaunchVelocity = new Vector2(3f, 8f);
 
         private LineRenderer trajectory;

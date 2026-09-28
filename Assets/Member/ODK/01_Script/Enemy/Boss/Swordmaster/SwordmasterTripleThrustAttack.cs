@@ -15,11 +15,12 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private float thrustDuration = 0.14f;
         [SerializeField] private float recoverDuration = 0.28f;
         [SerializeField] private Vector2 thrustHitbox = new Vector2(5.6f, 2.1f);
-        [SerializeField] private float thrustDamage = 42f;
+        [SerializeField] private float thrustDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float thrustOvershoot = 2.8f;
         [SerializeField] private float gatherSpread = 0.8f;
 
         private DamageCaster thrustCaster;
+        private SwordmasterTelegraph thrustTelegraph;
 
         public override bool CanUseSkill(GameObject target = null) =>
             Boss != null && Boss.Target != null && !Boss.IsDead;
@@ -57,21 +58,36 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                     thrustSwords[i].ShowPathLine(gatherPoint, thrustEnd, pathDuration);
                 }
                 Boss.AttackReady(targetPoint);
+                Vector3 warningStart = Boss.GetHitCenter();
+                thrustTelegraph = Boss.SpawnTelegraph();
+                thrustTelegraph?.Show(
+                    warningStart,
+                    thrustEnd,
+                    gatherDuration / DurationScale,
+                    thrustHitbox.y
+                );
                 Boss.PlayAnimation(Swordmaster.JumpState);
                 Boss.Cue(SwordmasterCue.ThrustGather, Boss.transform.position);
                 yield return new WaitForSeconds(gatherDuration / DurationScale);
+                Boss.ReleaseTelegraph(thrustTelegraph);
+                thrustTelegraph = null;
 
                 Boss.PlayAnimation(Swordmaster.Attack2State);
                 foreach (EnchantedSword sword in thrustSwords)
                     sword.MoveTo(thrustEnd, angle, thrustDuration / DurationScale, Ease.InExpo);
 
-                thrustCaster.SetWorldPose(targetPoint, angle);
+                Vector3 hitStart = Boss.GetHitCenter();
+                Vector3 hitCenter = Vector3.Lerp(hitStart, thrustEnd, 0.5f);
+                float hitLength = Vector2.Distance(hitStart, thrustEnd);
+                thrustCaster.ConfigureBox(new Vector2(hitLength, thrustHitbox.y), Boss.PlayerLayer);
+                thrustCaster.SetWorldPose(hitCenter, angle);
                 thrustCaster.EnableCasting(
                     new DamageData(thrustDamage, DamageType.Melee, knockbackForce: direction * 5f),
                     thrustDuration / DurationScale
                 );
                 yield return new WaitForSeconds(thrustDuration / DurationScale);
                 thrustCaster.DisableCasting();
+                thrustCaster.ClearWorldPose();
                 Boss.AttackImpact(targetPoint);
                 Boss.Cue(SwordmasterCue.ThrustStrike, targetPoint);
                 Boss.ReturnControlledSwords();
@@ -82,6 +98,9 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         protected override void OnSwordmasterCancel()
         {
             thrustCaster?.DisableCasting();
+            thrustCaster?.ClearWorldPose();
+            Boss?.ReleaseTelegraph(thrustTelegraph);
+            thrustTelegraph = null;
         }
 
         private void OnDrawGizmosSelected()

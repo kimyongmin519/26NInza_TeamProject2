@@ -1,5 +1,6 @@
 using System.Collections;
 using DG.Tweening;
+using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.MoonBoss
@@ -20,13 +21,13 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [SerializeField] private float beamWarningDuration = 0.22f;
         [SerializeField] private float beamActiveDuration = 0.16f;
         [SerializeField] private float beamWidth = 0.32f;
-        [SerializeField] private float beamDamage = 30f;
+        [SerializeField] private float beamDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private Color beamColor = new Color(0.55f, 0.8f, 1f, 1f);
 
         [Header("Phase Two Clone")]
         [SerializeField] private float cloneInterval = 0.85f;
         [SerializeField] private float cloneSpeed = 8f;
-        [SerializeField] private float cloneDamage = 32f;
+        [SerializeField] private float cloneDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float cloneDuration = 9f;
         [SerializeField] private Color cloneColor = new Color(0.72f, 0.82f, 1f, 0.8f);
         [SerializeField] private MoonDashMotion cloneMotion = new MoonDashMotion();
@@ -46,8 +47,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             Vector3 center = Boss.ArenaCenter;
             float left = center.x - Boss.ArenaHalfWidth + arenaPadding;
             float right = center.x + Boss.ArenaHalfWidth - arenaPadding;
-            float top = center.y + Boss.ArenaHalfHeight - arenaPadding + 3;
-            float bottom = center.y - Boss.ArenaHalfHeight + arenaPadding - 3;
+            float top = center.y + Boss.ArenaHalfHeight - arenaPadding;
+            float bottom = center.y - Boss.ArenaHalfHeight + arenaPadding;
             float z = Boss.transform.position.z;
             Vector3[] corners =
             {

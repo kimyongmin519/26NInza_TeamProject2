@@ -2,6 +2,7 @@ using System.Collections;
 using DG.Tweening;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts.Enemys.Bosses;
+using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.LostSoul
@@ -37,7 +38,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private LostSoulProjectile soulProjectilePrefab;
         [SerializeField] private LostSoulGrabbableProjectile weakSoulProjectilePrefab;
         [SerializeField] private LostSoulSlashBeam slashBeamPrefab;
-        [SerializeField] private float projectileDamage = 26f;
+        [SerializeField] private float projectileDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float thrownSoulDamage = 1f;
 
         [Header("Phase Two")]
@@ -331,6 +332,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             LostSoulProjectile soul = ODKPool.Spawn(soulProjectilePrefab, position, Quaternion.identity);
             if (soul == null) return null;
             soul.Initialize(velocity, projectileDamage * damageScale, playerLayer, Target);
+            RegisterSpawn(soul);
             feedback?.PlaySoulProjectile();
             return soul;
         }
@@ -341,6 +343,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             LostSoulGrabbableProjectile soul = ODKPool.Spawn(weakSoulProjectilePrefab, position, Quaternion.identity);
             if (soul == null) return null;
             soul.Initialize(this, velocity, thrownSoulDamage, Target);
+            RegisterSpawn(soul);
             feedback?.PlayWeakSoul();
             return soul;
         }
@@ -360,6 +363,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             LostSoulSlashBeam beam = ODKPool.Spawn(slashBeamPrefab, origin, Quaternion.identity);
             if (beam == null) return null;
             beam.Initialize(this, origin, direction, length, width, warningDuration, activeDuration, damage, color, preFireRotationDegrees);
+            RegisterSpawn(beam);
             return beam;
         }
 

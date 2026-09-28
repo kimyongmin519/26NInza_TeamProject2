@@ -85,12 +85,14 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private SwordmasterFeedbackSlot swordRecall = new SwordmasterFeedbackSlot();
         [SerializeField] private SwordmasterFeedbackSlot swordImpact = new SwordmasterFeedbackSlot();
         [SerializeField] private float swordCueInterval = 0.06f;
+        [SerializeField] private float volleyCueInterval = 0.08f;
 
         [Header("Damage")]
         [SerializeField] private SwordmasterFeedbackSlot hit = new SwordmasterFeedbackSlot();
         [SerializeField] private SwordmasterFeedbackSlot death = new SwordmasterFeedbackSlot();
 
         private float nextSwordCueTime;
+        private float nextVolleyCueTime;
 
         public void Play(SwordmasterCue cue, Vector3 position)
         {
@@ -98,6 +100,11 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             {
                 if (Time.time < nextSwordCueTime) return;
                 nextSwordCueTime = Time.time + swordCueInterval;
+            }
+            if (cue == SwordmasterCue.VolleyWarning || cue == SwordmasterCue.VolleyFire)
+            {
+                if (Time.time < nextVolleyCueTime) return;
+                nextVolleyCueTime = Time.time + volleyCueInterval;
             }
             GetSlot(cue)?.Play(position);
         }

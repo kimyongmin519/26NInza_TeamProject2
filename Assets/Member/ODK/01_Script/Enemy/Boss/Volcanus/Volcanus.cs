@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts.Enemys.Bosses;
+using Member.ODK.Scripts.Enemys.Combat;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -62,7 +63,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         [SerializeField] private GolemGroundWave groundWavePrefab;
         [SerializeField] private LineRenderer telegraphLinePrefab;
         [SerializeField] private float boulderBossDamage = 1f;
-        [SerializeField] private float boulderPlayerDamage = 30f;
+        [SerializeField] private float boulderPlayerDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private Vector2 boulderScaleRange = new Vector2(0.7f, 1.45f);
 
         [Header("Animation")]

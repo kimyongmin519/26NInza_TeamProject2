@@ -63,6 +63,10 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
 
         [Header("Phase")]
         [SerializeField] private MoonFeedbackSlot phaseTwo = new MoonFeedbackSlot();
+        [SerializeField, Min(0f)] private float rapidCueInterval = 0.07f;
+
+        private float nextFragmentTime;
+        private float nextLaserTime;
 
         public void PlayJump(Vector3 position) => jump?.Play(position);
         public void PlayLanding(Vector3 position, bool strong)
@@ -70,10 +74,20 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             if (strong) strongLanding?.Play(position);
             else landing?.Play(position);
         }
-        public void PlayFragment(Vector3 position) => fragment?.Play(position);
+        public void PlayFragment(Vector3 position)
+        {
+            if (Time.time < nextFragmentTime) return;
+            nextFragmentTime = Time.time + rapidCueInterval;
+            fragment?.Play(position);
+        }
         public void PlayRockExplosion(Vector3 position) => rockExplosion?.Play(position);
         public void PlayCloneThrow(Vector3 position) => cloneThrow?.Play(position);
-        public void PlayLaserFire(Vector3 position) => laserFire?.Play(position);
+        public void PlayLaserFire(Vector3 position)
+        {
+            if (Time.time < nextLaserTime) return;
+            nextLaserTime = Time.time + rapidCueInterval;
+            laserFire?.Play(position);
+        }
         public void PlayShrink(Vector3 position) => shrink?.Play(position);
         public void PlayDash(Vector3 position) => dash?.Play(position);
         public void PlayPhaseTwo(Vector3 position) => phaseTwo?.Play(position);

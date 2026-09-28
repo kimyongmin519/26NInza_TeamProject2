@@ -7,13 +7,14 @@ using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.MoonBoss
 {
-    public class MoonLaserShot : AbstractMonoPoolable
+    public class MoonLaserShot : AbstractMonoPoolable, ICancellableBossSpawn
     {
         private LineRenderer line;
         private DamageCaster caster;
         private Sequence visualSequence;
         private LayerMask targetLayer;
         private Material warningMaterial;
+        private Material runtimeLaserMaterial;
         private Coroutine fireRoutine;
 
         public override void ResetItem()
@@ -35,6 +36,18 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             visualSequence?.Kill();
             visualSequence = null;
             caster?.DisableCasting();
+            caster?.ClearWorldPose();
+        }
+
+        public void CancelBossSpawn()
+        {
+            StopShot();
+            if (line != null)
+            {
+                line.widthMultiplier = 0f;
+                line.enabled = false;
+            }
+            ODKPool.Despawn(this);
         }
 
         public void Initialize(
@@ -92,7 +105,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             line.positionCount = 2;
             line.SetPosition(0, origin);
             line.SetPosition(1, end);
-            line.widthMultiplier = Mathf.Max(0.02f, width * 0.16f);
+            float activeWidth = Mathf.Max(0.02f, width * 1.8f);
+            line.widthMultiplier = activeWidth;
             line.startColor = new Color(1f, 1f, 1f, 0.9f);
             line.endColor = new Color(1f, 1f, 1f, 0.5f);
             line.numCapVertices = 8;
@@ -107,7 +121,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
 
             targetLayer = playerLayer;
             float angle = Mathf.Atan2(normalizedDirection.y, normalizedDirection.x) * Mathf.Rad2Deg;
-            caster.ConfigureBox(new Vector2(length, width), playerLayer);
+            caster.ConfigureBox(new Vector2(length, activeWidth), playerLayer);
             caster.SetWorldPose(Vector3.Lerp(origin, end, 0.5f), angle);
             fireRoutine = StartCoroutine(FireRoutine(width, warningDuration, activeDuration, damage, color, owner));
         }
@@ -120,9 +134,6 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             Color color,
             MoonBoss owner)
         {
-            float warningWidth = line.widthMultiplier;
-            line.DOTweenWidth(warningWidth * 0.45f, Mathf.Max(0.06f, warningDuration * 0.28f))
-                .SetLoops(-1, LoopType.Yoyo);
             yield return new WaitForSeconds(Mathf.Max(0f, warningDuration));
             DOTween.Kill(line);
             owner?.PlayLaserFeedback(line.GetPosition(0));
@@ -133,7 +144,11 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             else
             {
                 Shader laserShader = Shader.Find("ODK/Laser");
-                if (laserShader != null) line.material = new Material(laserShader);
+                if (laserShader != null)
+                {
+                    if (runtimeLaserMaterial == null) runtimeLaserMaterial = new Material(laserShader);
+                    line.sharedMaterial = runtimeLaserMaterial;
+                }
             }
 
             line.startColor = Color.white;
@@ -205,19 +220,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             if (line != null) DOTween.Kill(line);
             visualSequence?.Kill();
             if (warningMaterial != null) Destroy(warningMaterial);
+            if (runtimeLaserMaterial != null) Destroy(runtimeLaserMaterial);
         }
     }
 
-    internal static class MoonLineRendererTweenExtensions
-    {
-        public static Tween DOTweenWidth(this LineRenderer line, float endValue, float duration)
-        {
-            return DOTween.To(
-                () => line.widthMultiplier,
-                value => line.widthMultiplier = value,
-                endValue,
-                duration
-            ).SetTarget(line);
-        }
-    }
 }

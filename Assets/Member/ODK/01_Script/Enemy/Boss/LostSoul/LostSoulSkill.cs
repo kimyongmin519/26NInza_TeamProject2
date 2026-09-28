@@ -68,6 +68,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         protected override void OnCompleted()
         {
             Caster?.DisableCasting();
+            Caster?.ClearWorldPose();
             if (Boss != null)
             {
                 Boss.SetActing(false);
@@ -79,6 +80,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         protected override void OnCancel()
         {
             Caster?.DisableCasting();
+            Caster?.ClearWorldPose();
+            Boss?.CancelRegisteredSpawns();
             if (Boss != null)
             {
                 Boss.SetActing(false);

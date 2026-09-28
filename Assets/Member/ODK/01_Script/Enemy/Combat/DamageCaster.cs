@@ -23,8 +23,8 @@ namespace Member.ODK.Scripts.Enemys.Combat
 
     public class DamageCaster : MonoBehaviour
     {
-        private const float BossPlayerDamage = 1f;
-        private const float PlayerHitInvincibilityDuration = 2f;
+        public const float BossPlayerDamage = 1f;
+        public const float PlayerHitInvincibilityDuration = 2f;
 
         [Header("Cast Setting")]
         [SerializeField] private DamageCastMode castMode;
@@ -45,7 +45,6 @@ namespace Member.ODK.Scripts.Enemys.Combat
 
         [Header("Debug Mode")]
         [SerializeField] private bool debugMode = true;
-        [SerializeField] private Color debugColor = new Color(0.35f, 1f, 0.1f, 0.9f);
         [SerializeField] private float debugRemainTime = 1.5f;
 
         private readonly List<DebugCast> debugCasts = new List<DebugCast>();
@@ -210,6 +209,12 @@ namespace Member.ODK.Scripts.Enemys.Combat
             worldAngleOverride = worldAngle;
         }
 
+        public void ClearWorldPose()
+        {
+            hasWorldPositionOverride = false;
+            hasWorldAngleOverride = false;
+        }
+
         public void SetRange(float value) => range = Mathf.Max(0f, value);
         public void SetSize(Vector2 value) => size = new Vector2(Mathf.Abs(value.x), Mathf.Abs(value.y));
         public void SetSectorAngle(float value) => sectorAngle = Mathf.Clamp(value, 0f, 360f);
@@ -298,7 +303,8 @@ namespace Member.ODK.Scripts.Enemys.Combat
         private static void GrantPlayerInvincibility(bool isPlayer, HealthModule health)
         {
             if (!isPlayer || health == null || health.IsDead) return;
-            health.SettingInvisibleTime(PlayerHitInvincibilityDuration);
+            if (health.InvisibleTime < PlayerHitInvincibilityDuration)
+                health.SettingInvisibleTime(PlayerHitInvincibilityDuration);
         }
 
         private Collider2D[] GetHits(Vector3 center, float castAngle)
@@ -343,12 +349,12 @@ namespace Member.ODK.Scripts.Enemys.Combat
             CleanupDebugCasts();
             //if (!Application.isPlaying)
             //{
-                Gizmos.color = debugColor;
+                Gizmos.color = GetModeColor(castMode, true);
                 DrawGizmoShape(castMode, CastCenter, size, range, CastAngle, capsuleDirection);
             //}
             foreach (DebugCast cast in debugCasts)
             {
-                Gizmos.color = GetCastColor(cast.applied);
+                Gizmos.color = GetCastColor(cast.mode, cast.applied);
                 DrawGizmoShape(cast.mode, cast.center, cast.size, cast.range, cast.angle, cast.capsuleDirection);
             }
         }
@@ -366,7 +372,7 @@ namespace Member.ODK.Scripts.Enemys.Combat
             GL.Begin(GL.LINES);
             foreach (DebugCast cast in debugCasts)
             {
-                GL.Color(GetCastColor(cast.applied));
+                GL.Color(GetCastColor(cast.mode, cast.applied));
                 DrawRuntimeShape(cast.mode, cast.center, cast.size, cast.range, cast.angle, cast.capsuleDirection);
             }
             GL.End();
@@ -571,10 +577,25 @@ namespace Member.ODK.Scripts.Enemys.Combat
             }
         }
 
-        private Color GetCastColor(bool applied)
+        private Color GetCastColor(DamageCastMode mode, bool applied)
         {
-            Color color = debugColor;
-            color.a = applied ? debugColor.a : debugColor.a * 0.45f;
+            Color color = GetModeColor(mode, applied);
+            color.a = applied ? 0.9f : 0.42f;
+            return color;
+        }
+
+        private static Color GetModeColor(DamageCastMode mode, bool applied)
+        {
+            Color color = mode switch
+            {
+                DamageCastMode.Circle => new Color(1f, 0.28f, 0.2f, 0.9f),
+                DamageCastMode.Box => new Color(0.2f, 0.85f, 1f, 0.9f),
+                DamageCastMode.Capsule => new Color(1f, 0.68f, 0.15f, 0.9f),
+                DamageCastMode.Sector => new Color(0.9f, 0.25f, 1f, 0.9f),
+                DamageCastMode.OutsideBox => new Color(0.25f, 1f, 0.5f, 0.9f),
+                _ => Color.white
+            };
+            if (!applied) color.a *= 0.47f;
             return color;
         }
 

@@ -1,4 +1,5 @@
 using System.Collections;
+using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.LostSoul
@@ -8,7 +9,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float warningDuration = 0.28f;
         [SerializeField] private float activeDuration = 0.16f;
         [SerializeField] private float cutThickness = 0.62f;
-        [SerializeField] private float damage = 30f;
+        [SerializeField] private float damage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float betweenCuts = 0.1f;
         [SerializeField] private Color beamColor = new Color(0.82f, 0.24f, 1f, 1f);
 
@@ -21,9 +22,10 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             yield return TelegraphAndCut(center, 0f, 90f);
             yield return new WaitForSeconds(0.14f / DurationScale);
             center = target.transform.position;
-            yield return TelegraphAndCut(center, 90f);
+            yield return TelegraphAndCut(center, 45f, -45f);
             yield return new WaitForSeconds(betweenCuts / DurationScale);
-            yield return TelegraphAndCut(center, 0f);
+            center = target.transform.position;
+            yield return TelegraphAndCut(center, 0f, 90f);
         }
 
         private IEnumerator TelegraphAndCut(Vector3 center, params float[] angles)

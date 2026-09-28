@@ -95,7 +95,9 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 Boss.PlayAnimation("frenzy", 0.03f);
                 frenzyAnimationPlaying = true;
             }
-            Boss.transform.position = target.position + new Vector3(Random.Range(-10f, 10f), Random.Range(-5f, 5f));
+            Boss.transform.position = Boss.Arena != null
+                ? Boss.Arena.RandomPoint(arenaPadding, Boss.transform.position.z)
+                : target.position + new Vector3(Random.Range(-10f, 10f), Random.Range(-5f, 5f));
             Vector3 center = GetRandomSlashPosition(target.position);
             float angle = Random.Range(0f, 180f);
             SpawnSlash(center, angle, enrageWarningDuration, 0f);

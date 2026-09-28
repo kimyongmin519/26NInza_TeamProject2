@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Member.ODK.Scripts.Enemys.LostSoul
 {
     [RequireComponent(typeof(LineRenderer), typeof(DamageCaster))]
-    public class LostSoulSlashBeam : AbstractMonoPoolable
+    public class LostSoulSlashBeam : AbstractMonoPoolable, ICancellableBossSpawn
     {
         [SerializeField] private LineRenderer line;
         [SerializeField] private DamageCaster caster;
@@ -21,6 +21,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         private Tween rotationTween;
         private Coroutine fireRoutine;
         private Material defaultMaterial;
+        private Material runtimeLaserMaterial;
 
         public override void ResetItem()
         {
@@ -37,6 +38,18 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             visualSequence?.Kill();
             visualSequence = null;
             if (caster != null) caster.DisableCasting();
+            caster?.ClearWorldPose();
+            if (line != null)
+            {
+                line.widthMultiplier = 0f;
+                line.enabled = false;
+            }
+        }
+
+        public void CancelBossSpawn()
+        {
+            StopBeam();
+            ODKPool.Despawn(this);
         }
 
         public void Initialize(
@@ -72,15 +85,17 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             line.positionCount = 2;
             line.SetPosition(0, origin);
             line.SetPosition(1, end);
-            line.widthMultiplier = Mathf.Max(0.025f, width * 0.16f);
+            float activeWidth = Mathf.Max(0.025f, width * 1.8f);
+            line.widthMultiplier = activeWidth;
             line.startColor = new Color(1f, 1f, 1f, 0.82f);
             line.endColor = new Color(1f, 1f, 1f, 0.45f);
             line.numCapVertices = 8;
             line.textureMode = LineTextureMode.Tile;
             line.sortingOrder = 60;
+            line.enabled = true;
 
             float angle = Mathf.Atan2(normalized.y, normalized.x) * Mathf.Rad2Deg;
-            caster.ConfigureBox(new Vector2(length, width), owner.PlayerLayer);
+            caster.ConfigureBox(new Vector2(length, activeWidth), owner.PlayerLayer);
             caster.SetWorldPose(Vector3.Lerp(origin, end, 0.5f), angle);
             owner.PlayBeamWarningFeedback();
             StartPreFireRotation(preFireRotationDegrees, warningDuration);
@@ -121,11 +136,6 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             float damage,
             Color color)
         {
-            float warningWidth = line.widthMultiplier;
-            DOTween.To(() => line.widthMultiplier, value => line.widthMultiplier = value,
-                    warningWidth * 0.42f, Mathf.Max(0.06f, warningDuration * 0.28f))
-                .SetLoops(-1, LoopType.Yoyo)
-                .SetTarget(line);
             yield return new WaitForSeconds(Mathf.Max(0f, warningDuration));
             DOTween.Kill(line);
             rotationTween?.Complete();
@@ -137,7 +147,11 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             else
             {
                 Shader laserShader = Shader.Find("ODK/Laser");
-                if (laserShader != null) line.material = new Material(laserShader);
+                if (laserShader != null)
+                {
+                    if (runtimeLaserMaterial == null) runtimeLaserMaterial = new Material(laserShader);
+                    line.sharedMaterial = runtimeLaserMaterial;
+                }
             }
 
             line.startColor = Color.white;
@@ -202,6 +216,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             DOTween.Kill(line);
             rotationTween?.Kill();
             visualSequence?.Kill();
+            if (runtimeLaserMaterial != null) Destroy(runtimeLaserMaterial);
         }
     }
 }

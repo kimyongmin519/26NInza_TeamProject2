@@ -1,7 +1,10 @@
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using Member.ODK.Scripts.Enemys.Skills;
+using Member.ODK.Scripts.Enemys.Combat;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using DG.Tweening;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
@@ -13,6 +16,12 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [Header("Attack")]
         [SerializeField] private float attackInterval = 1f;
         [SerializeField] private bool playOnStart = true;
+
+        [Header("Summon Presentation")]
+        [SerializeField] private BossSummonPresentation summonPresentation;
+
+        [Header("Death Presentation")]
+        [SerializeField] private BossDeathPresentation deathPresentation;
 
         [Header("Target / Ground")]
         [SerializeField] private Transform target;
@@ -38,7 +47,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [SerializeField] private float rockSpawnHeight = 0.15f;
         [SerializeField] private float rockLaunchForce = 5f;
         [SerializeField] private float rockScale = 1.3f;
-        [SerializeField] private float rockDamage = 80f;
+        [SerializeField] private float rockDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float rockLifeTime = 15f;
 
         [Header("Effect Hook")]
@@ -62,8 +71,10 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         public bool IsDead { get; private set; }
         protected virtual bool HasPhaseTwo => true;
         protected virtual float PhaseTransitionDelay => 1.1f;
+        private bool battleStarted;
         private float nextCameraShakeTime;
         private float lastCameraShakePower;
+        private readonly List<ICancellableBossSpawn> trackedSpawns = new List<ICancellableBossSpawn>();
 
         protected override void Awake()
         {
@@ -74,6 +85,10 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                 cameraImpulseSource = GetComponent<CinemachineImpulseSource>();
             if (cameraImpulseSource == null)
                 cameraImpulseSource = gameObject.AddComponent<CinemachineImpulseSource>();
+            if (summonPresentation == null)
+                summonPresentation = GetComponent<BossSummonPresentation>();
+            if (deathPresentation == null)
+                deathPresentation = GetComponent<BossDeathPresentation>();
             ConfigureImpulseSource();
             EnsureImpulseListener();
             if (healthModule == null) healthModule = GetModule<HealthModule>();
@@ -84,7 +99,21 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         {
             FindTarget();
             InitializeAttacks();
-            if (playOnStart) StartCoroutine(AttackLoop());
+            if (playOnStart) BeginBattle();
+        }
+
+        public bool BattleStarted => battleStarted;
+
+        public void SetAutoStart(bool autoStart)
+        {
+            playOnStart = autoStart;
+        }
+
+        public void BeginBattle()
+        {
+            if (battleStarted || IsDead) return;
+            battleStarted = true;
+            StartCoroutine(AttackLoop());
         }
 
         protected abstract IEnumerator PhaseOneLoop();
@@ -138,6 +167,8 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         private IEnumerator AttackLoop()
         {
             yield return new WaitUntil(FindTarget);
+            if (summonPresentation != null)
+                yield return summonPresentation.Play(this);
             yield return AttackWait();
 
             while (!IsDead)
@@ -251,6 +282,32 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             onMissileSpawn?.Invoke(position);
             OnMissileSpawn(position);
         }
+
+        public void RegisterSpawn(ICancellableBossSpawn spawn)
+        {
+            if (spawn == null || trackedSpawns.Contains(spawn)) return;
+            trackedSpawns.Add(spawn);
+        }
+
+        private void CancelTrackedSpawns()
+        {
+            for (int i = trackedSpawns.Count - 1; i >= 0; i--)
+            {
+                ICancellableBossSpawn spawn = trackedSpawns[i];
+                if (spawn is UnityEngine.Object unityObject && unityObject == null) continue;
+                try
+                {
+                    spawn?.CancelBossSpawn();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e, this);
+                }
+            }
+            trackedSpawns.Clear();
+        }
+
+        public void CancelRegisteredSpawns() => CancelTrackedSpawns();
 
         public void ShakeCamera(float power)
         {
@@ -416,6 +473,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             IsPhaseTwo = true;
             StopAllCoroutines();
             CancelAttacks();
+            CancelTrackedSpawns();
             SafeInvoke(OnPhaseTwoEntered);
             SafeInvoke(() => onPhaseTwo?.Invoke());
             StartCoroutine(PhaseTwoRestart());
@@ -442,13 +500,24 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         protected void CancelAttacks()
         {
+            summonPresentation?.Cancel();
             ISkill[] skills = GetBossSkillModule()?.GetAllSkill();
-            if (skills == null) return;
-
-            foreach (ISkill skill in skills)
+            if (skills != null)
             {
-                if (skill is ODKBossSkill attack)
-                    attack.StopSkill();
+                foreach (ISkill skill in skills)
+                {
+                    if (skill is ODKBossSkill attack)
+                        attack.StopSkill();
+                }
+            }
+
+            transform.DOKill();
+            DamageCaster[] casters = GetComponentsInChildren<DamageCaster>(true);
+            foreach (DamageCaster caster in casters)
+            {
+                if (caster == null) continue;
+                caster.DisableCasting();
+                caster.ClearWorldPose();
             }
         }
 
@@ -459,8 +528,11 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             IsDead = true;
             StopAllCoroutines();
             CancelAttacks();
+            CancelTrackedSpawns();
             SafeInvoke(OnBossDeath);
             SafeInvoke(() => onDeath?.Invoke());
+            if (deathPresentation != null)
+                StartCoroutine(deathPresentation.Play(this));
         }
 
         protected virtual void OnDrawGizmosSelected()
@@ -504,7 +576,9 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         protected virtual void OnDestroy()
         {
             if (healthModule != null) healthModule.OnDeath -= HandleHealthDeath;
+            deathPresentation?.Cancel();
             CancelAttacks();
+            CancelTrackedSpawns();
         }
     }
 }

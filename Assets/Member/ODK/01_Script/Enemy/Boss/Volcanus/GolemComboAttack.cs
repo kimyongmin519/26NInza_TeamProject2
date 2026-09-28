@@ -13,7 +13,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         [SerializeField] private float preferredDistance = 2.2f;
         [SerializeField] private Vector2 hitboxSize = new Vector2(4f, 3.2f);
         [SerializeField] private Vector2 hitboxOffset = new Vector2(1.8f, 1.6f);
-        [SerializeField] private float damage = 34f;
+        [SerializeField] private float damage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float stepDistance = 0.55f;
         [SerializeField] private float runDistance = 7f;
         [SerializeField] private float finisherDamageMultiplier = 1.35f;

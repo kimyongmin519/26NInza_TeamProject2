@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts.Enemys.Bosses;
+using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -24,7 +25,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private float orbitDepth = 1.15f;
         [SerializeField] private float orbitSpeed = 42f;
         [SerializeField] private float orbitHeight = 2.6f;
-        [SerializeField] private float swordPlayerDamage = 24f;
+        [SerializeField] private float swordPlayerDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float swordBossDamage = 1f;
 
         [Header("Body Facing")]
@@ -369,7 +370,10 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             if (!isActing && !IsDead) PlayAnimation(HurtState);
         }
 
-        protected override void OnPhaseTwoEntered() { }
+        protected override void OnPhaseTwoEntered()
+        {
+            ReturnEverySword();
+        }
 
         protected override void OnBossDeath()
         {

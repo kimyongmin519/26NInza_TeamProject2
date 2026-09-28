@@ -30,6 +30,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
 
         protected sealed override void OnCancel()
         {
+            Boss?.CancelRegisteredSpawns();
             if (!UsesAmbientFloating) Boss?.SetAmbientFloating(true);
             OnMoonCancel();
         }

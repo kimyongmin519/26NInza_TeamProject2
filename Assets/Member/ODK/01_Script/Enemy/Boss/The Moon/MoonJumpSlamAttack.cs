@@ -13,14 +13,13 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [SerializeField] private float warningDuration = 0.38f;
         [SerializeField] private float jumpDuration = 0.48f;
         [SerializeField] private float jumpHeight = 2.6f;
-        [SerializeField] private float landingDamage = 34f;
+        [SerializeField] private float landingDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float landingRadius = 1.8f;
         [SerializeField, Range(0f, 1f)] private float playerAreaChance = 0.65f;
         [SerializeField] private float playerPositionSpread = 3.2f;
 
         [Header("Phase Two Strong Slam")]
         [SerializeField] private float strongJumpHeightMultiplier = 1.4f;
-        [SerializeField] private float strongDamageMultiplier = 1.7f;
 
         [Header("Phase Two Upward Lasers")]
         [SerializeField, Min(1)] private int upwardLasersPerSide = 4;
@@ -30,7 +29,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [SerializeField] private float upwardLaserWarningDuration = 0.35f;
         [SerializeField] private float upwardLaserActiveDuration = 0.2f;
         [SerializeField] private float upwardLaserWidth = 0.42f;
-        [SerializeField] private float upwardLaserDamage = 30f;
+        [SerializeField] private float upwardLaserDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private Color upwardLaserColor = new Color(0.65f, 0.82f, 1f, 1f);
 
         [Header("Rock")]
@@ -117,7 +116,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private void Land(Vector3 point, bool strong)
         {
             float radius = landingRadius * (strong ? 1.25f : 1f);
-            float damage = landingDamage * (strong ? strongDamageMultiplier : 1f);
+            float damage = landingDamage;
             landingCaster.ConfigureCircle(radius, Boss.PlayerLayer);
             landingCaster.SetWorldPosition(point);
             landingCaster.Cast(new DamageData(damage, DamageType.Melee));

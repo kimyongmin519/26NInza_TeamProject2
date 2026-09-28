@@ -31,6 +31,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
         [Header("Turn 5 Final Cross")]
         [SerializeField] private float lineWarningDuration = 0.5f;
+        [SerializeField, Min(0.01f)] private float swordPathWidth = 0.36f;
         [SerializeField] private float finalSpawnRadius = 6.5f;
         [SerializeField] private float finalWarningDuration = 0.55f;
         [SerializeField] private float finalSwordSpeed = 15f;
@@ -219,7 +220,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         {
             SwordmasterTelegraph warning = Boss.SpawnTelegraph();
             if (warning == null) return null;
-            warning.Show(start, end, lineWarningDuration / DurationScale);
+            warning.Show(start, end, lineWarningDuration / DurationScale, swordPathWidth);
             warnings.Add(warning);
             Boss.Cue(SwordmasterCue.VolleyWarning, Vector3.Lerp(start, end, 0.5f));
             return warning;

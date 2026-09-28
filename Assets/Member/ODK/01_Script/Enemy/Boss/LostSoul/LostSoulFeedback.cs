@@ -31,16 +31,29 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private SoundClipSO death;
 
         [SerializeField] private float projectileSoundInterval = 0.07f;
+        [SerializeField] private float beamSoundInterval = 0.08f;
 
         private float nextProjectileSoundTime;
+        private float nextBeamWarningTime;
+        private float nextBeamFireTime;
 
         public void PlayTeleport() => Play(teleport);
         public void PlayCenterMove() => Play(centerMove);
         public void PlaySlash() => Play(slash);
         public void PlayCast() => Play(cast);
         public void PlayWeakSoul() => Play(weakSoulProjectile);
-        public void PlayBeamWarning() => Play(beamWarning);
-        public void PlayBeamFire() => Play(beamFire);
+        public void PlayBeamWarning()
+        {
+            if (Time.time < nextBeamWarningTime) return;
+            nextBeamWarningTime = Time.time + beamSoundInterval;
+            Play(beamWarning);
+        }
+        public void PlayBeamFire()
+        {
+            if (Time.time < nextBeamFireTime) return;
+            nextBeamFireTime = Time.time + beamSoundInterval;
+            Play(beamFire);
+        }
         public void PlayFadeOut() => Play(fadeOut);
         public void PlayFadeSlash() => Play(fadeSlash);
         public void PlayDesperationScream() => Play(desperationScream);

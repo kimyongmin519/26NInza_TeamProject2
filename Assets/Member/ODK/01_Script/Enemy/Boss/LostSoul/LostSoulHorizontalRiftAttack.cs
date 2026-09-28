@@ -1,4 +1,5 @@
 using System.Collections;
+using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.LostSoul
@@ -9,7 +10,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float warningDuration = 0.42f;
         [SerializeField] private float activeDuration = 0.18f;
         [SerializeField] private float riftHeight = 0.65f;
-        [SerializeField] private float damage = 42f;
+        [SerializeField] private float damage = DamageCaster.BossPlayerDamage;
         [SerializeField] private Color beamColor = new Color(0.78f, 0.2f, 1f, 1f);
 
         protected override IEnumerator ExecuteLostSoul(GameObject target)

@@ -11,7 +11,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private float teleportEdgePadding = 1.4f;
         [SerializeField] private float readyDuration = 0.8f;
         [SerializeField] private float dashDuration = 1.25f;
-        [SerializeField] private float dashDamage = 16f;
+        [SerializeField] private float dashDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float dashKnockback = 2f;
         [SerializeField] private Vector2 dashHitbox = new Vector2(1.4f, 2.6f);
         [SerializeField] private float swordSpeed = 11f;
@@ -53,13 +53,21 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 : Boss.transform.position + (Vector3)direction * 16f;
             dashTelegraph = Boss.SpawnTelegraph();
             Vector3 lineOffset = Vector3.up * Boss.GetHitCenter().y - Vector3.up * Boss.transform.position.y;
-            dashTelegraph?.Show(Boss.transform.position + lineOffset, dashEnd + lineOffset, readyDuration / DurationScale);
+            dashTelegraph?.Show(
+                Boss.transform.position + lineOffset,
+                dashEnd + lineOffset,
+                readyDuration / DurationScale,
+                dashHitbox.y
+            );
             yield return new WaitForSeconds(readyDuration / DurationScale);
             Boss.ReleaseTelegraph(dashTelegraph);
             dashTelegraph = null;
 
             List<EnchantedSword> volley = volleyCount > 0 ? Boss.TakeSwords(volleyCount) : new List<EnchantedSword>();
 
+            float dashAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            dashCaster.ConfigureBox(dashHitbox, Boss.PlayerLayer);
+            dashCaster.SetWorldPose(Boss.GetHitCenter(), dashAngle);
             dashCaster.EnableCasting(
                 new DamageData(dashDamage, DamageType.Melee, knockbackForce: direction * dashKnockback),
                 dashDuration / DurationScale
@@ -72,6 +80,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 {
                     progress = value;
                     Boss.transform.position = Vector3.Lerp(start, dashEnd, value);
+                    dashCaster.SetWorldPose(Boss.GetHitCenter(), dashAngle);
                 }, 1f, dashDuration / DurationScale)
                 .SetEase(Ease.InOutSine)
                 .SetTarget(Boss.transform);
@@ -86,6 +95,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
             yield return dashTween.WaitForCompletion();
             dashCaster.DisableCasting();
+            dashCaster.ClearWorldPose();
             Boss.AttackImpact(Boss.transform.position);
             Boss.PlayAnimation(Swordmaster.Attack1State);
             Boss.Cue(SwordmasterCue.DashEnd, Boss.transform.position);
@@ -95,6 +105,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         {
             dashTween?.Kill();
             dashCaster?.DisableCasting();
+            dashCaster?.ClearWorldPose();
             Boss?.ReleaseTelegraph(dashTelegraph);
             dashTelegraph = null;
         }

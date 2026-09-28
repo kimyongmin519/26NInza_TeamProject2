@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Member.ODK.Scripts.Enemys.LostSoul
 {
     [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-    public class LostSoulProjectile : AbstractMonoPoolable
+    public class LostSoulProjectile : AbstractMonoPoolable, ICancellableBossSpawn
     {
         [SerializeField] private float lifeTime = 6f;
         [SerializeField] private float acceleration = 9f;
@@ -33,6 +33,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             if (body == null) body = GetComponent<Rigidbody2D>();
             body.linearVelocity = Vector2.zero;
             body.angularVelocity = 0f;
+            body.gravityScale = 0f;
+            body.simulated = true;
         }
 
         public void Initialize(Vector2 velocity, float amount, LayerMask targetLayer, Transform homingTarget)
@@ -64,6 +66,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             if (body != null) body.linearVelocity = Vector2.zero;
             ODKPool.Despawn(this);
         }
+
+        public void CancelBossSpawn() => Consume();
 
         private void FixedUpdate()
         {

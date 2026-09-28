@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Member.ODK.Scripts.Enemys.MoonBoss
 {
     [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-    public class MoonHazardProjectile : AbstractMonoPoolable
+    public class MoonHazardProjectile : AbstractMonoPoolable, ICancellableBossSpawn
     {
         [SerializeField] private Vector2 fallingAngularSpeedRange = new Vector2(-320f, 320f);
         [SerializeField] private SoundClipSO impactSound;
@@ -37,6 +37,9 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private Sprite defaultSprite;
         private CircleCollider2D circle;
         private float defaultRadius = 0.35f;
+        private Vector3 defaultScale = Vector3.one;
+        private Color defaultColor = Color.white;
+        private bool defaultColliderEnabled = true;
 
         public override void ResetItem()
         {
@@ -48,17 +51,37 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             body.linearVelocity = Vector2.zero;
             body.angularVelocity = 0f;
             body.gravityScale = 0f;
-            if (spriteRenderer != null) spriteRenderer.sprite = defaultSprite;
-            if (circle != null) circle.radius = defaultRadius;
+            body.simulated = true;
+            transform.localScale = defaultScale;
+            transform.rotation = Quaternion.identity;
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = defaultSprite;
+                spriteRenderer.color = defaultColor;
+            }
+            if (circle != null)
+            {
+                circle.radius = defaultRadius;
+                circle.enabled = defaultColliderEnabled;
+            }
         }
 
         private void CacheComponents()
         {
             body = GetComponent<Rigidbody2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null && defaultSprite == null) defaultSprite = spriteRenderer.sprite;
+            if (spriteRenderer != null && defaultSprite == null)
+            {
+                defaultSprite = spriteRenderer.sprite;
+                defaultColor = spriteRenderer.color;
+                defaultScale = transform.localScale;
+            }
             circle = GetComponent<CircleCollider2D>();
-            if (circle != null) defaultRadius = circle.radius;
+            if (circle != null)
+            {
+                defaultRadius = circle.radius;
+                defaultColliderEnabled = circle.enabled;
+            }
         }
 
         public void SetDashBaseScale(Vector3 scale)
@@ -186,5 +209,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             transform.DOKill();
             ODKPool.Despawn(this);
         }
+
+        public void CancelBossSpawn() => Consume();
     }
 }

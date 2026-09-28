@@ -47,6 +47,16 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                    position.y <= MaxY - safePadding;
         }
 
+        public Vector3 RandomPoint(float padding = 0f, float z = 0f)
+        {
+            float safePadding = Mathf.Max(0f, padding);
+            float minX = Mathf.Min(Center.x, MinX + safePadding);
+            float maxX = Mathf.Max(Center.x, MaxX - safePadding);
+            float minY = Mathf.Min(Center.y, MinY + safePadding);
+            float maxY = Mathf.Max(Center.y, MaxY - safePadding);
+            return new Vector3(Random.Range(minX, maxX), Random.Range(minY, maxY), z);
+        }
+
         private void OnValidate()
         {
             size.x = Mathf.Max(0.1f, size.x);

@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Member.ODK.Scripts.Enemys.LostSoul
 {
     [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-    public class LostSoulGrabbableProjectile : GrabbableRigidbody, IPoolable
+    public class LostSoulGrabbableProjectile : GrabbableRigidbody, IPoolable, ICancellableBossSpawn
     {
         [SerializeField] private float lifeTime = 9f;
         [SerializeField] private float homingDegreesPerSecond = 75f;
@@ -25,9 +25,18 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         private bool consumed;
         private Vector2 thrownOrigin;
         private float lifeRemaining;
+        private Collider2D projectileCollider;
+        private float defaultGravityScale;
 
         public PoolItemSO PoolItem { get; set; }
         public GameObject GameObject => this != null ? gameObject : null;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            projectileCollider = GetComponent<Collider2D>();
+            defaultGravityScale = Rigidbody.gravityScale;
+        }
 
         public void ResetItem()
         {
@@ -39,6 +48,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             Rigidbody.simulated = true;
             Rigidbody.linearVelocity = Vector2.zero;
             Rigidbody.angularVelocity = 0f;
+            Rigidbody.gravityScale = defaultGravityScale;
+            if (projectileCollider != null) projectileCollider.enabled = true;
         }
 
         public void Initialize(LostSoul boss, Vector2 velocity, float damageToBoss, Transform homingTarget)
@@ -123,5 +134,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             consumed = true;
             ODKPool.Despawn(this);
         }
+
+        public void CancelBossSpawn() => Consume();
     }
 }

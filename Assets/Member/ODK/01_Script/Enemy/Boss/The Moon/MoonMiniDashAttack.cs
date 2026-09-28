@@ -13,9 +13,9 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
 
         [Header("Dash")]
         [SerializeField] private int dashCount = 8;
-        [SerializeField, Min(1)] private int dashCountCap = 6;
+        [SerializeField, Min(1)] private int dashCountCap = 8;
         [SerializeField] private float contactRadius = 0.85f;
-        [SerializeField] private float contactDamage = 38f;
+        [SerializeField] private float contactDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private MoonDashMotion motion = new MoonDashMotion();
 
         [Header("Dash Feel")]
@@ -26,7 +26,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [SerializeField] private float lightWarningDuration = 0.28f;
         [SerializeField] private float lightActiveDuration = 0.16f;
         [SerializeField] private float lightWidth = 0.3f;
-        [SerializeField] private float lightDamage = 30f;
+        [SerializeField] private float lightDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private Color lightColor = new Color(0.65f, 0.82f, 1f, 1f);
 
         private DamageCaster contactCaster;
@@ -114,7 +114,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         {
             contactCaster.DisableCasting();
             contactCaster.EnableCasting(
-                new DamageData(contactDamage * Boss.DashDamageScale, DamageType.Melee),
+                new DamageData(contactDamage, DamageType.Melee),
                 motion.DashInterval / DurationScale);
             Boss.PlayDashFeedback(Boss.transform.position);
             Boss.AttackImpact(Boss.transform.position);

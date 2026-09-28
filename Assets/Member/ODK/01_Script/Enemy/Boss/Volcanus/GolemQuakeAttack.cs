@@ -8,9 +8,9 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
     {
         [SerializeField] private float readyDuration = 0.65f;
         [SerializeField] private float impactRadius = 3.2f;
-        [SerializeField] private float impactDamage = 48f;
+        [SerializeField] private float impactDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float waveSpeed = 11f;
-        [SerializeField] private float waveDamage = 28f;
+        [SerializeField] private float waveDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float waveLifeTime = 2.2f;
         [SerializeField] private float phaseTwoWaveDelay = 0.22f;
         [SerializeField] private float slamForwardOffset = 1.4f;

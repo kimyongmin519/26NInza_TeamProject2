@@ -25,10 +25,16 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             pulseTween?.Kill();
             pulseTween = null;
             if (line == null) line = GetComponent<LineRenderer>();
-            if (line != null && baseWidth >= 0f) line.widthMultiplier = baseWidth;
+            if (line != null)
+            {
+                if (baseWidth >= 0f) line.widthMultiplier = baseWidth;
+                line.startColor = pathColor;
+                line.endColor = pathColor;
+                line.enabled = false;
+            }
         }
 
-        public void Show(Vector3 start, Vector3 end, float duration)
+        public void Show(Vector3 start, Vector3 end, float duration, float worldWidth = -1f)
         {
             if (line == null) return;
             line.positionCount = 2;
@@ -36,9 +42,10 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             line.SetPosition(1, end);
             line.startColor = pathColor;
             line.endColor = pathColor;
-            line.widthMultiplier = pathWidth;
+            line.widthMultiplier = worldWidth > 0f ? worldWidth : pathWidth;
             line.enabled = true;
             pulseTween?.Kill();
+            if (worldWidth > 0f) return;
             pulseTween = DOTween.To(
                     () => line.widthMultiplier,
                     value => line.widthMultiplier = value,

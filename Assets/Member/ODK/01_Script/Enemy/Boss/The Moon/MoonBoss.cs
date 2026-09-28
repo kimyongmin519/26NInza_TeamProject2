@@ -4,6 +4,7 @@ using GGMLib.ObjectPool.Runtime;
 using DG.Tweening;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts.Enemys.Bosses;
+using Member.ODK.Scripts.Enemys.Combat;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
@@ -27,7 +28,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         [SerializeField] private MoonLaserShot laserShotPrefab;
         [SerializeField] private MoonTelegraphLine telegraphLinePrefab;
         [SerializeField] private float rockBossDamage = 1f;
-        [SerializeField] private float rockPlayerDamage = 28f;
+        [SerializeField] private float rockPlayerDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float rockExplosionRadius = 1.4f;
         [SerializeField] private float spawnedRockLifeTime = 12f;
         [SerializeField] private Vector2 rockScaleRange = new Vector2(0.55f, 1.65f);
@@ -286,12 +287,13 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 this,
                 velocity,
                 rockBossDamage,
-                rockPlayerDamage * (strong ? 1.25f : 1f),
+                rockPlayerDamage,
                 rockExplosionRadius * scaleMultiplier * (strong ? 1.3f : 1f),
                 spawnedRockLifeTime,
                 playerLayer,
                 rockGravityScale
             );
+            RegisterSpawn(rock);
             return rock;
         }
 
@@ -324,6 +326,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 color,
                 fallingGravityScale
             );
+            RegisterSpawn(projectile);
             return projectile;
         }
 
@@ -352,6 +355,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 playerLayer,
                 color
             );
+            RegisterSpawn(shot);
             return shot;
         }
 
@@ -391,7 +395,12 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             ShakeCamera(0.9f);
         }
 
-        protected override void OnBossDeath() => ShakeCamera(1.25f);
+        protected override void OnBossDeath()
+        {
+            floatingTween?.Kill();
+            if (floatingVisual != null) floatingVisual.localPosition = floatingOrigin;
+            ShakeCamera(1.25f);
+        }
 
         protected override void OnDestroy()
         {
