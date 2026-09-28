@@ -28,6 +28,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float rotatingDegrees = 145f;
         [SerializeField] private float cycleIntervalAt25 = 0.72f;
         [SerializeField] private float cycleIntervalAt10 = 0.34f;
+        [SerializeField, Min(1)] private int minimumDirections = 2;
+        [SerializeField, Min(1)] private int maximumDirections = 5;
 
         [Header("Enrage")]
         [SerializeField, Range(0f, 1f)] private float enrageHealth = 0.1f;
@@ -160,7 +162,9 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             float pressure = Mathf.InverseLerp(0.25f, enrageHealth, Boss.HealthRatio);
             float lowHealthBias = Mathf.Lerp(2.4f, 0.55f, pressure);
             float roll = Mathf.Pow(Random.value, lowHealthBias);
-            return Mathf.Clamp(3 + Mathf.FloorToInt(roll * 6f), 3, 8);
+            int minimum = Mathf.Max(1, Mathf.Min(minimumDirections, maximumDirections));
+            int maximum = Mathf.Max(minimum, maximumDirections);
+            return Mathf.Clamp(minimum + Mathf.FloorToInt(roll * (maximum - minimum + 1)), minimum, maximum);
         }
 
         private Vector3 GetRandomGroundPosition()

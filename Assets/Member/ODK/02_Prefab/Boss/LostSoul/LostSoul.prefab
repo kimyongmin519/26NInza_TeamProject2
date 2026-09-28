@@ -21,13 +21,14 @@ GameObject:
   - component: {fileID: 821594943819590024}
   - component: {fileID: 2202478211197762620}
   - component: {fileID: 1433768154}
+  - component: {fileID: 7077340851209231311}
   m_Layer: 0
   m_Name: LostSoul
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &100001
 Transform:
   m_ObjectHideFlags: 0
@@ -59,8 +60,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1000000000000000000000000000002, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.LostSoul.LostSoul
-  attackInterval: 0.22
+  attackInterval: 0.7
   playOnStart: 1
+  playIntro: 1
   summonPresentation: {fileID: 2894015406123624110}
   deathPresentation: {fileID: 440017801383454203}
   target: {fileID: 0}
@@ -73,6 +75,10 @@ MonoBehaviour:
   drawDebugGizmos: 1
   cameraImpulseSource: {fileID: 100009}
   cameraShakeMinimumInterval: 0.07
+  cameraChannel: {fileID: 0}
+  cameraShakePowerScale: 1
+  cameraShakeBaseDuration: 0.14
+  cameraShakeDurationPerPower: 0.16
   healthModule: {fileID: 120002}
   invincible: 0
   healthBarBinding: {fileID: 821594943819590024}
@@ -141,6 +147,8 @@ MonoBehaviour:
   attackImpactNormalized: 0.5
   teleportAttackImpactNormalized: 0.5
   hitAnimationChance: 1
+  castAnimationSpeed: 1.8
+  castReleaseNormalized: 0.45
 --- !u!50 &100003
 Rigidbody2D:
   serializedVersion: 5
@@ -262,6 +270,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.LostSoul.LostSoulFeedback
   teleportEffect: {fileID: 11400000, guid: e7861c6c7b58d3f4396a9379852a4134, type: 2}
   castEffect: {fileID: 11400000, guid: d26fdea012674bf449c88f8393e5df15, type: 2}
+  portalEffect: {fileID: 11400000, guid: fd4c8e3222b84598b23ab7fca147c8d9, type: 2}
+  eyeFlashEffect: {fileID: 11400000, guid: f3bea1d5d2caeaa46afa144d1b536c44, type: 2}
   purpleProjectileEffect: {fileID: 11400000, guid: 1f4da5349dc744e43a136ed2f3396c9d, type: 2}
   cyanProjectileEffect: {fileID: 11400000, guid: 95d8f9257c9518c4f9732716d1987b6f, type: 2}
   purpleImpactEffect: {fileID: 11400000, guid: f3bea1d5d2caeaa46afa144d1b536c44, type: 2}
@@ -431,10 +441,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 994a88a2f8378e0438060ef243b39f2d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossHealthBarBinding
   healthModule: {fileID: 120002}
   healthBar: {fileID: 0}
+  koUI: {fileID: 0}
 --- !u!114 &2202478211197762620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -445,9 +456,56 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4390993996d149b469055599a9c7b355, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.LostSoul.LostSoulVfxPool
   poolManager: {fileID: 11400000, guid: e904046ea45891d468d3b99bb617ab84, type: 2}
+--- !u!114 &1433768154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21b45da1f86645eb96af4ee8a8f2225e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossIntroTimeline
+  boss: {fileID: 100002}
+  visualRoot: {fileID: 0}
+  playOnStart: 1
+  startDelay: 0.2
+  preset: 0
+  bossTitle: "\uC5B4\uB460\uC758 \uC0AC\uC2E0"
+  bossSubtitle: "\uC78A\uD78C \uC790\uB4E4\uC758 \uB9DD\uB839"
+  titleColor: {r: 1, g: 1, b: 1, a: 1}
+  subtitleColor: {r: 1, g: 1, b: 1, a: 0.7}
+  focusOffset: {x: 0, y: 1}
+  focusPriority: 500
+  steps: []
+  endPadding: 0.15
+  onIntroStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onIntroFinished:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &7077340851209231311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbf97c2524399b24b8cab3556a2718b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossBgmPlayback
+  managerPrefab: {fileID: 4760346976927674070, guid: 346863b3c35bf6f4ea096a9edda30e38, type: 3}
+  bossBgm: {fileID: 11400000, guid: efa8dd6db57593e43acbeccff2b8ee49, type: 2}
+  fadeInDuration: 0.7
+  fadeOutDuration: 0.8
 --- !u!1 &110000
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,7 +566,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 26cc4c223ddcd084eab111be7e02de12, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -532,7 +590,7 @@ SpriteRenderer:
   m_SortingOrder: 45
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 2b2aec552c1a29c41b45974210ddc240, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.78757834, g: 0.6839622, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -645,7 +703,7 @@ SpriteRenderer:
   m_SortingOrder: 47
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 2b2aec552c1a29c41b45974210ddc240, type: 3}
-  m_Color: {r: 0.94, g: 0.9, b: 1, a: 1}
+  m_Color: {r: 0.9, g: 0.3, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -789,8 +847,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
-  <MaxHealth>k__BackingField: 1450
-  <CurrentHealth>k__BackingField: 1450
+  <MaxHealth>k__BackingField: 80
+  <CurrentHealth>k__BackingField: 80
 --- !u!1 &130000
 GameObject:
   m_ObjectHideFlags: 0
@@ -891,8 +949,8 @@ MonoBehaviour:
   damageCaster: {fileID: 131003}
   animationStateName: teleport attack
   startupDelay: 1.12
-  recoveryDelay: 0.24
-  appearDelay: 0.55
+  recoveryDelay: 0.4
+  appearDelay: 0.7
   activeDuration: 0.12
   hitboxSize: {x: 3.8, y: 2.5}
   hitboxForwardOffset: 1.2
@@ -975,13 +1033,13 @@ MonoBehaviour:
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4000000000000000000000000000001, type: 2}
   damageCaster: {fileID: 132003}
   animationStateName: cast
-  startupDelay: 0.12
-  recoveryDelay: 0.28
+  startupDelay: 0.2
+  recoveryDelay: 0.45
   sideDistance: 5.2
   waveCount: 3
-  bulletsPerWave: 2
-  bulletSpeed: 15
-  waveInterval: 0.24
+  bulletsPerWave: 3
+  bulletSpeed: 9
+  waveInterval: 0.55
   laneSpacing: 0.46
 --- !u!114 &132003
 MonoBehaviour:
@@ -1060,14 +1118,13 @@ MonoBehaviour:
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4000000000000000000000000000002, type: 2}
   damageCaster: {fileID: 133003}
   animationStateName: cast
-  startupDelay: 0.12
-  recoveryDelay: 0.28
+  startupDelay: 0.2
+  recoveryDelay: 0.45
   castDistance: 8.5
-  castDelay: 1.25
-  bulletCount: 14
-  bulletSpeed: 12
-  shotInterval: 0.1
-  randomAngle: 32
+  bulletCount: 10
+  bulletSpeed: 8.5
+  shotInterval: 0.17
+  randomAngle: 24
 --- !u!114 &133003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1145,9 +1202,9 @@ MonoBehaviour:
   damageCaster: {fileID: 0}
   animationStateName: attack
   startupDelay: 0.3
-  recoveryDelay: 0.28
+  recoveryDelay: 0.45
   sideDistance: 5.5
-  warningDuration: 0.62
+  warningDuration: 0.7
   activeDuration: 0.18
   riftHeight: 0.65
   damage: 1
@@ -1200,12 +1257,12 @@ MonoBehaviour:
   damageCaster: {fileID: 0}
   animationStateName: attack
   startupDelay: 0.3
-  recoveryDelay: 0.28
-  warningDuration: 0.5
+  recoveryDelay: 0.45
+  warningDuration: 0.58
   activeDuration: 0.16
   cutThickness: 0.62
   damage: 1
-  betweenCuts: 0.16
+  betweenCuts: 0.3
   beamColor: {r: 0.94, g: 0.9, b: 1, a: 1}
 --- !u!1 &136000
 GameObject:
@@ -1263,7 +1320,7 @@ MonoBehaviour:
   damageCaster: {fileID: 136003}
   animationStateName: ready
   startupDelay: 0.3
-  recoveryDelay: 0.28
+  recoveryDelay: 0.45
   directionArrows:
   - {fileID: 136102}
   - {fileID: 136112}
@@ -1275,16 +1332,16 @@ MonoBehaviour:
   eyeOffset: {x: 0, y: 2.25}
   eyeSparkleDuration: 0.45
   darknessFadeDuration: 0.1
-  arrowDuration: 0.42
+  arrowDuration: 0.6
   arrowStartScale: 0.62
   arrowPeakScale: 1.05
   arrowSortingOrder: 500
   arrowSortingLayer: UI
   arrowMoveDistance: 0.7
-  responseTime: 0.1
+  responseTime: 0.2
   slashRevealDuration: 0.14
-  betweenCuts: 0.05
-  cutCountRange: {x: 3, y: 7}
+  betweenCuts: 0.18
+  cutCountRange: {x: 3, y: 6}
   moveDistance: 1.35
   jumpDistance: 0.85
   crouchHeightRatio: 0.82
@@ -2057,45 +2114,22 @@ MonoBehaviour:
   startupDelay: 0.35
   recoveryDelay: 0
   arenaPadding: 1.25
-  moveDuration: 0.34
-  slashReadyTime: 0.42
-  weakSoulInterval: 0.34
-  weakSoulSpeed: 8.5
+  moveDuration: 0.45
+  slashReadyTime: 0.5
+  weakSoulInterval: 0.5
+  weakSoulSpeed: 7
   weakSoulSpawnMargin: 1.2
-  slashWarningDuration: 0.72
+  slashWarningDuration: 0.85
   slashActiveDuration: 0.16
   slashWidth: 0.52
   slashDamage: 1
   slashColor: {r: 0.94, g: 0.9, b: 1, a: 1}
   rotatingSlashHealth: 0.2
   rotatingDegrees: 145
-  cycleIntervalAt25: 0.92
-  cycleIntervalAt10: 0.5
+  cycleIntervalAt25: 1.2
+  cycleIntervalAt10: 0.8
   enrageHealth: 0.1
-  enrageSlashInterval: 0.08
-  enrageWarningDuration: 0.6
+  enrageSlashInterval: 0.16
+  enrageWarningDuration: 0.75
   enrageMinimumDistance: 1
   enrageMaximumDistance: 16
---- !u!114 &1433768154
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21b45da1f86645eb96af4ee8a8f2225e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossIntroTimeline
-  boss: {fileID: 100002}
-  visualRoot: {fileID: 0}
-  playOnStart: 1
-  startDelay: 0.2
-  preset: 0
-  bossTitle: 
-  bossSubtitle: 
-  focusOffset: {x: 0, y: 1}
-  focusPriority: 500
-  steps: []
-  endPadding: 0.15

@@ -5,6 +5,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using KimLIb.EventSystem;
+using Member.KYM.Scripts.CoreSystems.Events;
+using Member.KYM.Scripts.CoreSystems.Managers;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
@@ -37,6 +40,10 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [Header("Camera Impulse")]
         [SerializeField] private CinemachineImpulseSource cameraImpulseSource;
         [SerializeField, Min(0f)] private float cameraShakeMinimumInterval = 0.07f;
+        [SerializeField] private EventChannelSO cameraChannel;
+        [SerializeField, Min(0f)] private float cameraShakePowerScale = 1f;
+        [SerializeField, Min(0.01f)] private float cameraShakeBaseDuration = 0.14f;
+        [SerializeField, Min(0f)] private float cameraShakeDurationPerPower = 0.16f;
 
         [Header("Health / Phase")]
         [SerializeField] private HealthModule healthModule;
@@ -97,8 +104,11 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                 deathPresentation = GetComponent<BossDeathPresentation>();
             if (healthBarBinding == null)
                 healthBarBinding = GetComponent<BossHealthBarBinding>();
+            if (healthBarBinding == null)
+                healthBarBinding = gameObject.AddComponent<BossHealthBarBinding>();
+            ResolveCameraChannel();
             ConfigureImpulseSource();
-            EnsureImpulseListener();
+            if (cameraChannel == null) EnsureImpulseListener();
             if (healthModule == null) healthModule = GetModule<HealthModule>();
             if (healthModule != null) healthModule.OnDeath += HandleHealthDeath;
             if (playIntro && GetComponentInChildren<BossIntroTimeline>(true) == null)
@@ -349,11 +359,25 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         public void ShakeCamera(float power)
         {
-            if (cameraImpulseSource == null || power <= 0f) return;
+            if (power <= 0f) return;
             if (Time.time < nextCameraShakeTime && power <= lastCameraShakePower) return;
             lastCameraShakePower = power;
             nextCameraShakeTime = Time.time + cameraShakeMinimumInterval;
-            cameraImpulseSource.GenerateImpulse(power);
+            if (cameraChannel == null) ResolveCameraChannel();
+            if (cameraChannel != null)
+            {
+                float duration = cameraShakeBaseDuration + power * cameraShakeDurationPerPower;
+                cameraChannel.RaiseEvent(new CameraShakeEvent().InitData(power * cameraShakePowerScale, duration));
+                return;
+            }
+            if (cameraImpulseSource != null) cameraImpulseSource.GenerateImpulse(power);
+        }
+
+        private void ResolveCameraChannel()
+        {
+            if (cameraChannel != null) return;
+            CameraShakeManager manager = FindFirstObjectByType<CameraShakeManager>(FindObjectsInactive.Include);
+            if (manager != null) cameraChannel = manager.cameraChannel;
         }
 
         private static void EnsureImpulseListener()

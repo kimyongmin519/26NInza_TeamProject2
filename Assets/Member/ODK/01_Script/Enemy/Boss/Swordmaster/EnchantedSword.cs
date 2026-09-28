@@ -94,6 +94,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         private float thrownSpeed;
         private bool thrownHit;
         private float bossReclaimTime;
+        private ODKGrabInfoDisplay grabInfoDisplay;
         private CircleCollider2D grabSensor;
         private float nextPlayerHitTime;
 
@@ -106,6 +107,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             body.bodyType = RigidbodyType2D.Kinematic;
 
             swordCollider = GetComponent<CapsuleCollider2D>();
+            grabInfoDisplay = GetComponent<ODKGrabInfoDisplay>();
             swordCollider.direction = CapsuleDirection2D.Horizontal;
             swordCollider.size = new Vector2(swordLength, swordThickness);
             swordCollider.isTrigger = true;
@@ -353,6 +355,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             transform.DOKill();
             HidePath();
             state = SwordState.Held;
+            grabInfoDisplay?.SetHeld(true);
             throwOwnerRoot = grabber != null ? grabber.transform.root : null;
             body.linearVelocity = Vector2.zero;
             body.angularVelocity = 0f;
@@ -370,6 +373,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             if (state != SwordState.Held) return;
             transform.SetParent(null, true);
             state = SwordState.Dispelled;
+            grabInfoDisplay?.SetHeld(false);
             throwOwnerRoot = null;
             swordCollider.enabled = true;
             SetPhysics(true, Vector2.zero);
@@ -382,6 +386,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             if (state != SwordState.Held) return;
             transform.SetParent(null, true);
             state = SwordState.PlayerThrown;
+            grabInfoDisplay?.SetHeld(false);
             thrownHit = false;
             thrownSpeed = Mathf.Max(8f, throwData.ArmThrowSpeed);
             thrownOrigin = body.position;
@@ -664,6 +669,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
         private void OnDisable()
         {
+            grabInfoDisplay?.SetHeld(false);
             transform.DOKill();
             StopStateRoutine();
             HidePath();

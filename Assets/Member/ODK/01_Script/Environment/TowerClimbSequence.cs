@@ -48,10 +48,15 @@ namespace Member.ODK.Scripts.Environment
         [SerializeField] private Swordmaster swordmasterPrefab;
         [SerializeField] private Transform swordmasterAppearPoint;
         [SerializeField] private float appearDuration = 1.1f;
-        [SerializeField] private float giantSwordWindup = 0.8f;
-        [SerializeField] private float giantSwordScale = 0.32f;
-        [SerializeField] private float giantSwordSpeed = 38f;
-        [SerializeField] private Transform giantSwordTarget;
+        [SerializeField] private Transform plantGroundPoint;
+        [SerializeField] private float plantSpread = 9f;
+        [SerializeField] private float plantRiseHeight = 3.2f;
+        [SerializeField] private float plantDepth = 0.9f;
+        [SerializeField] private float plantRiseDuration = 0.28f;
+        [SerializeField] private float plantStabDuration = 0.1f;
+        [SerializeField] private float plantInterval = 0.06f;
+        [SerializeField] private float plantHoldDuration = 0.7f;
+        [SerializeField] private float plantStabShake = 0.35f;
         [SerializeField] private float impactShake = 1.6f;
         [SerializeField] private float battleStartDelay = 1f;
 
@@ -295,8 +300,7 @@ namespace Member.ODK.Scripts.Environment
                 yield return new WaitForSeconds(appearDuration);
             }
 
-            yield return new WaitForSeconds(giantSwordWindup);
-            yield return FireGiantSword(boss, appear);
+            yield return PlantAndRecallSwords(boss, appear);
 
             onFallStarted?.Invoke();
             foreach (VerticalLoopScroller scroller in scrollers)
@@ -331,34 +335,68 @@ namespace Member.ODK.Scripts.Environment
             return swordmaster;
         }
 
-        private IEnumerator FireGiantSword(Swordmaster boss, Vector3 from)
+        private IEnumerator PlantAndRecallSwords(Swordmaster boss, Vector3 from)
         {
-            if (swordSprite == null) yield break;
-            Vector3 target = giantSwordTarget != null
-                ? giantSwordTarget.position
-                : new Vector3(from.x, ViewCenter.y - ViewHalfHeight * 0.55f, 0f);
-            Vector3 start = from + Vector3.up * 1.5f;
+            if (boss == null) yield break;
+            List<EnchantedSword> swords = boss.TakeSwords(boss.Swords.Count);
+            if (swords.Count == 0) yield break;
 
-            boss?.PlayAnimation(Swordmaster.Attack2State);
-            boss?.Cue(SwordmasterCue.FinalCross, start);
+            boss.PlayAnimation(Swordmaster.Attack1State);
+            boss.Cue(SwordmasterCue.SummonSwords, from);
 
-            GameObject sword = CreateSwordObject("Giant Sword", start, giantSwordScale, Color.white);
-            Collider2D swordCollider = sword.GetComponent<Collider2D>();
-            if (swordCollider != null) swordCollider.enabled = false;
-            Vector3 direction = (target - start).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90f;
-            sword.transform.rotation = Quaternion.Euler(0f, 0f, angle);
-            float duration = Vector3.Distance(start, target) / Mathf.Max(1f, giantSwordSpeed);
-            yield return sword.transform.DOMove(target, duration).SetEase(Ease.InQuad).WaitForCompletion();
-
-            if (boss != null)
+            float centerX = plantGroundPoint != null ? plantGroundPoint.position.x : from.x;
+            float fallbackY = plantGroundPoint != null ? plantGroundPoint.position.y : ViewCenter.y - ViewHalfHeight * 0.55f;
+            Vector3[] groundPoints = new Vector3[swords.Count];
+            for (int i = 0; i < swords.Count; i++)
             {
-                boss.ShakeCamera(impactShake);
-                boss.Cue(SwordmasterCue.SwordImpact, target);
-                boss.AttackImpact(target);
+                float rate = swords.Count > 1 ? i / (float)(swords.Count - 1) : 0.5f;
+                float x = centerX + Mathf.Lerp(-plantSpread, plantSpread, rate) + Random.Range(-0.35f, 0.35f);
+                Vector3 ground = plantGroundPoint != null ? new Vector3(x, fallbackY, 0f) : boss.GetGroundPoint(x);
+                if (ground.y > from.y) ground.y = fallbackY;
+                ground.z = 0f;
+                groundPoints[i] = ground;
+                Vector3 raise = ground + Vector3.up * plantRiseHeight;
+                swords[i].MoveTo(raise, -90f, plantRiseDuration, Ease.OutBack);
             }
-            sword.transform.DOShakePosition(0.35f, 0.25f, 30).SetTarget(sword.transform);
-            Destroy(sword, 2.5f);
+            yield return new WaitForSeconds(plantRiseDuration + 0.12f);
+
+            boss.PlayAnimation(Swordmaster.Attack2State);
+            for (int i = 0; i < swords.Count; i++)
+            {
+                EnchantedSword sword = swords[i];
+                if (sword == null) continue;
+                Vector3 stuck = groundPoints[i] + Vector3.down * plantDepth;
+                Vector3 impact = groundPoints[i];
+                sword.transform.DOKill();
+                sword.transform.DOMove(stuck, plantStabDuration)
+                    .SetEase(Ease.InExpo)
+                    .SetTarget(sword)
+                    .OnComplete(() =>
+                    {
+                        boss.Cue(SwordmasterCue.SwordImpact, impact);
+                        boss.ShakeCamera(plantStabShake);
+                    });
+                if (plantInterval > 0f) yield return new WaitForSeconds(plantInterval);
+            }
+            yield return new WaitForSeconds(plantStabDuration + 0.05f);
+            boss.ShakeCamera(impactShake * 0.6f);
+            boss.AttackImpact(new Vector3(centerX, fallbackY, 0f));
+
+            foreach (EnchantedSword sword in swords)
+                if (sword != null) sword.transform.DOShakePosition(plantHoldDuration, 0.08f, 24).SetTarget(sword);
+            yield return new WaitForSeconds(plantHoldDuration);
+
+            boss.PlayAnimation(Swordmaster.Attack1State);
+            boss.Cue(SwordmasterCue.SummonSwords, boss.transform.position);
+            foreach (EnchantedSword sword in swords)
+            {
+                if (sword == null) continue;
+                DOTween.Kill(sword);
+                sword.transform.DOKill();
+            }
+            boss.ReturnEverySword();
+            boss.ShakeCamera(impactShake);
+            boss.Cue(SwordmasterCue.FinalCross, new Vector3(centerX, fallbackY, 0f));
         }
 
         public void NotifyHazardHit(Vector3 position)

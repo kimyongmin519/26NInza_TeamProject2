@@ -36,10 +36,12 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         private CollisionDetectionMode2D defaultDetectionMode;
         private float defaultGravityScale;
         private Vector3 defaultScale;
+        private ODKGrabInfoDisplay grabInfoDisplay;
 
         protected override void Awake()
         {
             bodyCollider = GetComponent<Collider2D>();
+            grabInfoDisplay = GetComponent<ODKGrabInfoDisplay>();
             CreateGrabSensor();
             base.Awake();
             defaultDetectionMode = Rigidbody.collisionDetectionMode;
@@ -85,6 +87,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             explosionCaster?.DisableCasting();
             if (bodyCollider != null) bodyCollider.enabled = true;
             if (grabSensor != null) grabSensor.enabled = true;
+            grabInfoDisplay?.SetHeld(false);
         }
 
         public void Initialize(
@@ -149,12 +152,14 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         {
             isThrown = false;
             previousPosition = Rigidbody.position;
+            grabInfoDisplay?.SetHeld(true);
         }
 
         protected override void OnReleased()
         {
             isThrown = false;
             previousPosition = Rigidbody.position;
+            grabInfoDisplay?.SetHeld(false);
         }
 
         protected override void OnThrown(ThrowData throwData)
@@ -164,6 +169,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             armedTime = Time.time;
             Rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             previousPosition = Rigidbody.position;
+            grabInfoDisplay?.SetHeld(false);
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -230,6 +236,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
 
         private void Despawn()
         {
+            grabInfoDisplay?.SetHeld(false);
             ODKPool.Despawn(this);
         }
 

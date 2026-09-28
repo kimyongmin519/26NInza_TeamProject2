@@ -99,39 +99,10 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         private IEnumerator PlayEyeSparkle()
         {
-            if (eyeSparkle == null) yield break;
-            Vector3 center = Boss.transform.position + (Vector3)eyeOffset;
-            eyeSparkle.useWorldSpace = true;
-            eyeSparkle.positionCount = 5;
-            eyeSparkle.loop = true;
-            eyeSparkle.enabled = true;
-            float scale = 0.05f;
-            float alpha = 0f;
-
-            void Refresh()
-            {
-                eyeSparkle.SetPosition(0, center + Vector3.up * scale);
-                eyeSparkle.SetPosition(1, center + Vector3.right * scale * 0.36f);
-                eyeSparkle.SetPosition(2, center + Vector3.down * scale);
-                eyeSparkle.SetPosition(3, center + Vector3.left * scale * 0.36f);
-                eyeSparkle.SetPosition(4, center + Vector3.up * scale);
-                Color color = new Color(0.94f, 0.9f, 1f, alpha);
-                eyeSparkle.startColor = color;
-                eyeSparkle.endColor = color;
-                eyeSparkle.widthMultiplier = 0.08f + scale * 0.03f;
-            }
-
-            Sequence sequence = DOTween.Sequence().SetTarget(eyeSparkle);
-            sequence.Append(DOTween.To(() => scale, value => { scale = value; Refresh(); }, 0.72f,
-                eyeSparkleDuration * 0.5f / DurationScale).SetEase(Ease.OutBack));
-            sequence.Join(DOTween.To(() => alpha, value => { alpha = value; Refresh(); }, 1f,
-                eyeSparkleDuration * 0.32f / DurationScale));
-            sequence.Append(DOTween.To(() => scale, value => { scale = value; Refresh(); }, 0.04f,
-                eyeSparkleDuration * 0.5f / DurationScale).SetEase(Ease.InQuad));
-            sequence.Join(DOTween.To(() => alpha, value => { alpha = value; Refresh(); }, 0f,
-                eyeSparkleDuration * 0.42f / DurationScale));
-            yield return sequence.WaitForCompletion();
-            eyeSparkle.enabled = false;
+            if (eyeSparkle != null) eyeSparkle.enabled = false;
+            Vector3 eye = Boss.transform.position + (Vector3)eyeOffset;
+            Boss.PlayEyeFlash(eye);
+            yield return new WaitForSeconds(eyeSparkleDuration / DurationScale);
         }
 
         private IEnumerator ShowDirectionCue(int cue)
@@ -196,7 +167,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 slashGlowEffect.SetPosition(0, start);
                 slashGlowEffect.SetPosition(1, end);
                 slashGlowEffect.widthMultiplier = 1.8f;
-                Color glow = new Color(0.94f, 0.9f, 1f, 0.7f);
+                Color glow = new Color(0.78f, 0.22f, 1f, 0.7f);
                 slashGlowEffect.startColor = glow;
                 slashGlowEffect.endColor = glow;
                 slashGlowEffect.enabled = true;
@@ -237,7 +208,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 sequence.Insert(0f, DOTween.To(() => glowAlpha, value =>
                 {
                     glowAlpha = value;
-                    Color glow = new Color(0.94f, 0.9f, 1f, value);
+                    Color glow = new Color(0.78f, 0.22f, 1f, value);
                     slashGlowEffect.startColor = glow;
                     slashGlowEffect.endColor = glow;
                 }, 0f, slashRevealDuration / DurationScale).SetEase(Ease.InQuad));

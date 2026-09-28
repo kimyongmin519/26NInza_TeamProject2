@@ -13,6 +13,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private LineRenderer line;
         [SerializeField] private DamageCaster caster;
         [SerializeField, Min(0.01f)] private float warningWidth = 0.07f;
+        [SerializeField] private Material warningMaterial;
+        [SerializeField] private Material fireMaterial;
 
         private Sequence visualSequence;
         private Vector3 rotationCenter;
@@ -74,7 +76,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             }
             StopBeam();
             if (defaultMaterial == null) defaultMaterial = line.sharedMaterial;
-            else line.sharedMaterial = defaultMaterial;
+            line.sharedMaterial = warningMaterial != null ? warningMaterial : defaultMaterial;
 
             Vector2 normalized = direction.sqrMagnitude > 0.001f ? direction.normalized : Vector2.right;
             Vector3 end = origin + (Vector3)normalized * length;
@@ -143,7 +145,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             owner.PlayBeamFireFeedback();
             owner.ShakeCamera(0.28f);
 
-            Material laserMaterial = Resources.Load<Material>("ODKLaser");
+            Material laserMaterial = fireMaterial != null ? fireMaterial : Resources.Load<Material>("ODKLaser");
             if (laserMaterial != null) line.sharedMaterial = laserMaterial;
             else
             {

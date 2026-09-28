@@ -10,6 +10,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [Header("Pooled VFX")]
         [SerializeField] private PoolItemSO teleportEffect;
         [SerializeField] private PoolItemSO castEffect;
+        [SerializeField] private PoolItemSO portalEffect;
+        [SerializeField] private PoolItemSO eyeFlashEffect;
         [SerializeField] private PoolItemSO purpleProjectileEffect;
         [SerializeField] private PoolItemSO cyanProjectileEffect;
         [SerializeField] private PoolItemSO purpleImpactEffect;
@@ -59,6 +61,22 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         {
             Play(teleport);
             PlayEffect(teleportEffect, transform.position + bodyEffectOffset);
+        }
+
+        public void PlayPortalOpen(Vector3 position)
+        {
+            Play(cast);
+            PlayEffect(portalEffect != null ? portalEffect : castEffect, position);
+        }
+
+        public void PlayPortalPulse(Vector3 position)
+        {
+            PlayEffect(portalEffect != null ? portalEffect : castEffect, position);
+        }
+
+        public void PlayEyeFlash(Vector3 position)
+        {
+            PlayEffect(eyeFlashEffect != null ? eyeFlashEffect : purpleImpactEffect, position);
         }
 
         public void PlayCenterMove()

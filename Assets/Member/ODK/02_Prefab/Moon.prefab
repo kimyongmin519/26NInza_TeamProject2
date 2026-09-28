@@ -42,7 +42,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88811398c0934cf79fe7d3f6290374ce, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonMiniDashAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: 54a1bcae83984334a269f42074f96d0f, type: 2}
   animationStateName: 
@@ -441,6 +441,8 @@ GameObject:
   - component: {fileID: 5141975892121951349}
   - component: {fileID: 7372483207482707961}
   - component: {fileID: 7999411954055856346}
+  - component: {fileID: 3368410209886244019}
+  - component: {fileID: 7488356813069278717}
   m_Layer: 0
   m_Name: Moon
   m_TagString: Untagged
@@ -482,6 +484,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonBoss
   attackInterval: 1
   playOnStart: 1
+  playIntro: 1
   summonPresentation: {fileID: 5141975892121951349}
   deathPresentation: {fileID: 7372483207482707961}
   target: {fileID: 0}
@@ -494,6 +497,10 @@ MonoBehaviour:
   drawDebugGizmos: 1
   cameraImpulseSource: {fileID: 5083262448506206694}
   cameraShakeMinimumInterval: 0.07
+  cameraChannel: {fileID: 0}
+  cameraShakePowerScale: 1
+  cameraShakeBaseDuration: 0.14
+  cameraShakeDurationPerPower: 0.16
   healthModule: {fileID: 1795139631257598990}
   invincible: 0
   healthBarBinding: {fileID: 7999411954055856346}
@@ -823,10 +830,58 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 994a88a2f8378e0438060ef243b39f2d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossHealthBarBinding
   healthModule: {fileID: 1795139631257598990}
   healthBar: {fileID: 0}
+  koUI: {fileID: 0}
+--- !u!114 &3368410209886244019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbf97c2524399b24b8cab3556a2718b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossBgmPlayback
+  managerPrefab: {fileID: 4760346976927674070, guid: 346863b3c35bf6f4ea096a9edda30e38, type: 3}
+  bossBgm: {fileID: 11400000, guid: 78f0fbc8ba073a340b8826cd9cffef0d, type: 2}
+  fadeInDuration: 0.7
+  fadeOutDuration: 0.8
+--- !u!114 &7488356813069278717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21b45da1f86645eb96af4ee8a8f2225e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossIntroTimeline
+  boss: {fileID: 0}
+  visualRoot: {fileID: 0}
+  playOnStart: 1
+  startDelay: 0.2
+  preset: 0
+  bossTitle: "\uB2EC"
+  bossSubtitle: "\uCD94\uB77D\uD55C \uC704\uC131"
+  titleColor: {r: 1, g: 1, b: 1, a: 1}
+  subtitleColor: {r: 1, g: 1, b: 1, a: 0.7}
+  focusOffset: {x: 0, y: 1}
+  focusPriority: 500
+  steps: []
+  endPadding: 0.15
+  onIntroStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onIntroFinished:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4762341880899888644
 GameObject:
   m_ObjectHideFlags: 0

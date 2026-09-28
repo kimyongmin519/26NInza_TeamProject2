@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using DG.Tweening;
 using KimLIb.SoundSystem;
+using Member.KYM.Scripts.UI;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -90,12 +91,14 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         public bool IsPlaying { get; private set; }
         public bool AutoBeginBattle { get; set; } = true;
         public bool HasFinished { get; private set; }
+        public event Action Started;
         public event Action Finished;
 
         private Vector3 finalPosition;
         private Vector3 finalScale;
         private CinemachineCamera focusCamera;
         private Canvas overlayCanvas;
+        private CinematicViewUI cinematicView;
         private RectTransform topBar;
         private RectTransform bottomBar;
         private TextMeshProUGUI titleText;
@@ -147,6 +150,12 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             IsPlaying = true;
             finalPosition = boss.transform.position;
             finalScale = visualRoot.localScale;
+            BossBgmPlayback bgmPlayback =
+                GetComponentInChildren<BossBgmPlayback>(true);
+            if (bgmPlayback == null)
+                bgmPlayback = GetComponentInParent<BossBgmPlayback>();
+            bgmPlayback?.Play();
+            Started?.Invoke();
             onIntroStarted?.Invoke();
             ApplyInitialStates();
 
@@ -254,10 +263,10 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             if (!string.IsNullOrEmpty(bossTitle)) return bossTitle;
             switch (ResolvePreset())
             {
-                case Preset.Moon: return "THE MOON";
-                case Preset.LostSoul: return "LOST SOUL";
+                case Preset.Moon: return "달";
+                case Preset.LostSoul: return "어둠의 사신";
                 case Preset.Volcanus: return "VOLCANUS";
-                case Preset.Swordmaster: return "SWORDMASTER";
+                case Preset.Swordmaster: return "소드 마스터";
                 default: return boss.name.ToUpperInvariant();
             }
         }
@@ -267,10 +276,10 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             if (!string.IsNullOrEmpty(bossSubtitle)) return bossSubtitle;
             switch (ResolvePreset())
             {
-                case Preset.Moon: return "Fallen Satellite";
-                case Preset.LostSoul: return "Wraith of the Forgotten";
+                case Preset.Moon: return "추락한 위성";
+                case Preset.LostSoul: return "잊힌 자들의 망령";
                 case Preset.Volcanus: return "Molten Colossus";
-                case Preset.Swordmaster: return "Blade of the Endless Tower";
+                case Preset.Swordmaster: return "끝없는 탑의 검객";
                 default: return string.Empty;
             }
         }
@@ -494,6 +503,15 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         private void SetLetterbox(bool show, float duration)
         {
+            if (cinematicView == null)
+                cinematicView = FindFirstObjectByType<CinematicViewUI>(FindObjectsInactive.Include);
+            if (cinematicView != null)
+            {
+                if (!cinematicView.gameObject.activeSelf) cinematicView.gameObject.SetActive(true);
+                if (show) cinematicView.Show();
+                else cinematicView.Hide();
+                return;
+            }
             if (!show && overlayCanvas == null) return;
             EnsureOverlay();
             float height = show ? 130f : 0f;

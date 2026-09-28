@@ -11,6 +11,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         [Header("UI (Optional)")]
         [SerializeField] private BossHealthBarUI healthBar;
+        [SerializeField] private BossKOUI koUI;
 
         private void Awake()
         {
@@ -31,13 +32,26 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                 );
             }
 
+            if (koUI == null)
+            {
+                koUI = FindFirstObjectByType<BossKOUI>(
+                    FindObjectsInactive.Include
+                );
+            }
+
+            if (koUI != null)
+                koUI.Bind(healthModule);
+
             if (healthBar == null)
-                return false;
+                return koUI != null;
 
             if (!healthBar.gameObject.activeSelf)
                 healthBar.gameObject.SetActive(true);
 
             healthBar.Bind(healthModule);
+            UIShowFromTop showFromTop = healthBar.GetComponentInParent<UIShowFromTop>(true);
+            BossBarHideGuard.ReleaseFor(healthBar);
+            if (showFromTop != null) showFromTop.Show();
             return true;
         }
 

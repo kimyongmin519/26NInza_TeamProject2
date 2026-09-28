@@ -27,6 +27,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         private float lifeRemaining;
         private Collider2D projectileCollider;
         private float defaultGravityScale;
+        private ODKGrabInfoDisplay grabInfoDisplay;
 
         public PoolItemSO PoolItem { get; set; }
         public GameObject GameObject => this != null ? gameObject : null;
@@ -35,6 +36,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         {
             base.Awake();
             projectileCollider = GetComponent<Collider2D>();
+            grabInfoDisplay = GetComponent<ODKGrabInfoDisplay>();
             defaultGravityScale = Rigidbody.gravityScale;
         }
 
@@ -50,6 +52,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             Rigidbody.angularVelocity = 0f;
             Rigidbody.gravityScale = defaultGravityScale;
             if (projectileCollider != null) projectileCollider.enabled = true;
+            grabInfoDisplay?.SetHeld(false);
         }
 
         public void Initialize(LostSoul boss, Vector2 velocity, float damageToBoss, Transform homingTarget)
@@ -93,11 +96,22 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             SetVisualDirection(direction);
         }
 
-        protected override void OnGrabbed() => thrown = false;
-        protected override void OnReleased() => thrown = false;
+        protected override void OnGrabbed()
+        {
+            thrown = false;
+            grabInfoDisplay?.SetHeld(true);
+        }
+
+        protected override void OnReleased()
+        {
+            thrown = false;
+            grabInfoDisplay?.SetHeld(false);
+        }
+
         protected override void OnThrown(ThrowData throwData)
         {
             thrown = true;
+            grabInfoDisplay?.SetHeld(false);
             thrownOrigin = Rigidbody.position;
             target = owner != null ? owner.transform : null;
             speed = Rigidbody != null ? Rigidbody.linearVelocity.magnitude : throwData.ArmThrowSpeed;
@@ -133,6 +147,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         {
             if (consumed) return;
             consumed = true;
+            grabInfoDisplay?.SetHeld(false);
             ODKPool.Despawn(this);
         }
 

@@ -19,6 +19,8 @@ GameObject:
   - component: {fileID: 671098634239582433}
   - component: {fileID: 4634474904902257719}
   - component: {fileID: 482889053448111996}
+  - component: {fileID: 5404456631799956190}
+  - component: {fileID: 4780369912436477584}
   m_Layer: 8
   m_Name: Swordmaster
   m_TagString: Untagged
@@ -56,7 +58,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb2c6337e5c7492385c20b4d51c8d503, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.Swordmaster
-  attackInterval: 1.15
+  attackInterval: 1.5
   playOnStart: 1
   playIntro: 1
   summonPresentation: {fileID: 7210551450521848489}
@@ -71,6 +73,10 @@ MonoBehaviour:
   drawDebugGizmos: 1
   cameraImpulseSource: {fileID: 100004}
   cameraShakeMinimumInterval: 0.07
+  cameraChannel: {fileID: 0}
+  cameraShakePowerScale: 1
+  cameraShakeBaseDuration: 0.14
+  cameraShakeDurationPerPower: 0.16
   healthModule: {fileID: 120002}
   invincible: 0
   healthBarBinding: {fileID: 4121464155189697167}
@@ -144,6 +150,7 @@ MonoBehaviour:
   hitImpulse: 0.1
   deathImpulse: 1.15
   feedback: {fileID: 100006}
+  flashFx: {fileID: 0}
   summonWindup: 0.25
   summonTimeout: 1.2
   summonRecover: 0.15
@@ -263,7 +270,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   summonSwords:
-    effectItem: {fileID: 11400000, guid: 49100d6ab62f86942b30c8d52f2847c9, type: 2}
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
     effectTint: {r: 1, g: 1, b: 1, a: 1}
     rotationOffset: 0
     soundClip: {fileID: 11400000, guid: 29ffcb789eba94e48aa5bdd8068cf1cc, type: 2}
@@ -271,7 +278,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   dashReady:
-    effectItem: {fileID: 11400000, guid: 49100d6ab62f86942b30c8d52f2847c9, type: 2}
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
     effectTint: {r: 1, g: 1, b: 1, a: 1}
     rotationOffset: 0
     soundClip: {fileID: 11400000, guid: c6b798e74da0a994698260b3c6bd31c4, type: 2}
@@ -295,7 +302,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   thrustGather:
-    effectItem: {fileID: 11400000, guid: 49100d6ab62f86942b30c8d52f2847c9, type: 2}
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
     effectTint: {r: 1, g: 1, b: 1, a: 1}
     rotationOffset: 0
     soundClip: {fileID: 11400000, guid: a87c881b9f38191439e1d0fc8fe578c5, type: 2}
@@ -311,7 +318,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   crossfireReady:
-    effectItem: {fileID: 11400000, guid: 49100d6ab62f86942b30c8d52f2847c9, type: 2}
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
     effectTint: {r: 1, g: 1, b: 1, a: 1}
     rotationOffset: 0
     soundClip: {fileID: 11400000, guid: 29ffcb789eba94e48aa5bdd8068cf1cc, type: 2}
@@ -497,6 +504,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossHealthBarBinding
   healthModule: {fileID: 120002}
   healthBar: {fileID: 0}
+  koUI: {fileID: 0}
 --- !u!70 &671098634239582433
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -527,7 +535,7 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -561,6 +569,55 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterVfxPool
   poolManager: {fileID: 11400000, guid: 4c7e077288485b24eb3d4c91d1d2e0cf, type: 2}
+  effectSortingLayer: Vfx
+  effectSortingOrder: 10
+--- !u!114 &5404456631799956190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbf97c2524399b24b8cab3556a2718b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossBgmPlayback
+  managerPrefab: {fileID: 4760346976927674070, guid: 346863b3c35bf6f4ea096a9edda30e38, type: 3}
+  bossBgm: {fileID: 11400000, guid: f6040b7c56b2511458b1c5dd33ce6b56, type: 2}
+  fadeInDuration: 0.7
+  fadeOutDuration: 0.8
+--- !u!114 &4780369912436477584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21b45da1f86645eb96af4ee8a8f2225e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossIntroTimeline
+  boss: {fileID: 0}
+  visualRoot: {fileID: 0}
+  playOnStart: 1
+  startDelay: 0.2
+  preset: 0
+  bossTitle: "\uC18C\uB4DC \uB9C8\uC2A4\uD130"
+  bossSubtitle: "\uB05D\uC5C6\uB294 \uD0D1\uC758 \uAC80\uAC1D"
+  titleColor: {r: 1, g: 1, b: 1, a: 1}
+  subtitleColor: {r: 1, g: 1, b: 1, a: 0.7}
+  focusOffset: {x: 0, y: 1}
+  focusPriority: 500
+  steps: []
+  endPadding: 0.15
+  onIntroStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onIntroFinished:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &110000
 GameObject:
   m_ObjectHideFlags: 0
@@ -656,13 +713,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterDashVolleyAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: f6eb82387d73404183dd0463b621a109, type: 2}
   teleportEdgePadding: 1.4
-  readyDuration: 0.8
+  readyDuration: 1
   dashDuration: 1.25
   dashDamage: 1
   dashKnockback: 2
   dashHitbox: {x: 1.4, y: 2.6}
-  swordSpeed: 30
-  swordInterval: 0.2
+  swordSpeed: 24
+  swordInterval: 0.28
   volleyCount: 3
   dashDistanceScale: 1.3
   swordFlightTime: 1.6
@@ -715,10 +772,10 @@ MonoBehaviour:
   repeatCount: 3
   sideDistance: 4.4
   gatherDistance: 3.6
-  gatherDuration: 0.3
+  gatherDuration: 0.42
   thrustDuration: 0.14
-  recoverDuration: 0.28
-  thrustHitbox: {x: 5.6, y: 2.1}
+  recoverDuration: 0.4
+  thrustHitbox: {x: 5.6, y: 1.8}
   thrustDamage: 1
   thrustOvershoot: 2.8
   gatherSpread: 0.8
@@ -774,22 +831,22 @@ MonoBehaviour:
   wallDistance: 7
   wallHalfSpan: 6
   rowHeight: 7
-  rowSwordSpeed: 58
+  rowSwordSpeed: 64
   wallFormDuration: 0.32
   wallHoldDuration: 0.38
-  wallSwordSpeed: 36
+  wallSwordSpeed: 40
   wallFireStagger: 0.03
   axisShotCount: 4
   axisFormDuration: 0.14
   axisAimDuration: 0.26
   axisInterval: 0.05
-  axisSwordSpeed: 30
+  axisSwordSpeed: 33
   axisDistance: 7
   lineWarningDuration: 0.5
   swordPathWidth: 0.08
   finalSpawnRadius: 9
   finalWarningDuration: 0.55
-  finalSwordSpeed: 15
+  finalSwordSpeed: 22
 --- !u!1 &114000
 GameObject:
   m_ObjectHideFlags: 0
@@ -836,14 +893,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterSurroundAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: 6f7e7e83321c45428880b78868db0b43, type: 2}
   roundCount: 3
-  swordsPerRound: {x: 2, y: 4}
-  roundGap: 0.25
+  swordsPerRound: {x: 2, y: 3}
+  roundGap: 0.45
   finalSwordCount: 6
-  finalFireInterval: 0.16
-  radiusRange: {x: 3.2, y: 5}
+  finalFireInterval: 0.24
+  radiusRange: {x: 4, y: 6}
   formDuration: 0.35
-  aimDuration: 0.45
-  swordSpeed: 24
+  aimDuration: 0.6
+  swordSpeed: 20
   flightTime: 1.6
   pathLength: 14
 --- !u!1 &115000
@@ -891,16 +948,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterScatterAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: aac1d53896784424a1c444b08898d01d, type: 2}
-  swordCount: 8
+  swordCount: 6
   arenaPadding: 1.5
   appearDuration: 0.25
   appearStagger: 0.05
   scatterSpeed: 9
   scatterDuration: 0.45
-  aimWarning: 0.3
-  homeSpeed: 26
+  aimWarning: 0.45
+  homeSpeed: 20
   homeFlightTime: 1.6
-  retargetInterval: 0.12
+  retargetInterval: 0.2
   pathLength: 14
 --- !u!1 &120000
 GameObject:

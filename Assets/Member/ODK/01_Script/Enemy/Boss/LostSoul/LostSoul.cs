@@ -41,6 +41,12 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float projectileDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float thrownSoulDamage = 1f;
 
+        [Header("Portal")]
+        [SerializeField] private float portalHeight = 4.2f;
+        [SerializeField] private float portalOpenDuration = 0.35f;
+        [SerializeField] private float portalRepeatInterval = 0.4f;
+        [SerializeField] private float portalEdgePadding = 1.2f;
+
         [Header("Phase Two")]
         [SerializeField, Range(0f, 1f)] private float phaseTwoHealthRatio = 0.25f;
 
@@ -351,6 +357,49 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             feedback?.PlaySoulProjectile(position);
             return soul;
         }
+
+        public Vector3 GetPortalPoint(float sideOffset = 0f)
+        {
+            Vector3 point = transform.position + new Vector3(sideOffset, portalHeight, 0f);
+            if (Arena != null)
+            {
+                float top = ArenaCenter.y + ArenaHalfHeight - portalEdgePadding;
+                point.y = Mathf.Min(point.y, top);
+                point.x = Mathf.Clamp(point.x, ArenaCenter.x - ArenaHalfWidth + 1f, ArenaCenter.x + ArenaHalfWidth - 1f);
+            }
+            point.z = transform.position.z;
+            return point;
+        }
+
+        public LostSoulPortal OpenPortal(Vector3 position)
+        {
+            LostSoulPortal portal = new LostSoulPortal(this, position);
+            feedback?.PlayPortalOpen(position);
+            portal.Loop = StartCoroutine(PortalLoop(portal));
+            return portal;
+        }
+
+        private IEnumerator PortalLoop(LostSoulPortal portal)
+        {
+            float interval = Mathf.Max(0.1f, portalRepeatInterval);
+            while (portal != null && !portal.IsClosed && !IsDead)
+            {
+                yield return new WaitForSeconds(interval);
+                if (portal.IsClosed || IsDead) break;
+                feedback?.PlayPortalPulse(portal.Position);
+            }
+        }
+
+        public void PlayPortalPulse(Vector3 position) => feedback?.PlayPortalPulse(position);
+        public void PlayEyeFlash(Vector3 position) => feedback?.PlayEyeFlash(position);
+
+        public void StopPortal(LostSoulPortal portal)
+        {
+            if (portal?.Loop != null) StopCoroutine(portal.Loop);
+            if (portal != null) portal.Loop = null;
+        }
+
+        public float PortalOpenDuration => portalOpenDuration;
 
         public LostSoulGrabbableProjectile SpawnWeakSoul(Vector3 position, Vector2 velocity)
         {
