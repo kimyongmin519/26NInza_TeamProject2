@@ -39,6 +39,7 @@ public class DialogManager : MonoBehaviour
         Talking = true;
         InputChannel.RaiseEvent(InputEvent.LockInputAllEvent.Init(true));
         UIEventChannel.RaiseEvent(UiEvent.HighlightEvent.Init(true));
+        Time.timeScale = 0;
         _dialogCoroutine = StartCoroutine(DialogCorutine(startDialogEvent.dialogData));
     }
     private IEnumerator DialogCorutine(DialogDataSO dialogData)
@@ -72,6 +73,7 @@ public class DialogManager : MonoBehaviour
         InputChannel.RaiseEvent(InputEvent.LockInputAllEvent.Init(false));
         CameraEventChannel?.RaiseEvent(CameraEvent.ReturnDefaultCameraTargetEvent);
         DialogEventChannel.RaiseEvent(DialogEvent.EndDialogEvent);
+        Time.timeScale = 1;
         _dialogCoroutine = null;
     }
 }
