@@ -25,7 +25,7 @@ public class DialogManager : MonoBehaviour
 
     private void HandleStartDialog(StartDialogEvent startDialogEvent)
     {
-        if (BubbleDialogManager.Talking)
+        if (!isActiveAndEnabled || startDialogEvent.dialogData == null || BubbleDialogManager.Talking)
         {
             return;
         }
@@ -35,6 +35,7 @@ public class DialogManager : MonoBehaviour
             StopCoroutine(_dialogCoroutine);
         }
 
+        startDialogEvent.Accepted = true;
         Talking = true;
         InputChannel.RaiseEvent(InputEvent.LockInputAllEvent.Init(true));
         UIEventChannel.RaiseEvent(UiEvent.HighlightEvent.Init(true));

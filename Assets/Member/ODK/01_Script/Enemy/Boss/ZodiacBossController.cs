@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Zodiac
@@ -22,6 +23,13 @@ namespace Member.ODK.Scripts.Enemys.Zodiac
         [SerializeField]
         private float speedIncreasePerBreak = 0.08f;
 
+        [Header("Camera Impulse")]
+        [SerializeField]
+        private CinemachineImpulseSource impulseSource;
+
+        [SerializeField]
+        private float shakeMinimumInterval = 0.07f;
+
         [Header("Constellations")]
         [SerializeField]
         private ZodiacConstellation[] constellations;
@@ -31,6 +39,9 @@ namespace Member.ODK.Scripts.Enemys.Zodiac
 
         private int brokenConstellationCount;
         private int previousPatternIndex = -1;
+
+        private float lastShakeTime = float.NegativeInfinity;
+        private float lastShakePower;
 
         private readonly List<Transform> players = new();
 
@@ -44,6 +55,12 @@ namespace Member.ODK.Scripts.Enemys.Zodiac
         protected override void AfterInitializeModules()
         {
             base.AfterInitializeModules();
+
+            if (impulseSource == null)
+                impulseSource = GetComponent<CinemachineImpulseSource>();
+
+            if (impulseSource == null)
+                impulseSource = gameObject.AddComponent<CinemachineImpulseSource>();
 
             health = GetModule<HealthModule>();
 
@@ -63,6 +80,21 @@ namespace Member.ODK.Scripts.Enemys.Zodiac
             InitializePatterns();
 
             StartCoroutine(PatternLoop());
+        }
+
+        public void ShakeCamera(float power)
+        {
+            if (impulseSource == null || power <= 0f)
+                return;
+
+            float elapsed = Time.unscaledTime - lastShakeTime;
+
+            if (elapsed < shakeMinimumInterval && power <= lastShakePower)
+                return;
+
+            lastShakeTime = Time.unscaledTime;
+            lastShakePower = power;
+            impulseSource.GenerateImpulse(Vector3.down * power);
         }
 
         private void SpawnArena()
@@ -181,6 +213,7 @@ namespace Member.ODK.Scripts.Enemys.Zodiac
             }
 
             brokenConstellationCount++;
+            ShakeCamera(0.85f);
         }
 
         private void OnDestroy()

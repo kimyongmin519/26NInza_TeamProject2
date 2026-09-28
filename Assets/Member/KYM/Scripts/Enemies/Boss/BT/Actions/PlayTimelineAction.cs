@@ -54,6 +54,10 @@ namespace Member.KYM.Scripts.Enemies.Boss.BT.Actions
             if (_hasResult)
                 return GetCurrentStatus();
 
+            // Reading dialogue must not time out the sequence and release the boss AI.
+            if (DialogManager.Talking || BubbleDialogManager.Talking)
+                return Status.Running;
+
             float timeout = Timeout?.Value ?? 0f;
             if (timeout > 0f)
             {

@@ -1153,6 +1153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.TransitionUIController
   transitionChannel: {fileID: 11400000, guid: 7005849eaf054b1e91212b09e5c40b71, type: 2}
   fadeImage: {fileID: 7372610172872804182}
+  sortingOrder: 1000
   openCircleSize: 2.5
   closedCircleSize: 0
   fadeOutDuration: 0.75
@@ -1831,7 +1832,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1000
   m_TargetDisplay: 0
 --- !u!114 &6451465845555172957
 MonoBehaviour:

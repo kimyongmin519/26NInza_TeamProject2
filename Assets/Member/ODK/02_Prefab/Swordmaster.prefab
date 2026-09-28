@@ -1,0 +1,1128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &100000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 100001}
+  - component: {fileID: 100002}
+  - component: {fileID: 100003}
+  - component: {fileID: 100004}
+  - component: {fileID: 100006}
+  - component: {fileID: 7210551450521848489}
+  - component: {fileID: 3307578300065348359}
+  - component: {fileID: 4121464155189697167}
+  - component: {fileID: 671098634239582433}
+  - component: {fileID: 4634474904902257719}
+  - component: {fileID: 482889053448111996}
+  - component: {fileID: 5404456631799956190}
+  - component: {fileID: 4780369912436477584}
+  m_Layer: 8
+  m_Name: Swordmaster
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &100001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 110001}
+  - {fileID: 120001}
+  - {fileID: 130001}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &100002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb2c6337e5c7492385c20b4d51c8d503, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.Swordmaster
+  attackInterval: 1.5
+  playOnStart: 1
+  playIntro: 1
+  summonPresentation: {fileID: 7210551450521848489}
+  deathPresentation: {fileID: 3307578300065348359}
+  target: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  arena: {fileID: 0}
+  groundRayHeight: 20
+  groundRayDistance: 50
+  drawDebugGizmos: 1
+  cameraImpulseSource: {fileID: 100004}
+  cameraShakeMinimumInterval: 0.07
+  cameraChannel: {fileID: 0}
+  switchToBattleCamera: 1
+  battleCameraName: BattleCam
+  battleCameraPriority: 20
+  stopOnPlayerDeath: 1
+  playerUIChannel: {fileID: 0}
+  cameraShakePowerScale: 1
+  cameraShakeBaseDuration: 0.14
+  cameraShakeDurationPerPower: 0.16
+  healthModule: {fileID: 120002}
+  invincible: 0
+  healthBarBinding: {fileID: 4121464155189697167}
+  rockVisualPrefabs: []
+  fistRockCount: 1
+  sawRockCount: 4
+  rockSpawnSpread: 1.2
+  rockSpawnHeight: 0.15
+  rockLaunchForce: 5
+  rockScale: 1.3
+  rockDamage: 1
+  rockLifeTime: 15
+  onAttackReady:
+    m_PersistentCalls:
+      m_Calls: []
+  onAttackImpact:
+    m_PersistentCalls:
+      m_Calls: []
+  onMissileSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onRockSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onRockBreak:
+    m_PersistentCalls:
+      m_Calls: []
+  onPhaseTwo:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  hazardGroundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  bodyHitboxSize: {x: 1.6, y: 3.4}
+  bodyHitboxOffset: {x: 0, y: 1.7}
+  swordCount: 8
+  swordPrefab: {fileID: 100005, guid: c1111111111141118111111111111111, type: 3}
+  telegraphPrefab: {fileID: 100003, guid: c2222222222242228222222222222222, type: 3}
+  orbitRadius: {x: 2.15, y: 1}
+  orbitDepth: 1.15
+  orbitSpeed: 84
+  orbitHeight: 0
+  swordPlayerDamage: 1
+  swordBossDamage: 1
+  bodyVisual: {fileID: 130001}
+  prefabFacesRight: 1
+  faceTarget: 1
+  bodyAnimator: {fileID: 130003}
+  animationCrossFade: 0.02
+  teleportImpulse: 0.2
+  summonSwordsImpulse: 0.25
+  dashReadyImpulse: 0.15
+  dashStartImpulse: 0.35
+  dashEndImpulse: 0.75
+  thrustGatherImpulse: 0
+  thrustStrikeImpulse: 0.58
+  crossfireReadyImpulse: 0.25
+  volleyWarningImpulse: 0
+  volleyFireImpulse: 0.36
+  finalCrossImpulse: 0.9
+  swordLaunchImpulse: 0
+  swordDispelledImpulse: 0
+  swordRecallImpulse: 0
+  swordImpactImpulse: 0.12
+  hitImpulse: 0.1
+  deathImpulse: 1.15
+  feedback: {fileID: 100006}
+  flashFx: {fileID: 0}
+  summonWindup: 0.25
+  summonTimeout: 1.2
+  summonRecover: 0.15
+  onTeleport:
+    m_PersistentCalls:
+      m_Calls: []
+  onSwordLaunch:
+    m_PersistentCalls:
+      m_Calls: []
+  onSwordDispelled:
+    m_PersistentCalls:
+      m_Calls: []
+  onSwordRecalled:
+    m_PersistentCalls:
+      m_Calls: []
+  onDefeated:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!50 &100003
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 1
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 4
+--- !u!114 &100004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseSource
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 2
+    CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ImpulseDuration: 0.16
+    ImpulseType: 0
+    DissipationRate: 0.25
+    RawSignal: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    RepeatMode: 0
+    Randomize: 1
+    TimeEnvelope:
+      AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      AttackTime: 0
+      SustainTime: 0.08
+      DecayTime: 0.3
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 100
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 100
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 0, y: -1, z: 0}
+--- !u!114 &100006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fee0541d43e740ec801f891c33ff8503, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterFeedback
+  teleport:
+    effectItem: {fileID: 11400000, guid: 029c2ce565be5ca41b555a6fa09d7030, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: a87c881b9f38191439e1d0fc8fe578c5, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  summonSwords:
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: 29ffcb789eba94e48aa5bdd8068cf1cc, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  dashReady:
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: c6b798e74da0a994698260b3c6bd31c4, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  dashStart:
+    effectItem: {fileID: 0}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: c6b798e74da0a994698260b3c6bd31c4, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  dashEnd:
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: ab980bc13997a1e408865596a4930d57, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  thrustGather:
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: a87c881b9f38191439e1d0fc8fe578c5, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  thrustStrike:
+    effectItem: {fileID: 0}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: 2c2ec7dd8a1c7de4c915d8a1aa7cdb38, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  crossfireReady:
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: 29ffcb789eba94e48aa5bdd8068cf1cc, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  volleyWarning:
+    effectItem: {fileID: 0}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: a87c881b9f38191439e1d0fc8fe578c5, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  volleyFire:
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: a04de029e829eab4782f0bc7304913f1, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  finalCross:
+    effectItem: {fileID: 11400000, guid: 67ba9ed175552054d993f68f7cd3fafb, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: 2c2ec7dd8a1c7de4c915d8a1aa7cdb38, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  swordLaunch:
+    effectItem: {fileID: 0}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: a04de029e829eab4782f0bc7304913f1, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  swordDispelled:
+    effectItem: {fileID: 0}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 0}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  swordRecall:
+    effectItem: {fileID: 0}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 0}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  swordImpact:
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: ab980bc13997a1e408865596a4930d57, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  swordBlink:
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 0}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  swordCueInterval: 0.06
+  volleyCueInterval: 0.08
+  hit:
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: ab980bc13997a1e408865596a4930d57, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  death:
+    effectItem: {fileID: 11400000, guid: 33e6e16dc6c1ebd4d83979e36a250474, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 11400000, guid: 3698e1f5e73c5df459357923951b3b0e, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+--- !u!114 &7210551450521848489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6ad9aaf4825bd44da259382e340fe5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossSummonPresentation
+  visualRoot: {fileID: 100001}
+  renderers: []
+  delay: 0.3
+  appearDuration: 0.48
+  settleDuration: 0.28
+  startLocalOffset: {x: 0, y: 1.5, z: 0}
+  startScale: {x: 0.05, y: 1.35, z: 1}
+  startRotation: 0
+  overshootScale: 1.12
+  impactSquash: {x: 1.2, y: 0.88, z: 1}
+  impactPunch: {x: 0.16, y: 0.04, z: 0}
+  impactDuration: 0.08
+  appearEase: 9
+  summonTint: {r: 0.88, g: 0.64, b: 1, a: 1}
+  startAlpha: 0
+  flashDuration: 0.12
+  summonSound: {fileID: 0}
+  cameraShake: 0.5
+  onSummonStart:
+    m_PersistentCalls:
+      m_Calls: []
+  onSummonImpact:
+    m_PersistentCalls:
+      m_Calls: []
+  onSummonComplete:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &3307578300065348359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a4f37cdc9b0834a8c9916beb30160c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossDeathPresentation
+  visualRoot: {fileID: 100001}
+  renderers: []
+  collectChildRenderersOnPlay: 1
+  animationLeadTime: 0.65
+  breakDuration: 0.22
+  vanishDuration: 0.65
+  vanishLocalOffset: {x: 0, y: -0.8, z: 0}
+  vanishScale: {x: 0.7, y: 0.1, z: 1}
+  vanishRotation: -20
+  shakeStrength: 0.18
+  shakeVibrato: 14
+  fragmentScatter: 2.6
+  fragmentLift: 1.1
+  fragmentRotation: 100
+  vanishEase: 8
+  deathTint: {r: 0.76, g: 0.46, b: 1, a: 1}
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  flashCount: 3
+  flashDuration: 0.09
+  hideRenderersOnComplete: 1
+  disableCollidersOnStart: 1
+  deathSound: {fileID: 0}
+  cameraShake: 1.15
+  onDeathStart:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeathBreak:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeathComplete:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &4121464155189697167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994a88a2f8378e0438060ef243b39f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossHealthBarBinding
+  healthModule: {fileID: 120002}
+  healthBar: {fileID: 0}
+  koUI: {fileID: 0}
+--- !u!70 &671098634239582433
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 1.7}
+  m_Size: {x: 1.6, y: 3.4}
+  m_Direction: 0
+--- !u!114 &4634474904902257719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5efef4ee50c2a7649899e6fad384b712, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterPresentation
+  animator: {fileID: 130003}
+  rigidBody: {fileID: 100003}
+--- !u!114 &482889053448111996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e655b5ca983ec9249866f40a15751bf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterVfxPool
+  poolManager: {fileID: 11400000, guid: 4c7e077288485b24eb3d4c91d1d2e0cf, type: 2}
+  effectSortingLayer: Vfx
+  effectSortingOrder: 10
+--- !u!114 &5404456631799956190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbf97c2524399b24b8cab3556a2718b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossBgmPlayback
+  managerPrefab: {fileID: 4760346976927674070, guid: 346863b3c35bf6f4ea096a9edda30e38, type: 3}
+  bossBgm: {fileID: 11400000, guid: f6040b7c56b2511458b1c5dd33ce6b56, type: 2}
+  fadeInDuration: 0.7
+  fadeOutDuration: 0.8
+--- !u!114 &4780369912436477584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21b45da1f86645eb96af4ee8a8f2225e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossIntroTimeline
+  boss: {fileID: 0}
+  visualRoot: {fileID: 0}
+  playOnStart: 1
+  startDelay: 0.2
+  preset: 0
+  bossTitle: "\uC18C\uB4DC \uB9C8\uC2A4\uD130"
+  bossSubtitle: "\uD0D1\uC758 \uAC80\uAC1D"
+  titleColor: {r: 1, g: 1, b: 1, a: 1}
+  subtitleColor: {r: 1, g: 1, b: 1, a: 0.7}
+  titleFont: {fileID: 11400000, guid: 414307599c7763f4e9e9d22e6c8bb368, type: 2}
+  fallbackFontKeyword: Hangul
+  focusOffset: {x: 0, y: 1}
+  focusPriority: 500
+  steps: []
+  endPadding: 0.15
+  onIntroStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onIntroFinished:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!1 &110000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 110001}
+  - component: {fileID: 110002}
+  m_Layer: 0
+  m_Name: Skills
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &110001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 111001}
+  - {fileID: 112001}
+  - {fileID: 113001}
+  - {fileID: 114001}
+  - {fileID: 115001}
+  m_Father: {fileID: 100001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &110002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad4bda74cebe5fd42b7b32293321a575, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.EnemySkillModule
+--- !u!1 &111000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 111001}
+  - component: {fileID: 111002}
+  m_Layer: 0
+  m_Name: 0 Dash Volley
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &111001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 111000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 110001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &111002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 111000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 955d99ae6d5f4fe29cd949bd8bd6d306, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterDashVolleyAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: f6eb82387d73404183dd0463b621a109, type: 2}
+  teleportEdgePadding: 1.4
+  readyDuration: 1
+  dashDuration: 1.25
+  dashDamage: 1
+  dashKnockback: 2
+  dashHitbox: {x: 1.4, y: 2.6}
+  swordSpeed: 24
+  swordInterval: 0.28
+  volleyCount: 3
+  dashDistanceScale: 1.3
+  swordFlightTime: 1.6
+  warningLineWidth: 0.16
+--- !u!1 &112000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 112001}
+  - component: {fileID: 112002}
+  m_Layer: 0
+  m_Name: 1 Triple Thrust
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &112001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 112000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 110001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &112002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 112000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2b306156d54339bcf06360877ef307, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterTripleThrustAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: 8d87f997814e48b0b9641f4f58cb8a0a, type: 2}
+  repeatCount: 3
+  sideDistance: 4.4
+  gatherDistance: 3.6
+  gatherDuration: 0.42
+  thrustDuration: 0.14
+  recoverDuration: 0.4
+  thrustHitbox: {x: 5.6, y: 1.8}
+  thrustDamage: 1
+  thrustOvershoot: 2.8
+  gatherSpread: 0.8
+  warningLineWidth: 0.12
+--- !u!1 &113000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 113001}
+  - component: {fileID: 113002}
+  m_Layer: 0
+  m_Name: 2 Eight Sword Crossfire
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &113001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 113000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 110001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &113002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 113000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d16882f1fca47c492b8cfb74aace408, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterCrossfireAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: a27b98c3f329401f852a18e0a76d320b, type: 2}
+  readyDuration: 0.7
+  turnGap: 0.35
+  wallSwordCount: 6
+  wallDistance: 7
+  wallHalfSpan: 6
+  rowHeight: 7
+  rowSwordSpeed: 64
+  wallFormDuration: 0.32
+  wallHoldDuration: 0.38
+  wallSwordSpeed: 40
+  wallFireStagger: 0.03
+  axisShotCount: 4
+  axisFormDuration: 0.14
+  axisAimDuration: 0.26
+  axisInterval: 0.05
+  axisSwordSpeed: 33
+  axisDistance: 7
+  lineWarningDuration: 0.5
+  swordPathWidth: 0.08
+  finalSpawnRadius: 9
+  finalWarningDuration: 0.55
+  finalSwordSpeed: 22
+--- !u!1 &114000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 114001}
+  - component: {fileID: 114002}
+  m_Layer: 0
+  m_Name: 3 Surround Volley
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &114001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 110001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d0ed25947dd48e8b8f23e4af6f120fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterSurroundAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: 6f7e7e83321c45428880b78868db0b43, type: 2}
+  roundCount: 3
+  swordsPerRound: {x: 2, y: 3}
+  roundGap: 0.45
+  finalSwordCount: 6
+  finalFireInterval: 0.24
+  radiusRange: {x: 4, y: 6}
+  formDuration: 0.35
+  aimDuration: 0.6
+  swordSpeed: 20
+  flightTime: 1.6
+  pathLength: 14
+--- !u!1 &115000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 115001}
+  - component: {fileID: 115002}
+  m_Layer: 0
+  m_Name: 4 Scatter Home
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &115001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 110001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &115002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe949eb9b62f43a19e8d71e4bc90d858, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterScatterAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: aac1d53896784424a1c444b08898d01d, type: 2}
+  swordCount: 6
+  arenaPadding: 1.5
+  appearDuration: 0.25
+  appearStagger: 0.05
+  scatterSpeed: 9
+  scatterDuration: 0.45
+  aimWarning: 0.45
+  homeSpeed: 20
+  homeFlightTime: 1.6
+  retargetInterval: 0.2
+  pathLength: 14
+--- !u!1 &120000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 120001}
+  - component: {fileID: 120002}
+  m_Layer: 0
+  m_Name: HealthModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &120001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 120000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 100001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &120002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 120000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
+  <MaxHealth>k__BackingField: 76
+  <CurrentHealth>k__BackingField: 76
+--- !u!1 &130000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 130001}
+  - component: {fileID: 130002}
+  - component: {fileID: 130003}
+  m_Layer: 0
+  m_Name: Swordmaster Visual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &130001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 100001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &130002
+SpriteRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130000}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 26cc4c223ddcd084eab111be7e02de12, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 10
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: -6228484584480434237, guid: 32edea1700a911444ad300a62adfd8c8, type: 3}
+  m_Color: {r: 0.64222014, g: 0.41960788, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 4, y: 4}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+--- !u!95 &130003
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130000}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7e18da39def7450aaf8805aedd1731d8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

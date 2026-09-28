@@ -179,6 +179,7 @@ namespace Member.YKJ.Bosses
             landingWarning.enabled = false;
             Boss.BodyAnimator?.Land(landingDelay);
             Boss.CombatVfx?.Land();
+            Boss.PlayLandingSound();
             if (feedbackChannel != null && landingFeedback != null)
                 feedbackChannel.RaiseEvent(new PlayFeedBack().Init(landingFeedback.FeedBackId));
             if (!IsCurrent)
