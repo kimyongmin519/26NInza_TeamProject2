@@ -11,7 +11,8 @@ namespace Member.YKJ.Bosses
         [SerializeField, Min(0f)] private float warningTime = 0.35f;
         [SerializeField, Min(0.01f)] private float flightTime = 0.75f;
         [SerializeField, Min(0f)] private float jumpHeight = 5f;
-        [SerializeField] private AnimationCurve flightProgress = new AnimationCurve(
+        [SerializeField]
+        private AnimationCurve flightProgress = new AnimationCurve(
             new Keyframe(0f, 0f, 1.8f, 1.8f), new Keyframe(0.38f, 0.48f, 0.25f, 0.25f),
             new Keyframe(0.58f, 0.54f, 0.45f, 0.45f), new Keyframe(1f, 1f, 2f, 2f));
         [SerializeField, Min(0f)] private float landingDelay = 0.3f;
@@ -113,7 +114,7 @@ namespace Member.YKJ.Bosses
                 if (hit.collider != groundSurface)
                     continue;
                 float bottomOffset = Boss.transform.position.y - bossCollider.bounds.min.y;
-                position.y = hit.point.y + bottomOffset;
+                position.y = hit.point.y + bottomOffset + 0.45f;
                 return position;
             }
             Debug.LogWarning("Mimic landing point is outside the assigned ground surface.", this);

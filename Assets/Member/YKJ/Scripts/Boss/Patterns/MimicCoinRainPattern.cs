@@ -1,3 +1,6 @@
+using KimLIb.EventSystem;
+using KimLIb.SoundSystem;
+using System.Diagnostics.Tracing;
 using UnityEngine;
 
 namespace Member.YKJ.Bosses
@@ -16,6 +19,8 @@ namespace Member.YKJ.Bosses
         [SerializeField, Min(0.01f)] private float gravity = 2f;
         [SerializeField, Min(0f)] private float damage = 10f;
         [SerializeField, Min(0.1f)] private float lifetime = 10f;
+        [SerializeField] private SoundClipSO CoinSoundSO;
+        [SerializeField] EventChannelSO soundChannel;
         private Sprite _previousSprite;
         private bool _opened;
         private float _timer;
@@ -34,7 +39,14 @@ namespace Member.YKJ.Bosses
             chestRenderer.sprite = openChestSprite;
             Boss.BodyAnimator?.PrepareTreasure(_timer);
         }
+        private void PlaySound(SoundClipSO clip)
+        {
+            if (soundChannel == null || clip == null || clip.audioClip == null)
+                return;
 
+            soundChannel.RaiseEvent(
+                SoundEvent.PlaySoundEvent.InitData(transform.position, clip));
+        }
         public override void OnUpdate(float deltaTime)
         {
             _timer -= deltaTime;
@@ -69,6 +81,7 @@ namespace Member.YKJ.Bosses
                 Mathf.Max(lifetime, flightTime + 2f));
             Boss.BodyAnimator?.Spit(interval);
             _emitted++;
+            PlaySound(CoinSoundSO);
             _timer = Mathf.Max(0.01f, interval);
         }
 

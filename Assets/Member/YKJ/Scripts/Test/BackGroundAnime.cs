@@ -36,7 +36,7 @@ public class BackGroundAnime : MonoBehaviour
             return;
         }
 
-        _timer += Time.deltaTime;
+        _timer += Time.unscaledDeltaTime;
 
         if (_timer < FrameInterval)
         {
