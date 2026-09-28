@@ -16,46 +16,38 @@ public class BubbleDialogManager : MonoBehaviour
     public static bool Talking { get; private set; }
 
     private Coroutine _dialogCoroutine;
+    private StartBubbleDialogEvent _activeRequest;
+    private System.Action _completed;
 
     private void Awake()
     {
         BubbleDialogEventChannel?.AddListener<StartBubbleDialogEvent>(HandleStartDialog);
+        BubbleDialogEventChannel?.AddListener<CancelBubbleDialogEvent>(HandleCancelDialog);
     }
 
     private void OnDestroy()
     {
         BubbleDialogEventChannel?.RemoveListener<StartBubbleDialogEvent>(HandleStartDialog);
+        BubbleDialogEventChannel?.RemoveListener<CancelBubbleDialogEvent>(HandleCancelDialog);
 
-        if (_dialogCoroutine != null)
-        {
-            StopCoroutine(_dialogCoroutine);
-            _dialogCoroutine = null;
-        }
-
-        if (Talking)
-        {
-            Talking = false;
-
-            if (LockInputDuringDialog)
-            {
-                InputChannel?.RaiseEvent(InputEvent.LockInputAllEvent.Init(false));
-            }
-        }
+        EndDialog();
     }
 
     private void HandleStartDialog(StartBubbleDialogEvent evt)
     {
-        if (evt.DialogData == null)
+        if (!isActiveAndEnabled || evt.DialogData == null)
         {
             return;
         }
 
         if (_dialogCoroutine != null)
         {
-            StopCoroutine(_dialogCoroutine);
-            BubbleDialogEventChannel?.RaiseEvent(BubbleDialogEvent.EndBubbleDialogEvent);
+            EndDialog();
         }
 
+        _activeRequest = evt;
+        _completed = evt.Completed;
+        evt.Accepted = true;
         Talking = true;
 
         if (LockInputDuringDialog)
@@ -130,6 +122,14 @@ public class BubbleDialogManager : MonoBehaviour
 
     private void EndDialog()
     {
+        if (_activeRequest == null)
+            return;
+        System.Action completed = _completed;
+        _completed = null;
+        _activeRequest = null;
+        if (_dialogCoroutine != null)
+            StopCoroutine(_dialogCoroutine);
+        _dialogCoroutine = null;
         Talking = false;
 
         if (LockInputDuringDialog)
@@ -139,8 +139,16 @@ public class BubbleDialogManager : MonoBehaviour
 
         CameraEventChannel?.RaiseEvent(CameraEvent.ReturnDefaultCameraTargetEvent);
         BubbleDialogEventChannel?.RaiseEvent(BubbleDialogEvent.EndBubbleDialogEvent);
-        _dialogCoroutine = null;
+        completed?.Invoke();
     }
+
+    private void HandleCancelDialog(CancelBubbleDialogEvent evt)
+    {
+        if (ReferenceEquals(evt.Request, _activeRequest))
+            EndDialog();
+    }
+
+    private void OnDisable() => EndDialog();
 
     private bool WasAdvancePressed()
     {

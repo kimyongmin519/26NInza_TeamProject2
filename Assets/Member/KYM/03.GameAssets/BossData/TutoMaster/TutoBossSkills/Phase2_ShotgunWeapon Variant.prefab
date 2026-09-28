@@ -12,13 +12,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: Phase2_ShotgunWeapon Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 2396366198155699001, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7349234222327201798, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -11.599979
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7349234222327201798, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.48642004
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7349234222327201798, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
       propertyPath: m_LocalPosition.z
@@ -62,7 +66,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8452097884732460165, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
       propertyPath: projectileCount
-      value: 12
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8452097884732460165, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
       propertyPath: <WeaponIndex>k__BackingField

@@ -11,6 +11,9 @@ namespace Member.YKJ.Bosses
         [SerializeField, Min(0f)] private float warningTime = 0.35f;
         [SerializeField, Min(0.01f)] private float flightTime = 0.75f;
         [SerializeField, Min(0f)] private float jumpHeight = 5f;
+        [SerializeField] private AnimationCurve flightProgress = new AnimationCurve(
+            new Keyframe(0f, 0f, 1.8f, 1.8f), new Keyframe(0.38f, 0.48f, 0.25f, 0.25f),
+            new Keyframe(0.58f, 0.54f, 0.45f, 0.45f), new Keyframe(1f, 1f, 2f, 2f));
         [SerializeField, Min(0f)] private float landingDelay = 0.3f;
         [SerializeField, Min(0f)] private float landingDamage = 20f;
         [SerializeField] private LayerMask playerLayers = 1 << 6;
@@ -22,6 +25,8 @@ namespace Member.YKJ.Bosses
         [Header("Ground Contact")]
         [SerializeField] private Collider2D groundSurface;
         [SerializeField] private Collider2D bossCollider;
+        [Header("Jump Afterimage")]
+        [SerializeField] private MimicJumpAfterimage afterimage;
 
         private enum Step { Warning, Flight, Landed }
         private Step _step;
@@ -98,16 +103,24 @@ namespace Member.YKJ.Bosses
             switch (_step)
             {
                 case Step.Warning:
+                    Color pulseColor = warningColor;
+                    pulseColor.a *= Mathf.Lerp(0.55f, 1f, 0.5f + 0.5f * Mathf.Sin(_elapsed * 28f));
+                    landingWarning.startColor = landingWarning.endColor = pulseColor;
                     if (_elapsed >= warningTime)
                     {
                         _elapsed = 0f;
                         _step = Step.Flight;
                         Boss.BodyAnimator?.Jump(flightTime);
+                        afterimage?.Begin();
                     }
                     break;
                 case Step.Flight:
                     float t = Mathf.Clamp01(_elapsed / Mathf.Max(0.01f, flightTime));
-                    Boss.transform.position = Vector3.Lerp(_start, _landing, t) + Vector3.up * (4f * jumpHeight * t * (1f - t));
+                    float progress = t >= 1f ? 1f : flightProgress != null && flightProgress.length > 0 ?
+                        Mathf.Clamp01(flightProgress.Evaluate(t)) : t;
+                    Boss.transform.position = Vector3.Lerp(_start, _landing, progress) +
+                        Vector3.up * (4f * jumpHeight * progress * (1f - progress));
+                    if (t < 1f && afterimage == null) Boss.CombatVfx?.JumpAfterimage();
                     if (t >= 1f)
                         Land();
                     break;
@@ -130,11 +143,13 @@ namespace Member.YKJ.Bosses
 
         private void Land()
         {
+            afterimage?.Stop();
             _landedCount++;
             _step = Step.Landed;
             _elapsed = 0f;
             landingWarning.enabled = false;
             Boss.BodyAnimator?.Land(landingDelay);
+            Boss.CombatVfx?.Land();
             if (feedbackChannel != null && landingFeedback != null)
                 feedbackChannel.RaiseEvent(new PlayFeedBack().Init(landingFeedback.FeedBackId));
             if (Boss.Patterns.Current != this)
@@ -146,10 +161,22 @@ namespace Member.YKJ.Bosses
                 _pendingTongue = true;
         }
 
-        public override void OnPause() => Boss.BodyAnimator?.ResetPose();
+        public override void OnPause()
+        {
+            afterimage?.Stop(true);
+            Boss.BodyAnimator?.ResetPose();
+        }
+
+        public override void OnResume()
+        {
+            if (_step == Step.Flight) afterimage?.Begin();
+        }
+
+        private void OnDisable() => afterimage?.Stop(true);
 
         public override void OnEnd()
         {
+            afterimage?.Stop(true);
             Boss.BodyAnimator?.ResetPose();
             if (landingWarning != null)
                 landingWarning.enabled = false;

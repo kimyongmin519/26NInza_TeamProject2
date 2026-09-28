@@ -4,6 +4,7 @@ using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.CombatSystems.Projectiles;
 using Member.KYM.Scripts.CoreSystems;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 namespace Member.KYM.Scripts.Enemies
 {
@@ -21,7 +22,7 @@ namespace Member.KYM.Scripts.Enemies
         [SerializeField] private Ease floatingEase = Ease.InOutSine;
 
         [Header("공격")]
-        [SerializeField, Min(0.01f)] private float attackInterval = 2f;
+        [SerializeField, Min(0.01f)] private float attackInterval = 7.5f;
         [SerializeField] private AnimParamSO attackAnimation;
         [SerializeField] private AnimatorTrigger animatorTrigger;
         [SerializeField] private Transform muzzle;
@@ -31,7 +32,7 @@ namespace Member.KYM.Scripts.Enemies
         private Tween _floatingTween;
         private Vector3 _floatingStartLocalPosition;
         private float _nextAttackTime;
-        private bool _isWaitingForFireEvent;
+        private bool _isFiring;
 
         protected override void Awake()
         {
@@ -60,8 +61,6 @@ namespace Member.KYM.Scripts.Enemies
             if (animatorTrigger != null)
                 animatorTrigger.OnSpecialEvent += HandleFireAnimationEvent;
 
-            _isWaitingForFireEvent = false;
-            _nextAttackTime = Time.time + attackInterval;
             StartFloating();
         }
 
@@ -70,43 +69,56 @@ namespace Member.KYM.Scripts.Enemies
             if (animatorTrigger != null)
                 animatorTrigger.OnSpecialEvent -= HandleFireAnimationEvent;
 
-            _isWaitingForFireEvent = false;
+            _isFiring = false;
             StopFloating();
+        }
+
+        public void ActivateAndStartFiring()
+        {
+            gameObject.SetActive(true);
+            _isFiring = true;
+
+            _nextAttackTime = Time.time + attackInterval;
         }
 
         private void Update()
         {
-            if (Target == null ||
-                _isWaitingForFireEvent ||
-                Time.time < _nextAttackTime)
-            {
+            FaceTarget();
+
+            if (!_isFiring || Target == null || Time.time < _nextAttackTime)
                 return;
-            }
 
             BeginAttack();
         }
 
-        public void SetTarget(GameObject target)
+        private void FaceTarget()
         {
-            Target = target;
-            _nextAttackTime = Time.time + attackInterval;
+            if (Target == null)
+                return;
+
+            float targetX = Target.transform.position.x;
+            if (Mathf.Approximately(targetX, transform.position.x))
+                return;
+
+            Vector3 rotation = transform.localEulerAngles;
+            rotation.y = targetX > transform.position.x ? 180f : 0f;
+            transform.localEulerAngles = rotation;
         }
 
         private void BeginAttack()
         {
-            if (_renderer == null || attackAnimation == null)
+            if (_renderer?.Animator == null || attackAnimation == null)
                 return;
 
-            _isWaitingForFireEvent = true;
-            _renderer.PlayClip(attackAnimation.ParamHash);
+            _nextAttackTime = Time.time + attackInterval;
+            _renderer.Animator.Play(attackAnimation.ParamHash, 0, 0f);
         }
 
         private void HandleFireAnimationEvent()
         {
-            if (!_isWaitingForFireEvent)
+            if (!_isFiring)
                 return;
 
-            _isWaitingForFireEvent = false;
             _nextAttackTime = Time.time + attackInterval;
 
             if (Target == null || projectilePrefab == null || muzzle == null)
@@ -116,17 +128,12 @@ namespace Member.KYM.Scripts.Enemies
             if (direction.sqrMagnitude <= Mathf.Epsilon)
                 direction = Vector2.down;
 
-            AbstractProjectile projectile = Instantiate(
-                projectilePrefab,
-                muzzle.position,
-                Quaternion.identity);
+            AbstractProjectile projectile = Instantiate(projectilePrefab, muzzle.position, Quaternion.identity);
             projectile.Shot(direction.normalized, this);
         }
 
         private void StartFloating()
         {
-            if (floatingVisual == null)
-                return;
 
             StopFloating();
             floatingVisual.localPosition = _floatingStartLocalPosition;

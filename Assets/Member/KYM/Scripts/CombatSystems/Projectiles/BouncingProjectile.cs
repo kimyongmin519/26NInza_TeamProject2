@@ -1,6 +1,8 @@
+using GGMLib.ObjectPool.Runtime;
 using KimLIb.ModuleSystems;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Tilemaps;
 
 namespace Member.KYM.Scripts.CombatSystems.Projectiles
 {
@@ -12,6 +14,10 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
         [SerializeField, Range(0f, 2f)] private float bounceSpeedMultiplier = 1f;
         [SerializeField, Min(0f)] private float separationDistance = 0.02f;
         [SerializeField] private bool playImpactEffectOnBounce = true;
+
+        [Header("반사 잔해")]
+        [SerializeField] private PoolItemSO debrisEffectItem;
+        [SerializeField] private Color defaultDebrisColor = new(0.45f, 0.3f, 0.18f, 1f);
 
         [Header("반사 이벤트")]
         [SerializeField] private UnityEvent onBounce;
@@ -84,8 +90,30 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             if (playImpactEffectOnBounce)
                 PlayImpactEffect(hitPoint, normal);
 
+            if (debrisEffectItem != null)
+                PlayEffect(debrisEffectItem, hitPoint, normal, GetSurfaceColor(wall, hitPoint, normal));
+
             onBounce?.Invoke();
             return true;
+        }
+
+        private Color GetSurfaceColor(Collider2D wall, Vector2 hitPoint, Vector2 normal)
+        {
+            if (wall.TryGetComponent(out SpriteRenderer spriteRenderer) &&
+                spriteRenderer.color != Color.white)
+            {
+                return spriteRenderer.color;
+            }
+
+            if (wall.TryGetComponent(out Tilemap tilemap))
+            {
+                Vector3Int cell = tilemap.WorldToCell(hitPoint - normal * 0.02f);
+                Color tileColor = tilemap.GetColor(cell);
+                if (tileColor != Color.white)
+                    return tileColor;
+            }
+
+            return defaultDebrisColor;
         }
 
         protected override void OnValidate()

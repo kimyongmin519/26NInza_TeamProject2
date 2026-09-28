@@ -6,6 +6,7 @@ namespace Member.KYM.Scripts.CoreSystems.Events
     public static class PostProcessEvents
     {
         public static readonly PostProcessRequestEvent HurtVignetteEvent = new(PostProcessType.HurtVignette);
+        public static readonly PostProcessRequestEvent ParryImpactEvent = new(PostProcessType.ParryImpact);
     }
 
     public sealed class PostProcessRequestEvent : GameEvent

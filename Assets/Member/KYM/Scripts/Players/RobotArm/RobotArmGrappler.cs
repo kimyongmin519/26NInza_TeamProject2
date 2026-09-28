@@ -22,6 +22,10 @@ namespace Member.KYM.Scripts.Players.RobotArm
         [SerializeField] private float swingForce = 30f;
         [SerializeField] private float maximumSwingSpeed = 12f;
 
+        [Header("해제 시 실제 이동 관성")]
+        [Tooltip("현재 이동 속도에 추가할 배율입니다. 0이면 관성만 유지하고, 1이면 추가 힘 적용 직후 속도가 약 2배가 됩니다.")]
+        [SerializeField, Min(0f)] private float releaseSpeedMultiplier = 1.5f;
+
         [Header("제어 복귀")]
         [SerializeField] private float controlReturnDelay = 0.12f;
 
@@ -123,7 +127,27 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
         public void StopGrapple()
         {
+            if (IsGrappling)
+                ApplyReleaseForce();
+
             StopGrappleInternal(true);
+        }
+
+        private void ApplyReleaseForce()
+        {
+            if (_mover == null || _mover.RigidBody == null)
+                return;
+
+            Rigidbody2D body = _mover.RigidBody;
+            Vector2 releaseVelocity = body.linearVelocity;
+            if (releaseVelocity.sqrMagnitude < 0.0001f || releaseSpeedMultiplier <= 0f)
+                return;
+
+            // 월드 속도에는 체인과 고리의 움직임도 이미 포함되어 있다.
+            // 고리 속도를 빼거나 다시 더하지 않고 실제 진행 방향으로 강화한다.
+            // 충격량 = 질량 × 추가 속도이므로 플레이어 질량이 달라도 배율은 같다.
+            Vector2 impulse = releaseVelocity * (body.mass * releaseSpeedMultiplier);
+            _mover.AddForceToAgent(impulse);
         }
 
         private void StopGrappleInternal(bool delayControl)
@@ -353,6 +377,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
             hangGravityScale = Mathf.Max(0f, hangGravityScale);
             swingForce = Mathf.Max(0f, swingForce);
             maximumSwingSpeed = Mathf.Max(0f, maximumSwingSpeed);
+            releaseSpeedMultiplier = Mathf.Max(0f, releaseSpeedMultiplier);
             controlReturnDelay = Mathf.Max(0f, controlReturnDelay);
         }
     }

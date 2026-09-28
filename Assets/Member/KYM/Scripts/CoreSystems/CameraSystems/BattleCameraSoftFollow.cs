@@ -7,9 +7,13 @@ namespace Member.KYM.Scripts.CoreSystems.CameraSystems
     [RequireComponent(typeof(CinemachineCamera))]
     public class BattleCameraSoftFollow : MonoBehaviour
     {
+        [Header("추적 방식")]
+        [SerializeField] private bool followTargetContinuously;
+
         [Header("카메라 이동 범위")]
         [SerializeField] private Vector2 maxOffset = new(0.5f, 0.3f);
         [SerializeField, Min(0f)] private float smoothTime = 0.55f;
+        [SerializeField, Min(0f)] private float lookAheadTime = 0.15f;
 
         [Header("경계가 없을 때 사용할 전투 영역")]
         [SerializeField] private Vector2 fallbackArenaHalfSize = new(12f, 6.75f);
@@ -21,6 +25,7 @@ namespace Member.KYM.Scripts.CoreSystems.CameraSystems
         private Vector2 _battleCenter;
         private Vector2 _arenaHalfSize;
         private Vector2 _smoothVelocity;
+        private Vector3 _previousPlayerPosition;
 
         private void Awake()
         {
@@ -42,22 +47,44 @@ namespace Member.KYM.Scripts.CoreSystems.CameraSystems
         private void OnEnable()
         {
             if (_camera != null && _focusTarget != null)
-                _camera.Target.TrackingTarget = _focusTarget;
+            {
+                if (_camera.Target.TrackingTarget != null &&
+                    _camera.Target.TrackingTarget != _focusTarget)
+                {
+                    _player = _camera.Target.TrackingTarget;
+                }
+
+                if (followTargetContinuously && _player != null)
+                    _focusTarget.position = _player.position;
+
+                _previousPlayerPosition = _player != null ? _player.position : Vector3.zero;
+                _smoothVelocity = Vector2.zero;
+                if (_player != null)
+                    _camera.Target.TrackingTarget = _focusTarget;
+            }
         }
 
-        private void Update()
+        private void LateUpdate()
         {
+            if (_player == null && _camera.Target.TrackingTarget != _focusTarget)
+            {
+                _player = _camera.Target.TrackingTarget;
+                if (_player != null)
+                {
+                    _previousPlayerPosition = _player.position;
+                    if (followTargetContinuously)
+                        _focusTarget.position = _player.position;
+
+                    _camera.Target.TrackingTarget = _focusTarget;
+                }
+            }
+
             if (_player == null || _focusTarget == null)
                 return;
 
-            Vector2 playerOffset = (Vector2)_player.position - _battleCenter;
-            Vector2 normalizedOffset = new(
-                Mathf.Clamp(playerOffset.x / _arenaHalfSize.x, -1f, 1f),
-                Mathf.Clamp(playerOffset.y / _arenaHalfSize.y, -1f, 1f));
-
-            Vector2 targetPosition = _battleCenter + new Vector2(
-                normalizedOffset.x * maxOffset.x,
-                normalizedOffset.y * maxOffset.y);
+            Vector2 targetPosition = followTargetContinuously
+                ? GetFollowingPosition()
+                : GetArenaPosition();
 
             Vector2 currentPosition = _focusTarget.position;
             Vector2 smoothedPosition = smoothTime <= 0f
@@ -72,6 +99,45 @@ namespace Member.KYM.Scripts.CoreSystems.CameraSystems
                 smoothedPosition.x,
                 smoothedPosition.y,
                 _player.position.z);
+        }
+
+        private Vector2 GetArenaPosition()
+        {
+            Vector2 playerOffset = (Vector2)_player.position - _battleCenter;
+            Vector2 normalizedOffset = new(
+                Mathf.Clamp(playerOffset.x / _arenaHalfSize.x, -1f, 1f),
+                Mathf.Clamp(playerOffset.y / _arenaHalfSize.y, -1f, 1f));
+
+            return _battleCenter + new Vector2(
+                normalizedOffset.x * maxOffset.x,
+                normalizedOffset.y * maxOffset.y);
+        }
+
+        private Vector2 GetFollowingPosition()
+        {
+            Vector2 movement = (Vector2)(_player.position - _previousPlayerPosition);
+            _previousPlayerPosition = _player.position;
+
+            Vector2 lookAhead = Time.deltaTime > 0f
+                ? movement / Time.deltaTime * lookAheadTime
+                : Vector2.zero;
+            lookAhead = new Vector2(
+                Mathf.Clamp(lookAhead.x, -maxOffset.x, maxOffset.x),
+                Mathf.Clamp(lookAhead.y, -maxOffset.y, maxOffset.y));
+
+            return (Vector2)_player.position + lookAhead;
+        }
+
+        public void OnTargetWarped(Transform target, Vector3 positionDelta)
+        {
+            if (!isActiveAndEnabled || !followTargetContinuously ||
+                _player != target || _focusTarget == null)
+                return;
+
+            _focusTarget.position += positionDelta;
+            _previousPlayerPosition = target.position;
+            _smoothVelocity = Vector2.zero;
+            CinemachineCore.OnTargetObjectWarped(_focusTarget, positionDelta);
         }
 
         private void OnDisable()
@@ -118,10 +184,10 @@ namespace Member.KYM.Scripts.CoreSystems.CameraSystems
 
             _focusTarget = focusObject.transform;
             float targetZ = _player != null ? _player.position.z : 0f;
-            _focusTarget.position = new Vector3(
-                _battleCenter.x,
-                _battleCenter.y,
-                targetZ);
+            Vector2 startPosition = followTargetContinuously && _player != null
+                ? _player.position
+                : _battleCenter;
+            _focusTarget.position = new Vector3(startPosition.x, startPosition.y, targetZ);
         }
 
         private void RestorePlayerTarget()
@@ -140,6 +206,7 @@ namespace Member.KYM.Scripts.CoreSystems.CameraSystems
                 Mathf.Max(0f, maxOffset.x),
                 Mathf.Max(0f, maxOffset.y));
             smoothTime = Mathf.Max(0f, smoothTime);
+            lookAheadTime = Mathf.Max(0f, lookAheadTime);
             fallbackArenaHalfSize = new Vector2(
                 Mathf.Max(0.01f, fallbackArenaHalfSize.x),
                 Mathf.Max(0.01f, fallbackArenaHalfSize.y));

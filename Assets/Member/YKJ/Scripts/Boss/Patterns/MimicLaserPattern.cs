@@ -11,18 +11,23 @@ namespace Member.YKJ.Bosses
         [SerializeField] private Material laserMaterial;
         [SerializeField, Min(1)] private int shotCount = 5;
         [SerializeField] private Vector2 angleRange = new Vector2(-30f, 210f);
-        [SerializeField, Min(0f)] private float warningTime = 0.6f;
+        [SerializeField, Min(0f)] private float warningTime = 1f;
         [SerializeField, Min(0.01f)] private float shotInterval = 0.12f;
-        [SerializeField, Min(0f)] private float rotationWarningTime = 0.6f;
-        [SerializeField] private Color rotationWarningColor = new Color(1f, 0.85f, 0.1f, 1f);
-        [SerializeField, Min(0.01f)] private float rotationDuration = 3f;
+        [SerializeField, Min(0f)] private float rotationWarningTime = 1.2f;
+        [SerializeField] private Color rotationWarningColor = new Color(1f, 0.02f, 0.02f, 1f);
+        [SerializeField, Min(0.01f)] private float rotationDuration = 14f;
         [SerializeField] private bool clockwise = true;
         [SerializeField, Min(0.1f)] private float length = 40f;
-        [SerializeField, Min(0.01f)] private float width = 0.65f;
-        [SerializeField, Min(0f)] private float damage = 15f;
+        [SerializeField, Min(0.01f)] private float width = 0.35f;
+        [SerializeField, Min(0f)] private float damage = 1f;
         [SerializeField] private LayerMask playerLayers = 1 << 6;
-        [SerializeField] private Color warningColor = new Color(1f, 0.25f, 0.25f, 0.35f);
-        [SerializeField] private Color fireColor = new Color(1f, 0.05f, 0.05f, 1f);
+        [SerializeField] private Color warningColor = new Color(1f, 0.02f, 0.02f, 0.35f);
+        [SerializeField] private Color fireColor = new Color(1f, 0.02f, 0.02f, 1f);
+        [Header("Chest Appearance")]
+        [SerializeField] private SpriteRenderer chestRenderer;
+        [SerializeField] private Sprite openChestSprite;
+        private Sprite _previousSprite;
+        private bool _spriteChanged;
         private sealed class Beam
         {
             public LineRenderer Line;
@@ -36,10 +41,13 @@ namespace Member.YKJ.Bosses
         private readonly List<Beam> _beams = new List<Beam>();
         public int FiredCount { get; private set; }
         public float RotationDegrees { get; private set; }
+        public bool IsDamaging => _step == Step.Rotating && Boss != null && Boss.Patterns.Current == this;
         public override bool CanStart() => Boss != null && laserMaterial != null;
 
         public override void OnStart()
         {
+            Boss.BodyAnimator?.PrepareLaser(warningTime);
+            Boss.CombatVfx?.SetCharge(0f);
             _count = Mathf.Max(1, shotCount);
             while (_beams.Count < _count)
             {
@@ -76,6 +84,7 @@ namespace Member.YKJ.Bosses
             _elapsed += deltaTime;
             if (_step == Step.Warning)
             {
+                Boss.CombatVfx?.SetCharge(_elapsed / Mathf.Max(0.01f, warningTime));
                 if (_elapsed < warningTime) return;
                 _elapsed = 0f;
                 _step = Step.Building;
@@ -95,6 +104,7 @@ namespace Member.YKJ.Bosses
                 {
                     _step = Step.Rotating;
                     _elapsed = 0f;
+                    Boss.BodyAnimator?.HoldLaser();
                 }
             }
             else
@@ -117,23 +127,31 @@ namespace Member.YKJ.Bosses
             for (int i = 0; i < FiredCount; i++)
             {
                 Draw(_beams[i], RotationDegrees, false);
-                if (_step == Step.RotationWarning)
+                if (_step != Step.Rotating)
                 {
                     float pulse = 0.5f + 0.5f * Mathf.Cos(_elapsed * Mathf.PI * 10f);
-                    Color color = Color.Lerp(fireColor, rotationWarningColor, pulse);
+                    Color color = Color.Lerp(warningColor, rotationWarningColor, pulse);
                     _beams[i].Line.startColor = _beams[i].Line.endColor = color;
                 }
-                DamageBeam(_beams[i], RotationDegrees);
+                if (IsDamaging)
+                    DamageBeam(_beams[i], RotationDegrees);
                 if (Boss.Patterns.Current != this) return;
             }
             if (_step == Step.Rotating && _elapsed >= Mathf.Max(0.01f, rotationDuration))
+            {
+                foreach (Beam beam in _beams)
+                    if (beam.Line.enabled)
+                        Boss.CombatVfx?.FadeBeam(beam.Line.GetPosition(0), beam.Line.GetPosition(1), width, fireColor, laserMaterial);
                 EndPattern();
+            }
         }
 
         private void FireNext()
         {
+            OpenChest();
             FiredCount++;
-            Boss.BodyAnimator?.Spit(shotInterval);
+            Boss.BodyAnimator?.FireLaser(shotInterval);
+            Boss.CombatVfx?.LaserShot();
             if (FiredCount == _count)
             {
                 _step = Step.RotationWarning;
@@ -156,6 +174,9 @@ namespace Member.YKJ.Bosses
 
         private void DamageBeam(Beam beam, float rotation)
         {
+            // Charging and rotation warnings are movement windows, not active attacks.
+            if (!IsDamaging)
+                return;
             Vector3 origin = Boss.MouthPosition;
             Vector3 end = Tip(beam, rotation);
             Vector2 delta = end - origin;
@@ -177,7 +198,26 @@ namespace Member.YKJ.Bosses
                 if (beam.Line != null) beam.Line.enabled = false;
                 beam.Damaged.Clear();
             }
+            RestoreChest();
             Boss?.BodyAnimator?.ResetPose();
+            Boss?.CombatVfx?.EndMuzzle();
+        }
+
+        private void OpenChest()
+        {
+            if (_spriteChanged || chestRenderer == null || openChestSprite == null)
+                return;
+            _previousSprite = chestRenderer.sprite;
+            _spriteChanged = true;
+            chestRenderer.sprite = openChestSprite;
+        }
+
+        private void RestoreChest()
+        {
+            if (!_spriteChanged) return;
+            if (chestRenderer != null) chestRenderer.sprite = _previousSprite;
+            _previousSprite = null;
+            _spriteChanged = false;
         }
         public override void OnDie() => OnEnd();
         private void OnDisable() => OnEnd();

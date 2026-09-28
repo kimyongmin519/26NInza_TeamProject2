@@ -11,6 +11,7 @@ namespace Member.KYM.Scripts.Enemies.Boss
     {
         public BehaviorGraphAgent BTAgent { get; private set; }
         public StateChannel StateChannel { get; private set; }
+        private bool _deathStateRequested;
 
         protected override void InitializeModules()
         {
@@ -24,20 +25,30 @@ namespace Member.KYM.Scripts.Enemies.Boss
             
             PhaseController.OnPhaseChanged += HandlePhaseChanged;
             HealthModule.SetMaxHealth(BossData.MaxHealth);
+            HealthModule.OnDeath += HandleDeath;
         }
 
         private void Start()
         {
             SetVariableValue<AbstractBoss>(BtVar.Boss, this);
 
-            if (PhaseController == null)
-                return;
-
             if (BTAgent.GetVariable(BtVar.StateChannel, out BlackboardVariable<StateChannel> channelVar))
             {
                 StateChannel = channelVar.Value;
             }
-            SetVariableValue(BtVar.CurrentPhase, PhaseController.CurrentPhase);
+            if (PhaseController != null)
+                SetVariableValue(BtVar.CurrentPhase, PhaseController.CurrentPhase);
+            if (HealthModule != null && HealthModule.IsDead)
+                HandleDeath();
+        }
+
+        private void HandleDeath()
+        {
+            if (_deathStateRequested || StateChannel == null)
+                return;
+
+            _deathStateRequested = true;
+            StateChannel.SendEventMessage(BossStateEnum.DEATH);
         }
 
         private void HandlePhaseChanged(BossPhaseEnum phase)
@@ -49,13 +60,19 @@ namespace Member.KYM.Scripts.Enemies.Boss
         {
             if (PhaseController != null)
                 PhaseController.OnPhaseChanged -= HandlePhaseChanged;
+            if (HealthModule != null)
+                HealthModule.OnDeath -= HandleDeath;
         }
 
         public void TakeDamage(DamageData damage)
         {
-            HealthModule?.ApplyDamage(damage);
-            
-            if (HealthModule.IsDead)
+            if (HealthModule == null || HealthModule.IsDead || damage.Amount <= 0f)
+                return;
+
+            bool wasInvincible = HealthModule.IsInvisible;
+            HealthModule.ApplyDamage(damage);
+
+            if (wasInvincible || HealthModule.IsDead)
                 return;
 
             StateChannel.SendEventMessage(BossStateEnum.HIT);

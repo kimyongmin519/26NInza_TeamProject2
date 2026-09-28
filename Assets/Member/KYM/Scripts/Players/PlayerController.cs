@@ -21,21 +21,44 @@ namespace Member.KYM.Scripts.Players
         [field:SerializeField] public PlayerInputSO PlayerInput { get; private set; }
         [SerializeField] private StateListSO stateList;
         [field:SerializeField] public EventChannelSO UIChannel { get; private set; }
+
+        [Header("점프 이펙트")]
+        [SerializeField] private ParticleSystem jumpAirWave;
         
         [field:Header("PP")]
         [field:SerializeField] public EventChannelSO PostProcessChannel { get; private set; }
+
+        [Header("피격 무적")]
+        [SerializeField, Min(0f)] private float hitInvincibilityDuration = 1.5f;
+        [SerializeField, Min(0.02f)] private float blinkInterval = 0.1f;
+
+        [Header("투사체 잡기 표시 거리")]
+        [SerializeField, Min(0f)] private float projectileCueRevealDistance = 2.8f;
+        [SerializeField, Min(0f)] private float projectileCueFullRevealDistance = 1.2f;
+
+        public float ProjectileCueRevealDistance => Mathf.Max(0f, projectileCueRevealDistance);
+        public float ProjectileCueFullRevealDistance => Mathf.Clamp(
+            projectileCueFullRevealDistance, 0f, ProjectileCueRevealDistance);
         
         public UnityEvent OnHit;
         public UnityEvent OnDeath;
         
         public AgentSensor Sensor { get; private set; }
         public ISkillModule SkillModule { get; private set; }
+        private IMover _mover;
         private StateMachine _stateMachine;
         private RobotArmGrappler _robotArmGrappler;
         private int _currentJumpCount;
+        private PlayerUIEventPublisher _uiPublisher;
+        public int RemainingJumpCount => Mathf.Max(0, MaxJumpCount - _currentJumpCount);
         private CapsuleCollider2D _bodyCollider;
         private Vector2 _standingColliderSize;
         private Vector2 _standingColliderOffset;
+        private SpriteRenderer[] _blinkRenderers;
+        private bool[] _originalForceRenderingOff;
+        private bool _isBlinking;
+        private bool _blinkHidden;
+        private float _nextBlinkTime;
 
         protected override void InitializeModules()
         {
@@ -50,6 +73,7 @@ namespace Member.KYM.Scripts.Players
             }
 
             _stateMachine = new StateMachine(this, stateList.states);
+            _mover = GetModule<IMover>();
             Sensor = GetModule<AgentSensor>();
             SkillModule = GetModule<ISkillModule>();
             _robotArmGrappler = GetComponentInChildren<RobotArmGrappler>(true);
@@ -60,6 +84,8 @@ namespace Member.KYM.Scripts.Players
             base.AfterInitializeModules();
             PlayerInput.OnJumpKeyPressed += HandleJumpKeyPressed;
             PlayerInput.OnDashKeyPressed += HandleDashKeyPressed;
+            if (_mover != null)
+                _mover.OnGroundStatusChange += HandleGroundStatusChange;
 
             if (HealthModule != null)
                 HealthModule.OnDeath += HandleDeath;
@@ -90,11 +116,15 @@ namespace Member.KYM.Scripts.Players
         {
             ChangeState(PlayerStateEnum.IDLE);
             
-            UIChannel.RaiseEvent(PlayerSubEvents.PlayerHealthSubEvent.InitData(HealthModule));
+            _uiPublisher = new PlayerUIEventPublisher(this);
+            _uiPublisher.Publish();
         }
 
         private void OnDestroy()
         {
+            _uiPublisher?.Dispose();
+            StopInvincibilityBlink();
+
             if (PlayerInput != null)
             {
                 PlayerInput.OnJumpKeyPressed -= HandleJumpKeyPressed;
@@ -104,11 +134,19 @@ namespace Member.KYM.Scripts.Players
             if (HealthModule != null)
                 HealthModule.OnDeath -= HandleDeath;
 
+            if (_mover != null)
+                _mover.OnGroundStatusChange -= HandleGroundStatusChange;
+
             if (_robotArmGrappler != null)
             {
                 _robotArmGrappler.GrappleStarted -= HandleGrappleStarted;
                 _robotArmGrappler.GrappleEnded -= HandleGrappleEnded;
             }
+        }
+
+        private void OnDisable()
+        {
+            StopInvincibilityBlink();
         }
         
         private void HandleJumpKeyPressed()
@@ -136,6 +174,21 @@ namespace Member.KYM.Scripts.Players
         }
         
         public void ResetJumpCount() => _currentJumpCount = 0;
+
+        public void PlayJumpAirWave()
+        {
+            if (jumpAirWave == null)
+                return;
+
+            jumpAirWave.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            jumpAirWave.Play(true);
+        }
+
+        private void HandleGroundStatusChange(bool isGrounded)
+        {
+            if (isGrounded)
+                ResetJumpCount();
+        }
 
         public void SetCrouching(bool isCrouching)
         {
@@ -177,12 +230,20 @@ namespace Member.KYM.Scripts.Players
         private void Update()
         {
             _stateMachine.UpdateMachine();
+            UpdateInvincibilityBlink();
+        }
+
+        private void LateUpdate()
+        {
+            _uiPublisher?.Publish();
         }
 
         private void HandleDeath()
         {
+            StopInvincibilityBlink();
             StopCurrentAction();
             ChangeState(PlayerStateEnum.DEATH);
+            _uiPublisher?.Publish();
             
             OnDeath?.Invoke();
         }
@@ -210,12 +271,24 @@ namespace Member.KYM.Scripts.Players
         }
         public void TakeDamage(DamageData damage)
         {
-            HealthModule?.ApplyDamage(damage);
+            if (HealthModule == null || HealthModule.IsDead || damage.Amount <= 0f)
+                return;
+
+            if (HealthModule.IsInvisible)
+            {
+                HealthModule.ApplyDamage(damage);
+                return;
+            }
+
+            HealthModule.ApplyDamage(damage);
+
+            if (!HealthModule.IsDead && hitInvincibilityDuration > 0f)
+                HealthModule.SettingInvisibleTime(hitInvincibilityDuration);
 
             if (PostProcessChannel != null)
                 PostProcessChannel.RaiseEvent(PostProcessEvents.HurtVignetteEvent.Play());
 
-            if (HealthModule == null || HealthModule.IsDead)
+            if (HealthModule.IsDead)
                 return;
 
             StopCurrentAction();
@@ -223,6 +296,56 @@ namespace Member.KYM.Scripts.Players
             ChangeState(PlayerStateEnum.HIT);
             
             OnHit?.Invoke();
+        }
+
+        private void UpdateInvincibilityBlink()
+        {
+            if (HealthModule == null || HealthModule.IsDead || !HealthModule.IsInvisible)
+            {
+                StopInvincibilityBlink();
+                return;
+            }
+
+            if (!_isBlinking)
+            {
+                _blinkRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+                _originalForceRenderingOff = new bool[_blinkRenderers.Length];
+                for (int i = 0; i < _blinkRenderers.Length; i++)
+                    _originalForceRenderingOff[i] = _blinkRenderers[i].forceRenderingOff;
+
+                _isBlinking = true;
+                _nextBlinkTime = Time.time + blinkInterval;
+            }
+
+            if (Time.time < _nextBlinkTime)
+                return;
+
+            _blinkHidden = !_blinkHidden;
+            for (int i = 0; i < _blinkRenderers.Length; i++)
+            {
+                if (_blinkRenderers[i] != null)
+                    _blinkRenderers[i].forceRenderingOff =
+                        _originalForceRenderingOff[i] || _blinkHidden;
+            }
+
+            _nextBlinkTime = Time.time + Mathf.Max(0.02f, blinkInterval);
+        }
+
+        private void StopInvincibilityBlink()
+        {
+            if (!_isBlinking)
+                return;
+
+            for (int i = 0; i < _blinkRenderers.Length; i++)
+            {
+                if (_blinkRenderers[i] != null)
+                    _blinkRenderers[i].forceRenderingOff = _originalForceRenderingOff[i];
+            }
+
+            _blinkRenderers = null;
+            _originalForceRenderingOff = null;
+            _isBlinking = false;
+            _blinkHidden = false;
         }
     }
 }

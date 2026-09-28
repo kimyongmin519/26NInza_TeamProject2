@@ -4,6 +4,7 @@ using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Member.YKJ.Bosses
 {
@@ -20,6 +21,15 @@ namespace Member.YKJ.Bosses
         [Header("Appearance")]
         [SerializeField] private SpriteRenderer weaponRenderer;
         [SerializeField] private List<Sprite> weaponSprites = new List<Sprite>();
+        [FormerlySerializedAs("maxVisualSize")]
+        [Tooltip("Longest sprite dimension in weapon-local units; keeps different sprite import scales consistent.")]
+        [SerializeField, Min(0.1f)] private float visualSize = 1f;
+        [Header("Flight Trail")]
+        [SerializeField] private Material trailMaterial;
+        [SerializeField, Min(0.01f)] private float trailTime = 0.12f;
+        [SerializeField, Min(0.01f)] private float trailWidth = 0.1f;
+        private TrailRenderer _trail;
+        private WeaponState _trailState = WeaponState.Spent;
 
         private readonly List<Collider2D> _ignoredColliders = new List<Collider2D>();
         private Collider2D _collider;
@@ -45,6 +55,20 @@ namespace Member.YKJ.Bosses
             Rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             _launchPosition = transform.position;
             SetRandomSprite();
+            FitAppearance();
+            if (trailMaterial != null)
+            {
+                _trail = new GameObject("WeaponFlightTrail").AddComponent<TrailRenderer>();
+                _trail.transform.SetParent(transform, false);
+                _trail.sharedMaterial = trailMaterial;
+                _trail.time = Mathf.Max(0.01f, trailTime);
+                _trail.minVertexDistance = 0.08f;
+                _trail.startWidth = trailWidth;
+                _trail.endWidth = 0f;
+                _trail.sortingLayerName = "Weapon";
+                _trail.sortingOrder = 35;
+                _trail.emitting = false;
+            }
         }
 
         private void SetRandomSprite()
@@ -59,6 +83,28 @@ namespace Member.YKJ.Bosses
             List<Sprite> available = weaponSprites.FindAll(sprite => sprite != null);
             if (available.Count > 0)
                 weaponRenderer.sprite = available[UnityEngine.Random.Range(0, available.Count)];
+        }
+
+        private void FitAppearance()
+        {
+            if (weaponRenderer == null || weaponRenderer.sprite == null ||
+                weaponRenderer.transform == transform || !weaponRenderer.transform.IsChildOf(transform))
+                return;
+
+            Transform visual = weaponRenderer.transform;
+            Bounds spriteBounds = weaponRenderer.sprite.bounds;
+            Vector3 right = transform.InverseTransformVector(visual.TransformVector(Vector3.right * spriteBounds.size.x));
+            Vector3 up = transform.InverseTransformVector(visual.TransformVector(Vector3.up * spriteBounds.size.y));
+            Vector2 size = new Vector2(Mathf.Abs(right.x) + Mathf.Abs(up.x), Mathf.Abs(right.y) + Mathf.Abs(up.y));
+            float factor = Mathf.Max(0.1f, visualSize) / Mathf.Max(0.001f, Mathf.Max(size.x, size.y));
+            visual.localScale *= factor;
+
+            // Keep the physics root unchanged so throws and platform landing calculations remain valid.
+            if (_collider is BoxCollider2D box)
+            {
+                box.offset = transform.InverseTransformPoint(visual.TransformPoint(spriteBounds.center));
+                box.size = new Vector2(Mathf.Max(0.05f, size.x * factor), Mathf.Max(0.05f, size.y * factor));
+            }
         }
 
         public void LaunchFromBoss(MimicBoss boss, Vector2 landing, float flightTime, bool hurtsPlayer)
@@ -88,6 +134,7 @@ namespace Member.YKJ.Bosses
             Rigidbody.linearVelocity = velocity;
             IgnoreCollisionsWith(boss != null ? boss.transform : null);
             IgnoreCollisionsWith(boss != null ? boss.Target : null);
+            RefreshTrail();
         }
 
         public static Vector2 CalculateLaunchVelocity(Vector2 origin, Vector2 target, Vector2 gravity, float seconds)
@@ -111,9 +158,13 @@ namespace Member.YKJ.Bosses
 
         protected override void OnGrabbed()
         {
+            bool caughtInFlight = State == WeaponState.BossFlight;
             State = WeaponState.Held;
             _hurtsPlayer = false;
             _remainingLifetime = 0f;
+            RefreshTrail();
+            if (caughtInFlight && _boss != null && Grabber != null && !Grabber.transform.IsChildOf(_boss.transform))
+                _boss.CombatVfx?.Catch(transform.position);
         }
 
         protected override void OnReleased()
@@ -122,6 +173,7 @@ namespace Member.YKJ.Bosses
             _hurtsPlayer = false;
             RestoreIgnoredCollisions();
             IgnoreCollisionsWith(_boss != null ? _boss.Target : null);
+            RefreshTrail();
             if (_retireWhenReleased)
                 Retire();
         }
@@ -135,12 +187,14 @@ namespace Member.YKJ.Bosses
             RestoreIgnoredCollisions();
             IgnoreCollisionsWith(_throwOwner);
             IgnoreCollisionsWith(_boss != null ? _boss.Target : null);
+            RefreshTrail();
             if (_retireWhenReleased)
                 Retire();
         }
 
         private void Update()
         {
+            RefreshTrail();
             if (IsHeld || State == WeaponState.Spent)
                 return;
 
@@ -171,6 +225,7 @@ namespace Member.YKJ.Bosses
                 // The arena platforms have zero friction; leave landed treasure on their tops.
                 Rigidbody.linearVelocity = Vector2.zero;
                 Rigidbody.angularVelocity = 0f;
+                RefreshTrail();
                 break;
             }
         }
@@ -195,7 +250,11 @@ namespace Member.YKJ.Bosses
                     // Disable first: damage can synchronously kill the boss and clear all weapons.
                     State = WeaponState.Spent;
                     _collider.enabled = false;
-                    receiver.TakeDamage(new DamageData(bossDamage, DamageType.Projectile));
+                    var damage = new DamageData(bossDamage, DamageType.Projectile);
+                    if (receiver is MimicBoss mimic)
+                        mimic.TakeWeaponDamage(damage, other.ClosestPoint(transform.position));
+                    else
+                        receiver.TakeDamage(damage);
                     Retire();
                 }
                 else if (!other.isTrigger)
@@ -256,6 +315,28 @@ namespace Member.YKJ.Bosses
             _ignoredColliders.Clear();
         }
 
-        private void OnDisable() => RestoreIgnoredCollisions();
+        private void RefreshTrail()
+        {
+            if (_trail == null || _trailState == State) return;
+            _trailState = State;
+            _trail.Clear();
+            _trail.emitting = State == WeaponState.BossFlight || State == WeaponState.PlayerThrown;
+            Color color = State == WeaponState.PlayerThrown ? new Color(0.08f, 0.9f, 1f, 0.9f) :
+                new Color(1f, 0.4f, 0.08f, 0.55f);
+            _trail.startColor = color;
+            color.a = 0f;
+            _trail.endColor = color;
+        }
+
+        private void OnDisable()
+        {
+            RestoreIgnoredCollisions();
+            if (_trail != null)
+            {
+                _trail.emitting = false;
+                _trail.Clear();
+            }
+            _trailState = WeaponState.Spent;
+        }
     }
 }

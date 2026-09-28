@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="432" height="840" viewBox="0 0 216 420" role="img" aria-label="Antlered pixel character redrawn as a clean vector illustration">
+  <defs>
+    <linearGradient id="cape" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#40575c"/>
+      <stop offset="0.55" stop-color="#2c4146"/>
+      <stop offset="1" stop-color="#1a3034"/>
+    </linearGradient>
+    <linearGradient id="white" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.7" stop-color="#fafaff"/>
+      <stop offset="1" stop-color="#d9daf4"/>
+    </linearGradient>
+    <linearGradient id="antler" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#1d1e1d"/>
+      <stop offset="1" stop-color="#070a0b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Silhouette and soft inner folds of the dark mantle. -->
+  <path d="M70 91 C56 85 40 78 24 78 C8 77 -1 91 3 110 L9 184 C11 219 3 258 12 284 L28 277 L26 316 L48 306 L56 340 L76 310 L139 307 L160 343 L173 304 L190 289 C186 260 191 232 192 196 L195 103 C194 87 179 78 162 79 L136 87 Z" fill="#101717"/>
+  <path d="M69 96 C50 88 28 83 17 94 C6 106 17 136 18 170 L19 243 C19 262 12 276 19 278 L35 266 L35 304 L53 293 L59 326 L78 295 C96 301 121 302 140 294 L158 327 L166 291 L183 284 C180 255 186 225 186 193 L190 108 C189 93 171 87 157 90 L136 101 Z" fill="url(#cape)"/>
+  <path d="M22 110 C31 98 47 101 57 108 C36 153 42 225 31 263 C26 247 24 222 26 188 Z" fill="#667d7e" opacity=".33"/>
+  <path d="M164 106 C179 104 183 117 180 139 L176 221 C171 249 164 273 157 288 C163 233 154 170 164 106 Z" fill="#0d262b" opacity=".65"/>
+  <path d="M30 122 C40 117 46 122 53 127 M159 123 C171 117 180 123 183 132" fill="none" stroke="#779090" stroke-width="3" stroke-linecap="round" opacity=".48"/>
+
+  <!-- The two swept horns and the dark face frame. -->
+  <path d="M84 75 C68 73 54 68 47 55 C43 48 43 40 43 30 C48 35 51 42 52 49 C61 57 71 59 86 59 Z" fill="url(#antler)" stroke="#090b0b" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M132 74 C146 70 154 64 159 54 C162 46 161 38 160 31 C155 36 153 44 150 49 C141 56 132 59 119 60 Z" fill="url(#antler)" stroke="#090b0b" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M78 70 Q81 63 89 63 H125 Q133 63 136 71 L137 123 H78 Z" fill="#0a0d0d"/>
+  <path d="M84 82 Q84 78 88 78 H122 Q126 78 126 82 V113 Q126 118 121 118 H89 Q84 118 84 113 Z" fill="#777c7c"/>
+  <path d="M89 83 H119 V89 H89 Z" fill="#9a9d9b" opacity=".55"/>
+  <path d="M87 118 H125 V206 H87 Z" fill="#0b0d0e"/>
+  <path d="M96 132 Q96 130 98 130 H106 Q108 130 108 132 V203 H96 Z" fill="#9a96a5"/>
+  <path d="M97 133 H102 V201 H97 Z" fill="#c0bac8" opacity=".45"/>
+
+  <!-- The small pale character in front, with a wide head, simple eyes, and tiny feet. -->
+  <path d="M75 207 Q62 207 58 219 Q54 228 54 245 V275 Q54 287 66 293 L64 369 Q64 387 77 391 H91 Q99 390 100 378 L103 362 L109 380 Q112 391 125 390 L134 387 Q143 384 143 372 L142 299 Q150 290 151 273 V245 Q151 222 141 214 Q135 207 123 207 Z" fill="#111416" stroke="#111416" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M76 215 Q63 215 63 236 V271 Q63 282 72 287 H135 Q143 281 143 269 V239 Q143 215 123 215 Z" fill="url(#white)"/>
+  <path d="M125 218 Q140 219 142 238 V270 Q142 281 134 285 H125 Z" fill="#cbcbea" opacity=".84"/>
+  <path d="M69 290 H136 V364 Q136 374 128 381 H116 Q112 378 111 368 L109 349 H101 L97 372 Q95 384 88 384 H77 Q69 379 69 368 Z" fill="url(#white)"/>
+  <path d="M122 294 H136 V362 Q136 374 127 380 H117 Q115 370 112 360 L120 342 Z" fill="#c9c8e8"/>
+  <path d="M72 292 H135" fill="none" stroke="#5b5987" stroke-width="8"/>
+  <path d="M91 288 H112 V296 H91 Z" fill="#b8b8dc"/>
+  <path d="M75 250 Q75 247 78 247 H83 Q86 247 86 250 V267 Q86 270 83 270 H78 Q75 270 75 267 Z" fill="#111416"/>
+  <path d="M117 250 Q117 247 120 247 H125 Q128 247 128 250 V267 Q128 270 125 270 H120 Q117 270 117 267 Z" fill="#111416"/>
+  <path d="M73 226 Q82 221 92 224" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+  <path d="M123 348 L112 348 L110 361 M135 337 H126 L124 350" fill="none" stroke="#7776a7" stroke-width="4" stroke-linecap="round"/>
+</svg>
