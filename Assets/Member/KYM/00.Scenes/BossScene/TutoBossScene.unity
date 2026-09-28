@@ -2322,6 +2322,7 @@ GameObject:
   - component: {fileID: 899263189}
   - component: {fileID: 899263191}
   - component: {fileID: 899263192}
+  - component: {fileID: 899263193}
   m_Layer: 0
   m_Name: Phase2 Timeline
   m_TagString: Untagged
@@ -2409,7 +2410,19 @@ MonoBehaviour:
     - {fileID: 11400000, guid: aae3d87d88d8c33479a03037d63be124, type: 2}
     m_Events:
     - m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 899263193}
+          m_TargetAssemblyTypeName: TimelineDialogSignal, Assembly-CSharp
+          m_MethodName: PlayDialogSignal
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument:
+            m_BoolArgument: 0
+          m_CallState: 2
     - m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 11400000, guid: a66c4c0d4ed7bb141991aa0954182ed9, type: 2}
@@ -2527,6 +2540,23 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &899263193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899263185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3777d729547b4d84b86f196f13e74b8f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TimelineDialogSignal
+  PlayableDirector: {fileID: 899263187}
+  DialogEventChannel: {fileID: 11400000, guid: 6fb4af2337fad444399b1c39daed72c0, type: 2}
+  DialogData: {fileID: 11400000, guid: 9599cb2e11fd0e749a2186e65617c416, type: 2}
+  PlayTimelineOnStart: 0
+  PauseTimelineUntilDialogEnd: 1
 --- !u!114 &899263189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3125,7 +3155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3777d729547b4d84b86f196f13e74b8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimelineDialogSignal
-  PlayableDirector: {fileID: 899263187}
+  PlayableDirector: {fileID: 1053581989}
   DialogEventChannel: {fileID: 11400000, guid: 6fb4af2337fad444399b1c39daed72c0, type: 2}
   DialogData: {fileID: 11400000, guid: a11c9abecb883424a82028fe9409eeb0, type: 2}
   PlayTimelineOnStart: 0

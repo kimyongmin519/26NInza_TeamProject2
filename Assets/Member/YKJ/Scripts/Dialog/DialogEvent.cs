@@ -43,10 +43,12 @@ public class SetDialogLineEvent : GameEvent
 }
 public class StartDialogEvent : GameEvent
 {
+    public bool Accepted;
     public DialogDataSO dialogData;
     public StartDialogEvent InitData(DialogDataSO dialogData)
     {
         this.dialogData = dialogData;
+        Accepted = false;
         return this;
     }
 }

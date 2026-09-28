@@ -23,6 +23,7 @@ MonoBehaviour:
   m_Clips: []
   m_Markers:
     m_Objects:
+    - {fileID: 899263194}
     - {fileID: -5552649529842650148}
     - {fileID: -3454166849444737728}
 --- !u!114 &-7940233008459151387
@@ -2666,3 +2667,19 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   m_PostPlaybackState: 3
+--- !u!114 &899263194
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c38f6fa1940124db1ab7f6fe7268d1, type: 3}
+  m_Name: Phase Two Dialogue
+  m_EditorClassIdentifier: Unity.Timeline::UnityEngine.Timeline.SignalEmitter
+  m_Time: 2
+  m_Retroactive: 0
+  m_EmitOnce: 0
+  m_Asset: {fileID: 11400000, guid: ae14da8f3344e774089991b39fe242fa, type: 2}

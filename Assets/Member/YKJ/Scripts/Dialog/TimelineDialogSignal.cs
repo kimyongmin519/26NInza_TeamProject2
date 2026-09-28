@@ -1,5 +1,6 @@
 using KimLIb.EventSystem;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -13,6 +14,8 @@ public class TimelineDialogSignal : MonoBehaviour
 
     private bool _waitingDialogEnd;
     private Coroutine _playDialogCoroutine;
+    private readonly List<Playable> _pausedRoots = new();
+    private readonly List<double> _previousSpeeds = new();
 
     private void Awake()
     {
@@ -20,8 +23,12 @@ public class TimelineDialogSignal : MonoBehaviour
         {
             PlayableDirector = GetComponent<PlayableDirector>();
         }
+    }
 
+    private void OnEnable()
+    {
         DialogEventChannel?.AddListener<EndDialogEvent>(OnEndDialogEvent);
+        if (PlayableDirector != null) PlayableDirector.stopped += HandleDirectorStopped;
     }
 
     private void Start()
@@ -32,15 +39,31 @@ public class TimelineDialogSignal : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         DialogEventChannel?.RemoveListener<EndDialogEvent>(OnEndDialogEvent);
+        if (PlayableDirector != null) PlayableDirector.stopped -= HandleDirectorStopped;
+        CancelWait();
+    }
+
+    private void HandleDirectorStopped(PlayableDirector director) => CancelWait();
+
+    private void CancelWait()
+    {
+        if (_playDialogCoroutine != null) StopCoroutine(_playDialogCoroutine);
+        _playDialogCoroutine = null;
+        _waitingDialogEnd = false;
+        ResumeTimeline();
     }
 
     public void SetDialogData(DialogDataSO dialogData) => DialogData = dialogData;
 
     public void PlayDialogSignal()
     {
+        if (!Application.isPlaying || !isActiveAndEnabled || _waitingDialogEnd ||
+            _playDialogCoroutine != null || DialogManager.Talking || BubbleDialogManager.Talking)
+            return;
+
         if (DialogEventChannel == null || DialogData == null)
         {
             Debug.LogWarning($"{nameof(TimelineDialogSignal)} needs DialogEventChannel and DialogData.", this);
@@ -51,11 +74,6 @@ public class TimelineDialogSignal : MonoBehaviour
         {
             PauseTimeline();
             _waitingDialogEnd = true;
-        }
-
-        if (_playDialogCoroutine != null)
-        {
-            StopCoroutine(_playDialogCoroutine);
         }
 
         _playDialogCoroutine = StartCoroutine(RaiseDialogNextFrame(DialogData));
@@ -74,22 +92,27 @@ public class TimelineDialogSignal : MonoBehaviour
 
     public void PauseTimeline()
     {
-        if (PlayableDirector == null || !PlayableDirector.playableGraph.IsValid() || PlayableDirector.playableGraph.GetRootPlayableCount() == 0)
+        if (_pausedRoots.Count > 0 || PlayableDirector == null || !PlayableDirector.playableGraph.IsValid())
         {
             return;
         }
 
-        PlayableDirector.playableGraph.GetRootPlayable(0).SetSpeed(0f);
+        PlayableGraph graph = PlayableDirector.playableGraph;
+        for (int i = 0; i < graph.GetRootPlayableCount(); i++)
+        {
+            Playable root = graph.GetRootPlayable(i);
+            _pausedRoots.Add(root);
+            _previousSpeeds.Add(root.GetSpeed());
+            root.SetSpeed(0);
+        }
     }
 
     public void ResumeTimeline()
     {
-        if (PlayableDirector == null || !PlayableDirector.playableGraph.IsValid() || PlayableDirector.playableGraph.GetRootPlayableCount() == 0)
-        {
-            return;
-        }
-
-        PlayableDirector.playableGraph.GetRootPlayable(0).SetSpeed(1f);
+        for (int i = 0; i < _pausedRoots.Count; i++)
+            if (_pausedRoots[i].IsValid()) _pausedRoots[i].SetSpeed(_previousSpeeds[i]);
+        _pausedRoots.Clear();
+        _previousSpeeds.Clear();
     }
 
     public void EndTimeline()
@@ -117,7 +140,13 @@ public class TimelineDialogSignal : MonoBehaviour
     {
         yield return null;
 
-        DialogEventChannel.RaiseEvent(DialogEvent.StartDialogEvent.InitData(dialogData));
         _playDialogCoroutine = null;
+        var request = new StartDialogEvent().InitData(dialogData);
+        DialogEventChannel.RaiseEvent(request);
+        if (!request.Accepted)
+        {
+            Debug.LogWarning("Timeline dialogue was not accepted. Check the active DialogManager and event channel.", this);
+            CancelWait();
+        }
     }
 }
