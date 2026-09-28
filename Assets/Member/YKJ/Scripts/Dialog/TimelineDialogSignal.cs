@@ -1,4 +1,6 @@
 using KimLIb.EventSystem;
+using Member.KYM.Scripts.CoreSystems.Managers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +16,7 @@ public class TimelineDialogSignal : MonoBehaviour
 
     private bool _waitingDialogEnd;
     private Coroutine _playDialogCoroutine;
+    private IDisposable _timePause;
     private readonly List<Playable> _pausedRoots = new();
     private readonly List<double> _previousSpeeds = new();
 
@@ -53,6 +56,7 @@ public class TimelineDialogSignal : MonoBehaviour
         if (_playDialogCoroutine != null) StopCoroutine(_playDialogCoroutine);
         _playDialogCoroutine = null;
         _waitingDialogEnd = false;
+        ReleaseTimePause();
         ResumeTimeline();
     }
 
@@ -127,13 +131,22 @@ public class TimelineDialogSignal : MonoBehaviour
 
     private void OnEndDialogEvent(EndDialogEvent evt)
     {
-        if (!_waitingDialogEnd)
+        if (_timePause == null)
         {
             return;
         }
 
+        bool resumeTimeline = _waitingDialogEnd;
         _waitingDialogEnd = false;
-        ResumeTimeline();
+        ReleaseTimePause();
+        if (resumeTimeline)
+            ResumeTimeline();
+    }
+
+    private void ReleaseTimePause()
+    {
+        _timePause?.Dispose();
+        _timePause = null;
     }
 
     private IEnumerator RaiseDialogNextFrame(DialogDataSO dialogData)
@@ -147,6 +160,10 @@ public class TimelineDialogSignal : MonoBehaviour
         {
             Debug.LogWarning("Timeline dialogue was not accepted. Check the active DialogManager and event channel.", this);
             CancelWait();
+        }
+        else
+        {
+            _timePause = TimeManager.Instance.Pause();
         }
     }
 }

@@ -226,13 +226,13 @@ MonoBehaviour:
   floatingHeight: 0.25
   floatingDuration: 1
   floatingEase: 4
-  attackInterval: 6
+  attackInterval: 5
   attackAnimation: {fileID: 11400000, guid: 8509a1e85d621934b82c6bb52fa89a72, type: 2}
   animatorTrigger: {fileID: 5839734371690460231}
   muzzle: {fileID: 2264706696912519001}
   projectilePrefab: {fileID: 2541999690089387191, guid: 074dda21ffb0a6c49b1861cfd8cee9ca, type: 3}
-  soundChannel: {fileID: 0}
-  fireSound: {fileID: 0}
+  soundChannel: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
+  fireSound: {fileID: 11400000, guid: bbf0a8268c8eb1f498b5291492f30957, type: 2}
 --- !u!95 &4898174227710800820
 Animator:
   serializedVersion: 7
