@@ -178,6 +178,8 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             body.linearVelocity = Vector2.Lerp(current, desired, rate).normalized * speed;
         }
 
+        private void OnTriggerStay2D(Collider2D other) => OnTriggerEnter2D(other);
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (consumed || other == null) return;
@@ -186,6 +188,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                 other.CompareTag("Player") || other.transform.root.CompareTag("Player");
             if (player)
             {
+                if (!DamageCaster.IsWithinPlayerHitbox(circle != null ? circle : GetComponent<Collider2D>(), other)) return;
                 DamageCaster.ApplyDamage(
                     other.transform,
                     new DamageData(damage, DamageType.Projectile)

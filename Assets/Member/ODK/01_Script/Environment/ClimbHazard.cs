@@ -115,6 +115,7 @@ namespace Member.ODK.Scripts.Environment
             int mask = 1 << other.gameObject.layer;
             bool isPlayer = (playerLayer.value & mask) != 0 || other.transform.root.CompareTag("Player");
             if (!isPlayer) return;
+            if (!DamageCaster.IsWithinPlayerHitbox(GetComponent<Collider2D>(), other)) return;
             nextHitTime = Time.time + hitCooldown;
             DamageCaster.ApplyDamage(other.transform, new DamageData(damage, DamageType.Projectile));
             owner?.NotifyHazardHit(transform.position);

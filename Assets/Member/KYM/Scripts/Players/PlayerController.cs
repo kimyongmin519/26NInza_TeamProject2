@@ -32,6 +32,12 @@ namespace Member.KYM.Scripts.Players
         [SerializeField] private SoundClipSO jumpSound;
         [SerializeField] private SoundClipSO landingSound;
         [SerializeField] private SoundClipSO hurtSound;
+        [SerializeField] private SoundClipSO[] projectileHitSounds;
+
+        [Header("적에게 피해를 입혔을 때 카메라 흔들림")]
+        [SerializeField] private EventChannelSO cameraChannel;
+        [SerializeField, Min(0f)] private float enemyHitShakePower = 0.5f;
+        [SerializeField, Min(0f)] private float enemyHitShakeDuration = 0.2f;
         
         [field:Header("PP")]
         [field:SerializeField] public EventChannelSO PostProcessChannel { get; private set; }
@@ -195,6 +201,33 @@ namespace Member.KYM.Scripts.Players
         public void PlayJumpSound() => PlaySound(jumpSound);
 
         public void PlayLandingSound() => PlaySound(landingSound);
+
+        public void PlayProjectileHitSound(Vector2 hitPoint)
+        {
+            if (soundChannel == null || projectileHitSounds == null || projectileHitSounds.Length == 0)
+                return;
+
+            int startIndex = Random.Range(0, projectileHitSounds.Length);
+            for (int i = 0; i < projectileHitSounds.Length; i++)
+            {
+                SoundClipSO clip = projectileHitSounds[(startIndex + i) % projectileHitSounds.Length];
+                if (clip == null || clip.audioClip == null)
+                    continue;
+
+                soundChannel.RaiseEvent(
+                    SoundEvent.PlaySoundEvent.InitData(hitPoint, clip));
+                return;
+            }
+        }
+
+        public void PlayEnemyHitShake()
+        {
+            if (cameraChannel == null || enemyHitShakePower <= 0f || enemyHitShakeDuration <= 0f)
+                return;
+
+            cameraChannel.RaiseEvent(
+                new CameraShakeEvent().InitData(enemyHitShakePower, enemyHitShakeDuration));
+        }
 
         private void PlaySound(SoundClipSO clip)
         {
