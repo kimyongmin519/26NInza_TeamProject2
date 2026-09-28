@@ -20,7 +20,7 @@ namespace Member.KYM.Scripts.EffectSystems
 
         private void Update()
         {
-            _elapsed += Time.deltaTime;
+            _elapsed += Time.unscaledDeltaTime;
             float offsetY = Mathf.Sin(_elapsed * Mathf.PI * 2f / cycleDuration) * height;
             Vector2 dir = startDirIsDown ? Vector2.up : Vector2.down;
             transform.localPosition = _startLocalPosition + (Vector3)dir * offsetY;
