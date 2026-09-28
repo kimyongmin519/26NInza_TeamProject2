@@ -419,6 +419,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 08a1bb9275db590438e9566ea28fb412, type: 3}
+--- !u!114 &258169338 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8066096889021373622, guid: 08a1bb9275db590438e9566ea28fb412, type: 3}
+  m_PrefabInstance: {fileID: 258169337}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce37d22fb2644cde95e27470824337e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.BgmManager
 --- !u!1 &310978961
 GameObject:
   m_ObjectHideFlags: 0
@@ -1424,7 +1435,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7
+  orthographic size: 3
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1449,7 +1460,7 @@ Transform:
   m_GameObject: {fileID: 547614580}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.34555626, y: 1.4199998, z: -10}
+  m_LocalPosition: {x: -8.36973, y: -0.024039984, z: -5.795974}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2469,6 +2480,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: cb50c1c8149195d4d8ff1b080b655fea, type: 2}
     - {fileID: 11400000, guid: 4577eb352361ae84b8688f04e53be24a, type: 2}
     - {fileID: 11400000, guid: aae3d87d88d8c33479a03037d63be124, type: 2}
+    - {fileID: 11400000, guid: dc2eddf743a1006438a26821927fafbf, type: 2}
     m_Events:
     - m_PersistentCalls:
         m_Calls: []
@@ -2584,6 +2596,20 @@ MonoBehaviour:
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 258169338}
+          m_TargetAssemblyTypeName: Member.KYM.Scripts.CoreSystems.BgmManager, Assembly-CSharp
+          m_MethodName: PlayBgm
+          m_Mode: 2
+          m_Arguments:
+            m_ObjectArgument: {fileID: 11400000, guid: a45faf1785931ab40a60f41cc5c50e81, type: 2}
+            m_ObjectArgumentAssemblyTypeName: KimLIb.SoundSystem.SoundClipSO, Assembly-CSharp
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
@@ -10676,10 +10702,6 @@ PrefabInstance:
     - target: {fileID: 1262674556015165942, guid: 23126d935a7e35844bedbe8b0070443a, type: 3}
       propertyPath: m_Name
       value: GameOverCanvas
-      objectReference: {fileID: 0}
-    - target: {fileID: 4532971450009490186, guid: 23126d935a7e35844bedbe8b0070443a, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 124.99994
       objectReference: {fileID: 0}
     - target: {fileID: 7151823156426051534, guid: 23126d935a7e35844bedbe8b0070443a, type: 3}
       propertyPath: m_Pivot.x
