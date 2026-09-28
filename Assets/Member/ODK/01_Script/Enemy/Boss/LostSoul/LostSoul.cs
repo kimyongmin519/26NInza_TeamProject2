@@ -3,6 +3,7 @@ using DG.Tweening;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
+using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.LostSoul
@@ -28,6 +29,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField, Range(0.5f, 1.2f)] private float animationSpeed = 0.82f;
         [SerializeField] private bool prefabFacesRight = true;
         [SerializeField] private int bodySortingOrder = 45;
+        [SerializeField] private string bodySortingLayer = "Vfx";
+        [SerializeField] private float teleportEdgeMargin = 1.2f;
 
         [Header("Collision")]
         [SerializeField] private LayerMask playerLayer = 1 << 6;
@@ -82,6 +85,9 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             visualScale = visualRoot != null ? visualRoot.localScale : Vector3.one;
             ConfigureBody();
             SnapToGround();
+            ApplySortingLayer(bodyRenderer);
+            ApplySortingLayer(outlineRenderer);
+            ApplySortingLayer(darknessOverlay);
             if (bodyRenderer != null) bodyRenderer.sortingOrder = bodySortingOrder;
             if (outlineRenderer != null)
             {
@@ -324,12 +330,55 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             animator.CrossFade(hash, fade, 0, startTime);
         }
 
+        private void ApplySortingLayer(Renderer target)
+        {
+            if (target == null || string.IsNullOrEmpty(bodySortingLayer)) return;
+            if (SortingLayer.NameToID(bodySortingLayer) == 0 && bodySortingLayer != "Default") return;
+            target.sortingLayerName = bodySortingLayer;
+        }
+
+        public void GetTeleportRange(out float minimum, out float maximum)
+        {
+            float margin = Mathf.Max(0f, teleportEdgeMargin);
+            minimum = ArenaCenter.x - ArenaHalfWidth + margin;
+            maximum = ArenaCenter.x + ArenaHalfWidth - margin;
+            CinemachineConfiner2D confiner = FindFirstObjectByType<CinemachineConfiner2D>();
+            if (confiner == null || confiner.BoundingShape2D == null) return;
+            Bounds bounds = confiner.BoundingShape2D.bounds;
+            float cameraMinimum = bounds.min.x + margin;
+            float cameraMaximum = bounds.max.x - margin;
+            float clampedMinimum = Mathf.Max(minimum, cameraMinimum);
+            float clampedMaximum = Mathf.Min(maximum, cameraMaximum);
+            if (clampedMinimum <= clampedMaximum)
+            {
+                minimum = clampedMinimum;
+                maximum = clampedMaximum;
+            }
+            else if (cameraMinimum <= cameraMaximum)
+            {
+                minimum = cameraMinimum;
+                maximum = cameraMaximum;
+            }
+        }
+
+        public float ClampTeleportX(float x)
+        {
+            GetTeleportRange(out float minimum, out float maximum);
+            return minimum <= maximum ? Mathf.Clamp(x, minimum, maximum) : x;
+        }
+
         public Vector3 TeleportToTarget(float sideDistance = 0f)
         {
             if (Target == null) return transform.position;
+            GetTeleportRange(out float minimum, out float maximum);
             float side = Random.value < 0.5f ? -1f : 1f;
             float x = Target.position.x + side * sideDistance;
-            x = Mathf.Clamp(x, ArenaCenter.x - ArenaHalfWidth + 1f, ArenaCenter.x + ArenaHalfWidth - 1f);
+            if (x < minimum || x > maximum)
+            {
+                float flipped = Target.position.x - side * sideDistance;
+                if (flipped >= minimum && flipped <= maximum) x = flipped;
+            }
+            if (minimum <= maximum) x = Mathf.Clamp(x, minimum, maximum);
             Vector3 point = GetGroundPoint(x) + Vector3.up * 0.05f;
             point.z = transform.position.z;
             transform.DOKill();
@@ -340,7 +389,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         public Vector3 MoveToArenaCenter()
         {
-            Vector3 point = GetGroundPoint(ArenaCenter.x) + Vector3.up * 0.05f;
+            Vector3 point = GetGroundPoint(ClampTeleportX(ArenaCenter.x)) + Vector3.up * 0.05f;
             point.z = transform.position.z;
             transform.position = point;
             feedback?.PlayCenterMove();
@@ -365,7 +414,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             {
                 float top = ArenaCenter.y + ArenaHalfHeight - portalEdgePadding;
                 point.y = Mathf.Min(point.y, top);
-                point.x = Mathf.Clamp(point.x, ArenaCenter.x - ArenaHalfWidth + 1f, ArenaCenter.x + ArenaHalfWidth - 1f);
+                point.x = ClampTeleportX(point.x);
             }
             point.z = transform.position.z;
             return point;

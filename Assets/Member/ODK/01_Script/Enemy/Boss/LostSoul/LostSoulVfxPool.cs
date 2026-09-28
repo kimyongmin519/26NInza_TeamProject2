@@ -9,6 +9,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
     public sealed class LostSoulVfxPool : MonoBehaviour
     {
         [SerializeField] private PoolManagerSO poolManager;
+        [SerializeField] private string effectSortingLayer = "Vfx";
+        [SerializeField] private int effectSortingOrder = 60;
 
         private readonly HashSet<PoolableVfx> activeEffects = new();
         private bool initialized;
@@ -32,8 +34,21 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             effect.OnVfxEnd -= HandleEffectEnd;
             effect.OnVfxEnd += HandleEffectEnd;
             activeEffects.Add(effect);
+            ApplySorting(effect);
             effect.PlayVfx(new VfxSpawnContext(position, rotation, Color.white));
             return true;
+        }
+
+        private void ApplySorting(PoolableVfx effect)
+        {
+            bool validLayer = !string.IsNullOrEmpty(effectSortingLayer) &&
+                              (SortingLayer.NameToID(effectSortingLayer) != 0 || effectSortingLayer == "Default");
+            foreach (Renderer renderer in effect.GetComponentsInChildren<Renderer>(true))
+            {
+                if (renderer == null) continue;
+                if (validLayer) renderer.sortingLayerName = effectSortingLayer;
+                renderer.sortingOrder = effectSortingOrder;
+            }
         }
 
         private bool EnsureInitialized()

@@ -75,6 +75,8 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [SerializeField] private string bossSubtitle;
         [SerializeField] private Color titleColor = Color.white;
         [SerializeField] private Color subtitleColor = new Color(1f, 1f, 1f, 0.7f);
+        [SerializeField] private TMP_FontAsset titleFont;
+        [SerializeField] private string fallbackFontKeyword = "Hangul";
 
         [Header("Camera")]
         [SerializeField] private Vector2 focusOffset = new Vector2(0f, 1f);
@@ -461,10 +463,13 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             titleGroup = titleRoot.AddComponent<CanvasGroup>();
             titleGroup.alpha = 0f;
 
+            TMP_FontAsset font = ResolveFont();
             titleText = CreateText(titleRoot.transform, "Name", 96f, titleColor, new Vector2(0f, 60f));
+            if (font != null) titleText.font = font;
             titleText.fontStyle = FontStyles.Bold;
             titleText.characterSpacing = 18f;
             subtitleText = CreateText(titleRoot.transform, "Subtitle", 40f, subtitleColor, new Vector2(0f, -20f));
+            if (font != null) subtitleText.font = font;
             subtitleText.fontStyle = FontStyles.Italic;
         }
 
@@ -481,6 +486,21 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             image.color = Color.black;
             image.raycastTarget = false;
             return rect;
+        }
+
+        private TMP_FontAsset ResolveFont()
+        {
+            if (titleFont != null) return titleFont;
+            if (string.IsNullOrEmpty(fallbackFontKeyword)) return null;
+            foreach (TMP_FontAsset candidate in Resources.FindObjectsOfTypeAll<TMP_FontAsset>())
+            {
+                if (candidate != null && candidate.name.IndexOf(fallbackFontKeyword, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    titleFont = candidate;
+                    return candidate;
+                }
+            }
+            return null;
         }
 
         private static TextMeshProUGUI CreateText(Transform parent, string textName, float size, Color color, Vector2 position)

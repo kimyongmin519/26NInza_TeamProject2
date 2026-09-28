@@ -608,6 +608,8 @@ MonoBehaviour:
   bossSubtitle: "\uB05D\uC5C6\uB294 \uD0D1\uC758 \uAC80\uAC1D"
   titleColor: {r: 1, g: 1, b: 1, a: 1}
   subtitleColor: {r: 1, g: 1, b: 1, a: 0.7}
+  titleFont: {fileID: 11400000, guid: 83f461b325fe26e47b08a55076b63910, type: 2}
+  fallbackFontKeyword: Hangul
   focusOffset: {x: 0, y: 1}
   focusPriority: 500
   steps: []
@@ -1088,7 +1090,7 @@ SpriteRenderer:
   m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: -6228484584480434237, guid: 32edea1700a911444ad300a62adfd8c8, type: 3}
-  m_Color: {r: 0.96918833, g: 0.4198113, b: 1, a: 1}
+  m_Color: {r: 0.64222014, g: 0.41960788, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
