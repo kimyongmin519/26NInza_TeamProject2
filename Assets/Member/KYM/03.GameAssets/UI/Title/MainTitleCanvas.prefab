@@ -299,6 +299,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: Member.KYM.Scripts.CoreSystems.BgmManager, Assembly-CSharp
+        m_MethodName: PlayBgm
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11400000, guid: 644f7a3cf913f9b42b0655d3cced270f, type: 2}
+          m_ObjectArgumentAssemblyTypeName: KimLIb.SoundSystem.SoundClipSO, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &7251138637194532943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1043,6 +1055,7 @@ GameObject:
   - component: {fileID: 8493435317136115955}
   - component: {fileID: 6237638679361485597}
   - component: {fileID: 1746872749375655974}
+  - component: {fileID: 8176520737006430456}
   m_Layer: 5
   m_Name: MainTitleCanvas
   m_TagString: Untagged
@@ -1185,6 +1198,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.UI.MainTitle.CanvasGroupVisibler
   canvasGroup: {fileID: 6237638679361485597}
+--- !u!114 &8176520737006430456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3467264090061865227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a45259ed1a2a4809982108234ea438a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.UI.UIButtonSoundBinder
+  soundChannel: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
+  hoverSound: {fileID: 11400000, guid: 4495f45f5b2cd41479536160dc3d4e8b, type: 2}
+  clickSound: {fileID: 11400000, guid: 098ea555990284a49acc3cbe8a74929b, type: 2}
 --- !u!1 &5315736137681322370
 GameObject:
   m_ObjectHideFlags: 0

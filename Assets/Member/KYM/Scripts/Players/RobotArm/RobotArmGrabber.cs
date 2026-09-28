@@ -205,6 +205,8 @@ namespace Member.KYM.Scripts.Players.RobotArm
             _heldObject.Grab(grabPoint, throwOwner != null ? throwOwner.gameObject : null);
             fingerAnimator?.SetClosed(true);
             OnHeldObjectChanged?.Invoke(_heldObject);
+
+            PlayCatchSound();
             
             if (caughtEnemyProjectile)
             {
@@ -217,12 +219,6 @@ namespace Member.KYM.Scripts.Players.RobotArm
                         enemyCatchEffectItem, effectPosition, grabPoint.rotation));
                 }
 
-                if (soundChannel != null && catchSound != null && catchSound.audioClip != null)
-                {
-                    soundChannel.RaiseEvent(SoundEvent.PlaySoundEvent.InitData(
-                        transform.position, catchSound));
-                }
-
                 if (soundChannel != null && additionalCatchSound != null && additionalCatchSound.audioClip != null)
                 {
                     soundChannel.RaiseEvent(SoundEvent.PlaySoundEvent.InitData(
@@ -231,6 +227,15 @@ namespace Member.KYM.Scripts.Players.RobotArm
             }
             
             return true;
+        }
+
+        public void PlayCatchSound()
+        {
+            if (soundChannel == null || catchSound == null || catchSound.audioClip == null)
+                return;
+
+            soundChannel.RaiseEvent(SoundEvent.PlaySoundEvent.InitData(
+                transform.position, catchSound));
         }
 
         public void SetActionLocked(bool locked)

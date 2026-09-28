@@ -71,7 +71,10 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 return;
 
             if (grappler.TryStartNearest(grabber.GrabPoint.position))
+            {
+                grabber.PlayCatchSound();
                 return;
+            }
 
             grabber.PlayFailedAction();
         }
