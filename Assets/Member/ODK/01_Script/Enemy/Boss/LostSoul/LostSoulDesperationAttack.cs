@@ -11,6 +11,10 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float moveDuration = 0.24f;
         [SerializeField] private float slashReadyTime = 0.12f;
 
+        [Header("Enrage Scream")]
+        [SerializeField] private float enrageShakePower = 3f;
+        [SerializeField] private float enrageShakePulseInterval = 0.1f;
+
         [Header("Weak Soul Stream")]
         [SerializeField] private float weakSoulInterval = 0.34f;
         [SerializeField] private float weakSoulSpeed = 8.5f;
@@ -41,6 +45,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         private Coroutine weakSoulRoutine;
         private bool enrageStarted;
+        private Coroutine enrageShakeRoutine;
         private bool running;
         private bool frenzyAnimationPlaying;
 
@@ -73,6 +78,26 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             if (enrageStarted) return;
             enrageStarted = true;
             Boss.PlayDesperationScreamFeedback();
+            StopEnrageShake();
+            enrageShakeRoutine = StartCoroutine(EnrageShake());
+        }
+
+        private IEnumerator EnrageShake()
+        {
+            float interval = Mathf.Max(0.03f, enrageShakePulseInterval);
+            while (running && Boss != null && !Boss.IsDead && !Boss.PlayerDefeated)
+            {
+                Boss.ShakeCameraFor(enrageShakePower, interval * 2.5f);
+                yield return new WaitForSeconds(interval);
+            }
+            enrageShakeRoutine = null;
+        }
+
+        private void StopEnrageShake()
+        {
+            if (enrageShakeRoutine == null) return;
+            StopCoroutine(enrageShakeRoutine);
+            enrageShakeRoutine = null;
         }
 
         private IEnumerator NormalCycle(Transform target)
@@ -230,6 +255,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         private void StopWeakSoulStream()
         {
             running = false;
+            StopEnrageShake();
             if (weakSoulRoutine == null) return;
             StopCoroutine(weakSoulRoutine);
             weakSoulRoutine = null;

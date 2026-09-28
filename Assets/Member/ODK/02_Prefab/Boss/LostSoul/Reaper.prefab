@@ -2158,8 +2158,6 @@ MonoBehaviour:
   arenaPadding: 1.25
   moveDuration: 0.55
   slashReadyTime: 0.5
-  enrageShakePower: 3
-  enrageShakePulseInterval: 0.1
   weakSoulInterval: 2
   weakSoulSpeed: 7
   weakSoulSpawnMargin: 1.2
@@ -2178,5 +2176,5 @@ MonoBehaviour:
   enrageHealth: 0.12
   enrageSlashInterval: 0.08
   enrageWarningDuration: 0.9
-  enrageMinimumDistance: 3.5
-  enrageMaximumDistance: 16
+  enrageMinimumDistance: 4.5
+  enrageMaximumDistance: 20
