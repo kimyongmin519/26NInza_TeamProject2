@@ -41,6 +41,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private LostSoulProjectile soulProjectilePrefab;
         [SerializeField] private LostSoulGrabbableProjectile weakSoulProjectilePrefab;
         [SerializeField] private LostSoulSlashBeam slashBeamPrefab;
+        [SerializeField, Min(0f)] private float minimumSlashLength = 80f;
         [SerializeField] private float projectileDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float thrownSoulDamage = 1f;
 
@@ -528,6 +529,13 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             float preFireRotationDegrees = 0f)
         {
             if (slashBeamPrefab == null) return null;
+            Vector2 slashDirection = direction.sqrMagnitude > 0.001f ? direction.normalized : Vector2.right;
+            if (length < minimumSlashLength)
+            {
+                origin -= (Vector3)slashDirection * ((minimumSlashLength - length) * 0.5f);
+                length = minimumSlashLength;
+            }
+            direction = slashDirection;
             LostSoulSlashBeam beam = ODKPool.Spawn(slashBeamPrefab, origin, Quaternion.identity);
             if (beam == null) return null;
             beam.Initialize(this, origin, direction, length, width, warningDuration, activeDuration, damage, color, preFireRotationDegrees);
@@ -663,6 +671,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         public void PlaySlashFeedback() => feedback?.PlaySlash();
         public void PlayFadeSlashFeedback() => feedback?.PlayFadeSlash();
         public void PlayDesperationScreamFeedback() => feedback?.PlayDesperationScream();
+        public void PreloadDesperationScream() => feedback?.PreloadDesperationScream();
         public void PlayCastFeedback() => feedback?.PlayCast();
         public void PlayBeamWarningFeedback() => feedback?.PlayBeamWarning();
         public void PlayBeamFireFeedback() => feedback?.PlayBeamFire();

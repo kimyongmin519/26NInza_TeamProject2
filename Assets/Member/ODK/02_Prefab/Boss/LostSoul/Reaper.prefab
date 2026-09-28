@@ -145,6 +145,7 @@ MonoBehaviour:
   soulProjectilePrefab: {fileID: 100005, guid: a3000000000000000000000000000001, type: 3}
   weakSoulProjectilePrefab: {fileID: 100005, guid: a3000000000000000000000000000002, type: 3}
   slashBeamPrefab: {fileID: 100004, guid: a3000000000000000000000000000004, type: 3}
+  minimumSlashLength: 80
   projectileDamage: 1
   thrownSoulDamage: 1
   portalHeight: 4.2
@@ -306,6 +307,7 @@ MonoBehaviour:
   fadeSlash: {fileID: 11400000, guid: 2c2ec7dd8a1c7de4c915d8a1aa7cdb38, type: 2}
   directionCue: {fileID: 11400000, guid: 3698e1f5e73c5df459357923951b3b0e, type: 2}
   desperationScream: {fileID: 11400000, guid: 49b31e2468318364d9f1bbe73246316a, type: 2}
+  desperationScreamVolume: 2.5
   hit: {fileID: 11400000, guid: 3698e1f5e73c5df459357923951b3b0e, type: 2}
   death: {fileID: 11400000, guid: c6b798e74da0a994698260b3c6bd31c4, type: 2}
   projectileSoundInterval: 0.07
@@ -1378,7 +1380,7 @@ MonoBehaviour:
   responseTime: 0.2
   slashRevealDuration: 0.14
   betweenCuts: 0.18
-  cutCountRange: {x: 3, y: 6}
+  cutCountRange: {x: 3, y: 5}
   moveDistance: 0.35
   jumpDistance: 0.2
   crouchHeightRatio: 0.95
@@ -2156,7 +2158,9 @@ MonoBehaviour:
   arenaPadding: 1.25
   moveDuration: 0.55
   slashReadyTime: 0.5
-  weakSoulInterval: 0.5
+  enrageShakePower: 3
+  enrageShakePulseInterval: 0.1
+  weakSoulInterval: 2
   weakSoulSpeed: 7
   weakSoulSpawnMargin: 1.2
   slashWarningDuration: 1
@@ -2172,7 +2176,7 @@ MonoBehaviour:
   minimumDirections: 2
   maximumDirections: 4
   enrageHealth: 0.12
-  enrageSlashInterval: 0.26
+  enrageSlashInterval: 0.08
   enrageWarningDuration: 0.9
-  enrageMinimumDistance: 1
+  enrageMinimumDistance: 3.5
   enrageMaximumDistance: 16
