@@ -37,6 +37,27 @@ namespace Member.YKJ.Bosses
         private int _zone;
         private int _landedCount;
         private bool _pendingTongue;
+        private MimicPattern _companionOwner;
+        private bool _stopAfterLanding;
+
+        private bool IsCurrent => Boss.Patterns.Current == (_companionOwner != null ? _companionOwner : this);
+        public bool IsRunningAlongside(MimicPattern owner) => _companionOwner != null && _companionOwner == owner;
+
+        public void StartAlongside(MimicPattern owner)
+        {
+            OnStart();
+            _companionOwner = owner;
+        }
+
+        public void RequestStopAlongside(MimicPattern owner)
+        {
+            if (IsRunningAlongside(owner)) _stopAfterLanding = true;
+        }
+
+        public void StopAlongside(MimicPattern owner)
+        {
+            if (IsRunningAlongside(owner)) OnEnd();
+        }
 
         public int LandedCount => _landedCount;
         public override bool CanStart() => Boss != null && Boss.Arena != null && Boss.Arena.IsConfigured &&
@@ -44,6 +65,8 @@ namespace Member.YKJ.Bosses
 
         public override void OnStart()
         {
+            _companionOwner = null;
+            _stopAfterLanding = false;
             _zone = -1;
             _landedCount = 0;
             _pendingTongue = false;
@@ -127,6 +150,12 @@ namespace Member.YKJ.Bosses
                 case Step.Landed:
                     if (_elapsed < landingDelay)
                         return;
+                    if (_companionOwner != null)
+                    {
+                        if (_stopAfterLanding) OnEnd();
+                        else PrepareJump();
+                        return;
+                    }
                     if (_pendingTongue)
                     {
                         _pendingTongue = false;
@@ -152,12 +181,12 @@ namespace Member.YKJ.Bosses
             Boss.CombatVfx?.Land();
             if (feedbackChannel != null && landingFeedback != null)
                 feedbackChannel.RaiseEvent(new PlayFeedBack().Init(landingFeedback.FeedBackId));
-            if (Boss.Patterns.Current != this)
+            if (!IsCurrent)
                 return;
             MimicCombat.DamageBox(_warningBounds, playerLayers, landingDamage, Boss.transform);
-            if (Boss.Patterns.Current != this)
+            if (!IsCurrent)
                 return;
-            if (_landedCount == Mathf.CeilToInt(jumpCount * 0.5f) && _landedCount < jumpCount)
+            if (_companionOwner == null && _landedCount == Mathf.CeilToInt(jumpCount * 0.5f) && _landedCount < jumpCount)
                 _pendingTongue = true;
         }
 
@@ -172,10 +201,16 @@ namespace Member.YKJ.Bosses
             if (_step == Step.Flight) afterimage?.Begin();
         }
 
-        private void OnDisable() => afterimage?.Stop(true);
+        private void OnDisable()
+        {
+            if (_companionOwner != null) OnEnd();
+            else afterimage?.Stop(true);
+        }
 
         public override void OnEnd()
         {
+            _companionOwner = null;
+            _stopAfterLanding = false;
             afterimage?.Stop(true);
             Boss.BodyAnimator?.ResetPose();
             if (landingWarning != null)
