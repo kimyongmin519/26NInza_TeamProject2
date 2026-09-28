@@ -72,7 +72,7 @@ MonoBehaviour:
   arena: {fileID: 0}
   groundRayHeight: 20
   groundRayDistance: 50
-  drawDebugGizmos: 1
+  drawDebugGizmos: 0
   cameraImpulseSource: {fileID: 100009}
   cameraShakeMinimumInterval: 0.07
   cameraChannel: {fileID: 0}
@@ -144,14 +144,19 @@ MonoBehaviour:
   bodyHitboxOffset: {x: 0, y: 1.35}
   soulProjectilePrefab: {fileID: 100005, guid: a3000000000000000000000000000001, type: 3}
   weakSoulProjectilePrefab: {fileID: 100005, guid: a3000000000000000000000000000002, type: 3}
-  slashBeamPrefab: {fileID: 0}
+  slashBeamPrefab: {fileID: 100004, guid: a3000000000000000000000000000004, type: 3}
+  minimumSlashLength: 80
   projectileDamage: 1
   thrownSoulDamage: 1
   portalHeight: 4.2
   portalOpenDuration: 0.35
   portalRepeatInterval: 0.4
   portalEdgePadding: 1.2
-  phaseTwoHealthRatio: 0.25
+  passiveWeakSouls: 1
+  passiveWeakSoulInterval: {x: 1.6, y: 2.4}
+  passiveWeakSoulSpeed: 6.5
+  passiveWeakSoulMargin: 1.2
+  phaseTwoHealthRatio: 0.4
   idleState: ready
   hitState: hit
   deathState: dead
@@ -302,6 +307,7 @@ MonoBehaviour:
   fadeSlash: {fileID: 11400000, guid: 2c2ec7dd8a1c7de4c915d8a1aa7cdb38, type: 2}
   directionCue: {fileID: 11400000, guid: 3698e1f5e73c5df459357923951b3b0e, type: 2}
   desperationScream: {fileID: 11400000, guid: 49b31e2468318364d9f1bbe73246316a, type: 2}
+  desperationScreamVolume: 2.5
   hit: {fileID: 11400000, guid: 3698e1f5e73c5df459357923951b3b0e, type: 2}
   death: {fileID: 11400000, guid: c6b798e74da0a994698260b3c6bd31c4, type: 2}
   projectileSoundInterval: 0.07
@@ -863,8 +869,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
-  <MaxHealth>k__BackingField: 80
-  <CurrentHealth>k__BackingField: 80
+  <MaxHealth>k__BackingField: 65
+  <CurrentHealth>k__BackingField: 65
 --- !u!1 &130000
 GameObject:
   m_ObjectHideFlags: 0
@@ -997,7 +1003,7 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
-  hitPadding: 0.35
+  playerHitScale: 0.3
   castingMode: 1
   castingDuration: 0.12
   debugMode: 1
@@ -1086,7 +1092,7 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
-  hitPadding: 0.35
+  playerHitScale: 0.3
   castingMode: 0
   castingDuration: 0.2
   debugMode: 1
@@ -1173,7 +1179,7 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
-  hitPadding: 0.35
+  playerHitScale: 0.3
   castingMode: 0
   castingDuration: 0.2
   debugMode: 1
@@ -1289,14 +1295,14 @@ MonoBehaviour:
   animationStateName: attack
   startupDelay: 0.3
   recoveryDelay: 0.45
-  warningDuration: 0.58
+  warningDuration: 0.7
   activeDuration: 0.16
   cutThickness: 0.62
   damage: 1
   betweenCuts: 0.3
   beamColor: {r: 0.94, g: 0.9, b: 1, a: 1}
-  followUpWarningScale: 0.6
-  followUpGap: 0.04
+  followUpWarningScale: 0.85
+  followUpGap: 0.3
 --- !u!1 &136000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1374,10 +1380,12 @@ MonoBehaviour:
   responseTime: 0.2
   slashRevealDuration: 0.14
   betweenCuts: 0.18
-  cutCountRange: {x: 3, y: 6}
+  cutCountRange: {x: 3, y: 5}
   moveDistance: 0.35
   jumpDistance: 0.2
   crouchHeightRatio: 0.95
+  jumpUpwardSpeed: 0.5
+  avoidGraceTime: 0.15
   damage: 1
   damageRadius: 1.35
 --- !u!114 &136003
@@ -1405,7 +1413,7 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
-  hitPadding: 0.35
+  playerHitScale: 0.3
   castingMode: 0
   castingDuration: 0.2
   debugMode: 1
@@ -2148,24 +2156,27 @@ MonoBehaviour:
   startupDelay: 0.35
   recoveryDelay: 0
   arenaPadding: 1.25
-  moveDuration: 0.45
+  moveDuration: 0.55
   slashReadyTime: 0.5
-  weakSoulInterval: 0.5
+  enrageShakePower: 3
+  enrageShakePulseInterval: 0.1
+  weakSoulInterval: 2
   weakSoulSpeed: 7
   weakSoulSpawnMargin: 1.2
-  slashWarningDuration: 0.85
+  slashWarningDuration: 1
   slashActiveDuration: 0.16
   slashWidth: 0.52
   slashDamage: 1
   slashColor: {r: 0.94, g: 0.9, b: 1, a: 1}
-  rotatingSlashHealth: 0.2
+  phaseStartHealth: 0.4
+  rotatingSlashHealth: 0.25
   rotatingDegrees: 145
-  cycleIntervalAt25: 1.2
-  cycleIntervalAt10: 0.8
+  cycleIntervalAt25: 1.55
+  cycleIntervalAt10: 1.1
   minimumDirections: 2
-  maximumDirections: 5
-  enrageHealth: 0.1
-  enrageSlashInterval: 0.16
-  enrageWarningDuration: 0.75
-  enrageMinimumDistance: 1
+  maximumDirections: 4
+  enrageHealth: 0.12
+  enrageSlashInterval: 0.08
+  enrageWarningDuration: 0.9
+  enrageMinimumDistance: 3.5
   enrageMaximumDistance: 16
