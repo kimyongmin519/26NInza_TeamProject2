@@ -1,0 +1,1062 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &20286883466844222
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4125592756074736742}
+  - component: {fileID: 1827400542855079393}
+  m_Layer: 0
+  m_Name: Moon Mini Dash
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4125592756074736742
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 20286883466844222}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8185285824828877194}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1827400542855079393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 20286883466844222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88811398c0934cf79fe7d3f6290374ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonMiniDashAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: 54a1bcae83984334a269f42074f96d0f, type: 2}
+  animationStateName: 
+  shrinkScale: 0.42
+  shrinkDuration: 0.32
+  dashCount: 8
+  dashCountCap: 8
+  contactRadius: 0.85
+  contactDamage: 1
+  motion:
+    chaseAcceleration: 30
+    dashImpulse: 22
+    cruiseMaxSpeed: 14
+    overspeedDamping: 16
+    drag: 0.6
+    dashInterval: 0.58
+    firstDashDelay: 0.1
+  wallBounceKeep: 0.55
+  lightEveryDash: 2
+  lightWarningDuration: 0.28
+  lightActiveDuration: 0.16
+  lightWidth: 0.3
+  lightDamage: 1
+  lightColor: {r: 0.65, g: 0.82, b: 1, a: 1}
+--- !u!1 &149144801340966687
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5536058232868923385}
+  - component: {fileID: 2767759178670639906}
+  - component: {fileID: 6987453586054707018}
+  - component: {fileID: 2244064034269702148}
+  - component: {fileID: 6691165489152826617}
+  m_Layer: 0
+  m_Name: Visual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5536058232868923385
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 149144801340966687}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 480896848702239594}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &2767759178670639906
+SpriteRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 149144801340966687}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: -3
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: 0e7d67146815dcb4595ce77c080d05c3, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 3.13, y: 3.13}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+--- !u!95 &6987453586054707018
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 149144801340966687}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d992833cad877da41b8a8e6c2f6d2ec0, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2244064034269702148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 149144801340966687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4878f9395a0343caa28f6f89238c572c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Agents.AgentRenderer
+  <FacingDirection>k__BackingField: 1
+--- !u!114 &6691165489152826617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 149144801340966687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6fe4cd5db9e425fa5fe2c1b79222130, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Agents.AgentSensor
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  boxSize: {x: 1, y: 1}
+  boxOffset: {x: 0, y: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  groundCheckSize: {x: 1.5, y: 0.3}
+  groundCheckOffset: {x: 0, y: -1.6}
+  maxColliderCount: 5
+--- !u!1 &1870052285945309591
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7325194192384663638}
+  - component: {fileID: 3798428271052000435}
+  m_Layer: 0
+  m_Name: Move
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7325194192384663638
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1870052285945309591}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.4744067, y: -3.0711937, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 480896848702239594}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3798428271052000435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1870052285945309591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11b6adf92d794234bf36f7ae363d06c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.Players.PlayerMover
+  moveSpeed: 0
+  dropThroughSpeed: 2
+  dropThroughDelay: 1
+  useExtraGravity: 0
+  extraGravityDelay: 0
+  extraGravityPower: 0
+  externalVelocityDamping: 20
+--- !u!1 &2070043731478686166
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3186962343593874632}
+  - component: {fileID: 913999266785469479}
+  m_Layer: 0
+  m_Name: Moon Orbit Beam
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3186962343593874632
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2070043731478686166}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8185285824828877194}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &913999266785469479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2070043731478686166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d80b0f0b218f4441b4c1a49d14e1912e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonOrbitBeamAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: f780a3c4062142a49fd14bd29854bfd8, type: 2}
+  animationStateName: 
+  arenaPadding: 1.5
+  entryDuration: 0.55
+  legDuration: 1.15
+  returnDuration: 0.5
+  travelFloatAmplitude: 0.55
+  travelFloatCycles: 1.5
+  shotInterval: 0.29
+  randomAngle: 9
+  beamWarningDuration: 0.4
+  beamActiveDuration: 0.16
+  beamWidth: 0.32
+  beamDamage: 1
+  beamColor: {r: 0.55, g: 0.8, b: 1, a: 1}
+  cloneInterval: 0.85
+  cloneSpeed: 8
+  cloneDamage: 1
+  cloneDuration: 9
+  cloneColor: {r: 0.72, g: 0.82, b: 1, a: 0.8}
+  cloneMotion:
+    chaseAcceleration: 30
+    dashImpulse: 22
+    cruiseMaxSpeed: 14
+    overspeedDamping: 16
+    drag: 0.6
+    dashInterval: 0.58
+    firstDashDelay: 0.1
+--- !u!1 &2296282511082638970
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1216266136606159776}
+  m_Layer: 0
+  m_Name: DeathModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1216266136606159776
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2296282511082638970}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.4744067, y: -3.0711937, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 480896848702239594}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3039258266313323829
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1781779459354434721}
+  - component: {fileID: 1795139631257598990}
+  m_Layer: 0
+  m_Name: HealthModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1781779459354434721
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3039258266313323829}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.4744067, y: -3.0711937, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 480896848702239594}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1795139631257598990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3039258266313323829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
+  <MaxHealth>k__BackingField: 50
+  <CurrentHealth>k__BackingField: 50
+--- !u!1 &3794666144031011404
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 480896848702239594}
+  - component: {fileID: 3328576730835702910}
+  - component: {fileID: 6104605189522577612}
+  - component: {fileID: 2466957261999173778}
+  - component: {fileID: 5083262448506206694}
+  - component: {fileID: 5141975892121951349}
+  - component: {fileID: 7372483207482707961}
+  - component: {fileID: 7999411954055856346}
+  - component: {fileID: 3368410209886244019}
+  - component: {fileID: 7488356813069278717}
+  m_Layer: 0
+  m_Name: Moon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &480896848702239594
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -10.88, y: 20.23, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8185285824828877194}
+  - {fileID: 1781779459354434721}
+  - {fileID: 5536058232868923385}
+  - {fileID: 7325194192384663638}
+  - {fileID: 1216266136606159776}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3328576730835702910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e4726eaa4af4b2c8d59672667ab08a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonBoss
+  attackInterval: 1
+  playOnStart: 1
+  playIntro: 1
+  summonPresentation: {fileID: 5141975892121951349}
+  deathPresentation: {fileID: 7372483207482707961}
+  target: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  arena: {fileID: 0}
+  groundRayHeight: 20
+  groundRayDistance: 50
+  drawDebugGizmos: 1
+  cameraImpulseSource: {fileID: 5083262448506206694}
+  cameraShakeMinimumInterval: 0.07
+  cameraChannel: {fileID: 0}
+  cameraShakePowerScale: 1
+  cameraShakeBaseDuration: 0.14
+  cameraShakeDurationPerPower: 0.16
+  healthModule: {fileID: 1795139631257598990}
+  invincible: 0
+  healthBarBinding: {fileID: 7999411954055856346}
+  rockVisualPrefabs: []
+  fistRockCount: 1
+  sawRockCount: 4
+  rockSpawnSpread: 1.2
+  rockSpawnHeight: 0.15
+  rockLaunchForce: 5
+  rockScale: 1.3
+  rockDamage: 1
+  rockLifeTime: 15
+  onAttackReady:
+    m_PersistentCalls:
+      m_Calls: []
+  onAttackImpact:
+    m_PersistentCalls:
+      m_Calls: []
+  onMissileSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onRockSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+  onRockBreak:
+    m_PersistentCalls:
+      m_Calls: []
+  onPhaseTwo:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  hazardGroundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  hitboxRadius: 0
+  hitboxOffset: {x: 0, y: 0}
+  autoRadiusRatio: 0.8
+  rockPrefab: {fileID: 100005, guid: 4d5e062cc51546988e2dd12aa2e40103, type: 3}
+  hazardProjectilePrefab: {fileID: 100005, guid: a1111111111141118111111111111111, type: 3}
+  laserShotPrefab: {fileID: 100004, guid: a2222222222242228222222222222222, type: 3}
+  telegraphLinePrefab: {fileID: 100003, guid: a3333333333343338333333333333333, type: 3}
+  rockBossDamage: 1
+  rockPlayerDamage: 1
+  rockExplosionRadius: 1.4
+  spawnedRockLifeTime: 12
+  rockScaleRange: {x: 0.55, y: 1.65}
+  jumpTimeScale: 1.45
+  laserWarningScale: 1.35
+  laserWarningBonus: 0.08
+  laserAimSpread: 11
+  laserAimLag: 0.28
+  rockGravityScale: 1.5
+  rockLaunchBoost: 1.15
+  fallingGravityScale: 1.2
+  dashPowerScale: 0.75
+  dashIntervalScale: 1.3
+  dashDamageScale: 0.75
+  impactEffectItem: {fileID: 0}
+  impactEffectName: ProjectileImpact
+  rockImpactColor: {r: 0.85, g: 0.88, b: 1, a: 1}
+  hitImpactColor: {r: 0.7, g: 0.85, b: 1, a: 1}
+  hitEffectInterval: 0.05
+  moonAnimator: {fileID: 6987453586054707018}
+  phaseTwoAnimationState: 
+  phaseTransitionDuration: 1
+  floatingVisual: {fileID: 5536058232868923385}
+  floatingDistance: {x: 0.16, y: 0.32}
+  floatingDuration: 1.6
+  impulseSource: {fileID: 5083262448506206694}
+  normalImpactImpulse: 1.2
+  strongImpactImpulse: 2.4
+  feedback: {fileID: 2466957261999173778}
+  onDamaged:
+    m_PersistentCalls:
+      m_Calls: []
+  onPhaseTwoVisual:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!50 &6104605189522577612
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &2466957261999173778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1e8f4a52d3946e788b4ac9e0fe83170, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonBossFeedback
+  jump:
+    effectPrefab: {fileID: 0}
+    soundClip: {fileID: 11400000, guid: c6b798e74da0a994698260b3c6bd31c4, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  landing:
+    effectPrefab: {fileID: 0}
+    soundClip: {fileID: 11400000, guid: ab980bc13997a1e408865596a4930d57, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  strongLanding:
+    effectPrefab: {fileID: 0}
+    soundClip: {fileID: 11400000, guid: 2c2ec7dd8a1c7de4c915d8a1aa7cdb38, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  fragment:
+    effectPrefab: {fileID: 0}
+    soundClip: {fileID: 11400000, guid: a04de029e829eab4782f0bc7304913f1, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  rockExplosion:
+    effectPrefab: {fileID: 0}
+    soundClip: {fileID: 11400000, guid: ab980bc13997a1e408865596a4930d57, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  cloneThrow:
+    effectPrefab: {fileID: 0}
+    soundClip: {fileID: 11400000, guid: a04de029e829eab4782f0bc7304913f1, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  laserFire:
+    effectPrefab: {fileID: 0}
+    soundClip: {fileID: 11400000, guid: a87c881b9f38191439e1d0fc8fe578c5, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  shrink:
+    effectPrefab: {fileID: 0}
+    soundClip: {fileID: 11400000, guid: 29ffcb789eba94e48aa5bdd8068cf1cc, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  dash:
+    effectPrefab: {fileID: 0}
+    soundClip: {fileID: 11400000, guid: 3698e1f5e73c5df459357923951b3b0e, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  phaseTwo:
+    effectPrefab: {fileID: 0}
+    soundClip: {fileID: 11400000, guid: 49b31e2468318364d9f1bbe73246316a, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  rapidCueInterval: 0.07
+--- !u!114 &5083262448506206694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseSource
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 2
+    CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ImpulseDuration: 0.18
+    ImpulseType: 0
+    DissipationRate: 0.25
+    RawSignal: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    RepeatMode: 0
+    Randomize: 1
+    TimeEnvelope:
+      AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      AttackTime: 0
+      SustainTime: 0.1
+      DecayTime: 0.35
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 100
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 100
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 0, y: -1, z: 0}
+--- !u!114 &5141975892121951349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6ad9aaf4825bd44da259382e340fe5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossSummonPresentation
+  visualRoot: {fileID: 480896848702239594}
+  renderers: []
+  delay: 0.4
+  appearDuration: 0.8
+  settleDuration: 0.35
+  startLocalOffset: {x: 0, y: 6, z: 0}
+  startScale: {x: 0.25, y: 0.25, z: 1}
+  startRotation: -35
+  overshootScale: 1.12
+  impactSquash: {x: 1.18, y: 0.78, z: 1}
+  impactPunch: {x: 0, y: 0.28, z: 0}
+  impactDuration: 0.1
+  appearEase: 9
+  summonTint: {r: 0.5, g: 0.9, b: 1, a: 1}
+  startAlpha: 0
+  flashDuration: 0.12
+  summonSound: {fileID: 0}
+  cameraShake: 0.75
+  onSummonStart:
+    m_PersistentCalls:
+      m_Calls: []
+  onSummonImpact:
+    m_PersistentCalls:
+      m_Calls: []
+  onSummonComplete:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &7372483207482707961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a4f37cdc9b0834a8c9916beb30160c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossDeathPresentation
+  visualRoot: {fileID: 480896848702239594}
+  renderers: []
+  collectChildRenderersOnPlay: 1
+  animationLeadTime: 0.15
+  breakDuration: 0.3
+  vanishDuration: 0.8
+  vanishLocalOffset: {x: 0, y: -2.2, z: 0}
+  vanishScale: {x: 0.3, y: 0.12, z: 1}
+  vanishRotation: 22
+  shakeStrength: 0.18
+  shakeVibrato: 14
+  fragmentScatter: 0.65
+  fragmentLift: 0.8
+  fragmentRotation: 45
+  vanishEase: 8
+  deathTint: {r: 0.45, g: 0.78, b: 1, a: 1}
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  flashCount: 2
+  flashDuration: 0.11
+  hideRenderersOnComplete: 1
+  disableCollidersOnStart: 1
+  deathSound: {fileID: 0}
+  cameraShake: 1.25
+  onDeathStart:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeathBreak:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeathComplete:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &7999411954055856346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994a88a2f8378e0438060ef243b39f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossHealthBarBinding
+  healthModule: {fileID: 1795139631257598990}
+  healthBar: {fileID: 0}
+  koUI: {fileID: 0}
+--- !u!114 &3368410209886244019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbf97c2524399b24b8cab3556a2718b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossBgmPlayback
+  managerPrefab: {fileID: 4760346976927674070, guid: 346863b3c35bf6f4ea096a9edda30e38, type: 3}
+  bossBgm: {fileID: 11400000, guid: 78f0fbc8ba073a340b8826cd9cffef0d, type: 2}
+  fadeInDuration: 0.7
+  fadeOutDuration: 0.8
+--- !u!114 &7488356813069278717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21b45da1f86645eb96af4ee8a8f2225e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossIntroTimeline
+  boss: {fileID: 0}
+  visualRoot: {fileID: 0}
+  playOnStart: 1
+  startDelay: 0.2
+  preset: 0
+  bossTitle: "\uB2EC"
+  bossSubtitle: "\uCD94\uB77D\uD55C \uC704\uC131"
+  titleColor: {r: 1, g: 1, b: 1, a: 1}
+  subtitleColor: {r: 1, g: 1, b: 1, a: 0.7}
+  titleFont: {fileID: 11400000, guid: 83f461b325fe26e47b08a55076b63910, type: 2}
+  focusOffset: {x: 0, y: 1}
+  focusPriority: 500
+  steps: []
+  endPadding: 0.15
+  onIntroStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onIntroFinished:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!1 &4762341880899888644
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8502366810348067453}
+  - component: {fileID: 8311249381668849135}
+  m_Layer: 0
+  m_Name: Moon Jump Slam
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8502366810348067453
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4762341880899888644}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8185285824828877194}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8311249381668849135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4762341880899888644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 687778d705294f2f87bf2044c3044409, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonJumpSlamAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: 47ec79f4a78e46b6affeff3bfbec4932, type: 2}
+  animationStateName: 
+  slamCount: 9
+  warningDuration: 0.38
+  jumpDuration: 0.48
+  jumpHeight: 6
+  landingDamage: 1
+  landingRadius: 1.8
+  playerAreaChance: 0.65
+  playerPositionSpread: 3.2
+  strongJumpHeightMultiplier: 1.4
+  upwardLasersPerSide: 3
+  upwardLaserSpacing: 2.2
+  upwardLaserStartOffset: 1.6
+  upwardLaserStagger: 0.07
+  upwardLaserWarningDuration: 0.35
+  upwardLaserActiveDuration: 0.2
+  upwardLaserWidth: 0.42
+  upwardLaserDamage: 1
+  upwardLaserColor: {r: 0.65, g: 0.82, b: 1, a: 1}
+  rockLaunchVelocity: {x: 2.5, y: 11.5}
+  normalRockCount: 2
+  strongRockCount: 4
+  rockHorizontalSpread: 1.25
+--- !u!1 &7717291217874340102
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8112487105297374243}
+  - component: {fileID: 9046832546604078218}
+  m_Layer: 0
+  m_Name: Moon Traverse Shower
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8112487105297374243
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7717291217874340102}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8185285824828877194}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9046832546604078218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7717291217874340102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a58a41c971bb426ba2d0a68ad6c3b044, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonTraverseShowerAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: 2afc66fc55c8413199718c3bcc8105c5, type: 2}
+  animationStateName: 
+  horizontalJumpCount: 6
+  edgePadding: 1.2
+  smallJumpHeight: 5.4
+  smallJumpDuration: 0.34
+  finalJumpHeight: 4.5
+  finalJumpDuration: 0.9
+  fragmentInterval: 0.1
+  fragmentsPerBurst: {x: 2, y: 4}
+  fragmentScaleRange: {x: 0.35, y: 1.25}
+  fragmentSpawnSpread: 1.5
+  fragmentDamage: 1
+  fragmentSpread: 4
+  landingDamage: 1
+  landingRadius: 2.2
+  returnDuration: 0.45
+--- !u!1 &9120469415446644412
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8185285824828877194}
+  - component: {fileID: 8708949177505032291}
+  m_Layer: 0
+  m_Name: Skill
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8185285824828877194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9120469415446644412}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.4744067, y: -3.0711937, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8502366810348067453}
+  - {fileID: 3186962343593874632}
+  - {fileID: 8112487105297374243}
+  - {fileID: 4125592756074736742}
+  m_Father: {fileID: 480896848702239594}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8708949177505032291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9120469415446644412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad4bda74cebe5fd42b7b32293321a575, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.EnemySkillModule

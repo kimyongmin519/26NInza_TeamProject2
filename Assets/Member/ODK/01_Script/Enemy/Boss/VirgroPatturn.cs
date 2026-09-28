@@ -55,6 +55,8 @@ namespace Member.ODK.Scripts.Enemys.Zodiac
 
             // 여기서 Zodiac 눈 Blink 애니메이션 실행하면 됨.
 
+            Boss.ShakeCamera(0.5f);
+
             foreach (StarThread thread in threads)
             {
                 thread.SetDangerous(true);

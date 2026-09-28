@@ -23,6 +23,9 @@ namespace Member.ODK.Scripts.Enemys.Combat
 
     public class DamageCaster : MonoBehaviour
     {
+        public const float BossPlayerDamage = 1f;
+        public const float PlayerHitInvincibilityDuration = 2f;
+
         [Header("Cast Setting")]
         [SerializeField] private DamageCastMode castMode;
         [SerializeField] private Transform referenceTransform;
@@ -42,7 +45,6 @@ namespace Member.ODK.Scripts.Enemys.Combat
 
         [Header("Debug Mode")]
         [SerializeField] private bool debugMode = true;
-        [SerializeField] private Color debugColor = new Color(0.35f, 1f, 0.1f, 0.9f);
         [SerializeField] private float debugRemainTime = 1.5f;
 
         private readonly List<DebugCast> debugCasts = new List<DebugCast>();
@@ -69,7 +71,7 @@ namespace Member.ODK.Scripts.Enemys.Combat
                 if (hasWorldPositionOverride) return worldPositionOverride;
                 Transform basis = ReferenceTransform;
                 Vector2 offset = rotateOffsetWithReference
-                    ? basis.TransformDirection(positionOffset)
+                    ? (Vector2)basis.TransformDirection(positionOffset)
                     : positionOffset;
                 return basis.position + (Vector3)offset;
             }
@@ -166,20 +168,27 @@ namespace Member.ODK.Scripts.Enemys.Combat
                 if (castMode == DamageCastMode.Sector && !IsInsideSector(hit.bounds.center, center, castAngle))
                     continue;
 
+                bool isPlayer = IsPlayerTarget(hit.transform);
+                HealthModule targetHealth = FindHealthModule(hit.transform);
+                if (isPlayer && targetHealth != null && targetHealth.IsInvisible)
+                    continue;
+                DamageData appliedDamage = isPlayer ? AsBossPlayerDamage(damage) : damage;
+
                 IDamageable damageable = hit.GetComponentInParent<IDamageable>();
                 if (damageable == null) damageable = hit.GetComponentInChildren<IDamageable>();
                 if (damageable != null)
                 {
                     if (!damagedTargets.Add(damageable)) continue;
-                    damageable.TakeDamage(damage);
+                    damageable.TakeDamage(appliedDamage);
+                    GrantPlayerInvincibility(isPlayer, targetHealth);
                     applied = true;
                     continue;
                 }
 
-                HealthModule health = hit.GetComponentInParent<HealthModule>();
-                if (health == null) health = hit.GetComponentInChildren<HealthModule>();
+                HealthModule health = targetHealth;
                 if (health == null || !damagedHealthModules.Add(health)) continue;
-                health.ApplyDamage(damage);
+                health.ApplyDamage(appliedDamage);
+                GrantPlayerInvincibility(isPlayer, health);
                 applied = true;
             }
 
@@ -198,6 +207,12 @@ namespace Member.ODK.Scripts.Enemys.Combat
             SetWorldPosition(position);
             hasWorldAngleOverride = true;
             worldAngleOverride = worldAngle;
+        }
+
+        public void ClearWorldPose()
+        {
+            hasWorldPositionOverride = false;
+            hasWorldAngleOverride = false;
         }
 
         public void SetRange(float value) => range = Mathf.Max(0f, value);
@@ -226,23 +241,70 @@ namespace Member.ODK.Scripts.Enemys.Combat
             targetLayer = layer;
         }
 
+        public void ConfigureOutsideBox(Vector2 safeSize, float outerRange, LayerMask layer)
+        {
+            castMode = DamageCastMode.OutsideBox;
+            size = new Vector2(Mathf.Abs(safeSize.x), Mathf.Abs(safeSize.y));
+            range = Mathf.Max(0f, outerRange);
+            targetLayer = layer;
+        }
+
         public static bool ApplyDamage(Transform target, DamageData damage)
         {
             if (target == null) return false;
+
+            bool isPlayer = IsPlayerTarget(target);
+            HealthModule targetHealth = FindHealthModule(target);
+            if (isPlayer && targetHealth != null && targetHealth.IsInvisible)
+                return false;
+            DamageData appliedDamage = isPlayer ? AsBossPlayerDamage(damage) : damage;
 
             IDamageable damageable = target.GetComponentInParent<IDamageable>();
             if (damageable == null) damageable = target.GetComponentInChildren<IDamageable>();
             if (damageable != null)
             {
-                damageable.TakeDamage(damage);
+                damageable.TakeDamage(appliedDamage);
+                GrantPlayerInvincibility(isPlayer, targetHealth);
                 return true;
             }
 
+            HealthModule health = targetHealth;
+            if (health == null) return false;
+            health.ApplyDamage(appliedDamage);
+            GrantPlayerInvincibility(isPlayer, health);
+            return true;
+        }
+
+        private static DamageData AsBossPlayerDamage(DamageData damage)
+        {
+            damage.Amount = BossPlayerDamage;
+            return damage;
+        }
+
+        private static bool IsPlayerTarget(Transform target)
+        {
+            if (target == null) return false;
+            Transform root = target.root;
+            if (root != null && root.CompareTag("Player")) return true;
+            int playerLayer = LayerMask.NameToLayer("Player");
+            return playerLayer >= 0 && (target.gameObject.layer == playerLayer || root != null && root.gameObject.layer == playerLayer);
+        }
+
+        private static HealthModule FindHealthModule(Transform target)
+        {
+            if (target == null) return null;
             HealthModule health = target.GetComponentInParent<HealthModule>();
             if (health == null) health = target.GetComponentInChildren<HealthModule>();
-            if (health == null) return false;
-            health.ApplyDamage(damage);
-            return true;
+            if (health == null && target.root != null)
+                health = target.root.GetComponentInChildren<HealthModule>(true);
+            return health;
+        }
+
+        private static void GrantPlayerInvincibility(bool isPlayer, HealthModule health)
+        {
+            if (!isPlayer || health == null || health.IsDead) return;
+            if (health.InvisibleTime < PlayerHitInvincibilityDuration)
+                health.SettingInvisibleTime(PlayerHitInvincibilityDuration);
         }
 
         private Collider2D[] GetHits(Vector3 center, float castAngle)
@@ -287,12 +349,12 @@ namespace Member.ODK.Scripts.Enemys.Combat
             CleanupDebugCasts();
             //if (!Application.isPlaying)
             //{
-                Gizmos.color = debugColor;
+                Gizmos.color = GetModeColor(castMode, true);
                 DrawGizmoShape(castMode, CastCenter, size, range, CastAngle, capsuleDirection);
             //}
             foreach (DebugCast cast in debugCasts)
             {
-                Gizmos.color = GetCastColor(cast.applied);
+                Gizmos.color = GetCastColor(cast.mode, cast.applied);
                 DrawGizmoShape(cast.mode, cast.center, cast.size, cast.range, cast.angle, cast.capsuleDirection);
             }
         }
@@ -310,7 +372,7 @@ namespace Member.ODK.Scripts.Enemys.Combat
             GL.Begin(GL.LINES);
             foreach (DebugCast cast in debugCasts)
             {
-                GL.Color(GetCastColor(cast.applied));
+                GL.Color(GetCastColor(cast.mode, cast.applied));
                 DrawRuntimeShape(cast.mode, cast.center, cast.size, cast.range, cast.angle, cast.capsuleDirection);
             }
             GL.End();
@@ -515,10 +577,25 @@ namespace Member.ODK.Scripts.Enemys.Combat
             }
         }
 
-        private Color GetCastColor(bool applied)
+        private Color GetCastColor(DamageCastMode mode, bool applied)
         {
-            Color color = debugColor;
-            color.a = applied ? debugColor.a : debugColor.a * 0.45f;
+            Color color = GetModeColor(mode, applied);
+            color.a = applied ? 0.9f : 0.42f;
+            return color;
+        }
+
+        private static Color GetModeColor(DamageCastMode mode, bool applied)
+        {
+            Color color = mode switch
+            {
+                DamageCastMode.Circle => new Color(1f, 0.28f, 0.2f, 0.9f),
+                DamageCastMode.Box => new Color(0.2f, 0.85f, 1f, 0.9f),
+                DamageCastMode.Capsule => new Color(1f, 0.68f, 0.15f, 0.9f),
+                DamageCastMode.Sector => new Color(0.9f, 0.25f, 1f, 0.9f),
+                DamageCastMode.OutsideBox => new Color(0.25f, 1f, 0.5f, 0.9f),
+                _ => Color.white
+            };
+            if (!applied) color.a *= 0.47f;
             return color;
         }
 

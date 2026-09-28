@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using Member.ODK.Scripts.Enemys.Skills;
 using UnityEngine;
@@ -25,8 +27,15 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             Debug.Assert(Owner != null, "BossSkill의 소유자가 PhasedBossController가 아닙니다.", this);
             if (isInitialized || Owner == null) return;
 
-            OnInitialize();
-            isInitialized = true;
+            try
+            {
+                OnInitialize();
+                isInitialized = true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e, this);
+            }
         }
 
         public IEnumerator Play(float durationScale = 1f)
@@ -56,13 +65,16 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         public override void StopSkill()
         {
+            bool wasRunning = attackCoroutine != null || IsUsing;
+            if (!wasRunning) return;
+
             if (attackCoroutine != null)
             {
                 StopCoroutine(attackCoroutine);
                 attackCoroutine = null;
             }
 
-            OnCancel();
+            SafeInvoke(OnCancel);
             if (IsUsing) base.StopSkill();
         }
 
@@ -73,10 +85,81 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         private IEnumerator RunAttack(GameObject target)
         {
-            yield return Execute(target);
-            OnCompleted();
+            bool failed = false;
+            IEnumerator routine = null;
+
+            try
+            {
+                routine = Execute(target);
+            }
+            catch (Exception e)
+            {
+                failed = true;
+                Debug.LogException(e, this);
+            }
+
+            if (!failed && routine != null)
+                yield return Guard(routine, e =>
+                {
+                    failed = true;
+                    Debug.LogException(e, this);
+                });
+
             attackCoroutine = null;
+
+            if (failed) SafeInvoke(OnCancel);
+            else SafeInvoke(OnCompleted);
+
             if (IsUsing) base.StopSkill();
+        }
+
+        private static IEnumerator Guard(IEnumerator root, Action<Exception> onError)
+        {
+            Stack<IEnumerator> stack = new Stack<IEnumerator>();
+            stack.Push(root);
+
+            while (stack.Count > 0)
+            {
+                IEnumerator top = stack.Peek();
+                bool moved;
+
+                try
+                {
+                    moved = top.MoveNext();
+                }
+                catch (Exception e)
+                {
+                    onError?.Invoke(e);
+                    yield break;
+                }
+
+                if (!moved)
+                {
+                    stack.Pop();
+                    continue;
+                }
+
+                object current = top.Current;
+                if (current is IEnumerator nested && current is not CustomYieldInstruction)
+                {
+                    stack.Push(nested);
+                    continue;
+                }
+
+                yield return current;
+            }
+        }
+
+        private void SafeInvoke(Action action)
+        {
+            try
+            {
+                action?.Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e, this);
+            }
         }
 
         protected virtual void OnDestroy()
