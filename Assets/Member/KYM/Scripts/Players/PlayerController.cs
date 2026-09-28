@@ -1,9 +1,11 @@
 using KimLIb.EventSystem;
+using KimLIb.SoundSystem;
 using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.Agents.FSM;
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using Member.KYM.Scripts.CoreSystems;
 using Member.KYM.Scripts.CoreSystems.Events;
+using Member.KYM.Scripts.Players.FSM;
 using Member.KYM.Scripts.Players.FSM.Interface;
 using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK._01_Script;
@@ -24,6 +26,12 @@ namespace Member.KYM.Scripts.Players
 
         [Header("점프 이펙트")]
         [SerializeField] private ParticleSystem jumpAirWave;
+
+        [Header("사운드")]
+        [SerializeField] private EventChannelSO soundChannel;
+        [SerializeField] private SoundClipSO jumpSound;
+        [SerializeField] private SoundClipSO landingSound;
+        [SerializeField] private SoundClipSO hurtSound;
         
         [field:Header("PP")]
         [field:SerializeField] public EventChannelSO PostProcessChannel { get; private set; }
@@ -184,10 +192,27 @@ namespace Member.KYM.Scripts.Players
             jumpAirWave.Play(true);
         }
 
+        public void PlayJumpSound() => PlaySound(jumpSound);
+
+        public void PlayLandingSound() => PlaySound(landingSound);
+
+        private void PlaySound(SoundClipSO clip)
+        {
+            if (soundChannel == null || clip == null || clip.audioClip == null)
+                return;
+
+            soundChannel.RaiseEvent(
+                SoundEvent.PlaySoundEvent.InitData(transform.position, clip));
+        }
+
         private void HandleGroundStatusChange(bool isGrounded)
         {
-            if (isGrounded)
-                ResetJumpCount();
+            if (!isGrounded)
+                return;
+
+            ResetJumpCount();
+            if (_stateMachine.CurrentState is PlayerFallState)
+                PlayLandingSound();
         }
 
         public void SetCrouching(bool isCrouching)
@@ -281,6 +306,8 @@ namespace Member.KYM.Scripts.Players
             }
 
             HealthModule.ApplyDamage(damage);
+
+            PlaySound(hurtSound);
 
             if (!HealthModule.IsDead && hitInvincibilityDuration > 0f)
                 HealthModule.SettingInvisibleTime(hitInvincibilityDuration);

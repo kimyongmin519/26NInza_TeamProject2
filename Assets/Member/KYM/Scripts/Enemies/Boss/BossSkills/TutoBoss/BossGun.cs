@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using DG.Tweening;
 using KimLIb.AnimatorSystems;
 using KimLIb.ModuleSystems;
+using KimLIb.EventSystem;
+using KimLIb.SoundSystem;
 using Member.KYM.Scripts.CombatSystems.Projectiles;
 using Member.KYM.Scripts.CombatSystems.WeaponSystems;
 using UnityEngine;
@@ -63,6 +65,12 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
         [SerializeField] private Transform throwMotionTarget;
         [SerializeField] private ThrowMotionStep[] throwMotionSteps;
 
+        [Header("사운드")]
+        [SerializeField] private EventChannelSO soundChannel;
+        [SerializeField] private SoundClipSO equipSound;
+        [SerializeField] private SoundClipSO fireSound;
+        [SerializeField] private SoundClipSO throwSound;
+
         public UnityEvent OnShot;
 
         private Coroutine _fireRoutine;
@@ -93,6 +101,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
         {
             base.Equip();
             RestoreThrowMotionTarget();
+            PlaySound(equipSound, transform.position);
         }
 
         public override bool CanAttack(GameObject target = null)
@@ -152,6 +161,7 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
                     ? (Vector2)muzzle.right
                     : direction;
                 FireProjectiles(currentDirection.normalized, owner);
+                PlaySound(fireSound, muzzle.position);
 
                 if (burstIndex < safeBurstCount - 1 && burstInterval > 0f)
                     yield return new WaitForSeconds(burstInterval);
@@ -291,7 +301,18 @@ namespace Member.KYM.Scripts.Enemies.Boss.BossSkills.TutoBoss
                 Owner,
                 thrownWeaponSpeed);
 
+            PlaySound(throwSound, throwPoint.position);
+
             OnShot?.Invoke();
+        }
+
+        private void PlaySound(SoundClipSO clip, Vector3 position)
+        {
+            if (soundChannel == null || clip == null || clip.audioClip == null)
+                return;
+
+            soundChannel.RaiseEvent(
+                SoundEvent.PlaySoundEvent.InitData(position, clip));
         }
 
         private void HideThrownWeaponVisual()

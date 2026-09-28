@@ -213,9 +213,6 @@ MonoBehaviour:
   surfaceOffset: 0.02
   recoilDistance: 1
   recoilRecoveryTime: 0.12
-  soundChannel: {fileID: 0}
-  fireSound: {fileID: 0}
-  catchSound: {fileID: 0}
 --- !u!114 &9090595490636206771
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,6 +244,10 @@ MonoBehaviour:
   aimLineBlockLayers:
     serializedVersion: 2
     m_Bits: 2313
+  soundChannel: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
+  fireSound: {fileID: 11400000, guid: 8027ef976c125e44d9c1bd51c77a9280, type: 2}
+  catchSound: {fileID: 11400000, guid: b7e28bb98735567449d4294c8a489e93, type: 2}
+  additionalCatchSound: {fileID: 11400000, guid: 751b74a71d3939343ae2966661d69dd7, type: 2}
 --- !u!114 &8303114410518035434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,6 +482,10 @@ MonoBehaviour:
   stateList: {fileID: 11400000, guid: 36f3f9cbbe45ead4c820b99ff85e8714, type: 2}
   <UIChannel>k__BackingField: {fileID: 11400000, guid: 34695c655ee7ea444a7b7763fe55bce9, type: 2}
   jumpAirWave: {fileID: 6486604912544678936}
+  soundChannel: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
+  jumpSound: {fileID: 11400000, guid: 46aee0ff0b3415c499e724344f4345e7, type: 2}
+  landingSound: {fileID: 11400000, guid: 162c512073521564ba298cfae8741e54, type: 2}
+  hurtSound: {fileID: 11400000, guid: b055caa2c28f57b479233e41753519dc, type: 2}
   <PostProcessChannel>k__BackingField: {fileID: 11400000, guid: 8a23496a1fb64f4aa19a5c44512d5ad4, type: 2}
   hitInvincibilityDuration: 2
   blinkInterval: 0.1
@@ -991,7 +996,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeY:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -1044,7 +1049,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeZ:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
