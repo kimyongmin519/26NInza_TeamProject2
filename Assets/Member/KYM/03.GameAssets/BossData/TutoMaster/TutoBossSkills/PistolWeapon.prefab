@@ -48,7 +48,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4928729780672059890
 Transform:
   m_ObjectHideFlags: 0
@@ -99,6 +99,13 @@ MonoBehaviour:
   throwDelay: 0.25
   throwMotionTarget: {fileID: 0}
   throwMotionSteps: []
+  soundChannel: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
+  equipSound: {fileID: 0}
+  fireSound: {fileID: 11400000, guid: f346be33c3ee2d74ba596706872e7900, type: 2}
+  throwSound: {fileID: 0}
+  OnShot:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4396859150994539357
 GameObject:
   m_ObjectHideFlags: 0

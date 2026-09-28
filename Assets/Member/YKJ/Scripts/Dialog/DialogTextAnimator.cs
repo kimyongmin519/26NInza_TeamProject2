@@ -146,8 +146,8 @@ public class DialogTextAnimator : MonoBehaviour
         ForEachVisibleCharacter(textInfo, tag, (charInfo, order) =>
         {
             Vector3 offset = new(
-                Mathf.Sin((Time.time + order) * 62.8f) * power,
-                Mathf.Cos((Time.time + order) * 40f) * power,
+                Mathf.Sin((Time.unscaledTime + order) * 62.8f) * power,
+                Mathf.Cos((Time.unscaledTime + order) * 40f) * power,
                 0f);
 
             MoveCharacter(textInfo, charInfo, offset);
@@ -165,7 +165,7 @@ public class DialogTextAnimator : MonoBehaviour
             for (int i = 0; i < 4; i++)
             {
                 Vector3 origin = vertices[charInfo.vertexIndex + i];
-                float y = Mathf.Sin(Time.time * 8f + origin.x * 0.04f) * power;
+                float y = Mathf.Sin(Time.unscaledTime * 8f + origin.x * 0.04f) * power;
                 vertices[charInfo.vertexIndex + i] = origin + new Vector3(0f, y, 0f);
             }
         });
@@ -175,7 +175,7 @@ public class DialogTextAnimator : MonoBehaviour
     {
         ForEachVisibleCharacter(textInfo, tag, (charInfo, order) =>
         {
-            Color color = Color.HSVToRGB(Mathf.Repeat(Time.time * 0.8f + order * 0.06f, 1f), 0.8f, 1f);
+            Color color = Color.HSVToRGB(Mathf.Repeat(Time.unscaledTime * 0.8f + order * 0.06f, 1f), 0.8f, 1f);
             Color32 color32 = color;
             Color32[] colors = textInfo.meshInfo[charInfo.materialReferenceIndex].colors32;
 

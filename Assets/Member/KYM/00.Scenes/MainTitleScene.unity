@@ -1418,7 +1418,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -201292269
-  m_SortingLayer: 4
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -5923,6 +5923,34 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 956013032}
+    - target: {fileID: 1258122114702038973, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1258122114702038973, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1258122114702038973, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 5361426297959833188}
+    - target: {fileID: 1258122114702038973, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1258122114702038973, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Exit
+      objectReference: {fileID: 0}
+    - target: {fileID: 1258122114702038973, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Member.KYM.Scripts.UI.ExitButton, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1258122114702038973, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 1739474960640544162, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
@@ -6147,8 +6175,28 @@ PrefabInstance:
     - {fileID: 5689451190597490484, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 568691090047679921, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5361426297959833188}
   m_SourcePrefab: {fileID: 100100000, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+--- !u!1 &5361426297959833187 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 568691090047679921, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+  m_PrefabInstance: {fileID: 5361426297959833186}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5361426297959833188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5361426297959833187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f449c096e874ae5a1c09208ba3bb01e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.UI.ExitButton
 --- !u!1001 &5457717473357970032
 PrefabInstance:
   m_ObjectHideFlags: 0

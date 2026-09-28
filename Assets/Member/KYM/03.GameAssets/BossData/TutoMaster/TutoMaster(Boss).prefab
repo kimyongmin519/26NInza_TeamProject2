@@ -988,10 +988,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ShotgunWeapon
       objectReference: {fileID: 0}
-    - target: {fileID: 2396366198155699001, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7349234222327201798, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1032,18 +1028,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8452097884732460165, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
-      propertyPath: fireSound
-      value: 
-      objectReference: {fileID: 11400000, guid: 8ce5f3bcba8f06747bbcf6280a4f51e1, type: 2}
-    - target: {fileID: 8452097884732460165, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
-      propertyPath: throwSound
-      value: 
-      objectReference: {fileID: 11400000, guid: 8ce5f3bcba8f06747bbcf6280a4f51e1, type: 2}
-    - target: {fileID: 8452097884732460165, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
-      propertyPath: soundChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1127,10 +1111,6 @@ PrefabInstance:
     - target: {fileID: 3826361735517120510, guid: 83a3c6e130baf3646ae310952438142c, type: 3}
       propertyPath: m_Name
       value: PistolWeapon
-      objectReference: {fileID: 0}
-    - target: {fileID: 3826361735517120510, guid: 83a3c6e130baf3646ae310952438142c, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4928729780672059890, guid: 83a3c6e130baf3646ae310952438142c, type: 3}
       propertyPath: m_LocalPosition.x
