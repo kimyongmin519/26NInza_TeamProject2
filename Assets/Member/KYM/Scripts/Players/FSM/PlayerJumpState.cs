@@ -18,6 +18,7 @@ namespace Member.KYM.Scripts.Players.FSM
             
             _mover.StopImmediately(false, true);
             _mover.AddForceToAgent(Vector2.up * _player.JumpPower);
+            _player.PlayJumpAirWave();
             
             _mover.OnVelocityChange += HandleVelocityChange;
         }

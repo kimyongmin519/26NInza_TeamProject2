@@ -21,6 +21,9 @@ namespace Member.KYM.Scripts.Players
         [field:SerializeField] public PlayerInputSO PlayerInput { get; private set; }
         [SerializeField] private StateListSO stateList;
         [field:SerializeField] public EventChannelSO UIChannel { get; private set; }
+
+        [Header("점프 이펙트")]
+        [SerializeField] private ParticleSystem jumpAirWave;
         
         [field:Header("PP")]
         [field:SerializeField] public EventChannelSO PostProcessChannel { get; private set; }
@@ -171,6 +174,15 @@ namespace Member.KYM.Scripts.Players
         }
         
         public void ResetJumpCount() => _currentJumpCount = 0;
+
+        public void PlayJumpAirWave()
+        {
+            if (jumpAirWave == null)
+                return;
+
+            jumpAirWave.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            jumpAirWave.Play(true);
+        }
 
         private void HandleGroundStatusChange(bool isGrounded)
         {

@@ -1,4 +1,5 @@
 using Member.KYM.Scripts.Agents;
+using Member.KYM.Scripts.CoreSystems.CameraSystems;
 using Member.KYM.Scripts.Players;
 using Member.KYM.Scripts.Players.RobotArm;
 using System.Collections;
@@ -78,6 +79,11 @@ namespace Member.KYM.Scripts.CoreSystems
             player.ResetJumpCount();
             Physics2D.SyncTransforms();
             Unity.Cinemachine.CinemachineCore.OnTargetObjectWarped(player.transform, positionDelta);
+            foreach (BattleCameraSoftFollow cameraFollow in
+                     FindObjectsByType<BattleCameraSoftFollow>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                cameraFollow.OnTargetWarped(player.transform, positionDelta);
+            }
         }
 
         private void FinishTeleport()
