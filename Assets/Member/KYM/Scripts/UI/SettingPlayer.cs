@@ -11,12 +11,12 @@ namespace Member.KYM.Scripts.UI
         [SerializeField] private float flipDuration;
         [SerializeField] private RectTransform rectTrm;
 
-        private WaitForSeconds _waitForSeconds;
+        private WaitForSecondsRealtime _waitForSeconds;
         private bool _isFlip = false;
 
         private void Awake()
         {
-            _waitForSeconds = new WaitForSeconds(flipDuration);
+            _waitForSeconds = new WaitForSecondsRealtime(flipDuration);
         }
 
         private void Start()
