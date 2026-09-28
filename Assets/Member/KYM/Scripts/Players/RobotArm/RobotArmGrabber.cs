@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using GGMLib.ObjectPool.Runtime;
 using KimLIb.EventSystem;
 using KimLIb.ModuleSystems;
+using KimLIb.SoundSystem;
 using Member.KYM.Scripts.CombatSystems.Projectiles;
 using Member.KYM.Scripts.CoreSystems.Events;
 using UnityEngine;
@@ -38,6 +39,12 @@ namespace Member.KYM.Scripts.Players.RobotArm
         [Header("투척 조준선")]
         [SerializeField] private float aimLineLength = 15f;
         [SerializeField] private LayerMask aimLineBlockLayers = ~0;
+
+        [Header("사운드")]
+        [SerializeField] private EventChannelSO soundChannel;
+        [SerializeField] private SoundClipSO fireSound;
+        [SerializeField] private SoundClipSO catchSound;
+        [SerializeField] private SoundClipSO additionalCatchSound;
 
         public bool IsHolding => _heldObject != null;
         public bool IsBusy => _throwRoutine != null || _actionLocked;
@@ -170,6 +177,12 @@ namespace Member.KYM.Scripts.Players.RobotArm
             robotArm?.ApplyRecoil(throwDirection);
             objectToThrow.Throw(context);
             _throwRoutine = null;
+
+            if (soundChannel != null && fireSound != null && fireSound.audioClip != null)
+            {
+                soundChannel.RaiseEvent(SoundEvent.PlaySoundEvent.InitData(
+                    transform.position, fireSound));
+            }
         }
 
         public bool TryGrab()
@@ -180,20 +193,13 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
         public bool TryGrab(IGrabbable grabbable)
         {
-            if (_heldObject != null ||
-                _throwRoutine != null ||
-                grabPoint == null ||
-                grabbable == null ||
-                grabbable.GrabTransform == null ||
-                !grabbable.CanBeGrabbed)
+            if (_heldObject != null || _throwRoutine != null || grabPoint == null || grabbable == null || grabbable.GrabTransform == null || !grabbable.CanBeGrabbed)
             {
                 return false;
             }
             
-            bool caughtEnemyProjectile =
-                grabbable is GrabbableProjectile projectile &&
-                projectile.Owner != null &&
-                projectile.Owner != throwOwner;
+            bool caughtEnemyProjectile = grabbable is GrabbableProjectile projectile && projectile.Owner != null &&
+                                            projectile.Owner != throwOwner;
 
             _heldObject = grabbable;
             _heldObject.Grab(grabPoint, throwOwner != null ? throwOwner.gameObject : null);
@@ -202,14 +208,25 @@ namespace Member.KYM.Scripts.Players.RobotArm
             
             if (caughtEnemyProjectile)
             {
-                if (postProcessChannel != null)
-                    postProcessChannel.RaiseEvent(PostProcessEvents.ParryImpactEvent.Play());
+                postProcessChannel.RaiseEvent(PostProcessEvents.ParryImpactEvent.Play());
 
-                if (createChannel != null && enemyCatchEffectItem != null)
+                if (enemyCatchEffectItem != null)
                 {
                     Vector3 effectPosition = grabPoint.TransformPoint(enemyCatchEffectOffset);
                     createChannel.RaiseEvent(CreateEvents.ShowPoolingEffect.InitData(
                         enemyCatchEffectItem, effectPosition, grabPoint.rotation));
+                }
+
+                if (soundChannel != null && catchSound != null && catchSound.audioClip != null)
+                {
+                    soundChannel.RaiseEvent(SoundEvent.PlaySoundEvent.InitData(
+                        transform.position, catchSound));
+                }
+
+                if (soundChannel != null && additionalCatchSound != null && additionalCatchSound.audioClip != null)
+                {
+                    soundChannel.RaiseEvent(SoundEvent.PlaySoundEvent.InitData(
+                        transform.position, additionalCatchSound));
                 }
             }
             

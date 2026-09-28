@@ -1,5 +1,7 @@
 using DG.Tweening;
 using KimLIb.AnimatorSystems;
+using KimLIb.EventSystem;
+using KimLIb.SoundSystem;
 using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.CombatSystems.Projectiles;
 using Member.KYM.Scripts.CoreSystems;
@@ -27,6 +29,10 @@ namespace Member.KYM.Scripts.Enemies
         [SerializeField] private AnimatorTrigger animatorTrigger;
         [SerializeField] private Transform muzzle;
         [SerializeField] private AbstractProjectile projectilePrefab;
+
+        [Header("사운드")]
+        [SerializeField] private EventChannelSO soundChannel;
+        [SerializeField] private SoundClipSO fireSound;
 
         private IAnimateRenderer _renderer;
         private Tween _floatingTween;
@@ -130,6 +136,12 @@ namespace Member.KYM.Scripts.Enemies
 
             AbstractProjectile projectile = Instantiate(projectilePrefab, muzzle.position, Quaternion.identity);
             projectile.Shot(direction.normalized, this);
+
+            if (soundChannel != null && fireSound != null && fireSound.audioClip != null)
+            {
+                soundChannel.RaiseEvent(
+                    SoundEvent.PlaySoundEvent.InitData(muzzle.position, fireSound));
+            }
         }
 
         private void StartFloating()

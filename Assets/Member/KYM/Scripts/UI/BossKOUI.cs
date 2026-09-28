@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Member.KYM.Scripts.CoreSystems;
 using Member.KYM.Scripts.CoreSystems.Managers;
 using Member.ODK.Scripts;
 using UnityEngine;
@@ -25,6 +26,9 @@ namespace Member.KYM.Scripts.UI
         [SerializeField, Min(0f)] private float shakeDuration = 0.18f;
         [SerializeField] private Vector2 shakeStrength = new(30f, 30f);
         [SerializeField, Min(1)] private int shakeVibrato = 24;
+
+        [Header("연출 종료 후 이동할 씬 (비워두면 이동하지 않음)")]
+        [SerializeField] private string destinationScene;
 
         private HealthModule _health;
         private Sequence _sequence;
@@ -110,7 +114,10 @@ namespace Member.KYM.Scripts.UI
             {
                 koImage.rectTransform.anchoredPosition = _imageStartPosition;
                 RestoreTime();
-                overlayRoot.SetActive(false);
+
+                if (string.IsNullOrWhiteSpace(destinationScene) ||
+                    !SceneLoadManager.TryLoadScene(destinationScene))
+                    overlayRoot.SetActive(false);
             });
         }
 
