@@ -2,10 +2,12 @@ using System.Collections;
 using GGMLib.ObjectPool.Runtime;
 using KimLIb.EventSystem;
 using KimLIb.ModuleSystems;
+using KimLIb.SoundSystem;
 using Member.KYM.Scripts.CombatSystems.DamageSystems;
 using Member.KYM.Scripts.CoreSystems.Events;
 using Member.KYM.Scripts.EffectSystems;
 using Member.KYM.Scripts.Players.RobotArm;
+using Member.KYM.Scripts.Players;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.CombatSystems.Projectiles
@@ -22,6 +24,10 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
         [Header("충돌 이펙트")]
         [SerializeField] private EventChannelSO createChannel;
+
+        [Header("사운드 (플레이어 공격 적중)")]
+        [SerializeField] private EventChannelSO soundChannel;
+        [SerializeField] private SoundClipSO[] hitSounds;
         
         public bool CanBeGrabbed => canBeGrabbed && !_isHeld && !_hasImpacted;
         public Transform GrabTransform => transform;
@@ -158,11 +164,32 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             GetImpactContact(hitCollider, out Vector2 hitPoint, out Vector2 hitNormal);
 
             _damageCaster.InitCaster(Owner);
-            _damageCaster.CastDamage(hitCollider, hitPoint, hitNormal);
+            bool didDamage = _damageCaster.CastDamage(hitCollider, hitPoint, hitNormal);
+
+            if (didDamage && Owner is PlayerController)
+                PlayHitSound(hitPoint);
             
             PlayImpactEffect(hitPoint, hitNormal);
 
             Destroy(gameObject);
+        }
+
+        private void PlayHitSound(Vector2 hitPoint)
+        {
+            if (soundChannel == null || hitSounds == null || hitSounds.Length == 0)
+                return;
+
+            int startIndex = Random.Range(0, hitSounds.Length);
+            for (int i = 0; i < hitSounds.Length; i++)
+            {
+                SoundClipSO clip = hitSounds[(startIndex + i) % hitSounds.Length];
+                if (clip == null || clip.audioClip == null)
+                    continue;
+
+                soundChannel.RaiseEvent(
+                    SoundEvent.PlaySoundEvent.InitData(hitPoint, clip));
+                return;
+            }
         }
 
         protected void GetImpactContact(

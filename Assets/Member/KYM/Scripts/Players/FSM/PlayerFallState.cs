@@ -23,6 +23,7 @@ namespace Member.KYM.Scripts.Players.FSM
         private void LandingGround()
         {
             _player.ResetJumpCount();
+            _player.PlayLandingSound();
             _player.ChangeState(PlayerStateEnum.IDLE);
         }
     }

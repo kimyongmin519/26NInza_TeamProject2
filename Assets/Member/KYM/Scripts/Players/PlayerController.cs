@@ -1,4 +1,5 @@
 using KimLIb.EventSystem;
+using KimLIb.SoundSystem;
 using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.Agents.FSM;
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
@@ -24,6 +25,12 @@ namespace Member.KYM.Scripts.Players
 
         [Header("점프 이펙트")]
         [SerializeField] private ParticleSystem jumpAirWave;
+
+        [Header("사운드")]
+        [SerializeField] private EventChannelSO soundChannel;
+        [SerializeField] private SoundClipSO jumpSound;
+        [SerializeField] private SoundClipSO landingSound;
+        [SerializeField] private SoundClipSO hurtSound;
         
         [field:Header("PP")]
         [field:SerializeField] public EventChannelSO PostProcessChannel { get; private set; }
@@ -184,6 +191,19 @@ namespace Member.KYM.Scripts.Players
             jumpAirWave.Play(true);
         }
 
+        public void PlayJumpSound() => PlaySound(jumpSound);
+
+        public void PlayLandingSound() => PlaySound(landingSound);
+
+        private void PlaySound(SoundClipSO clip)
+        {
+            if (soundChannel == null || clip == null || clip.audioClip == null)
+                return;
+
+            soundChannel.RaiseEvent(
+                SoundEvent.PlaySoundEvent.InitData(transform.position, clip));
+        }
+
         private void HandleGroundStatusChange(bool isGrounded)
         {
             if (isGrounded)
@@ -281,6 +301,8 @@ namespace Member.KYM.Scripts.Players
             }
 
             HealthModule.ApplyDamage(damage);
+
+            PlaySound(hurtSound);
 
             if (!HealthModule.IsDead && hitInvincibilityDuration > 0f)
                 HealthModule.SettingInvisibleTime(hitInvincibilityDuration);

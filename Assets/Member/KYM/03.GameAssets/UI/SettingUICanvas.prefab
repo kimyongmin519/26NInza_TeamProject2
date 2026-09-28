@@ -669,7 +669,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6339826efe44329612415727424594, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.GameSettingsService
-  audioMixer: {fileID: 0}
+  audioMixer: {fileID: 24100000, guid: bb2a717f4f26b4c4cb39307a1c927a03, type: 2}
   masterParameter: MasterVolume
   sfxParameter: SfxVolume
   bgmParameter: BgmVolume
@@ -3065,6 +3065,7 @@ GameObject:
   - component: {fileID: 1365624476587934371}
   - component: {fileID: 5080316393284626708}
   - component: {fileID: 6903742542631521091}
+  - component: {fileID: 3551953244566434713}
   m_Layer: 5
   m_Name: SettingUICanvas
   m_TagString: Untagged
@@ -3184,6 +3185,21 @@ MonoBehaviour:
   fullscreenToggle: {fileID: 4780257305975330084}
   slideDuration: 0.4
   slideEase: 9
+--- !u!114 &3551953244566434713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4706284053615393877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a45259ed1a2a4809982108234ea438a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.UI.UIButtonSoundBinder
+  soundChannel: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
+  hoverSound: {fileID: 11400000, guid: 4495f45f5b2cd41479536160dc3d4e8b, type: 2}
+  clickSound: {fileID: 11400000, guid: 098ea555990284a49acc3cbe8a74929b, type: 2}
 --- !u!1 &5073921799947248616
 GameObject:
   m_ObjectHideFlags: 0
