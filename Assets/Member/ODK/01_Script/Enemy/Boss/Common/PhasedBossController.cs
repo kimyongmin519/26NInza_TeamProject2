@@ -4,6 +4,8 @@ using Member.ODK.Scripts.Enemys.Combat;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using Member.KYM.Scripts.UI;
 using DG.Tweening;
 using KimLIb.EventSystem;
 using Member.KYM.Scripts.CoreSystems.Events;
@@ -41,6 +43,15 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [SerializeField] private CinemachineImpulseSource cameraImpulseSource;
         [SerializeField, Min(0f)] private float cameraShakeMinimumInterval = 0.07f;
         [SerializeField] private EventChannelSO cameraChannel;
+
+        [Header("Battle Camera")]
+        [SerializeField] private bool switchToBattleCamera = true;
+        [SerializeField] private string battleCameraName = "BattleCam";
+        [SerializeField] private int battleCameraPriority = 20;
+
+        [Header("Player Death")]
+        [SerializeField] private bool stopOnPlayerDeath = true;
+        [SerializeField] private EventChannelSO playerUIChannel;
         [SerializeField, Min(0f)] private float cameraShakePowerScale = 1f;
         [SerializeField, Min(0.01f)] private float cameraShakeBaseDuration = 0.14f;
         [SerializeField, Min(0f)] private float cameraShakeDurationPerPower = 0.16f;
@@ -82,6 +93,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         public float MaxHealth => healthModule != null ? healthModule.MaxHealth : 0f;
         public bool IsPhaseTwo { get; private set; }
         public bool IsDead { get; private set; }
+        public bool PlayerDefeated { get; private set; }
         protected virtual bool HasPhaseTwo => true;
         protected virtual float PhaseTransitionDelay => 1.1f;
         private bool battleStarted;
@@ -111,6 +123,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             if (cameraChannel == null) EnsureImpulseListener();
             if (healthModule == null) healthModule = GetModule<HealthModule>();
             if (healthModule != null) healthModule.OnDeath += HandleHealthDeath;
+            SubscribePlayerDeath();
             if (playIntro && GetComponentInChildren<BossIntroTimeline>(true) == null)
                 gameObject.AddComponent<BossIntroTimeline>();
         }
@@ -131,8 +144,9 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         public void BeginBattle()
         {
-            if (battleStarted || IsDead) return;
+            if (battleStarted || IsDead || PlayerDefeated) return;
             battleStarted = true;
+            SwitchToBattleCamera();
             healthBarBinding?.TryBind();
             StartCoroutine(AttackLoop());
         }
@@ -141,6 +155,86 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         protected abstract IEnumerator PhaseTwoLoop();
 
         protected virtual void OnPhaseTwoEntered() { }
+        protected virtual void OnPlayerDefeated() { }
+
+        public void SwitchToBattleCamera()
+        {
+            if (!switchToBattleCamera) return;
+            CinemachineCamera battleCamera = null;
+            CinemachineCamera[] cameras = FindObjectsByType<CinemachineCamera>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (CinemachineCamera candidate in cameras)
+            {
+                if (candidate == null || candidate.gameObject.scene != gameObject.scene) continue;
+                if (!string.IsNullOrEmpty(battleCameraName) && candidate.name == battleCameraName)
+                {
+                    battleCamera = candidate;
+                    break;
+                }
+                if (battleCamera == null && candidate.GetComponent<CinemachineConfiner2D>() != null)
+                    battleCamera = candidate;
+            }
+            if (battleCamera == null) return;
+            if (!battleCamera.gameObject.activeSelf) battleCamera.gameObject.SetActive(true);
+            if (!battleCamera.enabled) battleCamera.enabled = true;
+            if (battleCamera.Target.TrackingTarget == null)
+            {
+                Transform player = target != null ? target : FindPlayerTransform();
+                if (player != null) battleCamera.Target.TrackingTarget = player;
+            }
+            int highest = battleCameraPriority;
+            foreach (CinemachineCamera other in cameras)
+            {
+                if (other == null || other == battleCamera || !other.isActiveAndEnabled) continue;
+                if (other.Priority.Enabled && other.Priority.Value >= highest && other.Priority.Value < 400)
+                    highest = other.Priority.Value + 1;
+            }
+            battleCamera.Priority.Enabled = true;
+            battleCamera.Priority.Value = highest;
+            battleCamera.Prioritize();
+        }
+
+        private void SubscribePlayerDeath()
+        {
+            if (!stopOnPlayerDeath) return;
+            if (playerUIChannel == null) playerUIChannel = FindPlayerUIChannel();
+            if (playerUIChannel == null) return;
+            playerUIChannel.RemoveListener<PlayerUIStateEvent>(HandlePlayerState);
+            playerUIChannel.AddListener<PlayerUIStateEvent>(HandlePlayerState);
+        }
+
+        private static EventChannelSO FindPlayerUIChannel()
+        {
+            Type[] owners = { typeof(GameOverUI), typeof(PlayerHealthUI), typeof(HeldProjectileUI) };
+            foreach (Type ownerType in owners)
+            {
+                UnityEngine.Object owner = FindFirstObjectByType(ownerType, FindObjectsInactive.Include);
+                if (owner == null) continue;
+                FieldInfo field = ownerType.GetField("uiChannel", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                if (field?.GetValue(owner) is EventChannelSO channel) return channel;
+            }
+            return null;
+        }
+
+        private void HandlePlayerState(PlayerUIStateEvent evt)
+        {
+            if (evt != null && evt.IsDead) HaltForPlayerDeath();
+        }
+
+        [ContextMenu("Halt For Player Death (Test)")]
+        public void HaltForPlayerDeath()
+        {
+            if (PlayerDefeated || IsDead) return;
+            PlayerDefeated = true;
+            StopAllCoroutines();
+            CancelAttacks();
+            CancelTrackedSpawns();
+            if (TryGetComponent(out Rigidbody2D body))
+            {
+                body.linearVelocity = Vector2.zero;
+                body.angularVelocity = 0f;
+            }
+            SafeInvoke(OnPlayerDefeated);
+        }
         protected virtual void OnBossDeath() { }
         protected virtual void OnAttackReady(Vector3 position) { }
         protected virtual void OnAttackImpact(Vector3 position) { }
@@ -530,7 +624,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [ContextMenu("Enter Phase Two")]
         public void EnterPhaseTwo()
         {
-            if (IsPhaseTwo || IsDead) return;
+            if (IsPhaseTwo || IsDead || PlayerDefeated) return;
 
             IsPhaseTwo = true;
             StopAllCoroutines();
@@ -637,6 +731,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         protected virtual void OnDestroy()
         {
+            if (playerUIChannel != null) playerUIChannel.RemoveListener<PlayerUIStateEvent>(HandlePlayerState);
             if (healthModule != null) healthModule.OnDeath -= HandleHealthDeath;
             deathPresentation?.Cancel();
             CancelAttacks();

@@ -550,6 +550,18 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             }
         }
 
+        protected override void OnPlayerDefeated()
+        {
+            IsActing = false;
+            swingRoutine = null;
+            oneShotRoutine = null;
+            phaseTwoRequested = false;
+            transform.DOKill();
+            SetDarkness(false, 0.1f);
+            if (outlineRenderer != null) outlineRenderer.enabled = false;
+            PlayIdle();
+        }
+
         protected override void OnPhaseTwoEntered()
         {
             phaseTwoRequested = false;

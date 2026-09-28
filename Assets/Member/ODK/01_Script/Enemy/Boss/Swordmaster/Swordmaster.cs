@@ -430,6 +430,14 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             if (!isActing && !IsDead) PlayAnimation(HurtState);
         }
 
+        protected override void OnPlayerDefeated()
+        {
+            StopMotion();
+            ReturnEverySword();
+            isActing = false;
+            PlayAnimation(IdleState);
+        }
+
         protected override void OnPhaseTwoEntered()
         {
             ReturnEverySword();

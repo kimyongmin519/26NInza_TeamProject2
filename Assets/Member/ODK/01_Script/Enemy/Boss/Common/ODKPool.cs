@@ -35,7 +35,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             {
                 if (initializer == null || initializer.PoolManagerAsset == null) continue;
                 if (chosen == null) chosen = initializer;
-                if (initializer.gameObject.scene.name == "DontDestroyOnLoad")
+                if (initializer.gameObject.name.StartsWith("ODK"))
                 {
                     chosen = initializer;
                     break;
