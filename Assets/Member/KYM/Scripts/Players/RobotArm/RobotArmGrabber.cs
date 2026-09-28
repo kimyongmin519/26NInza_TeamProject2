@@ -46,6 +46,11 @@ namespace Member.KYM.Scripts.Players.RobotArm
         [SerializeField] private SoundClipSO catchSound;
         [SerializeField] private SoundClipSO additionalCatchSound;
 
+        [Header("카메라")]
+        [SerializeField] private EventChannelSO cameraChannel;
+        [SerializeField] private float shakeDuration;
+        [SerializeField] private float shakePower;
+
         public bool IsHolding => _heldObject != null;
         public bool IsBusy => _throwRoutine != null || _actionLocked;
         public Transform GrabPoint => grabPoint;
@@ -182,6 +187,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
             {
                 soundChannel.RaiseEvent(SoundEvent.PlaySoundEvent.InitData(
                     transform.position, fireSound));
+                cameraChannel.RaiseEvent(CameraEvents.CameraShake.InitData(shakePower, shakeDuration));
             }
         }
 

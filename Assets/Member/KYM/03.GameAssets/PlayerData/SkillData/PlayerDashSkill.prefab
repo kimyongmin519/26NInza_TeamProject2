@@ -52,6 +52,9 @@ MonoBehaviour:
   wallGap: 0.05
   dashRechargeDelay: 0.2
   dashTrail: {fileID: 6752001389750433448}
+  soundChannel: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
+  dashSound: {fileID: 11400000, guid: 0cb6e9dbb043d634285d2a7aa72d729c, type: 2}
+  dashRechargedSound: {fileID: 11400000, guid: 4e90b9513fb96354bb6146b4ce31e740, type: 2}
 --- !u!1001 &2902764359387437536
 PrefabInstance:
   m_ObjectHideFlags: 0

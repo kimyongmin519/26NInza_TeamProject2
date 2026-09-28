@@ -414,6 +414,10 @@ PrefabInstance:
       propertyPath: startingBgm
       value: 
       objectReference: {fileID: 11400000, guid: c0c6e0b5fdfabff4ab3762b431f629cf, type: 2}
+    - target: {fileID: 8066096889021373622, guid: 08a1bb9275db590438e9566ea28fb412, type: 3}
+      propertyPath: defaultFadeDuration
+      value: 2.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1435,7 +1439,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 3
+  orthographic size: 7
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1460,7 +1464,7 @@ Transform:
   m_GameObject: {fileID: 547614580}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.36973, y: -0.024039984, z: -5.795974}
+  m_LocalPosition: {x: -0.34555626, y: 1.4199998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10150,10 +10154,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 5861287905016213860, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
-      propertyPath: soundChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
     - target: {fileID: 7847070380472739339, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
       propertyPath: m_LocalPosition.x
       value: -11.48
