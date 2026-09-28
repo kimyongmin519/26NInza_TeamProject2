@@ -97,7 +97,7 @@ CapsuleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1.75, y: 0.36}
+  m_Size: {x: 2.6, y: 0.5}
   m_Direction: 1
 --- !u!114 &100005
 MonoBehaviour:
@@ -130,7 +130,7 @@ MonoBehaviour:
   dispelledColor: {r: 0.72, g: 0.74, b: 0.8, a: 1}
   trailColor: {r: 0.75, g: 0.3, b: 1, a: 0.75}
   trailTime: 0.14
-  trailWidth: 0.22
+  trailWidth: 0.32
   pathColor: {r: 1, g: 1, b: 1, a: 0.32}
   pathWidth: 0.07
   pathSegments: 24
@@ -161,7 +161,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0.38268343, w: 0.9238795}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.065, y: 0.065, z: 1}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 100001}

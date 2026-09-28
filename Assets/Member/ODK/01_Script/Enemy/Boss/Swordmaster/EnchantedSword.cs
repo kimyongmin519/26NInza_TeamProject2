@@ -27,14 +27,19 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private float magicFlightLife = 1.8f;
         [SerializeField] private float thrownHitWindow = 2.6f;
         [SerializeField] private float thrownHomingDegrees = 1080f;
-        [SerializeField] private float returnStartSpeed = 4f;
-        [SerializeField] private float returnMaxSpeed = 34f;
-        [SerializeField] private float returnAcceleration = 70f;
+        [SerializeField, Min(0.05f)] private float summonReturnDuration = 0.6f;
         [SerializeField] private float thrownHitRecallDelay = 0.12f;
         [SerializeField] private float dispelledFlightTime = 1.6f;
         [SerializeField] private float dispelledHarmSpeed = 2f;
         [SerializeField, Min(1f)] private float maximumThrownDistance = 18f;
         [SerializeField, Min(0f)] private float playerGrabPriorityTime = 2.5f;
+        [SerializeField, Min(0f)] private float playerHitCooldown = 0.5f;
+        [SerializeField, Min(5f)] private float maximumFlightDistance = 60f;
+
+        [Header("Size / Grab")]
+        [SerializeField] private float swordLength = 2.6f;
+        [SerializeField] private float swordThickness = 0.5f;
+        [SerializeField, Min(0f)] private float grabAssistRadius = 1.6f;
 
         [Header("Visual")]
         [SerializeField] private SpriteRenderer bladeRenderer;
@@ -50,11 +55,22 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private float pathWidth = 0.07f;
         [SerializeField, Min(2)] private int pathSegments = 24;
 
-        public bool CanBeGrabbed => state == SwordState.Dispelled;
+        public bool CanBeGrabbed => state == SwordState.Dispelled || state == SwordState.MagicFlight;
+        public bool IsMagicFlying => state == SwordState.MagicFlight;
+
+        public void Hover(Vector2 facing)
+        {
+            if (state != SwordState.MagicFlight) return;
+            body.linearVelocity = Vector2.zero;
+            body.angularVelocity = 0f;
+            FaceVelocity(facing);
+        }
         public Transform GrabTransform => transform;
         public bool CanBossControl => state == SwordState.Orbiting || state == SwordState.Recalling;
         public bool CanBossReclaim => state == SwordState.Dispelled &&
                                       Time.time >= bossReclaimTime;
+        public bool CanBossForceReclaim => state == SwordState.Dispelled || state == SwordState.MagicFlight;
+        public float LaunchTime { get; private set; }
         public bool IsMagicLocked => state != SwordState.Dispelled &&
                                      state != SwordState.Held &&
                                      state != SwordState.PlayerThrown;
@@ -78,6 +94,8 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         private float thrownSpeed;
         private bool thrownHit;
         private float bossReclaimTime;
+        private CircleCollider2D grabSensor;
+        private float nextPlayerHitTime;
 
         private void Awake()
         {
@@ -89,12 +107,13 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
             swordCollider = GetComponent<CapsuleCollider2D>();
             swordCollider.direction = CapsuleDirection2D.Horizontal;
-            swordCollider.size = new Vector2(1.75f, 0.36f);
+            swordCollider.size = new Vector2(swordLength, swordThickness);
             swordCollider.isTrigger = true;
             GrabbableLayer.Validate(gameObject);
             if (bladeRenderer == null) bladeRenderer = GetComponentInChildren<SpriteRenderer>();
             if (trail == null) trail = GetComponentInChildren<TrailRenderer>();
             if (trail == null) CreateTrail();
+            CreateGrabSensor();
             CreatePathLine();
             SetEnchanted(true);
         }
@@ -120,6 +139,12 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
         private void FixedUpdate()
         {
+            if ((state == SwordState.MagicFlight || state == SwordState.Dispelled) && owner != null &&
+                body.bodyType == RigidbodyType2D.Dynamic &&
+                Vector2.Distance(body.position, owner.transform.position) > maximumFlightDistance)
+            {
+                body.linearVelocity = Vector2.zero;
+            }
             if (state != SwordState.PlayerThrown || thrownHit || owner == null) return;
             if (Vector2.Distance(thrownOrigin, body.position) >= maximumThrownDistance)
             {
@@ -179,6 +204,23 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             SetPhysics(false, Vector2.zero);
         }
 
+        public void BlinkHome()
+        {
+            if (owner == null)
+            {
+                BeginBossControl();
+                return;
+            }
+            Vector3 from = transform.position;
+            BeginBossControl();
+            HidePath();
+            transform.SetParent(originalParent, true);
+            Vector3 destination = owner.GetOrbitPosition(orbitIndex);
+            transform.position = destination;
+            transform.rotation = Quaternion.Euler(0f, 0f, owner.GetOrbitAngle(orbitIndex) + 90f);
+            owner.NotifySwordBlink(from, destination);
+        }
+
         public void EndBossControl()
         {
             if (state == SwordState.BossControlled) Expend();
@@ -198,7 +240,9 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
         public bool IsHome => state == SwordState.Orbiting;
         public bool IsReturning => state == SwordState.Recalling;
-        public bool CanBeSummoned => state == SwordState.Dispelled || state == SwordState.BossControlled;
+        public bool CanBeSummoned => state == SwordState.Dispelled ||
+                                     state == SwordState.BossControlled ||
+                                     state == SwordState.MagicFlight;
 
         public void Summon()
         {
@@ -241,6 +285,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             StopStateRoutine();
             transform.DOKill();
             state = SwordState.MagicFlight;
+            LaunchTime = Time.time;
             ClearTrail();
             transform.SetParent(null, true);
             SetEnchanted(true);
@@ -258,6 +303,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             StopStateRoutine();
             transform.DOKill();
             state = SwordState.Dispelled;
+            LaunchTime = Time.time;
             ClearTrail();
             transform.SetParent(null, true);
             SetEnchanted(false);
@@ -266,7 +312,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             FaceVelocity(direction);
             ShowPath(direction.normalized * speed, 0f, dispelledFlightTime);
             owner?.NotifySwordDispelled(transform.position);
-            stateRoutine = StartCoroutine(StopDispelledFlight(dispelledFlightTime));
+
         }
 
         public void Recall() => Recall(recallDuration);
@@ -313,6 +359,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             body.bodyType = RigidbodyType2D.Kinematic;
             body.gravityScale = 0f;
             swordCollider.enabled = false;
+            if (grabSensor != null) grabSensor.enabled = false;
             transform.SetParent(grabPoint, true);
             transform.localPosition = Vector3.zero;
             transform.localRotation = Quaternion.identity;
@@ -351,6 +398,12 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         private void HandleImpact(Collider2D other)
         {
             if (other == null || owner == null) return;
+            if (other.transform.IsChildOf(transform)) return;
+            if (grabSensor != null && swordCollider != null && swordCollider.enabled)
+            {
+                ColliderDistance2D distance = swordCollider.Distance(other);
+                if (!distance.isValid || distance.distance > 0.05f) return;
+            }
             if (other.GetComponentInParent<EnchantedSword>() != null) return;
             if (state == SwordState.PlayerThrown && throwOwnerRoot != null &&
                 other.transform.root == throwOwnerRoot)
@@ -373,13 +426,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
             if (state == SwordState.MagicFlight)
             {
-                if (hitPlayer)
-                    DamageCaster.ApplyDamage(other.transform, new DamageData(playerDamage, DamageType.Projectile));
-                if (hitPlayer)
-                {
-                    owner.NotifySwordImpact(transform.position);
-                    Expend();
-                }
+                if (hitPlayer) HitPlayer(other);
                 return;
             }
 
@@ -387,14 +434,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             {
                 bool moving = body.linearVelocity.magnitude >= dispelledHarmSpeed;
                 if (!moving) return;
-                if (hitPlayer)
-                    DamageCaster.ApplyDamage(other.transform, new DamageData(playerDamage, DamageType.Projectile));
-                if (hitPlayer)
-                {
-                    owner.NotifySwordImpact(transform.position);
-                    body.linearVelocity = Vector2.zero;
-                    body.angularVelocity = 0f;
-                }
+                if (hitPlayer) HitPlayer(other);
                 return;
             }
 
@@ -404,7 +444,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         {
             yield return new WaitForSeconds(duration);
             stateRoutine = null;
-            if (state == SwordState.MagicFlight) Expend();
+            if (state == SwordState.MagicFlight) DisenchantKeepFlying();
         }
 
         private IEnumerator ThrownRecallRoutine()
@@ -486,37 +526,75 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
             HidePath();
             state = SwordState.Recalling;
+            ClearTrail();
             SetEnchanted(true);
-            float speed = Mathf.Max(returnStartSpeed, body.linearVelocity.magnitude);
             SetPhysics(false, Vector2.zero);
             swordCollider.enabled = false;
-            while (state == SwordState.Recalling && owner != null)
+            transform.SetParent(originalParent, true);
+            Vector3 startPosition = transform.position;
+            Quaternion startRotation = transform.rotation;
+            float elapsed = 0f;
+            while (state == SwordState.Recalling && owner != null && elapsed < summonReturnDuration)
             {
+                elapsed += Time.deltaTime;
+                float rate = Mathf.Clamp01(elapsed / summonReturnDuration);
+                float eased = rate * rate * (3f - 2f * rate);
                 Vector3 destination = owner.GetOrbitPosition(orbitIndex);
                 Vector3 toHome = destination - transform.position;
-                speed = Mathf.Min(returnMaxSpeed, speed + returnAcceleration * Time.deltaTime);
-                float step = speed * Time.deltaTime;
-                if (toHome.magnitude <= step + 0.05f)
+                transform.position = Vector3.LerpUnclamped(startPosition, destination, eased);
+                if (toHome.sqrMagnitude > 0.0001f)
                 {
-                    transform.position = destination;
-                    break;
+                    float angle = Mathf.Atan2(toHome.y, toHome.x) * Mathf.Rad2Deg;
+                    transform.rotation = Quaternion.Slerp(startRotation, Quaternion.Euler(0f, 0f, angle), Mathf.Clamp01(rate * 4f));
                 }
-                transform.position += toHome.normalized * step;
-                float angle = Mathf.Atan2(toHome.y, toHome.x) * Mathf.Rad2Deg;
-                transform.rotation = Quaternion.Euler(0f, 0f, angle);
                 yield return null;
             }
             stateRoutine = null;
-            if (state == SwordState.Recalling) EnterOrbit();
+            if (state == SwordState.Recalling)
+            {
+                transform.position = owner.GetOrbitPosition(orbitIndex);
+                EnterOrbit();
+            }
         }
 
         private void SetPhysics(bool dynamicBody, Vector2 velocity)
         {
             swordCollider.enabled = true;
+            if (grabSensor != null) grabSensor.enabled = true;
             body.bodyType = dynamicBody ? RigidbodyType2D.Dynamic : RigidbodyType2D.Kinematic;
             body.gravityScale = 0f;
             body.linearVelocity = velocity;
             body.angularVelocity = 0f;
+        }
+
+        private void HitPlayer(Collider2D other)
+        {
+            if (Time.time < nextPlayerHitTime) return;
+            nextPlayerHitTime = Time.time + playerHitCooldown;
+            DamageCaster.ApplyDamage(other.transform, new DamageData(playerDamage, DamageType.Projectile));
+            owner.NotifySwordImpact(transform.position);
+        }
+
+        private void DisenchantKeepFlying()
+        {
+            Vector2 velocity = body.linearVelocity;
+            state = SwordState.Dispelled;
+            SetEnchanted(false);
+            PrepareForPlayerGrab();
+            body.linearVelocity = velocity;
+            owner?.NotifySwordDispelled(transform.position);
+        }
+
+        private void CreateGrabSensor()
+        {
+            if (grabSensor != null || grabAssistRadius <= 0f) return;
+            GameObject sensorObject = new GameObject("Grab Sensor");
+            sensorObject.transform.SetParent(transform, false);
+            int grabbableLayer = GrabbableLayer.Index;
+            if (grabbableLayer >= 0) sensorObject.layer = grabbableLayer;
+            grabSensor = sensorObject.AddComponent<CircleCollider2D>();
+            grabSensor.isTrigger = true;
+            grabSensor.radius = grabAssistRadius;
         }
 
         private void PrepareForPlayerGrab()

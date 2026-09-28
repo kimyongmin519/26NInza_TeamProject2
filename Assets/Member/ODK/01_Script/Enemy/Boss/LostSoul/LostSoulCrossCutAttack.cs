@@ -11,7 +11,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float cutThickness = 0.62f;
         [SerializeField] private float damage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float betweenCuts = 0.1f;
-        [SerializeField] private Color beamColor = new Color(0.82f, 0.24f, 1f, 1f);
+        [SerializeField] private Color beamColor = new Color(0.94f, 0.9f, 1f, 1f);
 
         protected override IEnumerator ExecuteLostSoul(GameObject target)
         {

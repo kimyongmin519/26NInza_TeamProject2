@@ -6,7 +6,6 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
     public class LostSoulBarrageAttack : LostSoulSkill
     {
         [SerializeField] private float castDistance = 8.5f;
-        [SerializeField] private float castDelay = 1f;
         [SerializeField] private int bulletCount = 14;
         [SerializeField] private float bulletSpeed = 12f;
         [SerializeField] private float shotInterval = 0.08f;
@@ -16,7 +15,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         {
             Boss.TeleportToTarget(castDistance);
             Boss.PlayCastFeedback();
-            yield return new WaitForSeconds(castDelay * DurationScale);
+            float release = Boss.PlayCastOnce();
+            if (release > 0f) yield return new WaitForSeconds(release);
             for (int i = 0; i < bulletCount; i++)
             {
                 Vector2 aimed = ((Vector2)target.transform.position - (Vector2)Boss.transform.position).normalized;
@@ -24,7 +24,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 Boss.SpawnSoul(Boss.transform.position, direction * Random.Range(bulletSpeed * 0.82f, bulletSpeed * 1.18f));
                 if (i % 4 == 1)
                     Boss.SpawnWeakSoul(Boss.transform.position, direction * bulletSpeed * 0.5f);
-                yield return new WaitForSeconds(shotInterval * DurationScale);
+                yield return new WaitForSeconds(shotInterval / DurationScale);
             }
         }
     }

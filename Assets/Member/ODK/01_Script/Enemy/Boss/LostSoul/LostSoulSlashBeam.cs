@@ -12,6 +12,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
     {
         [SerializeField] private LineRenderer line;
         [SerializeField] private DamageCaster caster;
+        [SerializeField, Min(0.01f)] private float warningWidth = 0.07f;
 
         private Sequence visualSequence;
         private Vector3 rotationCenter;
@@ -86,7 +87,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             line.SetPosition(0, origin);
             line.SetPosition(1, end);
             float activeWidth = Mathf.Max(0.025f, width * 1.8f);
-            line.widthMultiplier = activeWidth;
+            line.widthMultiplier = warningWidth;
             line.startColor = new Color(1f, 1f, 1f, 0.82f);
             line.endColor = new Color(1f, 1f, 1f, 0.45f);
             line.numCapVertices = 8;

@@ -17,6 +17,9 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [SerializeField] private float attackInterval = 1f;
         [SerializeField] private bool playOnStart = true;
 
+        [Header("Intro")]
+        [SerializeField] private bool playIntro = true;
+
         [Header("Summon Presentation")]
         [SerializeField] private BossSummonPresentation summonPresentation;
 
@@ -98,6 +101,8 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             EnsureImpulseListener();
             if (healthModule == null) healthModule = GetModule<HealthModule>();
             if (healthModule != null) healthModule.OnDeath += HandleHealthDeath;
+            if (playIntro && GetComponentInChildren<BossIntroTimeline>(true) == null)
+                gameObject.AddComponent<BossIntroTimeline>();
         }
 
         protected virtual void Start()
@@ -223,10 +228,37 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         protected bool FindTarget()
         {
-            if (target != null) return true;
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null) target = player.transform;
+            if (target != null && target.gameObject.activeInHierarchy) return true;
+            target = FindPlayerTransform();
             return target != null;
+        }
+
+        public void SetTarget(Transform newTarget)
+        {
+            target = newTarget;
+        }
+
+        public static Transform FindPlayerTransform()
+        {
+            GameObject tagged = GameObject.FindGameObjectWithTag("Player");
+            if (tagged != null) return tagged.transform;
+
+            int playerLayer = LayerMask.NameToLayer("Player");
+            if (playerLayer < 0) return null;
+            Transform fallback = null;
+            foreach (Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None))
+            {
+                if (body == null || body.gameObject.layer != playerLayer || !body.gameObject.activeInHierarchy) continue;
+                if (body.bodyType == RigidbodyType2D.Dynamic) return body.transform;
+                if (fallback == null) fallback = body.transform;
+            }
+            if (fallback != null) return fallback;
+            foreach (Collider2D collider in FindObjectsByType<Collider2D>(FindObjectsSortMode.None))
+            {
+                if (collider != null && collider.gameObject.layer == playerLayer && collider.gameObject.activeInHierarchy)
+                    return collider.attachedRigidbody != null ? collider.attachedRigidbody.transform : collider.transform;
+            }
+            return null;
         }
 
         public Vector3 GetGroundPoint(float x)

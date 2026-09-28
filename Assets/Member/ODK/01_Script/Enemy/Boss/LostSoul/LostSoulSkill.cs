@@ -33,7 +33,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         protected sealed override IEnumerator Execute(GameObject target)
         {
             Boss.SetActing(true);
-            if (IsSwingState(animationStateName)) Boss.PlayIdle();
+            if (IsSwingState(animationStateName) || animationStateName == "cast") Boss.PlayIdle();
             else Boss.PlayAnimation(animationStateName);
             if (startupDelay > 0f)
                 yield return new WaitForSeconds(startupDelay / DurationScale);
@@ -45,6 +45,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         protected void ReplayAnimation()
         {
             if (IsSwingState(animationStateName)) Boss.PlaySwing(animationStateName, Boss.GetImpactDelay(animationStateName));
+            else if (animationStateName == "cast") Boss.PlayCastOnce();
             else Boss.PlayAnimation(animationStateName, 0.02f);
         }
 

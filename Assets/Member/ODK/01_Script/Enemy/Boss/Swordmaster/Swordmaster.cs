@@ -59,6 +59,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
         [Header("Feedback")]
         [SerializeField] private SwordmasterFeedback feedback;
+        [SerializeField] private SwordmasterFlashFx flashFx;
 
         [Header("Sword Summon")]
         [SerializeField] private float summonWindup = 0.25f;
@@ -100,6 +101,10 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             if (feedback == null) feedback = GetComponent<SwordmasterFeedback>();
             if (feedback == null) feedback = gameObject.AddComponent<SwordmasterFeedback>();
             ConfigureBody();
+            if (flashFx == null) flashFx = GetComponent<SwordmasterFlashFx>();
+            if (flashFx == null) flashFx = gameObject.AddComponent<SwordmasterFlashFx>();
+            if (bodyRenderer == null && bodyVisual != null) bodyRenderer = bodyVisual.GetComponentInChildren<SpriteRenderer>();
+            flashFx.Setup(bodyVisual, bodyRenderer);
             CreateSwords();
         }
 
@@ -118,7 +123,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         private IEnumerator PlayRandomAttack()
         {
             int index;
-            do index = Random.Range(0, 3);
+            do index = Random.Range(0, 5);
             while (index == lastAttackIndex);
             lastAttackIndex = index;
             yield return PlayAttack(index);
@@ -228,10 +233,19 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
         public void Cue(SwordmasterCue cue, Vector3 position, float rotationZ = 0f)
         {
-            feedback?.Play(cue, position, rotationZ);
+            if (IsEyeFlashCue(cue) && flashFx != null)
+                feedback?.Play(cue, position, rotationZ, flashFx.EyePosition, flashFx.EyeSortingOrder);
+            else
+                feedback?.Play(cue, position, rotationZ);
             float impulse = GetImpulse(cue);
             if (impulse > 0f) ShakeCamera(impulse);
         }
+
+        private static bool IsEyeFlashCue(SwordmasterCue cue) =>
+            cue == SwordmasterCue.SummonSwords ||
+            cue == SwordmasterCue.DashReady ||
+            cue == SwordmasterCue.ThrustGather ||
+            cue == SwordmasterCue.CrossfireReady;
 
         private float GetImpulse(SwordmasterCue cue)
         {
@@ -252,6 +266,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 case SwordmasterCue.SwordDispelled: return swordDispelledImpulse;
                 case SwordmasterCue.SwordRecall: return swordRecallImpulse;
                 case SwordmasterCue.SwordImpact: return swordImpactImpulse;
+                case SwordmasterCue.SwordBlink: return 0f;
                 case SwordmasterCue.Hit: return hitImpulse;
                 case SwordmasterCue.Death: return deathImpulse;
                 default: return 0f;
@@ -291,26 +306,43 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             {
                 if (controlledSwords.Count >= count) break;
                 if (sword == null || !sword.CanBossControl) continue;
-                sword.BeginBossControl();
+                if (sword.IsReturning) sword.BlinkHome();
+                else sword.BeginBossControl();
                 controlledSwords.Add(sword);
             }
+            if (controlledSwords.Count >= count) return new List<EnchantedSword>(controlledSwords);
 
-            if (controlledSwords.Count < count)
+            Vector3 center = transform.position;
+            List<EnchantedSword> resting = new List<EnchantedSword>();
+            List<EnchantedSword> flying = new List<EnchantedSword>();
+            List<EnchantedSword> guarded = new List<EnchantedSword>();
+            foreach (EnchantedSword sword in swords)
             {
-                List<EnchantedSword> reclaimable = new List<EnchantedSword>();
-                foreach (EnchantedSword sword in swords)
-                    if (sword != null && sword.CanBossReclaim) reclaimable.Add(sword);
-                Vector3 center = transform.position;
-                reclaimable.Sort((a, b) =>
-                    (b.transform.position - center).sqrMagnitude.CompareTo((a.transform.position - center).sqrMagnitude));
-                foreach (EnchantedSword sword in reclaimable)
-                {
-                    if (controlledSwords.Count >= count) break;
-                    sword.BeginBossControl();
-                    controlledSwords.Add(sword);
-                }
+                if (sword == null || controlledSwords.Contains(sword) || !sword.CanBossForceReclaim) continue;
+                if (sword.IsMagicFlying) flying.Add(sword);
+                else if (sword.CanBossReclaim) resting.Add(sword);
+                else guarded.Add(sword);
             }
+            System.Comparison<EnchantedSword> farthestFirst = (a, b) =>
+                (b.transform.position - center).sqrMagnitude.CompareTo((a.transform.position - center).sqrMagnitude);
+            resting.Sort(farthestFirst);
+            flying.Sort((a, b) => a.LaunchTime.CompareTo(b.LaunchTime));
+            guarded.Sort((a, b) => a.LaunchTime.CompareTo(b.LaunchTime));
+
+            TakeFrom(resting, count);
+            TakeFrom(flying, count);
+            TakeFrom(guarded, count);
             return new List<EnchantedSword>(controlledSwords);
+        }
+
+        private void TakeFrom(List<EnchantedSword> candidates, int count)
+        {
+            foreach (EnchantedSword sword in candidates)
+            {
+                if (controlledSwords.Count >= count) return;
+                sword.BlinkHome();
+                controlledSwords.Add(sword);
+            }
         }
 
         public void ReturnControlledSwords()
@@ -355,6 +387,12 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         {
             Cue(SwordmasterCue.SwordRecall, position);
             onSwordRecalled?.Invoke(position);
+        }
+
+        public void NotifySwordBlink(Vector3 from, Vector3 to)
+        {
+            Cue(SwordmasterCue.SwordBlink, from);
+            Cue(SwordmasterCue.SwordBlink, to);
         }
 
         public void NotifySwordImpact(Vector3 position)

@@ -21,7 +21,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float slashActiveDuration = 0.16f;
         [SerializeField] private float slashWidth = 0.52f;
         [SerializeField] private float slashDamage = 1f;
-        [SerializeField] private Color slashColor = new Color(0.82f, 0.24f, 1f, 1f);
+        [SerializeField] private Color slashColor = new Color(0.94f, 0.9f, 1f, 1f);
 
         [Header("Health Pressure")]
         [SerializeField, Range(0f, 1f)] private float rotatingSlashHealth = 0.2f;

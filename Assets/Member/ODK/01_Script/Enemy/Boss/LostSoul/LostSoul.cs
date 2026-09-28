@@ -54,6 +54,10 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField, Range(0f, 1f)] private float teleportAttackImpactNormalized = 0.5f;
         [SerializeField, Range(0f, 1f)] private float hitAnimationChance = 1f;
 
+        [Header("Cast")]
+        [SerializeField, Min(0.1f)] private float castAnimationSpeed = 1.8f;
+        [SerializeField, Range(0f, 1f)] private float castReleaseNormalized = 0.45f;
+
         public LayerMask PlayerLayer => playerLayer;
         public float HealthRatio => MaxHealth > 0f ? CurrentHealth / MaxHealth : 0f;
         public bool IsActing { get; private set; }
@@ -245,7 +249,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         private static bool IsOneShotState(string stateName)
         {
-            return stateName == "attack" || stateName == "teleport attack" || stateName == "hit";
+            return stateName == "attack" || stateName == "teleport attack" || stateName == "hit" || stateName == "cast";
         }
 
         private float GetImpactNormalized(string stateName)
@@ -277,13 +281,24 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             if (controller == null || controller.animationClips == null || controller.animationClips.Length == 0)
                 return 0.5f;
             float length = controller.animationClips[0].length;
-            float speed = animator != null ? Mathf.Max(0.01f, animator.speed) : 1f;
-            return length / speed;
+            return length / Mathf.Max(0.01f, GetStateSpeed(stateName));
+        }
+
+        private float GetStateSpeed(string stateName)
+        {
+            return stateName == "cast" ? animationSpeed * castAnimationSpeed : animationSpeed;
+        }
+
+        public float PlayCastOnce()
+        {
+            PlayOneShot("cast", 0f);
+            return GetStateDuration("cast") * castReleaseNormalized;
         }
 
         private void PlayRaw(string stateName, float fade, float normalizedTime)
         {
             if (animator == null || string.IsNullOrWhiteSpace(stateName)) return;
+            animator.speed = GetStateSpeed(stateName);
             RuntimeAnimatorController controller = GetController(stateName);
             bool controllerChanged = controller != null && animator.runtimeAnimatorController != controller;
             if (controllerChanged)

@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Swordmaster;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Tilemaps;
 
 namespace Member.ODK.Scripts.Environment
 {
@@ -16,37 +16,32 @@ namespace Member.ODK.Scripts.Environment
 
         [Header("Background")]
         [SerializeField] private VerticalLoopScroller[] scrollers;
-        [SerializeField] private float climbSpeedScale = 1f;
-        [SerializeField] private float fallSpeedScale = -4.5f;
-        [SerializeField] private float fallRampDuration = 0.9f;
+        [SerializeField] private float climbSpeedScale = 4f;
+        [SerializeField] private float fallSpeedScale = -9f;
+        [SerializeField] private float fallRampDuration = 0.7f;
 
         [Header("World")]
-        [SerializeField] private float worldFallSpeed = 4.5f;
+        [SerializeField] private float worldFallSpeed = 16f;
         [SerializeField] private float shaftHalfWidth = 0f;
         [SerializeField] private float shaftPadding = 1.2f;
         [SerializeField] private LayerMask playerLayer = 1 << 6;
         [SerializeField] private float hazardDamage = 1f;
 
-        [Header("Tile Obstacles")]
-        [SerializeField] private TileBase obstacleTile;
-        [SerializeField] private string obstacleSortingLayer = "Prop";
-        [SerializeField] private int obstacleSortingOrder = 5;
-        [SerializeField] private Vector2 obstacleInterval = new Vector2(1.6f, 2.8f);
-        [SerializeField] private Vector2Int barLengthRange = new Vector2Int(3, 6);
-        [SerializeField] private Vector2 rotateSpeedRange = new Vector2(60f, 130f);
-        [SerializeField] private Vector2 sweepAmplitudeRange = new Vector2(2f, 4.5f);
-        [SerializeField] private Vector2 sweepFrequencyRange = new Vector2(0.25f, 0.5f);
-        [SerializeField, Range(0f, 1f)] private float rotateChance = 0.35f;
-        [SerializeField, Range(0f, 1f)] private float sweepChance = 0.4f;
-
         [Header("Falling Swords")]
         [SerializeField] private Sprite swordSprite;
         [SerializeField] private Color swordTint = new Color(0.9f, 0.7f, 1f, 1f);
         [SerializeField] private float swordScale = 0.07f;
-        [SerializeField] private Vector2 swordInterval = new Vector2(1.1f, 2.2f);
-        [SerializeField] private Vector2Int swordsPerVolley = new Vector2Int(1, 3);
-        [SerializeField] private float swordWarning = 0.7f;
-        [SerializeField] private float swordDropSpeed = 24f;
+        [SerializeField] private string swordSortingLayer = "Prop";
+        [SerializeField] private int swordSortingOrder = 5;
+        [SerializeField] private Vector2 volleyInterval = new Vector2(0.45f, 0.85f);
+        [SerializeField] private Vector2Int rainCount = new Vector2Int(4, 7);
+        [SerializeField] private float rainStagger = 0.05f;
+        [SerializeField] private float wallSpacing = 1.3f;
+        [SerializeField] private float wallGap = 2.6f;
+        [SerializeField] private int aimedCount = 3;
+        [SerializeField] private float aimedSpread = 1.1f;
+        [SerializeField] private float swordWarning = 0.45f;
+        [SerializeField] private float swordDropSpeed = 36f;
 
         [Header("Swordmaster Arrival")]
         [SerializeField] private Swordmaster swordmaster;
@@ -72,10 +67,10 @@ namespace Member.ODK.Scripts.Environment
         private readonly List<GameObject> spawned = new List<GameObject>();
         private readonly Dictionary<VerticalLoopScroller, float> baseSpeeds = new Dictionary<VerticalLoopScroller, float>();
         private Coroutine climbRoutine;
-        private Coroutine obstacleRoutine;
         private Coroutine swordRoutine;
         private bool finished;
         private Material lineMaterial;
+        private Transform cachedPlayer;
 
         private Camera ViewCamera => Camera.main;
         private Vector3 ViewCenter => ViewCamera != null ? ViewCamera.transform.position : transform.position;
@@ -118,7 +113,6 @@ namespace Member.ODK.Scripts.Environment
                 scroller.Speed = baseSpeeds[scroller] * climbSpeedScale;
                 scroller.IsPlaying = true;
             }
-            obstacleRoutine = StartCoroutine(ObstacleLoop());
             swordRoutine = StartCoroutine(SwordLoop());
             climbRoutine = StartCoroutine(ClimbTimer());
             onClimbStarted?.Invoke();
@@ -131,7 +125,6 @@ namespace Member.ODK.Scripts.Environment
             finished = true;
             IsClimbing = false;
             StopRoutine(ref climbRoutine);
-            StopRoutine(ref obstacleRoutine);
             StopRoutine(ref swordRoutine);
             CacheBaseSpeeds();
             StartCoroutine(ArrivalRoutine());
@@ -144,90 +137,75 @@ namespace Member.ODK.Scripts.Environment
             FinishClimb();
         }
 
-        private IEnumerator ObstacleLoop()
-        {
-            while (IsClimbing)
-            {
-                yield return new WaitForSeconds(Random.Range(obstacleInterval.x, obstacleInterval.y));
-                if (!IsClimbing) yield break;
-                SpawnTileObstacle();
-            }
-        }
-
         private IEnumerator SwordLoop()
         {
-            yield return new WaitForSeconds(swordInterval.y);
+            yield return new WaitForSeconds(0.6f);
+            int last = -1;
             while (IsClimbing)
             {
-                int count = Random.Range(Mathf.Max(1, swordsPerVolley.x), Mathf.Max(swordsPerVolley.x, swordsPerVolley.y) + 1);
-                for (int i = 0; i < count; i++)
-                {
-                    SpawnFallingSword();
-                    yield return new WaitForSeconds(0.12f);
-                }
-                yield return new WaitForSeconds(Random.Range(swordInterval.x, swordInterval.y));
+                int pattern;
+                do pattern = Random.Range(0, 3);
+                while (pattern == last && Random.value < 0.7f);
+                last = pattern;
+
+                if (pattern == 0) yield return RainVolley();
+                else if (pattern == 1) WallVolley();
+                else yield return AimedVolley();
+
+                yield return new WaitForSeconds(Random.Range(volleyInterval.x, volleyInterval.y));
             }
         }
 
-        private void SpawnTileObstacle()
+        private IEnumerator RainVolley()
         {
-            if (obstacleTile == null) return;
-            int length = Random.Range(Mathf.Max(1, barLengthRange.x), Mathf.Max(barLengthRange.x, barLengthRange.y) + 1);
-            float roll = Random.value;
-            ClimbHazard.MotionType motion = roll < rotateChance
-                ? ClimbHazard.MotionType.Rotate
-                : roll < rotateChance + sweepChance ? ClimbHazard.MotionType.Sweep : ClimbHazard.MotionType.Descend;
-
+            int count = Random.Range(Mathf.Max(1, rainCount.x), Mathf.Max(rainCount.x, rainCount.y) + 1);
             float halfWidth = ShaftHalfWidth;
-            float margin = motion == ClimbHazard.MotionType.Rotate ? length * 0.5f : length * 0.5f;
-            float x = ViewCenter.x + Random.Range(-halfWidth + margin, halfWidth - margin);
-            if (halfWidth - margin <= -halfWidth + margin) x = ViewCenter.x;
-            Vector3 position = new Vector3(x, ViewCenter.y + ViewHalfHeight + length + 1f, 0f);
-
-            GameObject root = new GameObject("Climb Obstacle " + motion);
-            root.transform.position = position;
-            root.AddComponent<Grid>();
-            Rigidbody2D body = root.AddComponent<Rigidbody2D>();
-            body.bodyType = RigidbodyType2D.Kinematic;
-            body.useFullKinematicContacts = true;
-
-            GameObject tileObject = new GameObject("Tiles");
-            tileObject.transform.SetParent(root.transform, false);
-            tileObject.transform.localPosition = new Vector3(-length * 0.5f, -0.5f, 0f);
-            Tilemap tilemap = tileObject.AddComponent<Tilemap>();
-            TilemapRenderer renderer = tileObject.AddComponent<TilemapRenderer>();
-            renderer.sortingLayerName = obstacleSortingLayer;
-            renderer.sortingOrder = obstacleSortingOrder;
-            for (int i = 0; i < length; i++)
-                tilemap.SetTile(new Vector3Int(i, 0, 0), obstacleTile);
-            TilemapCollider2D collider = tileObject.AddComponent<TilemapCollider2D>();
-            collider.isTrigger = true;
-
-            ClimbHazard hazard = root.AddComponent<ClimbHazard>();
-            hazard.Initialize(this, motion, hazardDamage, playerLayer);
-            if (motion == ClimbHazard.MotionType.Rotate)
+            for (int i = 0; i < count && IsClimbing; i++)
             {
-                float speed = Random.Range(rotateSpeedRange.x, rotateSpeedRange.y) * (Random.value < 0.5f ? -1f : 1f);
-                hazard.ConfigureRotate(speed);
-                root.transform.rotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 180f));
+                SpawnFallingSword(ViewCenter.x + Random.Range(-halfWidth, halfWidth));
+                if (rainStagger > 0f) yield return new WaitForSeconds(rainStagger);
             }
-            else if (motion == ClimbHazard.MotionType.Sweep)
-            {
-                float amplitude = Mathf.Min(Random.Range(sweepAmplitudeRange.x, sweepAmplitudeRange.y), Mathf.Max(0f, halfWidth - length * 0.5f));
-                hazard.ConfigureSweep(amplitude, Random.Range(sweepFrequencyRange.x, sweepFrequencyRange.y));
-                root.transform.position = new Vector3(ViewCenter.x, position.y, 0f);
-                hazard.Initialize(this, motion, hazardDamage, playerLayer);
-            }
-            Track(root);
         }
 
-        private void SpawnFallingSword()
+        private void WallVolley()
+        {
+            float halfWidth = ShaftHalfWidth;
+            float left = ViewCenter.x - halfWidth;
+            float right = ViewCenter.x + halfWidth;
+            float gapCenter = Random.Range(left + wallGap, right - wallGap);
+            for (float x = left; x <= right + 0.01f; x += Mathf.Max(0.4f, wallSpacing))
+            {
+                if (Mathf.Abs(x - gapCenter) < wallGap * 0.5f) continue;
+                SpawnFallingSword(x);
+            }
+        }
+
+        private IEnumerator AimedVolley()
+        {
+            Transform player = FindPlayer();
+            float halfWidth = ShaftHalfWidth;
+            for (int i = 0; i < aimedCount && IsClimbing; i++)
+            {
+                float targetX = player != null ? player.position.x : ViewCenter.x;
+                float x = Mathf.Clamp(targetX + Random.Range(-aimedSpread, aimedSpread), ViewCenter.x - halfWidth, ViewCenter.x + halfWidth);
+                SpawnFallingSword(x);
+                yield return new WaitForSeconds(0.14f);
+            }
+        }
+
+        private Transform FindPlayer()
+        {
+            if (cachedPlayer == null)
+            {
+                cachedPlayer = PhasedBossController.FindPlayerTransform();
+            }
+            return cachedPlayer;
+        }
+
+        private void SpawnFallingSword(float x)
         {
             if (swordSprite == null) return;
-            float halfWidth = ShaftHalfWidth;
-            float x = ViewCenter.x + Random.Range(-halfWidth, halfWidth);
             Vector3 position = new Vector3(x, ViewCenter.y + ViewHalfHeight - 0.6f, 0f);
-
             GameObject root = CreateSwordObject("Falling Sword", position, swordScale, swordTint);
             LineRenderer warning = CreateWarningLine(root.transform);
             ClimbHazard hazard = root.AddComponent<ClimbHazard>();
@@ -251,8 +229,8 @@ namespace Member.ODK.Scripts.Environment
             SpriteRenderer renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = swordSprite;
             renderer.color = tint;
-            renderer.sortingLayerName = obstacleSortingLayer;
-            renderer.sortingOrder = obstacleSortingOrder + 1;
+            renderer.sortingLayerName = swordSortingLayer;
+            renderer.sortingOrder = swordSortingOrder + 1;
 
             CapsuleCollider2D collider = root.AddComponent<CapsuleCollider2D>();
             collider.isTrigger = true;
@@ -272,8 +250,8 @@ namespace Member.ODK.Scripts.Environment
             line.positionCount = 2;
             line.widthMultiplier = 0.08f;
             line.numCapVertices = 2;
-            line.sortingLayerName = obstacleSortingLayer;
-            line.sortingOrder = obstacleSortingOrder - 1;
+            line.sortingLayerName = swordSortingLayer;
+            line.sortingOrder = swordSortingOrder - 1;
             if (lineMaterial == null)
             {
                 Shader shader = Shader.Find("Sprites/Default");
@@ -295,20 +273,22 @@ namespace Member.ODK.Scripts.Environment
             ClearSpawned();
             onClimbFinished?.Invoke();
 
-            Swordmaster boss = PrepareSwordmaster();
             Vector3 appear = swordmasterAppearPoint != null
                 ? swordmasterAppearPoint.position
                 : ViewCenter + Vector3.up * ViewHalfHeight * 0.45f;
             appear.z = 0f;
 
-            if (boss != null)
+            Swordmaster boss = SpawnSwordmaster(appear);
+            BossIntroTimeline intro = boss != null ? boss.GetComponentInChildren<BossIntroTimeline>(true) : null;
+            if (intro != null)
             {
-                boss.transform.position = appear + Vector3.up * (ViewHalfHeight + 4f);
-                boss.gameObject.SetActive(true);
-                boss.PlayAnimation(Swordmaster.FallState);
-                yield return boss.transform.DOMove(appear, appearDuration).SetEase(Ease.OutCubic).WaitForCompletion();
-                boss.Cue(SwordmasterCue.Teleport, appear);
-                boss.PlayAnimation(Swordmaster.JumpState);
+                intro.AutoBeginBattle = false;
+                float timeout = 12f;
+                while (!intro.HasFinished && timeout > 0f)
+                {
+                    timeout -= Time.deltaTime;
+                    yield return null;
+                }
             }
             else
             {
@@ -338,15 +318,16 @@ namespace Member.ODK.Scripts.Environment
             }
         }
 
-        private Swordmaster PrepareSwordmaster()
+        private Swordmaster SpawnSwordmaster(Vector3 position)
         {
             if (swordmaster == null && swordmasterPrefab != null)
-            {
-                swordmaster = Instantiate(swordmasterPrefab);
-                swordmaster.SetAutoStart(false);
-                swordmaster.gameObject.SetActive(false);
-            }
-            if (swordmaster != null) swordmaster.SetAutoStart(false);
+                swordmaster = Instantiate(swordmasterPrefab, position, Quaternion.identity);
+            if (swordmaster == null) return null;
+            swordmaster.SetAutoStart(false);
+            Transform player = FindPlayer();
+            if (player != null) swordmaster.SetTarget(player);
+            swordmaster.transform.position = position;
+            swordmaster.gameObject.SetActive(true);
             return swordmaster;
         }
 

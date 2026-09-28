@@ -19876,6 +19876,7 @@ GameObject:
   - component: {fileID: 951662277}
   - component: {fileID: 951662276}
   - component: {fileID: 1026855092}
+  - component: {fileID: 1026855093}
   m_Layer: 3
   m_Name: PlatForm
   m_TagString: Untagged
@@ -20906,13 +20907,32 @@ TilemapCollider2D:
     serializedVersion: 2
     m_Bits: 4294967295
   m_IsTrigger: 0
-  m_UsedByEffector: 0
+  m_UsedByEffector: 1
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0.00001
   m_UseDelaunayMesh: 0
+--- !u!251 &1026855093
+PlatformEffector2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 951662274}
+  m_Enabled: 1
+  m_UseColliderMask: 1
+  m_ColliderMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RotationalOffset: 0
+  m_UseOneWay: 1
+  m_UseOneWayGrouping: 0
+  m_SurfaceArc: 110
+  m_UseSideFriction: 0
+  m_UseSideBounce: 0
+  m_SideArc: 1
 --- !u!1 &1049679563
 GameObject:
   m_ObjectHideFlags: 0
@@ -24760,38 +24780,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55bd57b26d134e37bd59bf3bd7e7f9bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Environment.TowerClimbSequence
-  autoStart: 1
+  autoStart: 0
   climbDuration: 40
   scrollers:
   - {fileID: 1796233790}
   - {fileID: 1295310485}
-  climbSpeedScale: 1
-  fallSpeedScale: -4.5
-  fallRampDuration: 0.9
-  worldFallSpeed: 4.5
+  climbSpeedScale: 4
+  fallSpeedScale: -9
+  fallRampDuration: 0.7
+  worldFallSpeed: 16
   shaftHalfWidth: 0
   shaftPadding: 1.2
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
   hazardDamage: 1
-  obstacleTile: {fileID: 11400000, guid: b20f85179c74faf4f99fb6de2b2f3c21, type: 2}
-  obstacleSortingLayer: Prop
-  obstacleSortingOrder: 5
-  obstacleInterval: {x: 1.6, y: 2.8}
-  barLengthRange: {x: 3, y: 6}
-  rotateSpeedRange: {x: 60, y: 130}
-  sweepAmplitudeRange: {x: 2, y: 4.5}
-  sweepFrequencyRange: {x: 0.25, y: 0.5}
-  rotateChance: 0.35
-  sweepChance: 0.4
   swordSprite: {fileID: 21300000, guid: 12daf72d3103148e99cb8cdfa7f45d54, type: 3}
   swordTint: {r: 0.9, g: 0.7, b: 1, a: 1}
   swordScale: 0.07
-  swordInterval: {x: 1.1, y: 2.2}
-  swordsPerVolley: {x: 1, y: 3}
-  swordWarning: 0.7
-  swordDropSpeed: 24
+  swordSortingLayer: Prop
+  swordSortingOrder: 5
+  volleyInterval: {x: 0.45, y: 0.85}
+  rainCount: {x: 4, y: 7}
+  rainStagger: 0.05
+  wallSpacing: 1.3
+  wallGap: 2.6
+  aimedCount: 3
+  aimedSpread: 1.1
+  swordWarning: 0.45
+  swordDropSpeed: 36
   swordmaster: {fileID: 0}
   swordmasterPrefab: {fileID: 100002, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
   swordmasterAppearPoint: {fileID: 0}
@@ -45247,6 +45264,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lost Soul
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: a3000000000000000000000000000003, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 100001, guid: a3000000000000000000000000000003, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -45518,6 +45539,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
       propertyPath: m_Name
       value: Swordmaster
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 100001, guid: 5928de35c9484bd9acd87fca23de350c, type: 3}
       propertyPath: m_LocalPosition.x

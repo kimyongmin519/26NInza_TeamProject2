@@ -58,6 +58,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             Moon,
             LostSoul,
             Volcanus,
+            Swordmaster,
             Custom
         }
 
@@ -87,6 +88,9 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [SerializeField] private UnityEvent onIntroFinished;
 
         public bool IsPlaying { get; private set; }
+        public bool AutoBeginBattle { get; set; } = true;
+        public bool HasFinished { get; private set; }
+        public event Action Finished;
 
         private Vector3 finalPosition;
         private Vector3 finalScale;
@@ -168,8 +172,10 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             SetLetterbox(false, 0.25f);
             if (titleGroup != null) titleGroup.DOFade(0f, 0.25f).SetTarget(this);
             IsPlaying = false;
+            HasFinished = true;
             onIntroFinished?.Invoke();
-            boss.BeginBattle();
+            Finished?.Invoke();
+            if (AutoBeginBattle) boss.BeginBattle();
             if (overlayCanvas != null) Destroy(overlayCanvas.gameObject, 0.6f);
             overlayCanvas = null;
         }
@@ -239,6 +245,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             if (typeName.Contains("Moon")) return Preset.Moon;
             if (typeName.Contains("LostSoul")) return Preset.LostSoul;
             if (typeName.Contains("Volcanus")) return Preset.Volcanus;
+            if (typeName.Contains("Swordmaster")) return Preset.Swordmaster;
             return Preset.Moon;
         }
 
@@ -250,6 +257,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                 case Preset.Moon: return "THE MOON";
                 case Preset.LostSoul: return "LOST SOUL";
                 case Preset.Volcanus: return "VOLCANUS";
+                case Preset.Swordmaster: return "SWORDMASTER";
                 default: return boss.name.ToUpperInvariant();
             }
         }
@@ -262,6 +270,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                 case Preset.Moon: return "Fallen Satellite";
                 case Preset.LostSoul: return "Wraith of the Forgotten";
                 case Preset.Volcanus: return "Molten Colossus";
+                case Preset.Swordmaster: return "Blade of the Endless Tower";
                 default: return string.Empty;
             }
         }
@@ -288,6 +297,20 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                     Add(BossIntroAction.Title, 1.9f, 1.9f);
                     Add(BossIntroAction.CameraRelease, 3.9f, 0f);
                     Add(BossIntroAction.LetterboxHide, 3.9f, 0.35f);
+                    break;
+                case Preset.Swordmaster:
+                    Add(BossIntroAction.Letterbox, 0f, 0.3f);
+                    Add(BossIntroAction.CameraFocus, 0f, 0f).value = 5f;
+                    BossIntroStep drop = Add(BossIntroAction.MoveFromOffset, 0.1f, 0.9f);
+                    drop.vector = new Vector2(0f, 10f);
+                    drop.ease = Ease.OutCubic;
+                    Add(BossIntroAction.Animation, 0.1f, 0f).text = "Fall";
+                    Add(BossIntroAction.Animation, 1.05f, 0f).text = "Attack1";
+                    Add(BossIntroAction.Shake, 1.1f, 0f).value = 1.1f;
+                    Add(BossIntroAction.ScalePunch, 1.1f, 0.3f).value = 0.12f;
+                    Add(BossIntroAction.Title, 1.3f, 1.7f);
+                    Add(BossIntroAction.CameraRelease, 3.1f, 0f);
+                    Add(BossIntroAction.LetterboxHide, 3.1f, 0.3f);
                     break;
                 case Preset.Volcanus:
                     Add(BossIntroAction.Letterbox, 0f, 0.4f);

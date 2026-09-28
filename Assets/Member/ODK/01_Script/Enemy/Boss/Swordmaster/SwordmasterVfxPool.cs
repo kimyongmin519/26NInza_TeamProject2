@@ -9,6 +9,8 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
     public sealed class SwordmasterVfxPool : MonoBehaviour
     {
         [SerializeField] private PoolManagerSO poolManager;
+        [SerializeField] private string effectSortingLayer = "Vfx";
+        [SerializeField] private int effectSortingOrder = 10;
 
         private readonly HashSet<PoolableVfx> activeEffects = new();
         private bool initialized;
@@ -19,7 +21,8 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             PoolItemSO item,
             Vector3 position,
             Quaternion rotation,
-            Color tint)
+            Color tint,
+            int sortingOrderOverride = int.MinValue)
         {
             if (item == null || !EnsureInitialized())
                 return false;
@@ -33,8 +36,22 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             effect.OnVfxEnd -= HandleEffectEnd;
             effect.OnVfxEnd += HandleEffectEnd;
             activeEffects.Add(effect);
+            ApplySorting(effect, sortingOrderOverride);
             effect.PlayVfx(new VfxSpawnContext(position, rotation, tint));
             return true;
+        }
+
+        private void ApplySorting(PoolableVfx effect, int sortingOrderOverride)
+        {
+            bool validLayer = !string.IsNullOrEmpty(effectSortingLayer) && SortingLayer.NameToID(effectSortingLayer) != 0
+                || effectSortingLayer == "Default";
+            int order = sortingOrderOverride == int.MinValue ? effectSortingOrder : sortingOrderOverride;
+            foreach (Renderer renderer in effect.GetComponentsInChildren<Renderer>(true))
+            {
+                if (renderer == null) continue;
+                if (validLayer) renderer.sortingLayerName = effectSortingLayer;
+                renderer.sortingOrder = order;
+            }
         }
 
         private bool EnsureInitialized()

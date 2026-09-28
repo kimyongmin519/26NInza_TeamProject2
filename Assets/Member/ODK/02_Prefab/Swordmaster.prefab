@@ -58,6 +58,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.Swordmaster
   attackInterval: 1.15
   playOnStart: 1
+  playIntro: 1
   summonPresentation: {fileID: 7210551450521848489}
   deathPresentation: {fileID: 3307578300065348359}
   target: {fileID: 0}
@@ -353,7 +354,7 @@ MonoBehaviour:
     effectItem: {fileID: 0}
     effectTint: {r: 1, g: 1, b: 1, a: 1}
     rotationOffset: 0
-    soundClip: {fileID: 11400000, guid: a04de029e829eab4782f0bc7304913f1, type: 2}
+    soundClip: {fileID: 0}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
@@ -361,7 +362,7 @@ MonoBehaviour:
     effectItem: {fileID: 0}
     effectTint: {r: 1, g: 1, b: 1, a: 1}
     rotationOffset: 0
-    soundClip: {fileID: 11400000, guid: c6b798e74da0a994698260b3c6bd31c4, type: 2}
+    soundClip: {fileID: 0}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
@@ -370,6 +371,14 @@ MonoBehaviour:
     effectTint: {r: 1, g: 1, b: 1, a: 1}
     rotationOffset: 0
     soundClip: {fileID: 11400000, guid: ab980bc13997a1e408865596a4930d57, type: 2}
+    onPlayed:
+      m_PersistentCalls:
+        m_Calls: []
+  swordBlink:
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
+    soundClip: {fileID: 0}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
@@ -484,7 +493,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 994a88a2f8378e0438060ef243b39f2d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossHealthBarBinding
   healthModule: {fileID: 120002}
   healthBar: {fileID: 0}
@@ -535,7 +544,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5efef4ee50c2a7649899e6fad384b712, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterPresentation
   animator: {fileID: 130003}
   rigidBody: {fileID: 100003}
@@ -549,7 +558,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e655b5ca983ec9249866f40a15751bf0, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterVfxPool
   poolManager: {fileID: 11400000, guid: 4c7e077288485b24eb3d4c91d1d2e0cf, type: 2}
 --- !u!1 &110000
@@ -585,6 +594,8 @@ Transform:
   - {fileID: 111001}
   - {fileID: 112001}
   - {fileID: 113001}
+  - {fileID: 114001}
+  - {fileID: 115001}
   m_Father: {fileID: 100001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &110002
@@ -652,7 +663,7 @@ MonoBehaviour:
   dashHitbox: {x: 1.4, y: 2.6}
   swordSpeed: 30
   swordInterval: 0.2
-  volleyCount: 4
+  volleyCount: 3
   dashDistanceScale: 1.3
   swordFlightTime: 1.6
   warningLineWidth: 0.16
@@ -775,10 +786,122 @@ MonoBehaviour:
   axisSwordSpeed: 30
   axisDistance: 7
   lineWarningDuration: 0.5
-  swordPathWidth: 0.36
+  swordPathWidth: 0.08
   finalSpawnRadius: 9
   finalWarningDuration: 0.55
   finalSwordSpeed: 15
+--- !u!1 &114000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 114001}
+  - component: {fileID: 114002}
+  m_Layer: 0
+  m_Name: 3 Surround Volley
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &114001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 110001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d0ed25947dd48e8b8f23e4af6f120fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterSurroundAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: 6f7e7e83321c45428880b78868db0b43, type: 2}
+  roundCount: 3
+  swordsPerRound: {x: 2, y: 4}
+  roundGap: 0.25
+  finalSwordCount: 6
+  finalFireInterval: 0.16
+  radiusRange: {x: 3.2, y: 5}
+  formDuration: 0.35
+  aimDuration: 0.45
+  swordSpeed: 24
+  flightTime: 1.6
+  pathLength: 14
+--- !u!1 &115000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 115001}
+  - component: {fileID: 115002}
+  m_Layer: 0
+  m_Name: 4 Scatter Home
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &115001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 110001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &115002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe949eb9b62f43a19e8d71e4bc90d858, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterScatterAttack
+  <SkillData>k__BackingField: {fileID: 11400000, guid: aac1d53896784424a1c444b08898d01d, type: 2}
+  swordCount: 8
+  arenaPadding: 1.5
+  appearDuration: 0.25
+  appearStagger: 0.05
+  scatterSpeed: 9
+  scatterDuration: 0.45
+  aimWarning: 0.3
+  homeSpeed: 26
+  homeFlightTime: 1.6
+  retargetInterval: 0.12
+  pathLength: 14
 --- !u!1 &120000
 GameObject:
   m_ObjectHideFlags: 0

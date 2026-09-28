@@ -16,7 +16,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private Vector2 dashHitbox = new Vector2(1.4f, 2.6f);
         [SerializeField] private float swordSpeed = 11f;
         [SerializeField] private float swordInterval = 0.2f;
-        [SerializeField, Min(0)] private int volleyCount = 1;
+        [SerializeField, Min(0)] private int volleyCount = 3;
         [SerializeField] private float dashDistanceScale = 1.3f;
         [SerializeField] private float swordFlightTime = 1.6f;
 
@@ -50,58 +50,34 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             Boss.PlayAnimation(Swordmaster.JumpState);
             Boss.Cue(SwordmasterCue.DashReady, teleportPoint);
 
+            yield return new WaitForSeconds(readyDuration / DurationScale);
+
             Vector2 direction = (Boss.Target.position - Boss.transform.position).normalized;
-            Vector3 dashEnd = Boss.Arena != null
+            Vector3 moveEnd = Boss.Arena != null
                 ? Boss.Arena.Clamp(Boss.transform.position + (Vector3)direction * Boss.ArenaHalfWidth * dashDistanceScale, 1f)
                 : Boss.transform.position + (Vector3)direction * 16f;
-            dashTelegraph = Boss.SpawnTelegraph();
-            Vector3 lineOffset = Vector3.up * Boss.GetHitCenter().y - Vector3.up * Boss.transform.position.y;
-            dashTelegraph?.Show(
-                Boss.transform.position + lineOffset,
-                dashEnd + lineOffset,
-                readyDuration / DurationScale,
-                warningLineWidth
-            );
-            yield return new WaitForSeconds(readyDuration / DurationScale);
-            Boss.ReleaseTelegraph(dashTelegraph);
-            dashTelegraph = null;
-
+            moveEnd.z = Boss.transform.position.z;
             List<EnchantedSword> volley = volleyCount > 0 ? Boss.TakeSwords(volleyCount) : new List<EnchantedSword>();
 
-            float dashAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            dashCaster.ConfigureBox(dashHitbox, Boss.PlayerLayer);
-            dashCaster.SetWorldPose(Boss.GetHitCenter(), dashAngle);
-            dashCaster.EnableCasting(
-                new DamageData(dashDamage, DamageType.Melee, knockbackForce: direction * dashKnockback),
-                dashDuration / DurationScale
-            );
             Boss.PlayAnimation(Swordmaster.RunState);
-            Boss.Cue(SwordmasterCue.DashStart, Boss.transform.position, dashAngle);
-            float progress = 0f;
-            Vector3 start = Boss.transform.position;
-            dashTween = DOTween.To(() => progress, value =>
-                {
-                    progress = value;
-                    Boss.transform.position = Vector3.Lerp(start, dashEnd, value);
-                    dashCaster.SetWorldPose(Boss.GetHitCenter(), dashAngle);
-                }, 1f, dashDuration / DurationScale)
+            Boss.Cue(SwordmasterCue.DashStart, Boss.transform.position);
+            dashTween = Boss.transform.DOMove(moveEnd, dashDuration / DurationScale)
                 .SetEase(Ease.InOutSine)
                 .SetTarget(Boss.transform);
 
+            yield return new WaitForSeconds(dashDuration * 0.25f / DurationScale);
+            Boss.PlayAnimation(Swordmaster.Attack1State);
             foreach (EnchantedSword sword in volley)
             {
-                if (sword == null) continue;
+                if (sword == null || Boss.Target == null) continue;
                 Vector2 aim = (Boss.Target.position - sword.transform.position).normalized;
                 sword.FireMagic(aim, swordSpeed, swordFlightTime);
                 yield return new WaitForSeconds(swordInterval / DurationScale);
             }
 
-            yield return dashTween.WaitForCompletion();
-            dashCaster.DisableCasting();
-            dashCaster.ClearWorldPose();
-            Boss.AttackImpact(Boss.transform.position);
-            Boss.PlayAnimation(Swordmaster.Attack1State);
-            Boss.Cue(SwordmasterCue.DashEnd, Boss.transform.position, dashAngle);
+            if (dashTween != null && dashTween.IsActive()) yield return dashTween.WaitForCompletion();
+            Boss.PlayAnimation(Swordmaster.IdleState);
+            Boss.Cue(SwordmasterCue.DashEnd, Boss.transform.position);
         }
 
         protected override void OnSwordmasterCancel()

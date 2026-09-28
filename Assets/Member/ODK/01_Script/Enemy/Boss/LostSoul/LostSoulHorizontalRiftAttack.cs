@@ -11,7 +11,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float activeDuration = 0.18f;
         [SerializeField] private float riftHeight = 0.65f;
         [SerializeField] private float damage = DamageCaster.BossPlayerDamage;
-        [SerializeField] private Color beamColor = new Color(0.78f, 0.2f, 1f, 1f);
+        [SerializeField] private Color beamColor = new Color(0.94f, 0.9f, 1f, 1f);
 
         protected override IEnumerator ExecuteLostSoul(GameObject target)
         {

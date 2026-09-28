@@ -15,8 +15,9 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         protected override IEnumerator ExecuteLostSoul(GameObject target)
         {
             Boss.TeleportToTarget(sideDistance);
-            yield return new WaitForSeconds(0.1f * DurationScale);
             Boss.PlayCastFeedback();
+            float release = Boss.PlayCastOnce();
+            if (release > 0f) yield return new WaitForSeconds(release);
 
             for (int wave = 0; wave < waveCount; wave++)
             {
@@ -34,7 +35,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
                 Vector3 weakOrigin = new Vector3(Boss.transform.position.x, ground.y + 1.12f, Boss.transform.position.z);
                 Boss.SpawnWeakSoul(weakOrigin, direction * (bulletSpeed * 0.52f));
-                yield return new WaitForSeconds(waveInterval * DurationScale);
+                yield return new WaitForSeconds(waveInterval / DurationScale);
             }
         }
     }

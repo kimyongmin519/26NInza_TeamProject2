@@ -115,7 +115,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 eyeSparkle.SetPosition(2, center + Vector3.down * scale);
                 eyeSparkle.SetPosition(3, center + Vector3.left * scale * 0.36f);
                 eyeSparkle.SetPosition(4, center + Vector3.up * scale);
-                Color color = new Color(0.92f, 0.72f, 1f, alpha);
+                Color color = new Color(0.94f, 0.9f, 1f, alpha);
                 eyeSparkle.startColor = color;
                 eyeSparkle.endColor = color;
                 eyeSparkle.widthMultiplier = 0.08f + scale * 0.03f;
@@ -144,8 +144,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             Vector3 center = GetScreenCenter();
             Vector3 direction = Directions[cue];
             float duration = arrowDuration / DurationScale;
-            Color transparent = new Color(0.88f, 0.52f, 1f, 0f);
-            Color visible = new Color(0.98f, 0.84f, 1f, 0.82f);
+            Color transparent = new Color(0.94f, 0.9f, 1f, 0f);
+            Color visible = new Color(0.98f, 0.96f, 1f, 0.82f);
 
             arrow.transform.position = center - direction * (arrowMoveDistance * 0.35f);
             arrow.transform.rotation = Quaternion.identity;
@@ -196,7 +196,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 slashGlowEffect.SetPosition(0, start);
                 slashGlowEffect.SetPosition(1, end);
                 slashGlowEffect.widthMultiplier = 1.8f;
-                Color glow = new Color(0.78f, 0.22f, 1f, 0.7f);
+                Color glow = new Color(0.94f, 0.9f, 1f, 0.7f);
                 slashGlowEffect.startColor = glow;
                 slashGlowEffect.endColor = glow;
                 slashGlowEffect.enabled = true;
@@ -237,7 +237,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 sequence.Insert(0f, DOTween.To(() => glowAlpha, value =>
                 {
                     glowAlpha = value;
-                    Color glow = new Color(0.78f, 0.22f, 1f, value);
+                    Color glow = new Color(0.94f, 0.9f, 1f, value);
                     slashGlowEffect.startColor = glow;
                     slashGlowEffect.endColor = glow;
                 }, 0f, slashRevealDuration / DurationScale).SetEase(Ease.InQuad));

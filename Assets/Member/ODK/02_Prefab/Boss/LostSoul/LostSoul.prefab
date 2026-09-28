@@ -363,7 +363,7 @@ MonoBehaviour:
   impactPunch: {x: 0, y: 0.25, z: 0}
   impactDuration: 0.12
   appearEase: 9
-  summonTint: {r: 0.68, g: 0.25, b: 1, a: 1}
+  summonTint: {r: 0.94, g: 0.9, b: 1, a: 1}
   startAlpha: 0
   flashDuration: 0.12
   summonSound: {fileID: 0}
@@ -404,7 +404,7 @@ MonoBehaviour:
   fragmentLift: 2.2
   fragmentRotation: 25
   vanishEase: 8
-  deathTint: {r: 0.54, g: 0.22, b: 0.85, a: 1}
+  deathTint: {r: 0.94, g: 0.9, b: 1, a: 1}
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   flashCount: 2
   flashDuration: 0.15
@@ -645,7 +645,7 @@ SpriteRenderer:
   m_SortingOrder: 47
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 2b2aec552c1a29c41b45974210ddc240, type: 3}
-  m_Color: {r: 0.9, g: 0.3, b: 1, a: 1}
+  m_Color: {r: 0.94, g: 0.9, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -975,7 +975,7 @@ MonoBehaviour:
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4000000000000000000000000000001, type: 2}
   damageCaster: {fileID: 132003}
   animationStateName: cast
-  startupDelay: 0.32
+  startupDelay: 0.12
   recoveryDelay: 0.28
   sideDistance: 5.2
   waveCount: 3
@@ -1060,7 +1060,7 @@ MonoBehaviour:
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4000000000000000000000000000002, type: 2}
   damageCaster: {fileID: 133003}
   animationStateName: cast
-  startupDelay: 0.3
+  startupDelay: 0.12
   recoveryDelay: 0.28
   castDistance: 8.5
   castDelay: 1.25
@@ -1151,7 +1151,7 @@ MonoBehaviour:
   activeDuration: 0.18
   riftHeight: 0.65
   damage: 1
-  beamColor: {r: 0.78, g: 0.2, b: 1, a: 1}
+  beamColor: {r: 0.94, g: 0.9, b: 1, a: 1}
 --- !u!1 &135000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1206,7 +1206,7 @@ MonoBehaviour:
   cutThickness: 0.62
   damage: 1
   betweenCuts: 0.16
-  beamColor: {r: 0.82, g: 0.24, b: 1, a: 1}
+  beamColor: {r: 0.94, g: 0.9, b: 1, a: 1}
 --- !u!1 &136000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1725,7 +1725,7 @@ SpriteRenderer:
   m_SortingOrder: 500
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 75956f45c5bee4c48ad57322178154bf, type: 3}
-  m_Color: {r: 0.88, g: 0.52, b: 1, a: 0}
+  m_Color: {r: 0.94, g: 0.9, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1816,7 +1816,7 @@ SpriteRenderer:
   m_SortingOrder: 500
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 4667747b5b18b7c42914b101cbd4779c, type: 3}
-  m_Color: {r: 0.88, g: 0.52, b: 1, a: 0}
+  m_Color: {r: 0.94, g: 0.9, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1907,7 +1907,7 @@ SpriteRenderer:
   m_SortingOrder: 500
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 95360d9ebe48db748bbf325e76587b0b, type: 3}
-  m_Color: {r: 0.88, g: 0.52, b: 1, a: 0}
+  m_Color: {r: 0.94, g: 0.9, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1998,7 +1998,7 @@ SpriteRenderer:
   m_SortingOrder: 500
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 2d8f07d1deb749f4abe9bad1a5656ab4, type: 3}
-  m_Color: {r: 0.88, g: 0.52, b: 1, a: 0}
+  m_Color: {r: 0.94, g: 0.9, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2066,7 +2066,7 @@ MonoBehaviour:
   slashActiveDuration: 0.16
   slashWidth: 0.52
   slashDamage: 1
-  slashColor: {r: 0.82, g: 0.24, b: 1, a: 1}
+  slashColor: {r: 0.94, g: 0.9, b: 1, a: 1}
   rotatingSlashHealth: 0.2
   rotatingDegrees: 145
   cycleIntervalAt25: 0.92

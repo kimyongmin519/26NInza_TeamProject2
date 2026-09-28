@@ -23,6 +23,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         SwordDispelled,
         SwordRecall,
         SwordImpact,
+        SwordBlink,
         Hit,
         Death
     }
@@ -39,13 +40,16 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         public void Play(
             SwordmasterVfxPool vfxPool,
             Vector3 position,
-            float rotationZ = 0f)
+            float rotationZ = 0f,
+            Vector3? effectPosition = null,
+            int sortingOrderOverride = int.MinValue)
         {
             vfxPool?.Play(
                 effectItem,
-                position,
+                effectPosition ?? position,
                 Quaternion.Euler(0f, 0f, rotationZ + rotationOffset),
-                effectTint
+                effectTint,
+                sortingOrderOverride
             );
 
             ODKSoundPlayback.Play(soundClip, position);
@@ -80,6 +84,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private SwordmasterFeedbackSlot swordDispelled = new SwordmasterFeedbackSlot();
         [SerializeField] private SwordmasterFeedbackSlot swordRecall = new SwordmasterFeedbackSlot();
         [SerializeField] private SwordmasterFeedbackSlot swordImpact = new SwordmasterFeedbackSlot();
+        [SerializeField] private SwordmasterFeedbackSlot swordBlink = new SwordmasterFeedbackSlot();
         [SerializeField] private float swordCueInterval = 0.06f;
         [SerializeField] private float volleyCueInterval = 0.08f;
 
@@ -96,7 +101,12 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             vfxPool = GetComponent<SwordmasterVfxPool>();
         }
 
-        public void Play(SwordmasterCue cue, Vector3 position, float rotationZ = 0f)
+        public void Play(
+            SwordmasterCue cue,
+            Vector3 position,
+            float rotationZ = 0f,
+            Vector3? effectPosition = null,
+            int sortingOrderOverride = int.MinValue)
         {
             if (IsSwordCue(cue))
             {
@@ -108,7 +118,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 if (Time.time < nextVolleyCueTime) return;
                 nextVolleyCueTime = Time.time + volleyCueInterval;
             }
-            GetSlot(cue)?.Play(vfxPool, position, rotationZ);
+            GetSlot(cue)?.Play(vfxPool, position, rotationZ, effectPosition, sortingOrderOverride);
         }
 
         private static bool IsSwordCue(SwordmasterCue cue) =>
@@ -136,6 +146,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 case SwordmasterCue.SwordDispelled: return swordDispelled;
                 case SwordmasterCue.SwordRecall: return swordRecall;
                 case SwordmasterCue.SwordImpact: return swordImpact;
+                case SwordmasterCue.SwordBlink: return swordBlink;
                 case SwordmasterCue.Hit: return hit;
                 case SwordmasterCue.Death: return death;
                 default: return null;

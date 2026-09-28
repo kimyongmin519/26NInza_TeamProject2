@@ -31,7 +31,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
         [Header("Turn 5 Final Cross")]
         [SerializeField] private float lineWarningDuration = 0.5f;
-        [SerializeField, Min(0.01f)] private float swordPathWidth = 0.36f;
+        [SerializeField, Min(0.01f)] private float swordPathWidth = 0.08f;
         [SerializeField] private float finalSpawnRadius = 6.5f;
         [SerializeField] private float finalWarningDuration = 0.55f;
         [SerializeField] private float finalSwordSpeed = 15f;
@@ -204,14 +204,19 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             yield return new WaitForSeconds(finalWarningDuration / DurationScale);
             ClearWarnings();
 
+            float meetDistance = 0f;
             foreach (EnchantedSword sword in swords)
             {
                 if (sword == null) continue;
-                Vector2 direction = (center - sword.transform.position).normalized;
-                sword.FireDispelled(direction, finalSwordSpeed);
+                Vector2 toCenter = center - sword.transform.position;
+                meetDistance = Mathf.Max(meetDistance, toCenter.magnitude);
+                sword.FireDispelled(toCenter.normalized, finalSwordSpeed);
             }
-            Boss.AttackImpact(center);
             Boss.PlayAnimation(Swordmaster.Attack2State);
+            float meetTime = finalSwordSpeed > 0f ? meetDistance / finalSwordSpeed : 0f;
+            if (meetTime > 0f) yield return new WaitForSeconds(meetTime);
+            if (Boss.IsDead) yield break;
+            Boss.AttackImpact(center);
             Boss.Cue(SwordmasterCue.FinalCross, center);
             yield return new WaitForSeconds(0.25f / DurationScale);
         }
