@@ -121,6 +121,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 {
                     boss.TakeDamage(new DamageData(bossDamage, DamageType.Projectile));
                     ODKSoundPlayback.Play(impactSound, transform.position);
+                    owner.PlayWeakSoulImpactFeedback(transform.position);
                     Consume();
                     return;
                 }

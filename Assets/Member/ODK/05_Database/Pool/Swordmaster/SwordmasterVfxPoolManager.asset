@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f4fa3b4e3554a2d8e0ec0a4bd8c659c, type: 3}
+  m_Name: SwordmasterVfxPoolManager
+  m_EditorClassIdentifier: ObjectPool_Runtime_assembly::GGMLib.ObjectPool.Runtime.PoolManagerSO
+  itemList:
+  - {fileID: 11400000, guid: 029c2ce565be5ca41b555a6fa09d7030, type: 2}
+  - {fileID: 11400000, guid: 49100d6ab62f86942b30c8d52f2847c9, type: 2}
+  - {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+  - {fileID: 11400000, guid: 67ba9ed175552054d993f68f7cd3fafb, type: 2}
+  - {fileID: 11400000, guid: 33e6e16dc6c1ebd4d83979e36a250474, type: 2}

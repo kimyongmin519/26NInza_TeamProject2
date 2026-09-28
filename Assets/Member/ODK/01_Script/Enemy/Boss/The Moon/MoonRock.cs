@@ -52,7 +52,10 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             if (grabAssistRadius <= 0f || grabSensor != null) return;
             GameObject sensorObject = new GameObject("Grab Sensor");
             sensorObject.transform.SetParent(transform, false);
-            GrabbableLayer.TryApply(sensorObject);
+            int grabbableLayer = GrabbableLayer.Index;
+            if (grabbableLayer >= 0)
+                sensorObject.layer = grabbableLayer;
+            GrabbableLayer.Validate(sensorObject);
             grabSensor = sensorObject.AddComponent<CircleCollider2D>();
             grabSensor.isTrigger = true;
             UpdateGrabSensorRadius();

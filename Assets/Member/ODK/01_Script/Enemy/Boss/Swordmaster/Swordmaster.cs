@@ -9,6 +9,7 @@ using UnityEngine.Events;
 
 namespace Member.ODK.Scripts.Enemys.Swordmaster
 {
+    [RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
     public class Swordmaster : PhasedBossController, IDamageable
     {
         [Header("Collision")]
@@ -135,8 +136,22 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
         private void ConfigureBody()
         {
+            int bossLayer = LayerMask.NameToLayer("Boss");
+            if (bossLayer >= 0)
+                gameObject.layer = bossLayer;
+
+            Rigidbody2D body = GetComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Kinematic;
+            body.simulated = true;
+            body.useFullKinematicContacts = true;
+            body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            body.interpolation = RigidbodyInterpolation2D.Interpolate;
+            body.freezeRotation = true;
+
             CapsuleCollider2D hitbox = GetComponent<CapsuleCollider2D>();
             if (hitbox == null) hitbox = gameObject.AddComponent<CapsuleCollider2D>();
+            hitbox.enabled = true;
+            hitbox.isTrigger = false;
             hitbox.direction = CapsuleDirection2D.Vertical;
             hitbox.size = bodyHitboxSize;
             hitbox.offset = bodyHitboxOffset;
@@ -156,7 +171,8 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         public void SetActing(bool acting)
         {
             isActing = acting;
-            if (!acting && !IsDead && IsPlayingState(RunState)) PlayAnimation(IdleState);
+            if (!acting && !IsDead)
+                PlayAnimation(IdleState, false);
         }
 
         public IEnumerator SummonSwords(float speedScale = 1f)
@@ -210,9 +226,9 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             return bodyAnimator.GetCurrentAnimatorStateInfo(0).shortNameHash == Animator.StringToHash(stateName);
         }
 
-        public void Cue(SwordmasterCue cue, Vector3 position)
+        public void Cue(SwordmasterCue cue, Vector3 position, float rotationZ = 0f)
         {
-            feedback?.Play(cue, position);
+            feedback?.Play(cue, position, rotationZ);
             float impulse = GetImpulse(cue);
             if (impulse > 0f) ShakeCamera(impulse);
         }
@@ -350,7 +366,13 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         {
             transform.DOKill();
             destination = Arena != null ? Arena.Clamp(destination, 1f) : destination;
+            if (TryGetComponent(out Rigidbody2D body))
+            {
+                body.linearVelocity = Vector2.zero;
+                body.position = destination;
+            }
             transform.position = destination;
+            Physics2D.SyncTransforms();
             PlayAnimation(FallState);
             Cue(SwordmasterCue.Teleport, destination);
             onTeleport?.Invoke(destination);

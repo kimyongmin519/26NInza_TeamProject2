@@ -1141,6 +1141,7 @@ GameObject:
   - component: {fileID: 3900002010}
   - component: {fileID: 5704412892339857234}
   - component: {fileID: 4769644361796026486}
+  - component: {fileID: 1408830029}
   m_Layer: 0
   m_Name: Volcanus
   m_TagString: Untagged
@@ -2915,3 +2916,26 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4000011277552712, guid: bf6c8791ede43ec47a15a57fc4920cfa, type: 3}
   m_PrefabInstance: {fileID: 3900002000}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1408830029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1811559536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21b45da1f86645eb96af4ee8a8f2225e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossIntroTimeline
+  boss: {fileID: 1811559538}
+  visualRoot: {fileID: 0}
+  playOnStart: 1
+  startDelay: 0.2
+  preset: 0
+  bossTitle: 
+  bossSubtitle: 
+  focusOffset: {x: 0, y: 1}
+  focusPriority: 500
+  steps: []
+  endPadding: 0.15

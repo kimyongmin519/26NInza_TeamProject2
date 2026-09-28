@@ -15,7 +15,11 @@ GameObject:
   - component: {fileID: 100006}
   - component: {fileID: 7210551450521848489}
   - component: {fileID: 3307578300065348359}
-  m_Layer: 0
+  - component: {fileID: 4121464155189697167}
+  - component: {fileID: 671098634239582433}
+  - component: {fileID: 4634474904902257719}
+  - component: {fileID: 482889053448111996}
+  m_Layer: 8
   m_Name: Swordmaster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -68,6 +72,7 @@ MonoBehaviour:
   cameraShakeMinimumInterval: 0.07
   healthModule: {fileID: 120002}
   invincible: 0
+  healthBarBinding: {fileID: 4121464155189697167}
   rockVisualPrefabs: []
   fistRockCount: 1
   sawRockCount: 4
@@ -166,7 +171,7 @@ Rigidbody2D:
   m_GameObject: {fileID: 100000}
   m_BodyType: 1
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
@@ -249,91 +254,121 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterFeedback
   teleport:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 11400000, guid: 029c2ce565be5ca41b555a6fa09d7030, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: a87c881b9f38191439e1d0fc8fe578c5, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   summonSwords:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 11400000, guid: 49100d6ab62f86942b30c8d52f2847c9, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: 29ffcb789eba94e48aa5bdd8068cf1cc, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   dashReady:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 11400000, guid: 49100d6ab62f86942b30c8d52f2847c9, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: c6b798e74da0a994698260b3c6bd31c4, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   dashStart:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 0}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: c6b798e74da0a994698260b3c6bd31c4, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   dashEnd:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: ab980bc13997a1e408865596a4930d57, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   thrustGather:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 11400000, guid: 49100d6ab62f86942b30c8d52f2847c9, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: a87c881b9f38191439e1d0fc8fe578c5, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   thrustStrike:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 0}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: 2c2ec7dd8a1c7de4c915d8a1aa7cdb38, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   crossfireReady:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 11400000, guid: 49100d6ab62f86942b30c8d52f2847c9, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: 29ffcb789eba94e48aa5bdd8068cf1cc, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   volleyWarning:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 0}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: a87c881b9f38191439e1d0fc8fe578c5, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   volleyFire:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: a04de029e829eab4782f0bc7304913f1, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   finalCross:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 11400000, guid: 67ba9ed175552054d993f68f7cd3fafb, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: 2c2ec7dd8a1c7de4c915d8a1aa7cdb38, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   swordLaunch:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 0}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: a04de029e829eab4782f0bc7304913f1, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   swordDispelled:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 0}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: a04de029e829eab4782f0bc7304913f1, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   swordRecall:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 0}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: c6b798e74da0a994698260b3c6bd31c4, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   swordImpact:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: ab980bc13997a1e408865596a4930d57, type: 2}
     onPlayed:
       m_PersistentCalls:
@@ -341,13 +376,17 @@ MonoBehaviour:
   swordCueInterval: 0.06
   volleyCueInterval: 0.08
   hit:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 11400000, guid: 8d44490e73c29cb429605f13aa666f70, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: ab980bc13997a1e408865596a4930d57, type: 2}
     onPlayed:
       m_PersistentCalls:
         m_Calls: []
   death:
-    effectPrefab: {fileID: 0}
+    effectItem: {fileID: 11400000, guid: 33e6e16dc6c1ebd4d83979e36a250474, type: 2}
+    effectTint: {r: 1, g: 1, b: 1, a: 1}
+    rotationOffset: 0
     soundClip: {fileID: 11400000, guid: 3698e1f5e73c5df459357923951b3b0e, type: 2}
     onPlayed:
       m_PersistentCalls:
@@ -435,6 +474,84 @@ MonoBehaviour:
   onDeathComplete:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4121464155189697167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994a88a2f8378e0438060ef243b39f2d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossHealthBarBinding
+  healthModule: {fileID: 120002}
+  healthBar: {fileID: 0}
+--- !u!70 &671098634239582433
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 1.7}
+  m_Size: {x: 1.6, y: 3.4}
+  m_Direction: 0
+--- !u!114 &4634474904902257719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5efef4ee50c2a7649899e6fad384b712, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterPresentation
+  animator: {fileID: 130003}
+  rigidBody: {fileID: 100003}
+--- !u!114 &482889053448111996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e655b5ca983ec9249866f40a15751bf0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Swordmaster.SwordmasterVfxPool
+  poolManager: {fileID: 11400000, guid: 4c7e077288485b24eb3d4c91d1d2e0cf, type: 2}
 --- !u!1 &110000
 GameObject:
   m_ObjectHideFlags: 0
@@ -538,6 +655,7 @@ MonoBehaviour:
   volleyCount: 4
   dashDistanceScale: 1.3
   swordFlightTime: 1.6
+  warningLineWidth: 0.16
 --- !u!1 &112000
 GameObject:
   m_ObjectHideFlags: 0
@@ -593,6 +711,7 @@ MonoBehaviour:
   thrustDamage: 1
   thrustOvershoot: 2.8
   gatherSpread: 0.8
+  warningLineWidth: 0.12
 --- !u!1 &113000
 GameObject:
   m_ObjectHideFlags: 0

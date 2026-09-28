@@ -39,6 +39,9 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [SerializeField] private HealthModule healthModule;
         [SerializeField] private bool invincible;
 
+        [Header("Health Bar")]
+        [SerializeField] private BossHealthBarBinding healthBarBinding;
+
         [Header("Grab Rock")]
         [SerializeField] private GameObject[] rockVisualPrefabs;
         [SerializeField] private int fistRockCount = 1;
@@ -89,6 +92,8 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                 summonPresentation = GetComponent<BossSummonPresentation>();
             if (deathPresentation == null)
                 deathPresentation = GetComponent<BossDeathPresentation>();
+            if (healthBarBinding == null)
+                healthBarBinding = GetComponent<BossHealthBarBinding>();
             ConfigureImpulseSource();
             EnsureImpulseListener();
             if (healthModule == null) healthModule = GetModule<HealthModule>();
@@ -113,6 +118,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         {
             if (battleStarted || IsDead) return;
             battleStarted = true;
+            healthBarBinding?.TryBind();
             StartCoroutine(AttackLoop());
         }
 

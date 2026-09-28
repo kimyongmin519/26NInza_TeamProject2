@@ -331,9 +331,9 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             if (soulProjectilePrefab == null) return null;
             LostSoulProjectile soul = ODKPool.Spawn(soulProjectilePrefab, position, Quaternion.identity);
             if (soul == null) return null;
-            soul.Initialize(velocity, projectileDamage * damageScale, playerLayer, Target);
+            soul.Initialize(this, velocity, projectileDamage * damageScale, playerLayer, Target);
             RegisterSpawn(soul);
-            feedback?.PlaySoulProjectile();
+            feedback?.PlaySoulProjectile(position);
             return soul;
         }
 
@@ -344,7 +344,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             if (soul == null) return null;
             soul.Initialize(this, velocity, thrownSoulDamage, Target);
             RegisterSpawn(soul);
-            feedback?.PlayWeakSoul();
+            feedback?.PlayWeakSoul(position);
             return soul;
         }
 
@@ -487,5 +487,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         public void PlayBeamWarningFeedback() => feedback?.PlayBeamWarning();
         public void PlayBeamFireFeedback() => feedback?.PlayBeamFire();
         public void PlayDirectionCueFeedback() => feedback?.PlayDirectionCue();
+        public void PlaySoulImpactFeedback(Vector3 position) => feedback?.PlaySoulImpact(position);
+        public void PlayWeakSoulImpactFeedback(Vector3 position) => feedback?.PlayWeakSoulImpact(position);
     }
 }

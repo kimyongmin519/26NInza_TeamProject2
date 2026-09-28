@@ -34,6 +34,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private float dispelledFlightTime = 1.6f;
         [SerializeField] private float dispelledHarmSpeed = 2f;
         [SerializeField, Min(1f)] private float maximumThrownDistance = 18f;
+        [SerializeField, Min(0f)] private float playerGrabPriorityTime = 2.5f;
 
         [Header("Visual")]
         [SerializeField] private SpriteRenderer bladeRenderer;
@@ -52,7 +53,8 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         public bool CanBeGrabbed => state == SwordState.Dispelled;
         public Transform GrabTransform => transform;
         public bool CanBossControl => state == SwordState.Orbiting || state == SwordState.Recalling;
-        public bool CanBossReclaim => state == SwordState.Dispelled;
+        public bool CanBossReclaim => state == SwordState.Dispelled &&
+                                      Time.time >= bossReclaimTime;
         public bool IsMagicLocked => state != SwordState.Dispelled &&
                                      state != SwordState.Held &&
                                      state != SwordState.PlayerThrown;
@@ -75,6 +77,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         private float pathDuration;
         private float thrownSpeed;
         private bool thrownHit;
+        private float bossReclaimTime;
 
         private void Awake()
         {
@@ -88,7 +91,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             swordCollider.direction = CapsuleDirection2D.Horizontal;
             swordCollider.size = new Vector2(1.75f, 0.36f);
             swordCollider.isTrigger = true;
-            GrabbableLayer.TryApply(gameObject);
+            GrabbableLayer.Validate(gameObject);
             if (bladeRenderer == null) bladeRenderer = GetComponentInChildren<SpriteRenderer>();
             if (trail == null) trail = GetComponentInChildren<TrailRenderer>();
             if (trail == null) CreateTrail();
@@ -189,6 +192,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             transform.SetParent(null, true);
             SetEnchanted(false);
             SetPhysics(true, Vector2.zero);
+            PrepareForPlayerGrab();
             owner?.NotifySwordDispelled(transform.position);
         }
 
@@ -228,7 +232,11 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             return sequence;
         }
 
-        public void FireMagic(Vector2 direction, float speed, float lifeTime = -1f, bool showPath = true)
+        public void FireMagic(
+            Vector2 direction,
+            float speed,
+            float lifeTime = -1f,
+            bool showPath = true)
         {
             StopStateRoutine();
             transform.DOKill();
@@ -254,6 +262,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             transform.SetParent(null, true);
             SetEnchanted(false);
             SetPhysics(true, direction.normalized * speed);
+            PrepareForPlayerGrab();
             FaceVelocity(direction);
             ShowPath(direction.normalized * speed, 0f, dispelledFlightTime);
             owner?.NotifySwordDispelled(transform.position);
@@ -317,6 +326,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             throwOwnerRoot = null;
             swordCollider.enabled = true;
             SetPhysics(true, Vector2.zero);
+            PrepareForPlayerGrab();
             StopStateRoutine();
         }
 
@@ -431,8 +441,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             if (pathLine == null) CreatePathLine();
             if (pathLine == null || duration <= 0f) return;
             Vector2 gravity = Physics2D.gravity * gravityScale;
-            Vector2 previous = body != null ? body.position : (Vector2)transform.position;
-            Vector2 origin = previous;
+            Vector2 origin = body != null ? body.position : (Vector2)transform.position;
             int count = Mathf.Max(2, pathSegments);
             Vector3[] points = new Vector3[count + 1];
             points[0] = new Vector3(origin.x, origin.y, transform.position.z);
@@ -442,7 +451,6 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 float t = duration * i / count;
                 Vector2 point = origin + velocity * t + 0.5f * gravity * t * t;
                 points[used++] = new Vector3(point.x, point.y, transform.position.z);
-                previous = point;
             }
             pathLine.positionCount = used;
             for (int i = 0; i < used; i++) pathLine.SetPosition(i, points[i]);
@@ -509,6 +517,22 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             body.gravityScale = 0f;
             body.linearVelocity = velocity;
             body.angularVelocity = 0f;
+        }
+
+        private void PrepareForPlayerGrab()
+        {
+            int grabbableLayer = GrabbableLayer.Index;
+            if (grabbableLayer >= 0)
+            {
+                gameObject.layer = grabbableLayer;
+                foreach (Transform child in transform)
+                    child.gameObject.layer = grabbableLayer;
+            }
+
+            swordCollider.enabled = true;
+            body.simulated = true;
+            bossReclaimTime = Time.time + playerGrabPriorityTime;
+            Physics2D.SyncTransforms();
         }
 
         private void FaceVelocity(Vector2 direction)

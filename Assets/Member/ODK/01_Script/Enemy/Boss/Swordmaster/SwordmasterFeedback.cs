@@ -1,4 +1,5 @@
 using System;
+using GGMLib.ObjectPool.Runtime;
 using KimLIb.SoundSystem;
 using Member.ODK.Scripts.Enemys.Bosses;
 using UnityEngine;
@@ -29,31 +30,26 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
     [Serializable]
     public class SwordmasterFeedbackSlot
     {
-        [SerializeField] private GameObject effectPrefab;
+        [SerializeField] private PoolItemSO effectItem;
+        [SerializeField] private Color effectTint = Color.white;
+        [SerializeField] private float rotationOffset;
         [SerializeField] private SoundClipSO soundClip;
         [SerializeField] private BossPositionEvent onPlayed;
 
-        public void Play(Vector3 position)
+        public void Play(
+            SwordmasterVfxPool vfxPool,
+            Vector3 position,
+            float rotationZ = 0f)
         {
-            if (effectPrefab != null)
-            {
-                GameObject effect = UnityEngine.Object.Instantiate(effectPrefab, position, Quaternion.identity);
-                UnityEngine.Object.Destroy(effect, GetEffectLifeTime(effect));
-            }
+            vfxPool?.Play(
+                effectItem,
+                position,
+                Quaternion.Euler(0f, 0f, rotationZ + rotationOffset),
+                effectTint
+            );
 
             ODKSoundPlayback.Play(soundClip, position);
             onPlayed?.Invoke(position);
-        }
-
-        private static float GetEffectLifeTime(GameObject effect)
-        {
-            float lifeTime = 3f;
-            foreach (ParticleSystem particle in effect.GetComponentsInChildren<ParticleSystem>(true))
-            {
-                ParticleSystem.MainModule main = particle.main;
-                lifeTime = Mathf.Max(lifeTime, main.duration + main.startLifetime.constantMax);
-            }
-            return lifeTime;
         }
     }
 
@@ -93,8 +89,14 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
         private float nextSwordCueTime;
         private float nextVolleyCueTime;
+        private SwordmasterVfxPool vfxPool;
 
-        public void Play(SwordmasterCue cue, Vector3 position)
+        private void Awake()
+        {
+            vfxPool = GetComponent<SwordmasterVfxPool>();
+        }
+
+        public void Play(SwordmasterCue cue, Vector3 position, float rotationZ = 0f)
         {
             if (IsSwordCue(cue))
             {
@@ -106,7 +108,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 if (Time.time < nextVolleyCueTime) return;
                 nextVolleyCueTime = Time.time + volleyCueInterval;
             }
-            GetSlot(cue)?.Play(position);
+            GetSlot(cue)?.Play(vfxPool, position, rotationZ);
         }
 
         private static bool IsSwordCue(SwordmasterCue cue) =>

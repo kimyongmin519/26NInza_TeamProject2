@@ -14,6 +14,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float homingDegreesPerSecond = 6f;
         [SerializeField] private float visualAngleOffset = 180f;
         [SerializeField] private SoundClipSO impactSound;
+        private LostSoul owner;
         private float damage;
         private LayerMask playerLayer;
         private Rigidbody2D body;
@@ -27,6 +28,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         public override void ResetItem()
         {
             consumed = false;
+            owner = null;
             target = null;
             speed = 0f;
             maxSpeed = 0f;
@@ -37,8 +39,14 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             body.simulated = true;
         }
 
-        public void Initialize(Vector2 velocity, float amount, LayerMask targetLayer, Transform homingTarget)
+        public void Initialize(
+            LostSoul source,
+            Vector2 velocity,
+            float amount,
+            LayerMask targetLayer,
+            Transform homingTarget)
         {
+            owner = source;
             damage = amount;
             playerLayer = targetLayer;
             target = homingTarget;
@@ -101,6 +109,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             if ((playerLayer.value & mask) == 0 && !other.transform.root.CompareTag("Player")) return;
             DamageCaster.ApplyDamage(other.transform, new DamageData(damage, DamageType.Projectile));
             ODKSoundPlayback.Play(impactSound, transform.position);
+            owner?.PlaySoulImpactFeedback(transform.position);
             Consume();
         }
     }

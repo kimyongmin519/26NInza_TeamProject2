@@ -42,7 +42,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88811398c0934cf79fe7d3f6290374ce, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.MoonBoss.MoonMiniDashAttack
   <SkillData>k__BackingField: {fileID: 11400000, guid: 54a1bcae83984334a269f42074f96d0f, type: 2}
   animationStateName: 
@@ -440,6 +440,7 @@ GameObject:
   - component: {fileID: 5083262448506206694}
   - component: {fileID: 5141975892121951349}
   - component: {fileID: 7372483207482707961}
+  - component: {fileID: 7999411954055856346}
   m_Layer: 0
   m_Name: Moon
   m_TagString: Untagged
@@ -495,6 +496,7 @@ MonoBehaviour:
   cameraShakeMinimumInterval: 0.07
   healthModule: {fileID: 1795139631257598990}
   invincible: 0
+  healthBarBinding: {fileID: 7999411954055856346}
   rockVisualPrefabs: []
   fistRockCount: 1
   sawRockCount: 4
@@ -811,6 +813,20 @@ MonoBehaviour:
   onDeathComplete:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7999411954055856346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794666144031011404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994a88a2f8378e0438060ef243b39f2d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.Bosses.BossHealthBarBinding
+  healthModule: {fileID: 1795139631257598990}
+  healthBar: {fileID: 0}
 --- !u!1 &4762341880899888644
 GameObject:
   m_ObjectHideFlags: 0

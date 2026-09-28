@@ -19,6 +19,9 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private float thrustOvershoot = 2.8f;
         [SerializeField] private float gatherSpread = 0.8f;
 
+        [Header("Warning")]
+        [SerializeField, Min(0.01f)] private float warningLineWidth = 0.12f;
+
         private DamageCaster thrustCaster;
         private SwordmasterTelegraph thrustTelegraph;
 
@@ -64,7 +67,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                     warningStart,
                     thrustEnd,
                     gatherDuration / DurationScale,
-                    thrustHitbox.y
+                    warningLineWidth
                 );
                 Boss.PlayAnimation(Swordmaster.JumpState);
                 Boss.Cue(SwordmasterCue.ThrustGather, Boss.transform.position);
@@ -89,7 +92,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 thrustCaster.DisableCasting();
                 thrustCaster.ClearWorldPose();
                 Boss.AttackImpact(targetPoint);
-                Boss.Cue(SwordmasterCue.ThrustStrike, targetPoint);
+                Boss.Cue(SwordmasterCue.ThrustStrike, targetPoint, angle);
                 Boss.ReturnControlledSwords();
                 yield return new WaitForSeconds(recoverDuration / DurationScale);
             }

@@ -20,6 +20,9 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private float dashDistanceScale = 1.3f;
         [SerializeField] private float swordFlightTime = 1.6f;
 
+        [Header("Warning")]
+        [SerializeField, Min(0.01f)] private float warningLineWidth = 0.16f;
+
         private DamageCaster dashCaster;
         private Tween dashTween;
         private SwordmasterTelegraph dashTelegraph;
@@ -57,7 +60,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 Boss.transform.position + lineOffset,
                 dashEnd + lineOffset,
                 readyDuration / DurationScale,
-                dashHitbox.y
+                warningLineWidth
             );
             yield return new WaitForSeconds(readyDuration / DurationScale);
             Boss.ReleaseTelegraph(dashTelegraph);
@@ -73,7 +76,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 dashDuration / DurationScale
             );
             Boss.PlayAnimation(Swordmaster.RunState);
-            Boss.Cue(SwordmasterCue.DashStart, Boss.transform.position);
+            Boss.Cue(SwordmasterCue.DashStart, Boss.transform.position, dashAngle);
             float progress = 0f;
             Vector3 start = Boss.transform.position;
             dashTween = DOTween.To(() => progress, value =>
@@ -98,7 +101,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             dashCaster.ClearWorldPose();
             Boss.AttackImpact(Boss.transform.position);
             Boss.PlayAnimation(Swordmaster.Attack1State);
-            Boss.Cue(SwordmasterCue.DashEnd, Boss.transform.position);
+            Boss.Cue(SwordmasterCue.DashEnd, Boss.transform.position, dashAngle);
         }
 
         protected override void OnSwordmasterCancel()
