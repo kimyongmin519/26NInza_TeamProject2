@@ -53,8 +53,8 @@ MonoBehaviour:
   dashRechargeDelay: 0.2
   dashTrail: {fileID: 6752001389750433448}
   soundChannel: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
-  dashSound: {fileID: 11400000, guid: 0cb6e9dbb043d634285d2a7aa72d729c, type: 2}
-  dashRechargedSound: {fileID: 11400000, guid: 4e90b9513fb96354bb6146b4ce31e740, type: 2}
+  dashSound: {fileID: 11400000, guid: e06095613c0e74e4f9f3585aa21639c3, type: 2}
+  dashRechargedSound: {fileID: 11400000, guid: 61c108fe54b5c704597d86638865b749, type: 2}
 --- !u!1001 &2902764359387437536
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -109,7 +109,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8501491747874369352, guid: 5882f1d3be06804439dac9b6d80539db, type: 3}
       propertyPath: m_SortingLayer
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8501491747874369352, guid: 5882f1d3be06804439dac9b6d80539db, type: 3}
       propertyPath: m_SortingOrder
