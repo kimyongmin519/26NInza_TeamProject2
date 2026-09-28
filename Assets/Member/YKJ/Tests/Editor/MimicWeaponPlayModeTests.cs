@@ -688,12 +688,15 @@ namespace Member.YKJ.Tests
             SetField(falling, "warningMaterial", UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(
                 "Assets/Member/YKJ/MimicTestAssets/MimicUnlit.mat"));
             boss.InitializePatternDictionary();
+            MimicJumpPattern concurrentJump = ConfigureJump(boss);
             Physics2D.SyncTransforms();
             try
             {
                 foreach (bool reverse in new[] { false, true })
                 {
+                    SetField(falling, "jumpPattern", reverse ? concurrentJump : null);
                     Assert.That(boss.Patterns.Start(falling), Is.True);
+                    Assert.That(concurrentJump.IsRunningAlongside(falling), Is.EqualTo(reverse));
                     SetField(falling, "_reverse", reverse);
                     var line = falling.GetComponentInChildren<LineRenderer>();
                     Assert.That(line.enabled, Is.True);
@@ -727,11 +730,28 @@ namespace Member.YKJ.Tests
                         wave[shot].Retire();
                     }
                     boss.Patterns.Tick(0.1f);
+                    if (reverse)
+                    {
+                        Assert.That(concurrentJump.LandedCount, Is.GreaterThan(0));
+                        for (int tick = 0; tick < 60 && boss.Patterns.IsRunning; tick++)
+                        {
+                            Assert.That(boss.Patterns.Current, Is.SameAs(falling), "Concurrent jumping must not interrupt with tongue.");
+                            boss.Patterns.Tick(0.05f);
+                        }
+                        Assert.That(concurrentJump.IsRunningAlongside(falling), Is.False);
+                    }
                     Assert.That(boss.Patterns.IsRunning, Is.False);
                     Assert.That(line.enabled, Is.False);
                     Assert.That(boss.Patterns.Start(falling), Is.True);
                     Assert.That(falling.IsWarning, Is.True);
+                    if (reverse)
+                    {
+                        boss.Patterns.Tick(0.35f);
+                        boss.Patterns.Tick(0.1f);
+                        Assert.That(concurrentJump.IsRunningAlongside(falling), Is.True);
+                    }
                     boss.Patterns.Cancel(true);
+                    Assert.That(concurrentJump.IsRunningAlongside(falling), Is.False);
                     Assert.That(line.enabled, Is.False);
                     Assert.That(boss.Patterns.Start(falling), Is.True);
                     falling.enabled = false;
