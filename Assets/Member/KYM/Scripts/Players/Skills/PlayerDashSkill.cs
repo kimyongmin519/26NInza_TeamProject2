@@ -1,5 +1,7 @@
 using DG.Tweening;
 using KimLIb.AnimatorSystems;
+using KimLIb.EventSystem;
+using KimLIb.SoundSystem;
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using UnityEngine;
 
@@ -18,11 +20,17 @@ namespace Member.KYM.Scripts.Players.Skills
         [Header("대시 잔상 (직접 붙인 트레일 연결)")]
         [SerializeField] private TrailRenderer dashTrail;
 
+        [Header("사운드")]
+        [SerializeField] private EventChannelSO soundChannel;
+        [SerializeField] private SoundClipSO dashSound;
+        [SerializeField] private SoundClipSO dashRechargedSound;
+
         private bool _canDash = true;
         private float _dashRechargeReadyTime;
         private Collider2D _bodyCollider;
         private Vector2 _dashDirection;
         private float _dashTravelDistance;
+        private bool _wasRechargeReady = true;
 
         public float NormalizedRecharge
         {
@@ -53,6 +61,7 @@ namespace Member.KYM.Scripts.Players.Skills
             base.InitializeSkill(skillModule);
             _canDash = true;
             _dashRechargeReadyTime = 0f;
+            _wasRechargeReady = true;
             _bodyCollider = _player.GetComponent<Collider2D>();
             Debug.Assert(_bodyCollider != null, "대시 이동을 검사할 플레이어 콜라이더가 없습니다.");
             _mover.OnGroundStatusChange += HandleGroundStatusChange;
@@ -77,8 +86,10 @@ namespace Member.KYM.Scripts.Players.Skills
                 return;
 
             _canDash = false;
+            _wasRechargeReady = false;
             base.UseSkill(target);
             _renderer.PlayClip(dashParam.ParamHash);
+            PlaySound(dashSound);
 
             _mover.CanManualMovement = false;
             _mover.SetGravityScale(0);
@@ -118,6 +129,24 @@ namespace Member.KYM.Scripts.Players.Skills
         {
             if (isGrounded)
                 _canDash = true;
+        }
+
+        private void Update()
+        {
+            bool ready = NormalizedRecharge >= 1f && NormalizedCooldown >= 1f;
+            if (ready && !_wasRechargeReady)
+                PlaySound(dashRechargedSound);
+
+            _wasRechargeReady = ready;
+        }
+
+        private void PlaySound(SoundClipSO clip)
+        {
+            if (soundChannel == null || clip == null || clip.audioClip == null)
+                return;
+
+            soundChannel.RaiseEvent(
+                SoundEvent.PlaySoundEvent.InitData(_player.transform.position, clip));
         }
 
         private void OnDestroy()

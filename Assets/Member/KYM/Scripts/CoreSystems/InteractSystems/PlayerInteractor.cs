@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Member.KYM.Scripts.Players;
+using Member.KYM.Scripts.CoreSystems;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,6 +8,7 @@ namespace Member.KYM.Scripts.CoreSystems.InteractSystems
     public class PlayerInteractor : MonoBehaviour
     {
         [SerializeField] private LayerMask whatIsPlayer;
+        [SerializeField] private PlayerInputSO playerInput;
 
         [Header("E 버튼 표시")]
         [SerializeField] private SpriteRenderer promptRenderer;
@@ -17,7 +18,6 @@ namespace Member.KYM.Scripts.CoreSystems.InteractSystems
         public UnityEvent OnSuccess = new();
 
         private readonly HashSet<Collider2D> _playerColliders = new();
-        private PlayerController _player;
         private PlayerInputSO _input;
         private bool _isPressed;
 
@@ -31,16 +31,13 @@ namespace Member.KYM.Scripts.CoreSystems.InteractSystems
             if ((whatIsPlayer.value & (1 << other.gameObject.layer)) == 0)
                 return;
 
-            PlayerController player = other.GetComponentInParent<PlayerController>();
-            if (player == null || player.PlayerInput == null ||
-                (_player != null && _player != player))
+            if (playerInput == null)
                 return;
 
             if (!_playerColliders.Add(other) || _playerColliders.Count > 1)
                 return;
 
-            _player = player;
-            _input = player.PlayerInput;
+            _input = playerInput;
             _input.OnInteractKeyPressed += HandleInteract;
             _isPressed = false;
             if (promptRenderer != null)
@@ -82,7 +79,6 @@ namespace Member.KYM.Scripts.CoreSystems.InteractSystems
                 _input.OnInteractKeyPressed -= HandleInteract;
 
             _input = null;
-            _player = null;
             _isPressed = false;
             _playerColliders.Clear();
             HidePrompt();

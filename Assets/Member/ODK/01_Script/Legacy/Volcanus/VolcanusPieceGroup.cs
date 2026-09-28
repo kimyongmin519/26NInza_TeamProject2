@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Member.ODK.Scripts.Enemys.Volcanus
+namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
 {
     public class VolcanusPieceGroup : MonoBehaviour
     {

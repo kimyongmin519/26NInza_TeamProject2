@@ -7,118 +7,75 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
     [RequireComponent(typeof(LineRenderer))]
     public class MoonTelegraphLine : MonoBehaviour
     {
-        [SerializeField] private LineRenderer lineRenderer;
-        [SerializeField] private float revealDuration = 0.35f;
-        [SerializeField] private float pulseAmount = 0.45f;
-        [SerializeField] private float pulseDuration = 0.18f;
-        [SerializeField] private Ease revealEase = Ease.OutCubic;
+        [SerializeField] private LineRenderer line;
+        [SerializeField] private float pulseRate = 0.18f;
+        [SerializeField] private float pulseScale = 0.45f;
 
-        private Vector3[] points = new Vector3[0];
         private Tween revealTween;
         private Tween pulseTween;
-        private float revealProgress;
+        private Vector3[] path = System.Array.Empty<Vector3>();
+        private float progress;
         private float baseWidth;
-
-        public LineRenderer Renderer => lineRenderer;
 
         private void Awake()
         {
-            EnsureRenderer();
+            if (line == null) line = GetComponent<LineRenderer>();
+            baseWidth = Mathf.Max(0.001f, line.widthMultiplier);
+            line.enabled = false;
         }
 
-        public void Show(Vector3 start, Vector3 end, float duration = -1f)
+        public void Show(IReadOnlyList<Vector3> points, float duration)
         {
-            Show(new[] { start, end }, duration);
-        }
-
-        public void Show(IReadOnlyList<Vector3> path, float duration = -1f)
-        {
-            EnsureRenderer();
-            if (path == null || path.Count < 2) return;
-
-            points = new Vector3[path.Count];
-            for (int i = 0; i < path.Count; i++) points[i] = path[i];
+            if (points == null || points.Count < 2) return;
+            path = new Vector3[points.Count];
+            for (int i = 0; i < points.Count; i++) path[i] = points[i];
 
             KillTweens();
-            lineRenderer.enabled = true;
-            revealProgress = 0f;
-            DrawRevealedPath();
-
-            float actualDuration = duration < 0f ? revealDuration : duration;
-            revealTween = DOTween.To(
-                    () => revealProgress,
-                    value =>
-                    {
-                        revealProgress = value;
-                        DrawRevealedPath();
-                    },
-                    1f,
-                    Mathf.Max(0.01f, actualDuration))
-                .SetEase(revealEase)
+            line.enabled = true;
+            line.widthMultiplier = baseWidth;
+            progress = 0f;
+            Draw();
+            revealTween = DOTween.To(() => progress, value =>
+                {
+                    progress = value;
+                    Draw();
+                }, 1f, Mathf.Max(0.02f, duration))
+                .SetEase(Ease.OutCubic)
                 .SetTarget(this);
-
-            float minimumWidth = baseWidth * Mathf.Max(0.05f, 1f - pulseAmount);
             pulseTween = DOTween.To(
-                    () => lineRenderer.widthMultiplier,
-                    value => lineRenderer.widthMultiplier = value,
-                    minimumWidth,
-                    Mathf.Max(0.05f, pulseDuration))
-                .SetEase(Ease.InOutSine)
+                    () => line.widthMultiplier,
+                    value => line.widthMultiplier = value,
+                    baseWidth * Mathf.Max(0.1f, 1f - pulseScale),
+                    Mathf.Max(0.05f, pulseRate))
                 .SetLoops(-1, LoopType.Yoyo)
+                .SetEase(Ease.InOutSine)
                 .SetTarget(this);
-        }
-
-        public void SetEndpoints(Vector3 start, Vector3 end)
-        {
-            if (points.Length != 2) points = new Vector3[2];
-            points[0] = start;
-            points[1] = end;
-            DrawRevealedPath();
-        }
-
-        public void SetPath(IReadOnlyList<Vector3> path)
-        {
-            if (path == null || path.Count < 2) return;
-            if (points.Length != path.Count) points = new Vector3[path.Count];
-            for (int i = 0; i < path.Count; i++) points[i] = path[i];
-            DrawRevealedPath();
         }
 
         public void Hide()
         {
             KillTweens();
-            if (lineRenderer == null) return;
-            lineRenderer.widthMultiplier = baseWidth;
-            lineRenderer.enabled = false;
+            if (line == null) return;
+            line.widthMultiplier = baseWidth;
+            line.enabled = false;
         }
 
-        private void DrawRevealedPath()
+        private void Draw()
         {
-            if (lineRenderer == null || points.Length < 2) return;
-
-            lineRenderer.positionCount = points.Length;
-            float scaledProgress = revealProgress * (points.Length - 1);
-            int completeSegment = Mathf.FloorToInt(scaledProgress);
-            float segmentProgress = scaledProgress - completeSegment;
-
-            for (int i = 0; i < points.Length; i++)
+            if (path.Length < 2) return;
+            line.positionCount = path.Length;
+            float scaled = progress * (path.Length - 1);
+            int segment = Mathf.Min(Mathf.FloorToInt(scaled), path.Length - 1);
+            float rate = scaled - segment;
+            for (int i = 0; i < path.Length; i++)
             {
-                if (i <= completeSegment)
+                if (i <= segment) line.SetPosition(i, path[i]);
+                else
                 {
-                    lineRenderer.SetPosition(i, points[i]);
-                    continue;
+                    int start = Mathf.Min(segment, path.Length - 2);
+                    line.SetPosition(i, Vector3.Lerp(path[start], path[start + 1], rate));
                 }
-
-                int fromIndex = Mathf.Clamp(completeSegment, 0, points.Length - 2);
-                Vector3 end = Vector3.Lerp(points[fromIndex], points[fromIndex + 1], segmentProgress);
-                lineRenderer.SetPosition(i, end);
             }
-        }
-
-        private void EnsureRenderer()
-        {
-            if (lineRenderer == null) lineRenderer = GetComponent<LineRenderer>();
-            baseWidth = Mathf.Max(0.001f, lineRenderer.widthMultiplier);
         }
 
         private void KillTweens()
@@ -129,14 +86,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
             pulseTween = null;
         }
 
-        private void OnDisable()
-        {
-            KillTweens();
-        }
-
-        private void OnDestroy()
-        {
-            KillTweens();
-        }
+        private void OnDisable() => KillTweens();
+        private void OnDestroy() => KillTweens();
     }
 }

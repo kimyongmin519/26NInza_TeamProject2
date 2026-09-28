@@ -1,93 +1,96 @@
+using System;
 using DG.Tweening;
 using Member.ODK.Scripts.Enemys.Combat;
-using System;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Volcanus
 {
     public class VolcanusMissile : MonoBehaviour
     {
-        [SerializeField] private float rotateSpeed = 720f;
-        [SerializeField] private GameObject explodeEffect;
+        [SerializeField] private float turnSpeed = 150f;
+        [SerializeField] private float impactRadius = 1.2f;
         [SerializeField] private DamageCaster damageCaster;
+
         public event Action<Vector3> OnExplode;
 
         private Transform target;
         private Vector2 velocity;
         private float acceleration;
         private float maxSpeed;
-        private float lifeTime;
+        private float remainingLife;
         private float damage;
-        private bool isLaunched;
+        private LayerMask playerLayer;
+        private bool launched;
 
-        public void Launch(Transform target, float startSpeed, float acceleration, float maxSpeed, float lifeTime, float damage)
+        public void Launch(
+            Transform target,
+            float startSpeed,
+            float acceleration,
+            float maxSpeed,
+            float lifeTime,
+            float damage,
+            LayerMask playerLayer)
         {
             this.target = target;
             this.acceleration = acceleration;
             this.maxSpeed = maxSpeed;
-            this.lifeTime = lifeTime;
+            remainingLife = lifeTime;
             this.damage = damage;
+            this.playerLayer = playerLayer;
             if (damageCaster == null) damageCaster = GetComponent<DamageCaster>();
             if (damageCaster == null)
             {
-                damageCaster = gameObject.AddComponent<DamageCaster>();
-                damageCaster.SetRange(1.2f);
+                Debug.LogError("Volcanus Missile DamageCaster is not connected.", this);
+                Destroy(gameObject);
+                return;
             }
-            Vector2 direction = target != null ? ((Vector2)target.position - (Vector2)transform.position).normalized : Vector2.down;
+            damageCaster.ConfigureCircle(impactRadius, playerLayer);
+            Vector2 direction = target != null
+                ? ((Vector2)target.position - (Vector2)transform.position).normalized
+                : Vector2.down;
             velocity = direction * startSpeed;
-            isLaunched = true;
+            launched = true;
             transform.localScale = Vector3.zero;
             transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBack);
         }
 
         private void Update()
         {
-            if (!isLaunched) return;
-
+            if (!launched) return;
             if (target != null)
             {
-                Vector2 direction = ((Vector2)target.position - (Vector2)transform.position).normalized;
-                velocity = Vector2.MoveTowards(velocity, direction * maxSpeed, acceleration * Time.deltaTime);
-                if (ApplyDamage())
-                {
-                    Explode();
-                    return;
-                }
+                Vector2 desired = ((Vector2)target.position - (Vector2)transform.position).normalized;
+                Vector2 current = velocity.sqrMagnitude > 0.001f ? velocity.normalized : desired;
+                float maximumRadians = turnSpeed * Mathf.Deg2Rad * Time.deltaTime;
+                Vector2 steered = Vector3.RotateTowards(current, desired, maximumRadians, 0f);
+                float speed = Mathf.MoveTowards(velocity.magnitude, maxSpeed, acceleration * Time.deltaTime);
+                velocity = steered.normalized * speed;
             }
 
             transform.position += (Vector3)(velocity * Time.deltaTime);
-            RotateToVelocity();
-            lifeTime -= Time.deltaTime;
-            if (lifeTime <= 0f) Explode();
-        }
+            if (velocity.sqrMagnitude > 0.001f)
+                transform.right = velocity.normalized;
 
-        private void RotateToVelocity()
-        {
-            if (velocity.sqrMagnitude <= Mathf.Epsilon) return;
-            float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0f, 0f, angle), rotateSpeed * Time.deltaTime);
-        }
+            damageCaster.SetWorldPosition(transform.position);
+            if (damageCaster.Cast(new DamageData(damage, DamageType.Projectile)))
+            {
+                Explode();
+                return;
+            }
 
-        private bool ApplyDamage()
-        {
-            if (target == null) return false;
-            DamageData damageData = new DamageData(damage, DamageType.Projectile);
-            return damageCaster != null
-                ? damageCaster.Cast(damageData)
-                : DamageCaster.ApplyDamage(target, damageData);
+            remainingLife -= Time.deltaTime;
+            if (remainingLife <= 0f) Explode();
         }
 
         public void Explode()
         {
-            if (!isLaunched) return;
-            isLaunched = false;
+            if (!launched) return;
+            launched = false;
             transform.DOKill();
             OnExplode?.Invoke(transform.position);
-            if (explodeEffect != null) Instantiate(explodeEffect, transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
 
         private void OnDestroy() => transform.DOKill();
-
     }
 }

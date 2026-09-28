@@ -28,11 +28,6 @@ namespace Member.KYM.Scripts.Players.RobotArm
         [SerializeField] private float recoilDistance = 0.35f;
         [SerializeField] private float recoilRecoveryTime = 0.12f;
 
-        [Header("사운드")]
-        [SerializeField] private EventChannelSO soundChannel;
-        [SerializeField] private SoundClipSO fireSound;
-        [SerializeField] private SoundClipSO catchSound;
-
         private Vector3 _positionVelocity;
         private Vector2 _recoilOffset;
         private Vector2 _recoilVelocity;
