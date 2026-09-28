@@ -95,6 +95,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             line.numCapVertices = 8;
             line.textureMode = LineTextureMode.Tile;
             line.sortingOrder = 60;
+            owner.ApplyEffectSortingLayer(line);
             line.enabled = true;
 
             float angle = Mathf.Atan2(normalized.y, normalized.x) * Mathf.Rad2Deg;

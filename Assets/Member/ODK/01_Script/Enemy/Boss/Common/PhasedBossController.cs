@@ -99,7 +99,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         private bool battleStarted;
         private float nextCameraShakeTime;
         private float lastCameraShakePower;
-        private readonly List<ICancellableBossSpawn> trackedSpawns = new List<ICancellableBossSpawn>();
 
         protected override void Awake()
         {
@@ -227,7 +226,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             PlayerDefeated = true;
             StopAllCoroutines();
             CancelAttacks();
-            CancelTrackedSpawns();
             if (TryGetComponent(out Rigidbody2D body))
             {
                 body.linearVelocity = Vector2.zero;
@@ -427,29 +425,25 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         public void RegisterSpawn(ICancellableBossSpawn spawn)
         {
-            if (spawn == null || trackedSpawns.Contains(spawn)) return;
-            trackedSpawns.Add(spawn);
         }
 
-        private void CancelTrackedSpawns()
+        public void CancelRegisteredSpawns()
         {
-            for (int i = trackedSpawns.Count - 1; i >= 0; i--)
-            {
-                ICancellableBossSpawn spawn = trackedSpawns[i];
-                if (spawn is UnityEngine.Object unityObject && unityObject == null) continue;
-                try
-                {
-                    spawn?.CancelBossSpawn();
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e, this);
-                }
-            }
-            trackedSpawns.Clear();
         }
 
-        public void CancelRegisteredSpawns() => CancelTrackedSpawns();
+        public void ShakeCameraFor(float power, float duration)
+        {
+            if (power <= 0f || duration <= 0f) return;
+            lastCameraShakePower = power;
+            nextCameraShakeTime = Time.time + cameraShakeMinimumInterval;
+            if (cameraChannel == null) ResolveCameraChannel();
+            if (cameraChannel != null)
+            {
+                cameraChannel.RaiseEvent(new CameraShakeEvent().InitData(power * cameraShakePowerScale, duration));
+                return;
+            }
+            if (cameraImpulseSource != null) cameraImpulseSource.GenerateImpulse(power);
+        }
 
         public void ShakeCamera(float power)
         {
@@ -629,7 +623,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             IsPhaseTwo = true;
             StopAllCoroutines();
             CancelAttacks();
-            CancelTrackedSpawns();
             SafeInvoke(OnPhaseTwoEntered);
             SafeInvoke(() => onPhaseTwo?.Invoke());
             StartCoroutine(PhaseTwoRestart());
@@ -684,7 +677,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             IsDead = true;
             StopAllCoroutines();
             CancelAttacks();
-            CancelTrackedSpawns();
             SafeInvoke(OnBossDeath);
             SafeInvoke(() => onDeath?.Invoke());
             if (deathPresentation != null)
@@ -735,7 +727,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             if (healthModule != null) healthModule.OnDeath -= HandleHealthDeath;
             deathPresentation?.Cancel();
             CancelAttacks();
-            CancelTrackedSpawns();
         }
     }
 }

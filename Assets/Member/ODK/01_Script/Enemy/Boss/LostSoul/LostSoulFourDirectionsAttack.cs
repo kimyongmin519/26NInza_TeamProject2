@@ -193,6 +193,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             float extent = cue <= 1 ? Boss.ArenaHalfWidth * 1.4f : Boss.ArenaHalfHeight * 1.8f;
             Vector3 start = playerPosition - axis * extent;
             Vector3 end = playerPosition + axis * extent;
+            Boss.ApplyEffectSortingLayer(slashEffect);
+            if (slashGlowEffect != null) Boss.ApplyEffectSortingLayer(slashGlowEffect);
             slashEffect.useWorldSpace = true;
             slashEffect.positionCount = 2;
             slashEffect.SetPosition(0, start);
