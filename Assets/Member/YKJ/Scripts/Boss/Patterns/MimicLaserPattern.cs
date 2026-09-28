@@ -46,6 +46,7 @@ namespace Member.YKJ.Bosses
 
         public override void OnStart()
         {
+            Boss.PlayLaserChargeSound();
             Boss.BodyAnimator?.PrepareLaser(warningTime);
             Boss.CombatVfx?.SetCharge(0f);
             _count = Mathf.Max(1, shotCount);
@@ -148,6 +149,7 @@ namespace Member.YKJ.Bosses
 
         private void FireNext()
         {
+            Boss.PlayLaserFireSound();
             OpenChest();
             FiredCount++;
             Boss.BodyAnimator?.FireLaser(shotInterval);
@@ -193,6 +195,7 @@ namespace Member.YKJ.Bosses
 
         public override void OnEnd()
         {
+            Boss?.StopLaserChargeSound();
             foreach (Beam beam in _beams)
             {
                 if (beam.Line != null) beam.Line.enabled = false;

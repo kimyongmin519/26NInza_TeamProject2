@@ -1,5 +1,9 @@
 using System;
 using System.Collections.Generic;
+using KimLIb.EventSystem;
+using KimLIb.SoundSystem;
+using Member.KYM.Scripts.CoreSystems;
+using Member.KYM.Scripts.Players;
 using Member.KYM.Scripts.Agents;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts;
@@ -9,7 +13,7 @@ using UnityEngine.Events;
 namespace Member.YKJ.Bosses
 {
     [RequireComponent(typeof(HealthModule))]
-    public sealed class MimicBoss : Agent, IDamageable
+    public sealed partial class MimicBoss : Agent, IDamageable
     {
         public enum EncounterPhase { PhaseOne, Transition, PhaseTwo }
         [Header("Encounter")]
@@ -19,6 +23,18 @@ namespace Member.YKJ.Bosses
         [SerializeField] private UnityEvent onDeath;
         [SerializeField] private MimicBodyAnimator bodyAnimator;
         [SerializeField] private MimicCombatVfx combatVfx;
+        [Header("Sound")]
+        [SerializeField] private EventChannelSO soundChannel;
+        [SerializeField] private SoundClipSO bossBgm;
+        [SerializeField] private SoundClipSO weaponSpitSound;
+        [SerializeField] private SoundClipSO landingSound;
+        [SerializeField] private SoundClipSO laserChargeSound;
+        [SerializeField] private SoundClipSO laserFireSound;
+        [SerializeField] private SoundClipSO explosionSound;
+        private static int _nextChargeChannel = 260600;
+        private int _chargeChannel;
+        private bool _chargeSoundPlaying;
+        private PlayerController _audioPlayer;
 
         [Header("Half Health Boom")]
         [SerializeField] private ParticleSystem boomPrefab;
@@ -94,7 +110,7 @@ namespace Member.YKJ.Bosses
         public MimicPattern GetPattern(int skillId) =>
             _patternsById.TryGetValue(skillId, out MimicPattern pattern) ? pattern : null;
 
-        public bool TryStartSkill(int skillId) => Phase != EncounterPhase.Transition && Patterns.Start(GetPattern(skillId));
+        public bool TryStartSkill(int skillId) => !_timeoutStarted && Phase != EncounterPhase.Transition && Patterns.Start(GetPattern(skillId));
 
         public bool InitializePatternDictionary()
         {
@@ -150,6 +166,12 @@ namespace Member.YKJ.Bosses
             _halfHealthTriggered = false;
             Phase = EncounterPhase.PhaseOne;
             _encounterActive = true;
+            ClearDeadline();
+            _encounterElapsed = 0f;
+            _timeoutStarted = false;
+            _timeoutExploded = false;
+            _deadlineHealth = null;
+            BeginEncounterAudio();
             HandleHealthChanged(HealthModule.CurrentHealth, HealthModule.MaxHealth);
         }
 
@@ -163,6 +185,9 @@ namespace Member.YKJ.Bosses
                 StopEncounter();
                 return;
             }
+
+            if (TickDeadline(Time.deltaTime))
+                return;
 
             if (Phase == EncounterPhase.Transition)
             {
@@ -196,6 +221,7 @@ namespace Member.YKJ.Bosses
                 return;
             }
             Phase = EncounterPhase.PhaseTwo;
+            BeginDeadline();
             _nextPattern = 0;
             _idleTimer = 0f;
         }
@@ -231,7 +257,7 @@ namespace Member.YKJ.Bosses
 
         private void ApplyDamageWithFeedback(DamageData damage, Vector3 hitPosition)
         {
-            if (!_encounterActive || damage.Amount <= 0f) return;
+            if (!_encounterActive || Phase == EncounterPhase.Transition || _timeoutStarted || damage.Amount <= 0f) return;
             float previousHealth = HealthModule.CurrentHealth;
             HealthModule.ApplyDamage(damage);
             if (this != null && _encounterActive && HealthModule.CurrentHealth < previousHealth && !HealthModule.IsDead)
@@ -248,6 +274,7 @@ namespace Member.YKJ.Bosses
             Patterns.Cancel();
             bodyAnimator?.ResetPose();
             combatVfx?.PhaseBreak();
+            PlaySound(explosionSound);
             _boomsRemaining = Mathf.Max(1, boomCount);
             _boomTimer = 0f;
         }
@@ -335,6 +362,7 @@ namespace Member.YKJ.Bosses
                 bodyAnimator != null ? bodyAnimator.AnimatedMouthPosition(MouthPosition) : MouthPosition);
             _spawnedWeapons.RemoveAll(item => item == null);
             _spawnedWeapons.Add(weapon);
+            PlaySound(weaponSpitSound);
             return weapon;
         }
 
@@ -387,6 +415,8 @@ namespace Member.YKJ.Bosses
         [ContextMenu("Stop Encounter")]
         public void StopEncounter()
         {
+            StopEncounterAudio();
+            ClearDeadline();
             ClearBooms();
             _encounterActive = false;
             Patterns.Cancel();
@@ -397,6 +427,8 @@ namespace Member.YKJ.Bosses
 
         private void HandleDeath()
         {
+            StopEncounterAudio();
+            ClearDeadline();
             ClearBooms();
             _encounterActive = false;
             Patterns.Cancel(true);
@@ -431,6 +463,52 @@ namespace Member.YKJ.Bosses
                 HealthModule.OnDeath -= HandleDeath;
                 HealthModule.OnHealthChanged -= HandleHealthChanged;
             }
+        }
+
+        private void PlaySound(SoundClipSO clip, int channelNumber = 0)
+        {
+            if (soundChannel == null || clip == null || clip.audioClip == null) return;
+            soundChannel.RaiseEvent(new PlaySoundEvent().InitData(MouthPosition, clip, channelNumber));
+        }
+
+        public void PlayLandingSound() => PlaySound(landingSound);
+
+        public void PlayLaserChargeSound()
+        {
+            StopLaserChargeSound();
+            if (soundChannel == null || laserChargeSound == null || laserChargeSound.audioClip == null) return;
+            if (_chargeChannel == 0) _chargeChannel = System.Threading.Interlocked.Increment(ref _nextChargeChannel);
+            _chargeSoundPlaying = true;
+            PlaySound(laserChargeSound, _chargeChannel);
+        }
+
+        public void PlayLaserFireSound()
+        {
+            StopLaserChargeSound();
+            PlaySound(laserFireSound);
+        }
+
+        public void StopLaserChargeSound()
+        {
+            if (!_chargeSoundPlaying) return;
+            _chargeSoundPlaying = false;
+            soundChannel?.RaiseEvent(new StopSoundEvent().Init(_chargeChannel));
+        }
+
+        private void BeginEncounterAudio()
+        {
+            _audioPlayer = target != null ? target.GetComponentInParent<PlayerController>() : null;
+            if (_audioPlayer != null) _audioPlayer.OnDeath.AddListener(StopEncounterAudio);
+            if (bossBgm != null) BgmManager.Instance?.PlayBgm(bossBgm);
+        }
+
+        private void StopEncounterAudio()
+        {
+            StopLaserChargeSound();
+            if (_audioPlayer != null) _audioPlayer.OnDeath.RemoveListener(StopEncounterAudio);
+            _audioPlayer = null;
+            var bgm = BgmManager.Instance;
+            if (bgm != null && bossBgm != null && bgm.CurrentBgm == bossBgm) bgm.StopBgm();
         }
 
         private void OnDrawGizmosSelected()
