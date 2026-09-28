@@ -97,6 +97,9 @@ namespace Member.YKJ.Tests
                     "landingFeedback", "dustPrefab", "sparkMaterial", "cloudMaterial");
                 var jump = boss.GetComponentsInChildren<MimicJumpPattern>(true).Single();
                 RequireReferences(jump, "afterimage");
+                var falling = boss.GetComponentsInChildren<MimicFallingWeaponsPattern>(true).Single();
+                Assert.That(new SerializedObject(falling).FindProperty("jumpPattern").objectReferenceValue,
+                    Is.SameAs(jump), "Phase two falling weapons must share the phase one jump component.");
                 var laser = boss.GetComponentsInChildren<MimicLaserPattern>(true).Single();
                 RequireReferences(laser, "chestRenderer", "openChestSprite", "laserMaterial");
                 var tongue = new SerializedObject(boss.Tongue).FindProperty("tongueLine").objectReferenceValue as LineRenderer;

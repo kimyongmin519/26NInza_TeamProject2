@@ -12,6 +12,8 @@ namespace Member.YKJ.Bosses
         [SerializeField, Min(0.1f)] private float spawnOutsideScreen = 1f;
         [SerializeField, Min(0.1f)] private float spawnHeight = 1f;
         [SerializeField, Min(0.05f)] private float arcHeight = 0.6f;
+        [Header("Concurrent Jump")]
+        [SerializeField] private MimicJumpPattern jumpPattern;
         [Header("Incoming Weapon Warning")]
         [SerializeField] private Material warningMaterial;
         [SerializeField, Min(0.1f)] private float warningTime = 0.65f;
@@ -30,6 +32,7 @@ namespace Member.YKJ.Bosses
         public bool IsWarning => _step == Step.Warning && _warning != null && _warning.enabled;
         public static int PlatformIndex(int shot, bool reverse) => reverse ? 3 - shot : shot;
         public override bool CanStart() => Boss != null && Boss.HasWeaponPrefabs && warningMaterial != null && Physics2D.gravity.y < 0f &&
+            (jumpPattern == null || (jumpPattern.isActiveAndEnabled && jumpPattern.GetComponentInParent<MimicBoss>() == Boss && jumpPattern.CanStart())) &&
             (flightCamera != null || Camera.main != null) && platforms != null && platforms.Length == 4 &&
             System.Array.TrueForAll(platforms, item => item != null && item.enabled && !item.isTrigger && item.gameObject.activeInHierarchy);
 
@@ -53,16 +56,26 @@ namespace Member.YKJ.Bosses
             }
             _warning.sharedMaterial = warningMaterial;
             BeginWarning();
+            if (jumpPattern != null) jumpPattern.StartAlongside(this);
         }
 
         public override void OnUpdate(float deltaTime)
         {
+            bool waveFinished = _step == Step.WaitingForLanding && !System.Array.Exists(_wave,
+                item => item != null && item.gameObject.activeInHierarchy && item.State == MimicWeapon.WeaponState.BossFlight);
+            if (waveFinished && jumpPattern != null) jumpPattern.RequestStopAlongside(this);
+            if (jumpPattern != null && jumpPattern.IsRunningAlongside(this))
+            {
+                jumpPattern.OnUpdate(deltaTime);
+                // Landing damage/feedback can synchronously cancel the entire encounter.
+                if (Boss.Patterns.Current != this) return;
+            }
             if (_step == Step.WaitingForLanding)
             {
                 // The pattern ends after its last airborne weapon lands, is caught, or hits.
-                foreach (MimicWeapon item in _wave)
-                    if (item != null && item.gameObject.activeInHierarchy && item.State == MimicWeapon.WeaponState.BossFlight)
-                        return;
+                if (!waveFinished) return;
+                if (jumpPattern != null && jumpPattern.IsRunningAlongside(this))
+                    return;
                 EndPattern();
                 return;
             }
@@ -158,6 +171,7 @@ namespace Member.YKJ.Bosses
 
         public override void OnEnd()
         {
+            if (jumpPattern != null) jumpPattern.StopAlongside(this);
             if (_warning != null) _warning.enabled = false;
         }
         public override void OnDie() => OnEnd();
