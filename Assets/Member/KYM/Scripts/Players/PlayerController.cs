@@ -5,6 +5,7 @@ using Member.KYM.Scripts.Agents.FSM;
 using Member.KYM.Scripts.CombatSystems.SkillSystems;
 using Member.KYM.Scripts.CoreSystems;
 using Member.KYM.Scripts.CoreSystems.Events;
+using Member.KYM.Scripts.Players.FSM;
 using Member.KYM.Scripts.Players.FSM.Interface;
 using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK._01_Script;
@@ -206,8 +207,12 @@ namespace Member.KYM.Scripts.Players
 
         private void HandleGroundStatusChange(bool isGrounded)
         {
-            if (isGrounded)
-                ResetJumpCount();
+            if (!isGrounded)
+                return;
+
+            ResetJumpCount();
+            if (_stateMachine.CurrentState is PlayerFallState)
+                PlayLandingSound();
         }
 
         public void SetCrouching(bool isCrouching)

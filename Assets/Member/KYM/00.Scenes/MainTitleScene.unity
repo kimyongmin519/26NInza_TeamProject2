@@ -186,7 +186,7 @@ GameObject:
   m_Component:
   - component: {fileID: 65559177}
   - component: {fileID: 65559178}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Col1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -242,7 +242,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 3.9031267, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -252,7 +252,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 20}
+  m_Size: {x: 8.806253, y: 20}
   m_EdgeRadius: 0
 --- !u!1 &124145003
 GameObject:
@@ -401,7 +401,7 @@ GameObject:
   - component: {fileID: 264243988}
   - component: {fileID: 264243987}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -421,11 +421,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1519686511}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -100}
+  m_SizeDelta: {x: 400, y: 150}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &264243987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -875,7 +875,7 @@ GameObject:
   m_Component:
   - component: {fileID: 898057062}
   - component: {fileID: 898057063}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Col1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -931,7 +931,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -3.3846478, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -941,7 +941,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 20}
+  m_Size: {x: 7.7692957, y: 20}
   m_EdgeRadius: 0
 --- !u!1001 &939493090
 PrefabInstance:
@@ -5946,8 +5946,31 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3467264090061865227, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5361426297959833188}
   m_SourcePrefab: {fileID: 100100000, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+--- !u!1 &5361426297959833187 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3467264090061865227, guid: 613fd6792fe049f4ca543146e5cd520d, type: 3}
+  m_PrefabInstance: {fileID: 5361426297959833186}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5361426297959833188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5361426297959833187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a45259ed1a2a4809982108234ea438a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.UI.UIButtonSoundBinder
+  soundChannel: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
+  hoverSound: {fileID: 11400000, guid: 4495f45f5b2cd41479536160dc3d4e8b, type: 2}
+  clickSound: {fileID: 11400000, guid: 098ea555990284a49acc3cbe8a74929b, type: 2}
 --- !u!1001 &5457717473357970032
 PrefabInstance:
   m_ObjectHideFlags: 0

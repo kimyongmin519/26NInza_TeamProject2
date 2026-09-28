@@ -31,7 +31,6 @@ namespace Member.KYM.Scripts.CoreSystems
             }
 
             Instance = this;
-            DontDestroyOnLoad(gameObject);
 
             _activeSource = CreateSource("BGM A");
             _standbySource = CreateSource("BGM B");
