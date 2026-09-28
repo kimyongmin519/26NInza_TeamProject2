@@ -1,3 +1,5 @@
+using KimLIb.EventSystem;
+using KimLIb.SoundSystem;
 using Member.KYM.Scripts.CoreSystems;
 using UnityEngine;
 
@@ -25,6 +27,11 @@ namespace Member.KYM.Scripts.Players.RobotArm
         [Header("반동")]
         [SerializeField] private float recoilDistance = 0.35f;
         [SerializeField] private float recoilRecoveryTime = 0.12f;
+
+        [Header("사운드")]
+        [SerializeField] private EventChannelSO soundChannel;
+        [SerializeField] private SoundClipSO fireSound;
+        [SerializeField] private SoundClipSO catchSound;
 
         private Vector3 _positionVelocity;
         private Vector2 _recoilOffset;

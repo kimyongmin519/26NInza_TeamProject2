@@ -184,22 +184,5 @@ namespace Member.KYM.Scripts.EffectSystems
         {
             return Random.Range(range.x, range.y);
         }
-
-        private void OnValidate()
-        {
-            poolSize = Mathf.Max(1, poolSize);
-            spawnInterval.x = Mathf.Max(0.1f, spawnInterval.x);
-            spawnInterval.y = Mathf.Max(spawnInterval.x, spawnInterval.y);
-            lifetime.x = Mathf.Max(0.1f, lifetime.x);
-            lifetime.y = Mathf.Max(lifetime.x, lifetime.y);
-            fallSpeed.x = Mathf.Max(0f, fallSpeed.x);
-            fallSpeed.y = Mathf.Max(fallSpeed.x, fallSpeed.y);
-            flutterDistance.x = Mathf.Max(0f, flutterDistance.x);
-            flutterDistance.y = Mathf.Max(flutterDistance.x, flutterDistance.y);
-            flutterFrequency.x = Mathf.Max(0f, flutterFrequency.x);
-            flutterFrequency.y = Mathf.Max(flutterFrequency.x, flutterFrequency.y);
-            scale.x = Mathf.Max(0.01f, scale.x);
-            scale.y = Mathf.Max(scale.x, scale.y);
-        }
     }
 }

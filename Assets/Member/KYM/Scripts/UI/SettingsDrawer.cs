@@ -1,5 +1,6 @@
 using DG.Tweening;
 using Member.KYM.Scripts.CoreSystems;
+using Member.KYM.Scripts.CoreSystems.Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -126,6 +127,8 @@ namespace Member.KYM.Scripts.UI
             backdrop.SetActive(true);
             panel.DOKill();
             panel.DOAnchorPosX(0f, slideDuration).SetEase(slideEase).SetUpdate(true);
+            
+            TimeManager.Instance.StopTimer();
         }
 
         public void Close()
@@ -138,7 +141,11 @@ namespace Member.KYM.Scripts.UI
             panel.DOKill();
             panel.DOAnchorPosX(ClosedPositionX, slideDuration)
                 .SetEase(Ease.InCubic).SetUpdate(true)
-                .OnComplete(() => backdrop.SetActive(false));
+                .OnComplete(() =>
+                {
+                    backdrop.SetActive(false);
+                    TimeManager.Instance.StartTimer();
+                });
         }
 
         private void PreviousResolution() => ChangeResolution(-1);
