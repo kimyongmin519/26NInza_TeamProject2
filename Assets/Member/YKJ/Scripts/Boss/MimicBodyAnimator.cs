@@ -36,6 +36,8 @@ namespace Member.YKJ.Bosses
         private Vector3 _restPosition;
         private float _restBottom;
         private Sequence _pose;
+        private Color _restColor;
+        private bool _restEnabled;
 
         private void Awake() => CaptureRestPose();
 
@@ -49,6 +51,8 @@ namespace Member.YKJ.Bosses
             _visual = chestRenderer.transform;
             _restScale = _visual.localScale;
             _restPosition = _visual.localPosition;
+            _restColor = chestRenderer.color;
+            _restEnabled = chestRenderer.enabled;
             _restBottom = _restPosition.y +
                 (chestRenderer.sprite != null ? chestRenderer.sprite.bounds.min.y * _restScale.y : 0f);
             return true;
@@ -190,6 +194,22 @@ namespace Member.YKJ.Bosses
                 .SetLoops(-1, LoopType.Restart);
         }
 
+        public void SetExplosionCharge(float progress, float maximumScale)
+        {
+            if (!CaptureRestPose()) return;
+            _pose?.Kill();
+            _pose = null;
+            float t = Mathf.Clamp01(progress);
+            _visual.localScale = _restScale * Mathf.Lerp(1f, maximumScale, t * t);
+            chestRenderer.color = Color.Lerp(_restColor, Color.red, t);
+            AlignFeet();
+        }
+
+        public void HideAfterExplosion()
+        {
+            if (chestRenderer != null) chestRenderer.enabled = false;
+        }
+
         public void ResetPose()
         {
             _pose?.Kill();
@@ -199,6 +219,8 @@ namespace Member.YKJ.Bosses
                 return;
             _visual.localScale = _restScale;
             _visual.localPosition = _restPosition;
+            chestRenderer.color = _restColor;
+            chestRenderer.enabled = _restEnabled;
         }
 
         private void OnDisable() => ResetPose();

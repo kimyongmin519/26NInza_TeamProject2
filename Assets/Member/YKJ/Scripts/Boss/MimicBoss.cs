@@ -9,7 +9,7 @@ using UnityEngine.Events;
 namespace Member.YKJ.Bosses
 {
     [RequireComponent(typeof(HealthModule))]
-    public sealed class MimicBoss : Agent, IDamageable
+    public sealed partial class MimicBoss : Agent, IDamageable
     {
         public enum EncounterPhase { PhaseOne, Transition, PhaseTwo }
         [Header("Encounter")]
@@ -94,7 +94,7 @@ namespace Member.YKJ.Bosses
         public MimicPattern GetPattern(int skillId) =>
             _patternsById.TryGetValue(skillId, out MimicPattern pattern) ? pattern : null;
 
-        public bool TryStartSkill(int skillId) => Phase != EncounterPhase.Transition && Patterns.Start(GetPattern(skillId));
+        public bool TryStartSkill(int skillId) => !_timeoutStarted && Phase != EncounterPhase.Transition && Patterns.Start(GetPattern(skillId));
 
         public bool InitializePatternDictionary()
         {
@@ -150,6 +150,7 @@ namespace Member.YKJ.Bosses
             _halfHealthTriggered = false;
             Phase = EncounterPhase.PhaseOne;
             _encounterActive = true;
+            BeginDeadline();
             HandleHealthChanged(HealthModule.CurrentHealth, HealthModule.MaxHealth);
         }
 
@@ -163,6 +164,9 @@ namespace Member.YKJ.Bosses
                 StopEncounter();
                 return;
             }
+
+            if (TickDeadline(Time.deltaTime))
+                return;
 
             if (Phase == EncounterPhase.Transition)
             {
@@ -231,7 +235,7 @@ namespace Member.YKJ.Bosses
 
         private void ApplyDamageWithFeedback(DamageData damage, Vector3 hitPosition)
         {
-            if (!_encounterActive || damage.Amount <= 0f) return;
+            if (!_encounterActive || Phase == EncounterPhase.Transition || _timeoutStarted || damage.Amount <= 0f) return;
             float previousHealth = HealthModule.CurrentHealth;
             HealthModule.ApplyDamage(damage);
             if (this != null && _encounterActive && HealthModule.CurrentHealth < previousHealth && !HealthModule.IsDead)
@@ -387,6 +391,7 @@ namespace Member.YKJ.Bosses
         [ContextMenu("Stop Encounter")]
         public void StopEncounter()
         {
+            ClearDeadline();
             ClearBooms();
             _encounterActive = false;
             Patterns.Cancel();
@@ -397,6 +402,7 @@ namespace Member.YKJ.Bosses
 
         private void HandleDeath()
         {
+            ClearDeadline();
             ClearBooms();
             _encounterActive = false;
             Patterns.Cancel(true);

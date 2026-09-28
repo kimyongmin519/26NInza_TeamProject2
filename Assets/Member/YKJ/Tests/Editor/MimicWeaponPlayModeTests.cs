@@ -983,6 +983,107 @@ namespace Member.YKJ.Tests
             yield return null;
         }
 
+        [UnityTest]
+        public IEnumerator CoinTransitionRejectsBothNormalAndThrownWeaponDamage()
+        {
+            var weapon = CreateWeapon(Vector2.left * 20f);
+            var boss = CreateBoss(Vector2.zero, Create("Target", Vector2.right * 12f).transform, weapon);
+            boss.BeginEncounter();
+            boss.TakeDamage(new DamageData(boss.HealthModule.MaxHealth * 0.5f, Member.ODK.Scripts.DamageType.Special));
+            Assert.That(boss.Phase, Is.EqualTo(MimicBoss.EncounterPhase.Transition));
+            float health = boss.HealthModule.CurrentHealth;
+            boss.TakeDamage(new DamageData(100f, Member.ODK.Scripts.DamageType.Special));
+            boss.TakeWeaponDamage(new DamageData(100f, Member.ODK.Scripts.DamageType.Projectile), Vector3.zero);
+            Assert.That(boss.HealthModule.CurrentHealth, Is.EqualTo(health));
+            boss.StopEncounter();
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator DeadlineWaitsSixtySecondsThenChargesAndDealsExactlyOneHundredThroughInvulnerability()
+        {
+            var weapon = CreateWeapon(Vector2.left * 20f);
+            var target = Create("Target", Vector2.right * 12f);
+            var health = target.AddComponent<Member.ODK.Scripts.HealthModule>();
+            health.SetMaxHealth(250f);
+            health.SettingInvisibleTime(float.PositiveInfinity);
+            int deaths = 0;
+            health.OnDeath += () => deaths++;
+            var boss = CreateBoss(Vector2.zero, target.transform, weapon);
+            boss.BeginEncounter();
+            MethodInfo tick = typeof(MimicBoss).GetMethod("TickDeadline", BindingFlags.Instance | BindingFlags.NonPublic);
+            tick.Invoke(boss, new object[] { 59f });
+            Assert.That(boss.IsTimeoutSequenceActive, Is.False);
+            Assert.That(boss.EncounterTimeRemaining, Is.EqualTo(1f));
+            tick.Invoke(boss, new object[] { 1f });
+            Assert.That(boss.IsTimeoutSequenceActive, Is.True);
+            Assert.That(boss.TryStartSkill(1), Is.False);
+            tick.Invoke(boss, new object[] { 2.9f });
+            Assert.That(health.CurrentHealth, Is.EqualTo(250f));
+            tick.Invoke(boss, new object[] { 0.2f });
+            Assert.That(health.CurrentHealth, Is.EqualTo(150f));
+            Assert.That(health.IsDead, Is.True);
+            tick.Invoke(boss, new object[] { 10f });
+            Assert.That(health.CurrentHealth, Is.EqualTo(150f));
+            Assert.That(deaths, Is.EqualTo(1));
+            boss.StopEncounter();
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator KillingBossBeforeDeadlinePreventsTimeoutDamage()
+        {
+            var weapon = CreateWeapon(Vector2.left * 20f);
+            var target = Create("Target", Vector2.right * 12f);
+            var health = target.AddComponent<Member.ODK.Scripts.HealthModule>();
+            health.SetMaxHealth(100f);
+            var boss = CreateBoss(Vector2.zero, target.transform, weapon);
+            boss.BeginEncounter();
+            boss.TakeDamage(new DamageData(boss.HealthModule.MaxHealth, Member.ODK.Scripts.DamageType.Special));
+            typeof(MimicBoss).GetMethod("TickDeadline", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(boss, new object[] { 70f });
+            Assert.That(boss.IsEncounterActive, Is.False);
+            Assert.That(boss.IsTimeoutSequenceActive, Is.False);
+            Assert.That(health.CurrentHealth, Is.EqualTo(100f));
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator DeadlineVignetteRampsAndChestChargeRestoresOnCancel()
+        {
+            var weapon = CreateWeapon(Vector2.left * 20f);
+            var boss = CreateBoss(Vector2.zero, Create("Target", Vector2.right * 12f).transform, weapon);
+            var camera = Create("Deadline Camera", Vector2.zero).AddComponent<Camera>();
+            var cameraData = camera.gameObject.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+            cameraData.renderPostProcessing = false;
+            cameraData.volumeLayerMask = 1;
+            SetField(boss, "boomCamera", camera);
+            var visual = Create("Chest", Vector2.zero).AddComponent<SpriteRenderer>();
+            visual.transform.SetParent(boss.transform, false);
+            visual.transform.localScale = Vector3.one * 2f;
+            var animator = boss.gameObject.AddComponent<MimicBodyAnimator>();
+            SetField(animator, "chestRenderer", visual);
+            SetField(boss, "bodyAnimator", animator);
+            boss.BeginEncounter();
+            MethodInfo tick = typeof(MimicBoss).GetMethod("TickDeadline", BindingFlags.Instance | BindingFlags.NonPublic);
+            var volume = boss.GetComponentInChildren<UnityEngine.Rendering.Volume>();
+            Assert.That(volume, Is.Not.Null);
+            Assert.That(volume.weight, Is.Zero);
+            tick.Invoke(boss, new object[] { 30f });
+            Assert.That(volume.weight, Is.EqualTo(0.5f).Within(0.001f));
+            tick.Invoke(boss, new object[] { 30f });
+            tick.Invoke(boss, new object[] { 1.5f });
+            Assert.That(visual.transform.localScale.x, Is.GreaterThan(2f));
+            Assert.That(visual.color.g, Is.LessThan(1f));
+            boss.StopEncounter();
+            Assert.That(visual.transform.localScale, Is.EqualTo(Vector3.one * 2f));
+            Assert.That(visual.color, Is.EqualTo(Color.white));
+            Assert.That(volume.enabled, Is.False);
+            Assert.That(cameraData.renderPostProcessing, Is.False);
+            yield return null;
+            Assert.That(volume == null, Is.True);
+        }
+
         private MimicBoss CreateBoss(Vector2 position, Transform target, MimicWeapon weapon)
         {
             MimicBoss boss = Create("Mimic", position).AddComponent<MimicBoss>();
