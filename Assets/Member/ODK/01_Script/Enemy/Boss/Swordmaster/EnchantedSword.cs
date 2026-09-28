@@ -398,6 +398,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         }
 
         private void OnTriggerEnter2D(Collider2D other) => HandleImpact(other);
+        private void OnTriggerStay2D(Collider2D other) => HandleImpact(other);
         private void OnCollisionEnter2D(Collision2D collision) => HandleImpact(collision.collider);
 
         private void HandleImpact(Collider2D other)
@@ -575,6 +576,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         private void HitPlayer(Collider2D other)
         {
             if (Time.time < nextPlayerHitTime) return;
+            if (!DamageCaster.IsWithinPlayerHitbox(swordCollider, other)) return;
             nextPlayerHitTime = Time.time + playerHitCooldown;
             DamageCaster.ApplyDamage(other.transform, new DamageData(playerDamage, DamageType.Projectile));
             owner.NotifySwordImpact(transform.position);
