@@ -1,4 +1,6 @@
 using DG.Tweening;
+using KimLIb.EventSystem;
+using KimLIb.SoundSystem;
 using Member.KYM.Scripts.CoreSystems;
 using Member.KYM.Scripts.CoreSystems.Managers;
 using Member.ODK.Scripts;
@@ -26,6 +28,11 @@ namespace Member.KYM.Scripts.UI
         [SerializeField, Min(0f)] private float shakeDuration = 0.18f;
         [SerializeField] private Vector2 shakeStrength = new(30f, 30f);
         [SerializeField, Min(1)] private int shakeVibrato = 24;
+
+        [Header("KO 사운드")]
+        [SerializeField] private EventChannelSO soundChannel;
+        [SerializeField] private SoundClipSO koSound;
+        [SerializeField] private SoundClipSO additionalKoSound;
 
         [Header("연출 종료 후 이동할 씬 (비워두면 이동하지 않음)")]
         [SerializeField] private string destinationScene;
@@ -103,6 +110,9 @@ namespace Member.KYM.Scripts.UI
             koImage.fillAmount = 0f;
             koImage.rectTransform.anchoredPosition = _imageStartPosition;
 
+            PlaySound(koSound);
+            PlaySound(additionalKoSound);
+
             TimeManager.Instance.StopTimer();
             _ownsTimeStop = true;
             _sequence = DOTween.Sequence().SetUpdate(true);
@@ -137,6 +147,15 @@ namespace Member.KYM.Scripts.UI
             _ownsTimeStop = false;
             if (TimeManager.Instance != null)
                 TimeManager.Instance.StartTimer();
+        }
+
+        private void PlaySound(SoundClipSO clip)
+        {
+            if (soundChannel == null || clip == null || clip.audioClip == null)
+                return;
+
+            soundChannel.RaiseEvent(
+                SoundEvent.PlaySoundEvent.InitData(Vector3.zero, clip));
         }
     }
 }
