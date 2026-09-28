@@ -47,7 +47,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7349234222327201798
 Transform:
   m_ObjectHideFlags: 0
@@ -106,6 +106,13 @@ MonoBehaviour:
     localRotationOffset: {x: 0, y: 0, z: -60}
     duration: 0.1
     ease: 6
+  soundChannel: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
+  equipSound: {fileID: 0}
+  fireSound: {fileID: 11400000, guid: 8ce5f3bcba8f06747bbcf6280a4f51e1, type: 2}
+  throwSound: {fileID: 11400000, guid: b3df952fab67ba746acac95c3a81f8a6, type: 2}
+  OnShot:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2956033016766017406
 GameObject:
   m_ObjectHideFlags: 0

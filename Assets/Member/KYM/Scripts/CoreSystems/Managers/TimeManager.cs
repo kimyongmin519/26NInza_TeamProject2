@@ -10,6 +10,16 @@ namespace Member.KYM.Scripts.CoreSystems.Managers
         private float _beforeTime = 1f;
         private bool _manualStopped;
         private int _timedStops;
+        private int _pauseScopes;
+
+        public IDisposable Pause()
+        {
+            SaveRunningTime();
+            _pauseScopes++;
+            _currentTime = 0f;
+            Time.timeScale = 0f;
+            return new PauseScope(this);
+        }
 
         public void StopTimer()
         {
@@ -53,8 +63,33 @@ namespace Member.KYM.Scripts.CoreSystems.Managers
 
         private void RestoreRunningTime()
         {
-            if (!_manualStopped && _timedStops == 0)
+            if (!_manualStopped && _timedStops == 0 && _pauseScopes == 0)
                 _currentTime = _beforeTime;
+        }
+
+        private void ReleasePause()
+        {
+            if (_pauseScopes == 0)
+                return;
+
+            _pauseScopes--;
+            RestoreRunningTime();
+            Time.timeScale = _currentTime;
+        }
+
+        private sealed class PauseScope : IDisposable
+        {
+            private TimeManager _manager;
+
+            public PauseScope(TimeManager manager) => _manager = manager;
+
+            public void Dispose()
+            {
+                if (_manager != null)
+                    _manager.ReleasePause();
+
+                _manager = null;
+            }
         }
         
         public void SetBeforeTime(float time) => _beforeTime = time;
