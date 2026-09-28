@@ -41,6 +41,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private LostSoulProjectile soulProjectilePrefab;
         [SerializeField] private LostSoulGrabbableProjectile weakSoulProjectilePrefab;
         [SerializeField] private LostSoulSlashBeam slashBeamPrefab;
+        [SerializeField, Min(0f)] private float minimumSlashLength = 80f;
         [SerializeField] private float projectileDamage = DamageCaster.BossPlayerDamage;
         [SerializeField] private float thrownSoulDamage = 1f;
 
@@ -50,8 +51,14 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float portalRepeatInterval = 0.4f;
         [SerializeField] private float portalEdgePadding = 1.2f;
 
+        [Header("Passive Weak Souls")]
+        [SerializeField] private bool passiveWeakSouls = true;
+        [SerializeField] private Vector2 passiveWeakSoulInterval = new Vector2(1.6f, 2.4f);
+        [SerializeField] private float passiveWeakSoulSpeed = 6.5f;
+        [SerializeField] private float passiveWeakSoulMargin = 1.2f;
+
         [Header("Phase Two")]
-        [SerializeField, Range(0f, 1f)] private float phaseTwoHealthRatio = 0.25f;
+        [SerializeField, Range(0f, 1f)] private float phaseTwoHealthRatio = 0.4f;
 
         [Header("Animation State")]
         [SerializeField] private string idleState = "ready";
@@ -125,6 +132,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             base.Update();
             if (!IsDead && !IsPhaseTwo && HealthRatio <= phaseTwoHealthRatio)
                 phaseTwoRequested = true;
+            TickPassiveWeakSouls();
         }
 
         private void LateUpdate()
@@ -330,6 +338,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             animator.CrossFade(hash, fade, 0, startTime);
         }
 
+        public void ApplyEffectSortingLayer(Renderer target) => ApplySortingLayer(target);
+
         private void ApplySortingLayer(Renderer target)
         {
             if (target == null || string.IsNullOrEmpty(bodySortingLayer)) return;
@@ -407,6 +417,52 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             return soul;
         }
 
+        private float nextPassiveWeakSoulTime = -1f;
+
+        private void TickPassiveWeakSouls()
+        {
+            if (!passiveWeakSouls || IsDead || IsPhaseTwo || PlayerDefeated || !BattleStarted || Target == null) return;
+            if (!IsActing)
+            {
+                if (nextPassiveWeakSoulTime < Time.time) nextPassiveWeakSoulTime = Time.time + Random.Range(0.4f, 0.8f);
+                return;
+            }
+            if (nextPassiveWeakSoulTime < 0f)
+            {
+                nextPassiveWeakSoulTime = Time.time + Random.Range(passiveWeakSoulInterval.x, passiveWeakSoulInterval.y);
+                return;
+            }
+            if (Time.time < nextPassiveWeakSoulTime) return;
+            nextPassiveWeakSoulTime = Time.time + Random.Range(
+                Mathf.Min(passiveWeakSoulInterval.x, passiveWeakSoulInterval.y),
+                Mathf.Max(passiveWeakSoulInterval.x, passiveWeakSoulInterval.y));
+
+            Vector3 spawn = GetPassiveWeakSoulSpawn();
+            Vector2 direction = ((Vector2)Target.position - (Vector2)spawn).normalized;
+            SpawnWeakSoul(spawn, direction * passiveWeakSoulSpeed);
+        }
+
+        private Vector3 GetPassiveWeakSoulSpawn()
+        {
+            GetTeleportRange(out float minimum, out float maximum);
+            if (minimum > maximum)
+            {
+                minimum = ArenaCenter.x - ArenaHalfWidth;
+                maximum = ArenaCenter.x + ArenaHalfWidth;
+            }
+            float left = minimum - passiveWeakSoulMargin;
+            float right = maximum + passiveWeakSoulMargin;
+            float bottom = ArenaCenter.y - ArenaHalfHeight * 0.1f;
+            float top = ArenaCenter.y + ArenaHalfHeight;
+            float z = transform.position.z;
+            return Random.Range(0, 3) switch
+            {
+                0 => new Vector3(left, Random.Range(bottom, top), z),
+                1 => new Vector3(right, Random.Range(bottom, top), z),
+                _ => new Vector3(Random.Range(left, right), top, z)
+            };
+        }
+
         public Vector3 GetPortalPoint(float sideOffset = 0f)
         {
             Vector3 point = transform.position + new Vector3(sideOffset, portalHeight, 0f);
@@ -473,6 +529,13 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             float preFireRotationDegrees = 0f)
         {
             if (slashBeamPrefab == null) return null;
+            Vector2 slashDirection = direction.sqrMagnitude > 0.001f ? direction.normalized : Vector2.right;
+            if (length < minimumSlashLength)
+            {
+                origin -= (Vector3)slashDirection * ((minimumSlashLength - length) * 0.5f);
+                length = minimumSlashLength;
+            }
+            direction = slashDirection;
             LostSoulSlashBeam beam = ODKPool.Spawn(slashBeamPrefab, origin, Quaternion.identity);
             if (beam == null) return null;
             beam.Initialize(this, origin, direction, length, width, warningDuration, activeDuration, damage, color, preFireRotationDegrees);
@@ -608,6 +671,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         public void PlaySlashFeedback() => feedback?.PlaySlash();
         public void PlayFadeSlashFeedback() => feedback?.PlayFadeSlash();
         public void PlayDesperationScreamFeedback() => feedback?.PlayDesperationScream();
+        public void PreloadDesperationScream() => feedback?.PreloadDesperationScream();
         public void PlayCastFeedback() => feedback?.PlayCast();
         public void PlayBeamWarningFeedback() => feedback?.PlayBeamWarning();
         public void PlayBeamFireFeedback() => feedback?.PlayBeamFire();

@@ -13,7 +13,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
     {
         [SerializeField] private float lifeTime = 9f;
         [SerializeField] private float homingDegreesPerSecond = 75f;
-        [SerializeField] private float thrownHomingDegreesPerSecond = 150f;
+        [SerializeField] private float thrownHomingDegreesPerSecond = 2160f;
         [SerializeField] private float visualAngleOffset = 180f;
         [SerializeField] private SoundClipSO impactSound;
         [SerializeField, Min(1f)] private float maximumThrownDistance = 18f;

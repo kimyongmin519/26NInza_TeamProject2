@@ -836,7 +836,7 @@ MonoBehaviour:
   turnGap: 0.35
   wallSwordCount: 6
   wallDistance: 7
-  wallHalfSpan: 6
+  wallHalfSpan: 10
   rowHeight: 7
   rowSwordSpeed: 64
   wallFormDuration: 0.32
@@ -1010,8 +1010,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
-  <MaxHealth>k__BackingField: 76
-  <CurrentHealth>k__BackingField: 76
+  <MaxHealth>k__BackingField: 60
+  <CurrentHealth>k__BackingField: 60
 --- !u!1 &130000
 GameObject:
   m_ObjectHideFlags: 0

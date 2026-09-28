@@ -15,6 +15,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         private static GameObject fallbackRoot;
         private static readonly List<AudioSource> fallbackSources = new();
         private static int fallbackIndex;
+        private static AudioSource prioritySource;
         private static bool managerFailed;
         private static readonly HashSet<string> warned = new();
 
@@ -25,6 +26,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             fallbackRoot = null;
             fallbackSources.Clear();
             fallbackIndex = 0;
+            prioritySource = null;
             managerFailed = false;
             warned.Clear();
             cachedSfx = null;
@@ -47,6 +49,44 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                 return true;
 
             PlayFallback(clip, position);
+            return true;
+        }
+
+        public static void Preload(SoundClipSO clip)
+        {
+            if (clip == null || clip.audioClip == null) return;
+            if (clip.audioClip.loadState == AudioDataLoadState.Unloaded)
+                clip.audioClip.LoadAudioData();
+        }
+
+        public static bool PlayPriority(SoundClipSO clip, float volumeScale = 1f)
+        {
+            if (clip == null)
+                return false;
+
+            if (clip.audioClip == null)
+            {
+                WarnOnce($"clip:{clip.name}", $"[ODKSound] '{clip.name}' 에 AudioClip 이 비어있음");
+                return false;
+            }
+
+            if (clip.audioClip.loadState == AudioDataLoadState.Unloaded)
+                clip.audioClip.LoadAudioData();
+
+            if (prioritySource == null)
+            {
+                GameObject sourceObject = new GameObject("ODK Priority Sound");
+                prioritySource = sourceObject.AddComponent<AudioSource>();
+                prioritySource.playOnAwake = false;
+                prioritySource.spatialBlend = 0f;
+                prioritySource.priority = 0;
+                prioritySource.loop = false;
+            }
+
+            prioritySource.outputAudioMixerGroup = FindMixerGroup(clip.audioTypes);
+            prioritySource.volume = 1f;
+            prioritySource.pitch = clip.pitch;
+            prioritySource.PlayOneShot(clip.audioClip, Mathf.Max(0f, clip.volume * volumeScale));
             return true;
         }
 
