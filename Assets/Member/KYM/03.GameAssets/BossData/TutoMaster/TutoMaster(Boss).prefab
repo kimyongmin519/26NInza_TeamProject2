@@ -1032,6 +1032,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8452097884732460165, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
+      propertyPath: fireSound
+      value: 
+      objectReference: {fileID: 11400000, guid: 8ce5f3bcba8f06747bbcf6280a4f51e1, type: 2}
+    - target: {fileID: 8452097884732460165, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
+      propertyPath: throwSound
+      value: 
+      objectReference: {fileID: 11400000, guid: 8ce5f3bcba8f06747bbcf6280a4f51e1, type: 2}
+    - target: {fileID: 8452097884732460165, guid: 26fa774452f9a6f42afc8687739e0879, type: 3}
+      propertyPath: soundChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

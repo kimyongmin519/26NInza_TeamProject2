@@ -1,5 +1,6 @@
 using System;
 using KimLIb.ModuleSystems;
+using Member.KYM.Scripts.Agents;
 using Member.KYM.Scripts.Players;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts;
@@ -64,10 +65,19 @@ namespace Member.KYM.Scripts.CombatSystems.DamageSystems
             LastHitNormal = hitNormal;
             LastHitCritical = false;
 
+            // HealthModule을 쓰는 대상은 실제 체력이 줄었을 때만 적중으로 취급한다.
+            HealthModule targetHealth = damageable is Agent agent
+                ? agent.HealthModule
+                : (damageable as Component)?.GetComponentInChildren<HealthModule>(true);
+            float healthBefore = targetHealth != null ? targetHealth.CurrentHealth : 0f;
             damageable.TakeDamage(damageData);
+            if (targetHealth != null && targetHealth.CurrentHealth >= healthBefore)
+                return false;
+
             OnHit?.Invoke(damageData);
-            if (CasterOwner is PlayerController)
+            if (CasterOwner is PlayerController player)
             {
+                player.PlayEnemyHitShake();
                 OnHitOwnerPlayer?.Invoke();
             }
             return true;
