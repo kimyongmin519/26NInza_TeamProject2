@@ -24,7 +24,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private Color slashColor = new Color(0.94f, 0.9f, 1f, 1f);
 
         [Header("Health Pressure")]
-        [SerializeField, Range(0f, 1f)] private float rotatingSlashHealth = 0.2f;
+        [SerializeField, Range(0f, 1f)] private float phaseStartHealth = 0.4f;
+        [SerializeField, Range(0f, 1f)] private float rotatingSlashHealth = 0.25f;
         [SerializeField] private float rotatingDegrees = 145f;
         [SerializeField] private float cycleIntervalAt25 = 0.72f;
         [SerializeField] private float cycleIntervalAt10 = 0.34f;
@@ -84,7 +85,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             float waitDuration = Mathf.Lerp(
                 cycleIntervalAt10,
                 cycleIntervalAt25,
-                Mathf.InverseLerp(enrageHealth, 0.25f, Boss.HealthRatio)
+                Mathf.InverseLerp(enrageHealth, phaseStartHealth, Boss.HealthRatio)
             ) / DurationScale;
             waitDuration = Mathf.Max(waitDuration, warningTime + slashActiveDuration * 0.5f / DurationScale);
             yield return WaitCycle(target, waitDuration);
@@ -159,7 +160,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         private int GetDirectionCount()
         {
-            float pressure = Mathf.InverseLerp(0.25f, enrageHealth, Boss.HealthRatio);
+            float pressure = Mathf.InverseLerp(phaseStartHealth, enrageHealth, Boss.HealthRatio);
             float lowHealthBias = Mathf.Lerp(2.4f, 0.55f, pressure);
             float roll = Mathf.Pow(Random.value, lowHealthBias);
             int minimum = Mathf.Max(1, Mathf.Min(minimumDirections, maximumDirections));

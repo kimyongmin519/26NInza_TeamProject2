@@ -144,14 +144,14 @@ MonoBehaviour:
   bodyHitboxOffset: {x: 0, y: 1.35}
   soulProjectilePrefab: {fileID: 100005, guid: a3000000000000000000000000000001, type: 3}
   weakSoulProjectilePrefab: {fileID: 100005, guid: a3000000000000000000000000000002, type: 3}
-  slashBeamPrefab: {fileID: 0}
+  slashBeamPrefab: {fileID: 100004, guid: a3000000000000000000000000000004, type: 3}
   projectileDamage: 1
   thrownSoulDamage: 1
   portalHeight: 4.2
   portalOpenDuration: 0.35
   portalRepeatInterval: 0.4
   portalEdgePadding: 1.2
-  phaseTwoHealthRatio: 0.25
+  phaseTwoHealthRatio: 0.4
   idleState: ready
   hitState: hit
   deathState: dead
@@ -1289,14 +1289,14 @@ MonoBehaviour:
   animationStateName: attack
   startupDelay: 0.3
   recoveryDelay: 0.45
-  warningDuration: 0.58
+  warningDuration: 0.7
   activeDuration: 0.16
   cutThickness: 0.62
   damage: 1
   betweenCuts: 0.3
   beamColor: {r: 0.94, g: 0.9, b: 1, a: 1}
-  followUpWarningScale: 0.6
-  followUpGap: 0.04
+  followUpWarningScale: 0.85
+  followUpGap: 0.3
 --- !u!1 &136000
 GameObject:
   m_ObjectHideFlags: 0
@@ -2148,24 +2148,24 @@ MonoBehaviour:
   startupDelay: 0.35
   recoveryDelay: 0
   arenaPadding: 1.25
-  moveDuration: 0.45
+  moveDuration: 0.55
   slashReadyTime: 0.5
   weakSoulInterval: 0.5
   weakSoulSpeed: 7
   weakSoulSpawnMargin: 1.2
-  slashWarningDuration: 0.85
+  slashWarningDuration: 1
   slashActiveDuration: 0.16
   slashWidth: 0.52
   slashDamage: 1
   slashColor: {r: 0.94, g: 0.9, b: 1, a: 1}
-  rotatingSlashHealth: 0.2
+  rotatingSlashHealth: 0.25
   rotatingDegrees: 145
-  cycleIntervalAt25: 1.2
-  cycleIntervalAt10: 0.8
+  cycleIntervalAt25: 1.55
+  cycleIntervalAt10: 1.1
   minimumDirections: 2
-  maximumDirections: 5
-  enrageHealth: 0.1
-  enrageSlashInterval: 0.16
-  enrageWarningDuration: 0.75
+  maximumDirections: 4
+  enrageHealth: 0.12
+  enrageSlashInterval: 0.26
+  enrageWarningDuration: 0.9
   enrageMinimumDistance: 1
   enrageMaximumDistance: 16
