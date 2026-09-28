@@ -26,9 +26,11 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private Vector2Int cutCountRange = new Vector2Int(3, 7);
 
         [Header("Avoid Check")]
-        [SerializeField] private float moveDistance = 1.35f;
-        [SerializeField] private float jumpDistance = 0.85f;
-        [SerializeField] private float crouchHeightRatio = 0.82f;
+        [SerializeField] private float moveDistance = 0.35f;
+        [SerializeField] private float jumpDistance = 0.2f;
+        [SerializeField] private float crouchHeightRatio = 0.95f;
+        [SerializeField] private float jumpUpwardSpeed = 0.5f;
+        [SerializeField] private float avoidGraceTime = 0.15f;
         [SerializeField] private float damage = 1f;
         [SerializeField] private float damageRadius = 1.35f;
 
@@ -59,6 +61,14 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 int cue = order[i];
                 Vector3 before = target.transform.position;
                 float beforeHeight = targetCollider != null ? targetCollider.bounds.size.y : 1f;
+                trackMinX = trackMaxX = before.x;
+                trackMinY = trackMaxY = before.y;
+                trackMinHeight = beforeHeight;
+                trackMaxUpSpeed = 0f;
+                targetBody = target.GetComponentInParent<Rigidbody2D>();
+                if (targetBody == null) targetBody = target.GetComponentInChildren<Rigidbody2D>();
+                tracking = true;
+                Coroutine tracker = StartCoroutine(TrackAvoid(target.transform, targetCollider));
 
                 Boss.PlayDirectionCueFeedback();
                 yield return ShowDirectionCue(cue);
@@ -72,14 +82,17 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 StartCoroutine(Boss.FlashDarknessReveal(slashRevealDuration / DurationScale));
                 yield return PlaySlashEffect(cue, target.transform.position);
 
+                if (avoidGraceTime > 0f) yield return new WaitForSeconds(avoidGraceTime);
+                tracking = false;
+                if (tracker != null) StopCoroutine(tracker);
+                SampleAvoid(target.transform, targetCollider);
                 Vector3 after = target.transform.position;
-                float afterHeight = targetCollider != null ? targetCollider.bounds.size.y : beforeHeight;
                 bool avoided = cue switch
                 {
-                    0 => after.x <= before.x - moveDistance,
-                    1 => after.x >= before.x + moveDistance,
-                    2 => after.y >= before.y + jumpDistance,
-                    _ => afterHeight <= beforeHeight * crouchHeightRatio || after.y <= before.y - 0.2f
+                    0 => trackMinX <= before.x - moveDistance,
+                    1 => trackMaxX >= before.x + moveDistance,
+                    2 => trackMaxY >= before.y + jumpDistance || trackMaxUpSpeed >= jumpUpwardSpeed,
+                    _ => trackMinHeight <= beforeHeight * crouchHeightRatio || trackMinY <= before.y - 0.1f
                 };
 
                 if (!avoided)
@@ -95,6 +108,36 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             CleanupVisuals();
             Boss.SetDarkness(false, 0.16f);
             yield return new WaitForSeconds(0.16f / DurationScale);
+        }
+
+        private bool tracking;
+        private float trackMinX;
+        private float trackMaxX;
+        private float trackMinY;
+        private float trackMaxY;
+        private float trackMinHeight;
+        private float trackMaxUpSpeed;
+        private Rigidbody2D targetBody;
+
+        private IEnumerator TrackAvoid(Transform target, Collider2D targetCollider)
+        {
+            while (tracking && target != null)
+            {
+                SampleAvoid(target, targetCollider);
+                yield return null;
+            }
+        }
+
+        private void SampleAvoid(Transform target, Collider2D targetCollider)
+        {
+            if (target == null) return;
+            Vector3 position = target.position;
+            trackMinX = Mathf.Min(trackMinX, position.x);
+            trackMaxX = Mathf.Max(trackMaxX, position.x);
+            trackMinY = Mathf.Min(trackMinY, position.y);
+            trackMaxY = Mathf.Max(trackMaxY, position.y);
+            if (targetCollider != null) trackMinHeight = Mathf.Min(trackMinHeight, targetCollider.bounds.size.y);
+            if (targetBody != null) trackMaxUpSpeed = Mathf.Max(trackMaxUpSpeed, targetBody.linearVelocity.y);
         }
 
         private IEnumerator PlayEyeSparkle()
@@ -258,6 +301,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         private void CleanupVisuals()
         {
+            tracking = false;
             HideArrows();
             if (eyeSparkle != null)
             {

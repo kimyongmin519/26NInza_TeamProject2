@@ -102,11 +102,14 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             transform.rotation = Quaternion.Euler(0f, 0f, angle);
         }
 
+        private void OnTriggerStay2D(Collider2D other) => OnTriggerEnter2D(other);
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (consumed || other == null) return;
             int mask = 1 << other.gameObject.layer;
             if ((playerLayer.value & mask) == 0 && !other.transform.root.CompareTag("Player")) return;
+            if (!DamageCaster.IsWithinPlayerHitbox(GetComponent<Collider2D>(), other)) return;
             DamageCaster.ApplyDamage(other.transform, new DamageData(damage, DamageType.Projectile));
             ODKSoundPlayback.Play(impactSound, transform.position);
             owner?.PlaySoulImpactFeedback(transform.position);

@@ -38,6 +38,7 @@ namespace Member.ODK.Scripts.Enemys.Combat
         [SerializeField] private CapsuleDirection2D capsuleDirection = CapsuleDirection2D.Horizontal;
         [SerializeField] private bool useReferenceRotation;
         [SerializeField] private LayerMask targetLayer = 1 << 6;
+        [SerializeField, Range(0.05f, 1f)] private float playerHitScale = 0.3f;
 
         [Header("Casting Setting")]
         [SerializeField] private DamageCastingMode castingMode;
@@ -312,12 +313,74 @@ namespace Member.ODK.Scripts.Enemys.Combat
             return castMode switch
             {
                 DamageCastMode.Circle or DamageCastMode.Sector =>
-                    Physics2D.OverlapCircleAll(center, range, targetLayer),
-                DamageCastMode.Box => Physics2D.OverlapBoxAll(center, size, castAngle, targetLayer),
-                DamageCastMode.Capsule => Physics2D.OverlapCapsuleAll(center, size, capsuleDirection, castAngle, targetLayer),
+                    Physics2D.OverlapCircleAll(center, range * HitScale, targetLayer),
+                DamageCastMode.Box => Physics2D.OverlapBoxAll(center, size * HitScale, castAngle, targetLayer),
+                DamageCastMode.Capsule => Physics2D.OverlapCapsuleAll(center, size * HitScale, capsuleDirection, castAngle, targetLayer),
                 DamageCastMode.OutsideBox => Physics2D.OverlapCircleAll(center, range, targetLayer),
                 _ => System.Array.Empty<Collider2D>()
             };
+        }
+
+        public static float PlayerHitScale { get; set; } = 0.3f;
+
+        private float HitScale
+        {
+            get
+            {
+                int playerLayer = LayerMask.NameToLayer("Player");
+                bool targetsPlayer = playerLayer >= 0 && (targetLayer.value & (1 << playerLayer)) != 0;
+                return targetsPlayer ? Mathf.Clamp(playerHitScale, 0.05f, 1f) : 1f;
+            }
+        }
+
+        public static bool IsWithinPlayerHitbox(Collider2D source, Collider2D target)
+        {
+            if (source == null || target == null) return true;
+            if (!IsPlayerTarget(target.transform)) return true;
+            float scale = Mathf.Clamp(PlayerHitScale, 0.05f, 1f);
+            if (scale >= 0.999f) return true;
+
+            Transform sourceTransform = source.transform;
+            Vector2 center = sourceTransform.TransformPoint(source.offset);
+            Vector2 closest = target.ClosestPoint(center);
+            Vector2 local = Quaternion.Inverse(sourceTransform.rotation) * (closest - center);
+            Vector3 lossy = sourceTransform.lossyScale;
+            float scaleX = Mathf.Abs(lossy.x);
+            float scaleY = Mathf.Abs(lossy.y);
+
+            switch (source)
+            {
+                case CircleCollider2D circle:
+                    return local.magnitude <= circle.radius * Mathf.Max(scaleX, scaleY) * scale;
+                case BoxCollider2D box:
+                    return Mathf.Abs(local.x) <= box.size.x * scaleX * 0.5f * scale &&
+                           Mathf.Abs(local.y) <= box.size.y * scaleY * 0.5f * scale;
+                case CapsuleCollider2D capsule:
+                {
+                    float halfX = capsule.size.x * scaleX * 0.5f * scale;
+                    float halfY = capsule.size.y * scaleY * 0.5f * scale;
+                    if (capsule.direction == CapsuleDirection2D.Horizontal)
+                    {
+                        float radius = halfY;
+                        float segment = Mathf.Max(0f, halfX - radius);
+                        float dx = Mathf.Max(0f, Mathf.Abs(local.x) - segment);
+                        return new Vector2(dx, local.y).magnitude <= radius;
+                    }
+                    else
+                    {
+                        float radius = halfX;
+                        float segment = Mathf.Max(0f, halfY - radius);
+                        float dy = Mathf.Max(0f, Mathf.Abs(local.y) - segment);
+                        return new Vector2(local.x, dy).magnitude <= radius;
+                    }
+                }
+                default:
+                {
+                    Vector2 extents = source.bounds.extents * scale;
+                    Vector2 delta = closest - (Vector2)source.bounds.center;
+                    return Mathf.Abs(delta.x) <= extents.x && Mathf.Abs(delta.y) <= extents.y;
+                }
+            }
         }
 
         private bool IsInsideSector(Vector3 point, Vector3 center, float castAngle)
