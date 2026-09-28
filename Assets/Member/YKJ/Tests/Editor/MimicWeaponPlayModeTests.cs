@@ -1012,6 +1012,14 @@ namespace Member.YKJ.Tests
             var boss = CreateBoss(Vector2.zero, target.transform, weapon);
             boss.BeginEncounter();
             MethodInfo tick = typeof(MimicBoss).GetMethod("TickDeadline", BindingFlags.Instance | BindingFlags.NonPublic);
+            tick.Invoke(boss, new object[] { 120f });
+            Assert.That(boss.EncounterTimeRemaining, Is.EqualTo(60f));
+            Assert.That(boss.IsTimeoutSequenceActive, Is.False);
+            boss.TakeDamage(new DamageData(boss.HealthModule.MaxHealth * 0.5f, Member.ODK.Scripts.DamageType.Special));
+            tick.Invoke(boss, new object[] { 120f });
+            Assert.That(boss.Phase, Is.EqualTo(MimicBoss.EncounterPhase.Transition));
+            Assert.That(boss.EncounterTimeRemaining, Is.EqualTo(60f));
+            StartDeadlinePhaseTwo(boss);
             tick.Invoke(boss, new object[] { 59f });
             Assert.That(boss.IsTimeoutSequenceActive, Is.False);
             Assert.That(boss.EncounterTimeRemaining, Is.EqualTo(1f));
@@ -1039,6 +1047,7 @@ namespace Member.YKJ.Tests
             health.SetMaxHealth(100f);
             var boss = CreateBoss(Vector2.zero, target.transform, weapon);
             boss.BeginEncounter();
+            StartDeadlinePhaseTwo(boss);
             boss.TakeDamage(new DamageData(boss.HealthModule.MaxHealth, Member.ODK.Scripts.DamageType.Special));
             typeof(MimicBoss).GetMethod("TickDeadline", BindingFlags.Instance | BindingFlags.NonPublic)
                 .Invoke(boss, new object[] { 70f });
@@ -1065,6 +1074,8 @@ namespace Member.YKJ.Tests
             SetField(animator, "chestRenderer", visual);
             SetField(boss, "bodyAnimator", animator);
             boss.BeginEncounter();
+            Assert.That(boss.GetComponentInChildren<UnityEngine.Rendering.Volume>(), Is.Null);
+            StartDeadlinePhaseTwo(boss);
             MethodInfo tick = typeof(MimicBoss).GetMethod("TickDeadline", BindingFlags.Instance | BindingFlags.NonPublic);
             var volume = boss.GetComponentInChildren<UnityEngine.Rendering.Volume>();
             Assert.That(volume, Is.Not.Null);
@@ -1082,6 +1093,38 @@ namespace Member.YKJ.Tests
             Assert.That(cameraData.renderPostProcessing, Is.False);
             yield return null;
             Assert.That(volume == null, Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator FallingCoinPassesThroughFlatPlatformAndRetiresOnGround()
+        {
+            var platform = Create("Flat", new Vector2(100f, 1f));
+            platform.layer = LayerMask.NameToLayer("Flat");
+            platform.AddComponent<BoxCollider2D>().size = new Vector2(10f, 0.2f);
+            var ground = Create("Ground", new Vector2(100f, -4f));
+            ground.layer = LayerMask.NameToLayer("Ground");
+            ground.AddComponent<BoxCollider2D>().size = new Vector2(10f, 0.2f);
+            var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<MimicHazard>(
+                "Assets/Member/YKJ/MimicTestAssets/MimicCoin.prefab");
+            var coin = Object.Instantiate(prefab, new Vector3(100f, 3f, 0f), Quaternion.identity);
+            _objects.Add(coin.gameObject);
+            coin.Launch(null, Vector2.down * 5f, 0f, 10f, 10f);
+            Physics2D.SyncTransforms();
+            for (int i = 0; i < 35; i++) Physics2D.Simulate(0.02f);
+            Assert.That(coin.gameObject.activeSelf, Is.True);
+            Assert.That(coin.transform.position.y, Is.LessThan(0f));
+            for (int i = 0; i < 45; i++) Physics2D.Simulate(0.02f);
+            Assert.That(coin.gameObject.activeSelf, Is.False);
+            yield return null;
+        }
+
+        private static void StartDeadlinePhaseTwo(MimicBoss boss)
+        {
+            // The existing tongue fixture is configured; deadline tests do not need laser/weapon arenas.
+            SetField(boss, "phaseTwoSkillIds", new[] { 3 });
+            typeof(MimicBoss).GetMethod("EnterPhaseTwo", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(boss, null);
+            Assert.That(boss.Phase, Is.EqualTo(MimicBoss.EncounterPhase.PhaseTwo));
         }
 
         private MimicBoss CreateBoss(Vector2 position, Transform target, MimicWeapon weapon)

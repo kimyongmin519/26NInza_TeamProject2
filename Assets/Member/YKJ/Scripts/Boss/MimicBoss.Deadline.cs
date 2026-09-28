@@ -10,7 +10,7 @@ namespace Member.YKJ.Bosses
 {
     public sealed partial class MimicBoss
     {
-        [Header("Encounter Deadline")]
+        [Header("Phase Two Deadline")]
         [SerializeField, Min(1f)] private float encounterTimeLimit = 60f;
         [SerializeField, Min(0.1f)] private float explosionChargeDuration = 3f;
         [SerializeField, Min(1f)] private float explosionChestScale = 2.5f;
@@ -75,10 +75,11 @@ namespace Member.YKJ.Bosses
             _deadlineVolume.sharedProfile = _deadlineProfile;
         }
 
-        // Uses gameplay time: pausing the game or reading dialogue does not consume the deadline.
+        // Starts after the coin transition. Pausing or reading dialogue does not consume the deadline.
         private bool TickDeadline(float deltaTime)
         {
             if (!_encounterActive || _timeoutExploded) return true;
+            if (Phase != EncounterPhase.PhaseTwo) return false;
             if (_deadlineHealth != null && _deadlineHealth.IsDead)
             {
                 StopEncounter();
@@ -136,6 +137,8 @@ namespace Member.YKJ.Bosses
             // Latch before damage: player death listeners may disable this encounter synchronously.
             _timeoutExploded = true;
             _encounterActive = false;
+            StopEncounterAudio();
+            PlaySound(explosionSound);
             bodyAnimator?.HideAfterExplosion();
             if (boomPrefab != null)
             {

@@ -4199,6 +4199,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9ed1b16b40340b499a27d4e66dee15c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.YKJ.Bosses.MimicBoss
+  soundChannel: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
+  bossBgm: {fileID: 11400000, guid: 87bae18730f248f994f89958f7038554, type: 2}
+  landingSound: {fileID: 11400000, guid: 24ec51b6bd1e4ba396804fdfec07f507, type: 2}
+  weaponSpitSound: {fileID: 11400000, guid: 0a9f8410330244e58fd0ba518b7c9edc, type: 2}
+  laserChargeSound: {fileID: 11400000, guid: 27a8a16b94594dc48696a3b5c6a385d4, type: 2}
+  laserFireSound: {fileID: 11400000, guid: 0e09b4222a0d413484811a104ddd200b, type: 2}
+  explosionSound: {fileID: 11400000, guid: 1066d6fe0aa344abbd671f8c6568eff2, type: 2}
   encounterTimeLimit: 60
   explosionChargeDuration: 3
   explosionChestScale: 2.5
@@ -14540,6 +14547,145 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7847070380472739339, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
   m_PrefabInstance: {fileID: 505932362}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2051300000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2051300001}
+  - component: {fileID: 2051300002}
+  m_Layer: 0
+  m_Name: Mimic Sound Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2051300001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051300000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2051300002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051300000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0051ab00a2224d92be822301c1a8b424, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::KimLIb.SoundSystem.SoundManager
+  poolManager: {fileID: 11400000, guid: 43a80b8bd35e1834c91ffaf736972b47, type: 2}
+  soundItem: {fileID: 11400000, guid: 8088fcdb2e53d314992ff2094c2bbec8, type: 2}
+  <SoundChannel>k__BackingField: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
+--- !u!1 &2051300010
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2051300011}
+  - component: {fileID: 2051300012}
+  m_Layer: 0
+  m_Name: Mimic Audio Pool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2051300011
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051300010}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2051300012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051300010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 530acc57fd76445bb30121e8fabc1d5e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ObjectPool_Runtime_assembly::GGMLib.ObjectPool.Runtime.PoolInitializer
+  <PoolManagerAsset>k__BackingField: {fileID: 11400000, guid: 43a80b8bd35e1834c91ffaf736972b47, type: 2}
+--- !u!1 &2051300020
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2051300021}
+  - component: {fileID: 2051300022}
+  m_Layer: 0
+  m_Name: Mimic BGM Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2051300021
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051300020}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2051300022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051300020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce37d22fb2644cde95e27470824337e2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.BgmManager
+  bgmGroup: {fileID: -3143614379541600916, guid: bb2a717f4f26b4c4cb39307a1c927a03, type: 2}
+  defaultFadeDuration: 0.7
+  startingBgm: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -14560,3 +14706,6 @@ SceneRoots:
   - {fileID: 2104317261}
   - {fileID: 2051200020}
   - {fileID: 1610015779}
+  - {fileID: 2051300001}
+  - {fileID: 2051300011}
+  - {fileID: 2051300021}

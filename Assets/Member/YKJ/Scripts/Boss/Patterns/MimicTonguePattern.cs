@@ -39,6 +39,7 @@ namespace Member.YKJ.Bosses
 
         public override void OnStart()
         {
+            Boss.PlayLaserChargeSound();
             Boss.BodyAnimator?.PrepareTongue(warningTime);
             Boss.CombatVfx?.SetCharge(0f);
             if (chestRenderer != null && openChestSprite != null)
@@ -78,6 +79,7 @@ namespace Member.YKJ.Bosses
                     _step = Step.Extending;
                     Boss.BodyAnimator?.ExtendTongue(extendTime);
                     Boss.CombatVfx?.LaserShot();
+                    Boss.PlayLaserFireSound();
                     DrawLine(_origin, false);
                     break;
                 case Step.Extending:
@@ -168,6 +170,7 @@ namespace Member.YKJ.Bosses
 
         public override void OnEnd()
         {
+            Boss?.StopLaserChargeSound();
             RestoreChestSprite();
             Boss.BodyAnimator?.ResetPose();
             Boss.CombatVfx?.EndMuzzle();
@@ -191,6 +194,7 @@ namespace Member.YKJ.Bosses
 
         private void OnDisable()
         {
+            Boss?.StopLaserChargeSound();
             RestoreChestSprite();
             Boss?.CombatVfx?.EndMuzzle();
         }
