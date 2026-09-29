@@ -94,7 +94,7 @@ public class BubbleDialogManager : MonoBehaviour
                     break;
                 }
 
-                typingTime += Time.deltaTime;
+                typingTime += Time.unscaledDeltaTime;
                 if (TypingFallbackTimeout > 0f && typingTime >= TypingFallbackTimeout)
                 {
                     isTyping = false;
@@ -112,19 +112,20 @@ public class BubbleDialogManager : MonoBehaviour
                     break;
                 }
 
-                currentTime += Time.deltaTime;
+                currentTime += Time.unscaledDeltaTime;
                 yield return null;
             }
         }
 
-        EndDialog();
+        EndDialog(true);
     }
 
-    private void EndDialog()
+    private void EndDialog(bool completedNormally = false)
     {
         if (_activeRequest == null)
             return;
         System.Action completed = _completed;
+        _activeRequest.CompletedNormally = completedNormally;
         _completed = null;
         _activeRequest = null;
         if (_dialogCoroutine != null)
@@ -167,7 +168,7 @@ public class BubbleDialogManager : MonoBehaviour
 
         while (predicate.Invoke() == false && currentTime < timeout)
         {
-            currentTime += Time.deltaTime;
+            currentTime += Time.unscaledDeltaTime;
             yield return null;
         }
     }

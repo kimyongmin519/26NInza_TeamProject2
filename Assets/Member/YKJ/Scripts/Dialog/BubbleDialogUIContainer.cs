@@ -127,7 +127,7 @@ public class BubbleDialogUIContainer : MonoBehaviour
             float waitTime = DialogTextAnimator != null ? DialogTextAnimator.GetWait(i) : 0f;
             if (waitTime > 0f)
             {
-                yield return new WaitForSeconds(waitTime);
+                yield return new WaitForSecondsRealtime(waitTime);
             }
 
             SetVisibleCharacters(i + 1);
@@ -135,7 +135,7 @@ public class BubbleDialogUIContainer : MonoBehaviour
             float delay = DialogTextAnimator != null ? DialogTextAnimator.GetDelay(i, PerCharTime) : PerCharTime;
             if (delay > 0f)
             {
-                yield return new WaitForSeconds(delay);
+                yield return new WaitForSecondsRealtime(delay);
             }
         }
 

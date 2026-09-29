@@ -16,6 +16,7 @@ public class StartBubbleDialogEvent : GameEvent
 
     public System.Action Completed;
     public bool Accepted;
+    public bool CompletedNormally;
 
     public StartBubbleDialogEvent InitData(DialogDataSO dialogData, Transform target, System.Action completed = null)
     {
@@ -23,6 +24,7 @@ public class StartBubbleDialogEvent : GameEvent
         Target = target;
         Completed = completed;
         Accepted = false;
+        CompletedNormally = false;
         return this;
     }
 }
