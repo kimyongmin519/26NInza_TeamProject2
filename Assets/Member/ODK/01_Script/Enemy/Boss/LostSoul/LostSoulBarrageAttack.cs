@@ -10,7 +10,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float bulletSpeed = 8.5f;
         [SerializeField] private float shotInterval = 0.2f;
         [SerializeField] private float randomAngle = 24f;
-        [SerializeField] private int weakSoulEvery = 3;
+        [SerializeField] private int weakSoulEvery = 7;
         [SerializeField] private float portalHoldAfter = 0.2f;
 
         private LostSoulPortal portal;

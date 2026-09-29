@@ -18,6 +18,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 {
     public abstract class PhasedBossController : EnemyController
     {
+        public event Action OnDefeated;
         [Header("Attack")]
         [SerializeField] private float attackInterval = 1f;
         [SerializeField] private bool playOnStart = true;
@@ -711,6 +712,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             if (IsDead) return;
 
             IsDead = true;
+            SafeInvoke(OnDefeated);
             StopAllCoroutines();
             CancelAttacks();
             SafeInvoke(OnBossDeath);

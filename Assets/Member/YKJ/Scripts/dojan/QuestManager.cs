@@ -2,11 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Member.Wst.Scripts.Achievements;
 using Member.Wst.Scripts.Achievements.Datas;
+using Member.Wst.Scripts.CoreSystems.SaveCode;
 using UnityEngine;
 
+[RequireComponent(typeof(AchievementDataManager))]
 public class QuestManager : MonoBehaviour
 {
     [SerializeField] private List<AchievementData> Quests = new();
+    [SerializeField] private SaveFileNameSO SaveFileName;
 
     [Header("등급별 컨테이너 4개")]
     [SerializeField] private QuestRankContainer[] RankContainers = new QuestRankContainer[4];
@@ -15,6 +18,7 @@ public class QuestManager : MonoBehaviour
 
     private void Awake()
     {
+        GetComponent<AchievementDataManager>().Initialize(Quests, SaveFileName);
         _containerByRank = RankContainers
             .Where(container => container != null)
             .ToDictionary(container => container.QuestRank);

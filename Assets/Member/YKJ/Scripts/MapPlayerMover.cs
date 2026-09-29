@@ -6,6 +6,7 @@ using UnityEngine;
 public class MapPlayerMover : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
+    [SerializeField] private AgentRenderer agentRenderer;
     public Rigidbody2D RigidBody2D { get; private set; }
     public bool IsGrounded { get; private set; }
     public bool CanManualMovement { get; set; } = true;
@@ -49,5 +50,9 @@ public class MapPlayerMover : MonoBehaviour
             RigidBody2D.linearVelocityY = 0;
     }
 
-    public void SetMovementX(Vector2 value) => _moveDir = value;
+    public void SetMovementX(Vector2 value)
+    {
+        _moveDir = value;
+        agentRenderer.FlipController(_moveDir.x);
+    }
 }

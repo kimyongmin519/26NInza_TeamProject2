@@ -13,7 +13,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float fanAngle = 26f;
         [SerializeField] private float portalSideOffset = 1.6f;
         [SerializeField] private float portalHoldAfter = 0.2f;
-        [SerializeField] private int weakSoulsPerWave = 2;
+        [SerializeField] private int weakSoulsPerWave = 1;
+        [SerializeField, Min(1)] private int weakSoulWaveStep = 2;
 
         private LostSoulPortal portal;
 
@@ -38,8 +39,9 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                     Vector2 direction = Quaternion.Euler(0f, 0f, rate * fanAngle * 2f + offset) * aimed;
                     Boss.SpawnSoul(portalPoint, direction * bulletSpeed);
                 }
-                for (int w = 0; w < weakSoulsPerWave; w++)
-                    Boss.SpawnWeakSoul(portalPoint, (Vector2)(Quaternion.Euler(0f, 0f, (w - (weakSoulsPerWave - 1) * 0.5f) * 18f) * aimed) * (bulletSpeed * 0.52f));
+                int weakCount = wave % Mathf.Max(1, weakSoulWaveStep) == 0 ? weakSoulsPerWave : 0;
+                for (int w = 0; w < weakCount; w++)
+                    Boss.SpawnWeakSoul(portalPoint, (Vector2)(Quaternion.Euler(0f, 0f, (w - (weakCount - 1) * 0.5f) * 18f) * aimed) * (bulletSpeed * 0.52f));
                 portal?.Pulse();
                 yield return new WaitForSeconds(waveInterval / DurationScale);
             }
