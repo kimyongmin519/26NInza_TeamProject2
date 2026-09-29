@@ -204,8 +204,8 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 return false;
             }
             
-            bool caughtEnemyProjectile = grabbable is GrabbableProjectile projectile && projectile.Owner != null &&
-                                            projectile.Owner != throwOwner;
+            bool caughtEnemyProjectile = grabbable is IEnemyAttackGrabbable enemyAttack &&
+                                         enemyAttack.IsEnemyAttackFrom(throwOwner);
 
             _heldObject = grabbable;
             _heldObject.Grab(grabPoint, throwOwner != null ? throwOwner.gameObject : null);

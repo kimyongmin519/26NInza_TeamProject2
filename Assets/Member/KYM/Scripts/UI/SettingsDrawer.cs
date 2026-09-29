@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using Member.KYM.Scripts.CoreSystems;
 using Member.KYM.Scripts.CoreSystems.Managers;
@@ -18,6 +19,7 @@ namespace Member.KYM.Scripts.UI
         [SerializeField] private GameSettingsService settings;
 
         [Header("패널")]
+        [SerializeField] private GameObject canvasRoot;
         [SerializeField] private RectTransform panel;
         [SerializeField] private GameObject backdrop;
         [FormerlySerializedAs("titleSettingButton")]
@@ -43,13 +45,14 @@ namespace Member.KYM.Scripts.UI
 
         private int _resolutionIndex;
         private bool _isOpen;
+        private IDisposable _timePause;
 
         private void Awake()
         {
             if (GameSettingsService.Instance != null)
                 settings = GameSettingsService.Instance;
 
-            if (settings == null || panel == null || backdrop == null ||
+            if (settings == null || canvasRoot == null || panel == null || backdrop == null ||
                 backdropButton == null || closeButton == null || masterSlider == null ||
                 sfxSlider == null || bgmSlider == null || resolutionText == null ||
                 previousResolutionButton == null || nextResolutionButton == null ||
@@ -84,6 +87,9 @@ namespace Member.KYM.Scripts.UI
 
         private void OnDestroy()
         {
+            _timePause?.Dispose();
+            _timePause = null;
+
             if (panel != null)
                 panel.DOKill();
 
@@ -123,12 +129,17 @@ namespace Member.KYM.Scripts.UI
                 return;
 
             _isOpen = true;
+            canvasRoot.SetActive(true);
+            Canvas.ForceUpdateCanvases();
             RefreshDisplay();
             backdrop.SetActive(true);
             panel.DOKill();
+            Vector2 position = panel.anchoredPosition;
+            position.x = ClosedPositionX;
+            panel.anchoredPosition = position;
             panel.DOAnchorPosX(0f, slideDuration).SetEase(slideEase).SetUpdate(true);
             
-            TimeManager.Instance.StopTimer();
+            _timePause ??= TimeManager.Instance.Pause();
         }
 
         public void Close()
@@ -144,7 +155,9 @@ namespace Member.KYM.Scripts.UI
                 .OnComplete(() =>
                 {
                     backdrop.SetActive(false);
-                    TimeManager.Instance.StartTimer();
+                    canvasRoot.SetActive(false);
+                    _timePause?.Dispose();
+                    _timePause = null;
                 });
         }
 

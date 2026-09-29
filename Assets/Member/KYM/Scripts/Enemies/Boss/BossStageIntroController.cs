@@ -97,7 +97,6 @@ namespace Member.KYM.Scripts.Enemies.Boss
             if (_skipIntro)
             {
                 MoveToCombatStart();
-                RestoreIntroPresentation();
                 StartCombat();
                 return;
             }
@@ -124,12 +123,10 @@ namespace Member.KYM.Scripts.Enemies.Boss
                 return;
             }
 
-            // Hold 모드는 마지막 프레임을 유지하므로 stopped 이벤트만으로는 종료를 보장할 수 없다.
-            if (_introStarted && !_combatStarted && !_playerDied &&
-                _director.time >= _director.duration - 0.001d)
-            {
+            // Hold 모드에서는 stopped 이벤트가 오지 않을 수 있고, 마지막 샘플은
+            // duration보다 한 프레임 앞에서 멈출 수도 있다.
+            if (_introStarted && !_combatStarted && !_playerDied && IntroHasFinished())
                 StartCombat();
-            }
         }
 
         private void OnDisable()
@@ -142,9 +139,18 @@ namespace Member.KYM.Scripts.Enemies.Boss
 
         private void HandleIntroStopped(PlayableDirector stoppedDirector)
         {
-            if (_introStarted && stoppedDirector == _director && !_playerDied &&
-                stoppedDirector.time >= stoppedDirector.duration - 0.001d)
+            if (_introStarted && stoppedDirector == _director && !_playerDied && IntroHasFinished())
                 StartCombat();
+        }
+
+        private bool IntroHasFinished()
+        {
+            if (DialogManager.Talking || BubbleDialogManager.Talking)
+                return false;
+
+            const double lastFrameTolerance = 1d / 60d + 0.001d;
+            return _director.time >= _director.duration - lastFrameTolerance ||
+                   (_director.state != PlayState.Playing && _director.time > 0d);
         }
 
         private void HandlePlayerDeath()
@@ -161,7 +167,8 @@ namespace Member.KYM.Scripts.Enemies.Boss
         public void SkipIntro()
         {
             // 대화 시스템은 별도로 종료해야 하므로 대화 도중에는 인트로만 건너뛰지 않는다.
-            if (!_introStarted || _combatStarted || _playerDied || DialogManager.Talking)
+            if (!_introStarted || _combatStarted || _playerDied ||
+                DialogManager.Talking || BubbleDialogManager.Talking)
                 return;
 
             _introStarted = false;
@@ -170,7 +177,6 @@ namespace Member.KYM.Scripts.Enemies.Boss
             // 입력 잠금과 시네마틱 바는 별도로 원상 복구한다.
             _director.time = System.Math.Max(0d, _director.duration - 0.0001d);
             _director.Evaluate();
-            RestoreIntroPresentation();
             StartCombat();
         }
 
@@ -186,6 +192,8 @@ namespace Member.KYM.Scripts.Enemies.Boss
                 return;
 
             _combatStarted = true;
+            _introStarted = false;
+            RestoreIntroPresentation();
             if (!_skipIntro)
                 RememberCombatPose();
             _behavior.enabled = true;

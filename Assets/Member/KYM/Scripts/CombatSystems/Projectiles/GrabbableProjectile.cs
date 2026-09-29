@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Member.KYM.Scripts.CombatSystems.Projectiles
 {
-    public class GrabbableProjectile : AbstractProjectile, IGrabbable
+    public class GrabbableProjectile : AbstractProjectile, IGrabbable, IEnemyAttackGrabbable
     {
         [Header("수명")]
         [SerializeField, Min(0f)] private float lifetime = 5f;
@@ -26,6 +26,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
         public bool CanBeGrabbed => canBeGrabbed && !_isHeld && !_hasImpacted;
         public Transform GrabTransform => transform;
+        public bool IsEnemyAttackFrom(ModuleOwner grabber) => Owner != null && Owner != grabber;
 
         protected bool IsHeld => _isHeld;
         protected Collider2D ProjectileCollider => _collider;
@@ -159,10 +160,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             GetImpactContact(hitCollider, out Vector2 hitPoint, out Vector2 hitNormal);
 
             _damageCaster.InitCaster(Owner);
-            bool didDamage = _damageCaster.CastDamage(hitCollider, hitPoint, hitNormal);
-
-            if (didDamage && Owner is PlayerController player)
-                player.PlayProjectileHitSound(hitPoint);
+            _damageCaster.CastDamage(hitCollider, hitPoint, hitNormal);
             
             PlayImpactEffect(hitPoint, hitNormal);
 
