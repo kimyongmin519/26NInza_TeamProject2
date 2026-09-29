@@ -76,6 +76,7 @@ MonoBehaviour:
   cameraImpulseSource: {fileID: 100009}
   cameraShakeMinimumInterval: 0.07
   cameraChannel: {fileID: 0}
+  randomizeShakeDirection: 1
   switchToBattleCamera: 1
   battleCameraName: BattleCam
   battleCameraPriority: 20
@@ -869,8 +870,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
-  <MaxHealth>k__BackingField: 65
-  <CurrentHealth>k__BackingField: 65
+  <MaxHealth>k__BackingField: 50
+  <CurrentHealth>k__BackingField: 50
 --- !u!1 &130000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1148,11 +1149,11 @@ MonoBehaviour:
   startupDelay: 0.2
   recoveryDelay: 0.45
   castDistance: 8.5
-  bulletCount: 10
+  bulletCount: 15
   bulletSpeed: 8.5
   shotInterval: 0.17
   randomAngle: 24
-  weakSoulEvery: 3
+  weakSoulEvery: 1
   portalHoldAfter: 0.2
 --- !u!114 &133003
 MonoBehaviour:
@@ -1241,8 +1242,8 @@ MonoBehaviour:
   beamColor: {r: 0.94, g: 0.9, b: 1, a: 1}
   castGap: 0.25
   burstCountRange: {x: 12, y: 17}
-  burstSpeed: 8
-  burstWeakSouls: 3
+  burstSpeed: 11
+  burstWeakSouls: 1
   weakSoulSpeedScale: 0.55
   burstShake: 0.35
   portalHoldAfter: 0.3
@@ -1294,8 +1295,8 @@ MonoBehaviour:
   damageCaster: {fileID: 0}
   animationStateName: attack
   startupDelay: 0.3
-  recoveryDelay: 0.45
-  warningDuration: 0.7
+  recoveryDelay: 0.25
+  warningDuration: 0.55
   activeDuration: 0.16
   cutThickness: 0.62
   damage: 1
@@ -1371,14 +1372,14 @@ MonoBehaviour:
   eyeOffset: {x: 0, y: 2.25}
   eyeSparkleDuration: 0.45
   darknessFadeDuration: 0.1
-  arrowDuration: 0.6
+  arrowDuration: 0.45
   arrowStartScale: 0.62
   arrowPeakScale: 1.05
   arrowSortingOrder: 500
   arrowSortingLayer: UI
   arrowMoveDistance: 0.7
   responseTime: 0.2
-  slashRevealDuration: 0.14
+  slashRevealDuration: 0.1
   betweenCuts: 0.18
   cutCountRange: {x: 3, y: 5}
   moveDistance: 0.35
@@ -1820,7 +1821,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 794792467
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 500
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 75956f45c5bee4c48ad57322178154bf, type: 3}
@@ -1911,7 +1912,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 794792467
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 500
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 4667747b5b18b7c42914b101cbd4779c, type: 3}
@@ -2002,7 +2003,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 794792467
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 500
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 95360d9ebe48db748bbf325e76587b0b, type: 3}
@@ -2093,7 +2094,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 794792467
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 500
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 2d8f07d1deb749f4abe9bad1a5656ab4, type: 3}
@@ -2153,11 +2154,13 @@ MonoBehaviour:
   <SkillData>k__BackingField: {fileID: 11400000, guid: a4000000000000000000000000000006, type: 2}
   damageCaster: {fileID: 0}
   animationStateName: attack
-  startupDelay: 0.35
+  startupDelay: 0.2
   recoveryDelay: 0
   arenaPadding: 1.25
   moveDuration: 0.55
   slashReadyTime: 0.5
+  enrageShakePower: 0.2
+  enrageShakePulseInterval: 0.1
   weakSoulInterval: 2
   weakSoulSpeed: 7
   weakSoulSpawnMargin: 1.2
