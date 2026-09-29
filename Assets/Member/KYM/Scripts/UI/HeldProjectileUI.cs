@@ -33,26 +33,32 @@ namespace Member.KYM.Scripts.UI
             Show(null);
         }
 
-        private void HandleState(PlayerUIStateEvent evt) => Show(evt.HeldProjectile);
+        private void HandleState(PlayerUIStateEvent evt) =>
+            Show(evt.HeldProjectile, evt.HeldIcon, evt.HeldName);
 
         // 잡기 로직을 통하지 않고 데이터만 전달해도 표시할 수 있다.
         public void Show(ProjectileDataSO data)
         {
+            Show(data, data != null ? data.Icon : null, data != null ? data.Name : null);
+        }
+
+        private void Show(ProjectileDataSO data, Sprite icon, string displayName)
+        {
             if (displayGroup != null)
             {
-                displayGroup.alpha = data != null ? 1f : 0f;
+                displayGroup.alpha = data != null || !string.IsNullOrEmpty(displayName) || icon != null ? 1f : 0f;
                 displayGroup.interactable = false;
                 displayGroup.blocksRaycasts = false;
             }
 
             if (iconImage != null)
             {
-                iconImage.sprite = data != null ? data.Icon : null;
-                iconImage.enabled = data != null && data.Icon != null;
+                iconImage.sprite = icon;
+                iconImage.enabled = icon != null;
             }
 
             if (nameText != null)
-                nameText.text = data != null ? data.Name : string.Empty;
+                nameText.text = displayName ?? string.Empty;
         }
     }
 }

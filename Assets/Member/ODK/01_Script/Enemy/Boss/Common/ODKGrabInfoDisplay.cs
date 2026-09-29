@@ -1,62 +1,21 @@
 using Member.KYM.Scripts.CombatSystems.Projectiles;
-using Member.KYM.Scripts.UI;
+using Member.KYM.Scripts.Players.RobotArm;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.Bosses
 {
-    [DefaultExecutionOrder(10000)]
     [DisallowMultipleComponent]
-    public sealed class ODKGrabInfoDisplay : MonoBehaviour
+    public sealed class ODKGrabInfoDisplay : MonoBehaviour, IGrabbableDisplayData
     {
         [SerializeField] private ProjectileDataSO projectileData;
 
         public ProjectileDataSO ProjectileData => projectileData;
+        public ProjectileDataSO DisplayData => projectileData;
+        public bool IsHeld { get; private set; }
 
-        private static ODKGrabInfoDisplay activeDisplay;
-        private HeldProjectileUI heldProjectileUI;
-        private bool held;
+        // 기존 투사체의 호출을 유지한다. UI 갱신은 PlayerUIEventPublisher가 담당한다.
+        public void SetHeld(bool value) => IsHeld = value;
 
-        public void SetHeld(bool value)
-        {
-            held = value;
-            if (held)
-            {
-                if (activeDisplay != null && activeDisplay != this)
-                    activeDisplay.held = false;
-                activeDisplay = this;
-                Show();
-                return;
-            }
-
-            if (activeDisplay != this)
-                return;
-
-            ResolveUI()?.Show(null);
-            activeDisplay = null;
-        }
-
-        private void LateUpdate()
-        {
-            if (held)
-                Show();
-        }
-
-        private void Show()
-        {
-            if (projectileData != null)
-                ResolveUI()?.Show(projectileData);
-        }
-
-        private HeldProjectileUI ResolveUI()
-        {
-            if (heldProjectileUI == null)
-                heldProjectileUI = FindFirstObjectByType<HeldProjectileUI>();
-            return heldProjectileUI;
-        }
-
-        private void OnDisable()
-        {
-            SetHeld(false);
-        }
+        private void OnDisable() => IsHeld = false;
     }
 }

@@ -38,7 +38,9 @@ namespace Member.KYM.Scripts.Players
                 state.Health != _previous.Health || state.MaxHealth != _previous.MaxHealth ||
                 state.RemainingJumps != _previous.RemainingJumps || state.MaxJumps != _previous.MaxJumps ||
                 state.DashCharge != _previous.DashCharge || state.DashReady != _previous.DashReady ||
-                state.IsDead != _previous.IsDead || state.HeldProjectile != _previous.HeldProjectile;
+                state.IsDead != _previous.IsDead || !ReferenceEquals(state.HeldObject, _previous.HeldObject) ||
+                state.HeldProjectile != _previous.HeldProjectile || state.HeldIcon != _previous.HeldIcon ||
+                state.HeldName != _previous.HeldName;
             if (changed)
             {
                 state.DashRecharged = _previous != null && !_previous.DashReady && state.DashReady;
@@ -53,7 +55,15 @@ namespace Member.KYM.Scripts.Players
 
         private PlayerUIStateEvent ReadState(PlayerUIStateEvent state)
         {
-            AbstractProjectile held = _grabber != null ? _grabber.HeldObject as AbstractProjectile : null;
+            IGrabbable held = _grabber != null ? _grabber.HeldObject : null;
+            Component heldComponent = held as Component;
+            ProjectileDataSO heldData = (held as AbstractProjectile)?.ProjectileData;
+            if (heldData == null && heldComponent != null)
+                heldData = heldComponent.GetComponent<IGrabbableDisplayData>()?.DisplayData;
+            SpriteRenderer heldRenderer = heldComponent != null &&
+                                          (heldData == null || heldData.Icon == null)
+                ? heldComponent.GetComponentInChildren<SpriteRenderer>(true)
+                : null;
             float charge = _dash != null
                 ? Mathf.Min(_dash.NormalizedRecharge, _dash.NormalizedCooldown) : 0f;
             state.Health = _player.HealthModule != null ? _player.HealthModule.CurrentHealth : 0f;
@@ -64,7 +74,14 @@ namespace Member.KYM.Scripts.Players
             state.DashCharge = charge;
             state.DashReady = _dash != null && charge >= 1f;
             state.DashRecharged = false;
-            state.HeldProjectile = held != null ? held.ProjectileData : null;
+            state.HeldObject = held;
+            state.HeldProjectile = heldData;
+            state.HeldIcon = heldData != null && heldData.Icon != null
+                ? heldData.Icon : heldRenderer != null ? heldRenderer.sprite : null;
+            state.HeldName = heldData != null && !string.IsNullOrWhiteSpace(heldData.Name)
+                ? heldData.Name : heldComponent != null
+                ? heldComponent.gameObject.name.Replace("(Clone)", string.Empty).Trim()
+                : null;
             return state;
         }
 

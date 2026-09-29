@@ -1,10 +1,10 @@
 using Member.KYM.Scripts.Players;
+using Member.KYM.Scripts.Players.RobotArm;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.CombatSystems.Projectiles
 {
     [DisallowMultipleComponent]
-    [RequireComponent(typeof(GrabbableProjectile))]
     public class ProjectileGrabCue : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer sourceRenderer;
@@ -13,19 +13,39 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
         [Header("잡기 표시")]
         [SerializeField, Range(0f, 1f)] private float maxOpacity = 0.5f;
 
-        private GrabbableProjectile _projectile;
+        private IGrabbable _grabbable;
         private PlayerController _player;
+        private static Material _sharedCueMaterial;
 
         private void Awake()
         {
-            _projectile = GetComponent<GrabbableProjectile>();
+            _grabbable = GetComponent<IGrabbable>();
+            if (sourceRenderer == null)
+                sourceRenderer = GetComponentInChildren<SpriteRenderer>(true);
+            if (cueRenderer == null && sourceRenderer != null)
+                CreateCueRenderer();
             _player = FindFirstObjectByType<PlayerController>();
             HideCue();
         }
 
+        private void CreateCueRenderer()
+        {
+            Shader shader = Shader.Find("KYM/2D/Projectile Grab Cue");
+            if (shader == null)
+                return;
+
+            if (_sharedCueMaterial == null)
+                _sharedCueMaterial = new Material(shader);
+
+            GameObject cueObject = new GameObject("GrabCue");
+            cueObject.transform.SetParent(sourceRenderer.transform, false);
+            cueRenderer = cueObject.AddComponent<SpriteRenderer>();
+            cueRenderer.sharedMaterial = _sharedCueMaterial;
+        }
+
         private void LateUpdate()
         {
-            if (_projectile == null || !_projectile.CanBeGrabbed ||
+            if (_grabbable == null || !_grabbable.CanBeGrabbed ||
                 sourceRenderer == null || !sourceRenderer.enabled ||
                 sourceRenderer.sprite == null || cueRenderer == null)
             {
