@@ -1067,7 +1067,8 @@ MonoBehaviour:
   fanAngle: 26
   portalSideOffset: 1.6
   portalHoldAfter: 0.2
-  weakSoulsPerWave: 2
+  weakSoulsPerWave: 1
+  weakSoulWaveStep: 2
 --- !u!114 &132003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1153,7 +1154,7 @@ MonoBehaviour:
   bulletSpeed: 8.5
   shotInterval: 0.17
   randomAngle: 24
-  weakSoulEvery: 1
+  weakSoulEvery: 7
   portalHoldAfter: 0.2
 --- !u!114 &133003
 MonoBehaviour:
@@ -2159,7 +2160,7 @@ MonoBehaviour:
   arenaPadding: 1.25
   moveDuration: 0.55
   slashReadyTime: 0.5
-  enrageShakePower: 0.2
+  enrageShakePower: 0.5
   enrageShakePulseInterval: 0.1
   weakSoulInterval: 2
   weakSoulSpeed: 7
