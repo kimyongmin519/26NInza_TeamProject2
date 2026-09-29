@@ -1,6 +1,9 @@
 using System.Collections;
 using DG.Tweening;
 using Member.KYM.Scripts.Players.RobotArm;
+using Member.KYM.Scripts.CombatSystems.DamageSystems;
+using KimLIb.ModuleSystems;
+using Member.KYM.Scripts.CombatSystems.Projectiles;
 using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
@@ -8,7 +11,7 @@ using UnityEngine;
 namespace Member.ODK.Scripts.Enemys.Swordmaster
 {
     [RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
-    public class EnchantedSword : MonoBehaviour, IGrabbable
+    public class EnchantedSword : MonoBehaviour, IGrabbable, IEnemyAttackGrabbable
     {
         private enum SwordState
         {
@@ -66,6 +69,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             FaceVelocity(facing);
         }
         public Transform GrabTransform => transform;
+        public bool IsEnemyAttackFrom(ModuleOwner grabber) => true;
         public bool CanBossControl => state == SwordState.Orbiting || state == SwordState.Recalling;
         public bool CanBossReclaim => state == SwordState.Dispelled &&
                                       Time.time >= bossReclaimTime;
@@ -87,6 +91,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         private Coroutine stateRoutine;
         private Transform originalParent;
         private Transform throwOwnerRoot;
+        private ModuleOwner throwOwner;
         private Vector2 thrownOrigin;
         private LineRenderer pathLine;
         private float pathTime;
@@ -113,6 +118,8 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             swordCollider.isTrigger = true;
             GrabbableLayer.Validate(gameObject);
             if (bladeRenderer == null) bladeRenderer = GetComponentInChildren<SpriteRenderer>();
+            if (GetComponent<ProjectileGrabCue>() == null)
+                gameObject.AddComponent<ProjectileGrabCue>();
             if (trail == null) trail = GetComponentInChildren<TrailRenderer>();
             if (trail == null) CreateTrail();
             CreateGrabSensor();
@@ -357,6 +364,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             state = SwordState.Held;
             grabInfoDisplay?.SetHeld(true);
             throwOwnerRoot = grabber != null ? grabber.transform.root : null;
+            throwOwner = null;
             body.linearVelocity = Vector2.zero;
             body.angularVelocity = 0f;
             body.bodyType = RigidbodyType2D.Kinematic;
@@ -375,6 +383,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             state = SwordState.Dispelled;
             grabInfoDisplay?.SetHeld(false);
             throwOwnerRoot = null;
+            throwOwner = null;
             swordCollider.enabled = true;
             SetPhysics(true, Vector2.zero);
             PrepareForPlayerGrab();
@@ -391,6 +400,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             thrownSpeed = Mathf.Max(8f, throwData.ArmThrowSpeed);
             thrownOrigin = body.position;
             throwOwnerRoot = throwData.Owner != null ? throwData.Owner.transform.root : throwOwnerRoot;
+            throwOwner = throwData.Owner;
             swordCollider.enabled = true;
             SetPhysics(true, throwData.Direction * thrownSpeed);
             body.gravityScale = 0f;
@@ -420,7 +430,8 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                 if (state == SwordState.PlayerThrown && !thrownHit)
                 {
                     thrownHit = true;
-                    owner.TakeDamage(new DamageData(bossDamage, DamageType.Projectile));
+                    PlayerDamageFeedback.Apply(throwOwner, owner,
+                        new DamageData(bossDamage, DamageType.Projectile), transform.position);
                     owner.NotifySwordImpact(transform.position);
                     StopStateRoutine();
                     stateRoutine = StartCoroutine(RecallAfter(thrownHitRecallDelay));

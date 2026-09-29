@@ -1,6 +1,7 @@
 using GGMLib.ObjectPool.Runtime;
 using KimLIb.ObjectPool.Runtime;
 using Member.KYM.Scripts.Players.RobotArm;
+using Member.KYM.Scripts.CombatSystems.DamageSystems;
 using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
@@ -208,6 +209,9 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
         {
             if (exploded) return;
             exploded = true;
+            float bossHealthBefore = isThrown && owner != null
+                ? PlayerDamageFeedback.ReadHealth(owner)
+                : 0f;
             Rigidbody.linearVelocity = Vector2.zero;
             Rigidbody.simulated = false;
 
@@ -221,6 +225,7 @@ namespace Member.ODK.Scripts.Enemys.MoonBoss
                     LayerMask bossLayer = 1 << owner.gameObject.layer;
                     explosionCaster.ConfigureCircle(explosionRadius, bossLayer);
                     explosionCaster.Cast(new DamageData(bossDamage, DamageType.Special));
+                    PlayerDamageFeedback.Report(ThrowOwner, owner, bossHealthBefore, point);
                 }
             }
 

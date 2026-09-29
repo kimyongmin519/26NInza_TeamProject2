@@ -229,6 +229,12 @@ namespace Member.KYM.Scripts.Players
                 new CameraShakeEvent().InitData(enemyHitShakePower, enemyHitShakeDuration));
         }
 
+        public void PlayEnemyHitFeedback(Vector2 hitPoint)
+        {
+            PlayProjectileHitSound(hitPoint);
+            PlayEnemyHitShake();
+        }
+
         private void PlaySound(SoundClipSO clip)
         {
             if (soundChannel == null || clip == null || clip.audioClip == null)

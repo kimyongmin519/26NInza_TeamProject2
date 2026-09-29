@@ -21,16 +21,19 @@ namespace Member.KYM.Scripts.UI
         
         private Animator _robotArmAnimator;
         private AnimatorTrigger _robotArmTrigger;
+        private Canvas _canvas;
         private bool _isShown;
 
         private void Awake()
         {
+            _canvas = GetComponent<Canvas>();
             _robotArmAnimator = robotArmVisual.GetComponent<Animator>();
             _robotArmTrigger = robotArmVisual.GetComponent<AnimatorTrigger>();
         }
 
         private void OnEnable()
         {
+            BindMainCamera();
             if (uiChannel == null) return;
             uiChannel.AddListener<PlayerUIStateEvent>(HandleState);
             uiChannel.RaiseEvent(new PlayerUIStateRequest());
@@ -49,6 +52,7 @@ namespace Member.KYM.Scripts.UI
             if (_isShown)
                 return;
 
+            BindMainCamera();
             _isShown = true;
             gameOverRoot.SetActive(true);
             _robotArmTrigger.OnSpecialEvent += HandlePanelShow;
@@ -58,6 +62,16 @@ namespace Member.KYM.Scripts.UI
         private void HandleState(PlayerUIStateEvent evt)
         {
             if (evt.IsDead) ShowGameOverUI();
+        }
+
+        private void BindMainCamera()
+        {
+            if (_canvas == null || _canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+                return;
+
+            Camera mainCamera = Camera.main;
+            if (mainCamera != null && _canvas.worldCamera != mainCamera)
+                _canvas.worldCamera = mainCamera;
         }
 
         private void HandlePanelShow()

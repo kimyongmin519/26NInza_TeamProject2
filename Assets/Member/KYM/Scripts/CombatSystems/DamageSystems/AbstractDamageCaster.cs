@@ -77,7 +77,7 @@ namespace Member.KYM.Scripts.CombatSystems.DamageSystems
             OnHit?.Invoke(damageData);
             if (CasterOwner is PlayerController player)
             {
-                player.PlayEnemyHitShake();
+                player.PlayEnemyHitFeedback(hitPoint);
                 OnHitOwnerPlayer?.Invoke();
             }
             return true;

@@ -1,6 +1,7 @@
 using GGMLib.ObjectPool.Runtime;
 using KimLIb.ObjectPool.Runtime;
 using KimLIb.SoundSystem;
+using Member.KYM.Scripts.CombatSystems.DamageSystems;
 using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
@@ -144,7 +145,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         private void HitOwner()
         {
-            owner.TakeDamage(new DamageData(bossDamage, DamageType.Projectile));
+            PlayerDamageFeedback.Apply(ThrowOwner, owner,
+                new DamageData(bossDamage, DamageType.Projectile), transform.position);
             ODKSoundPlayback.Play(impactSound, transform.position);
             owner.PlayWeakSoulImpactFeedback(transform.position);
             Consume();
