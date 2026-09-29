@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0dc1063a9994a43a74966f60d09f6f7, type: 3}
+  m_Name: SwordMaster Clear
+  m_EditorClassIdentifier: Assembly-CSharp::Member.Wst.Scripts.Achievements.Datas.AchievementDataSO
+  <AchievementType>k__BackingField: 5
+  <AchievementRank>k__BackingField: 1
+  <AchievementIcon>k__BackingField: {fileID: 21300000, guid: bc252f1d8c3f043d8a8557e4f873120d, type: 3}
+  <AchievementName>k__BackingField: "\uC18C\uB4DC \uB9C8\uC2A4\uD130 \uB514\uC2A4\uD2B8\uB85C\uC774\uC5B4"
+  <AchievementDescription>k__BackingField: "\uC18C\uB4DC\uB9C8\uC2A4\uD130\uB97C
+    \uCC98\uCE58\uD558\uC138\uC694"
+  <TargetDegree>k__BackingField: 1
+  <Condition>k__BackingField: {fileID: 11400000, guid: 56f6a6001406415aa0a7f6cff15a4648, type: 2}

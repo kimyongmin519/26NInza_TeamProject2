@@ -134,6 +134,8 @@ namespace Member.KYM.Scripts.Players.RobotArm
             IGrabbable grabbable = FindGrabbable(instance);
             if (grabbable == null || !grabber.TryGrab(grabbable))
                 Destroy(instance);
+            else
+                instance.GetComponent<Member.Wst.Scripts.Achievements.TakeOutAchievementReporter>()?.Report();
         }
 
         public void FinishTakeOut()

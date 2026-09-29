@@ -134,8 +134,11 @@ namespace Member.YKJ.Bosses
 
         private void ExplodeDeadline()
         {
+            if (_timeoutExploded) return;
             // Latch before damage: player death listeners may disable this encounter synchronously.
             _timeoutExploded = true;
+            Member.Wst.Scripts.Achievements.AchievementProgressRecord.Record(
+                Member.Wst.Scripts.Achievements.AchievementCounter.MimicTimeoutExplosion);
             _encounterActive = false;
             StopEncounterAudio();
             PlaySound(explosionSound);
