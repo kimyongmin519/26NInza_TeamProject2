@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0dc1063a9994a43a74966f60d09f6f7, type: 3}
+  m_Name: All Boss Clear
+  m_EditorClassIdentifier: Assembly-CSharp::Member.Wst.Scripts.Achievements.Datas.AchievementDataSO
+  <AchievementType>k__BackingField: 6
+  <AchievementRank>k__BackingField: 2
+  <AchievementIcon>k__BackingField: {fileID: -855298285791758126, guid: b8b5802aac5dd3d43bcf39911ec07b67, type: 3}
+  <AchievementName>k__BackingField: "\uD3C9\uD654\uC758 \uC2DC\uB300"
+  <AchievementDescription>k__BackingField: "\uBAA8\uB4E0 \uBCF4\uC2A4\uB97C \uCC98\uCE58\uD558\uC138\uC694"
+  <TargetDegree>k__BackingField: 1
+  <Condition>k__BackingField: {fileID: 11400000, guid: d632d3b082ec41648e97cdb190fc7b7d, type: 2}

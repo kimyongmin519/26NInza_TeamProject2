@@ -4176,6 +4176,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 8999000000003000}
   - component: {fileID: 841339996}
   - component: {fileID: 841340000}
   - component: {fileID: 841339999}
@@ -5320,6 +5321,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 8999000000003001}
   - component: {fileID: 1048773741}
   - component: {fileID: 1048773740}
   - component: {fileID: 1048773739}
@@ -14751,3 +14753,31 @@ SceneRoots:
   - {fileID: 2051300001}
   - {fileID: 2051300011}
   - {fileID: 2051300021}
+
+--- !u!114 &8999000000003000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841339995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16d178b20dd94c5591a3c8d4c20b0571, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  bossName: 미믹
+
+--- !u!114 &8999000000003001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1048773736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16d178b20dd94c5591a3c8d4c20b0571, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  bossName: 최스승
