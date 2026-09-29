@@ -97,6 +97,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         public bool IsDead { get; private set; }
         public bool PlayerDefeated { get; private set; }
         protected virtual bool HasPhaseTwo => true;
+        protected virtual bool VerticalCameraShake => false;
         protected virtual float PhaseTransitionDelay => 1.1f;
         private bool battleStarted;
         private float nextCameraShakeTime;
@@ -501,7 +502,9 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             float magnitude = shakeSource.DefaultVelocity.magnitude;
             if (magnitude <= 0.0001f) magnitude = 1f;
             lastShakeSign = -lastShakeSign;
-            Vector2 direction = new Vector2(lastShakeSign, UnityEngine.Random.Range(-0.3f, 0.3f)).normalized;
+            Vector2 direction = VerticalCameraShake
+                ? new Vector2(UnityEngine.Random.Range(-0.15f, 0.15f), lastShakeSign).normalized
+                : new Vector2(lastShakeSign, UnityEngine.Random.Range(-0.3f, 0.3f)).normalized;
             impulse.CreateAndReturnEvent(transform.position, (Vector3)direction * magnitude * power);
             return true;
         }

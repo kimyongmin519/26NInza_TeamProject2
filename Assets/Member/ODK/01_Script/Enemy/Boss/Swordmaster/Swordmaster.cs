@@ -77,6 +77,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         public LayerMask GroundLayer => hazardGroundLayer;
         public IReadOnlyList<EnchantedSword> Swords => swords;
         protected override bool HasPhaseTwo => false;
+        protected override bool VerticalCameraShake => true;
 
         private readonly List<EnchantedSword> swords = new List<EnchantedSword>();
         private readonly List<EnchantedSword> controlledSwords = new List<EnchantedSword>();
