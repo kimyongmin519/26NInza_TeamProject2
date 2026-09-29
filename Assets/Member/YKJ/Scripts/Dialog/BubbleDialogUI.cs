@@ -159,7 +159,7 @@ public class BubbleDialogUI : MonoBehaviour
 
         while (currentTime < duration)
         {
-            currentTime += Time.deltaTime;
+            currentTime += Time.unscaledDeltaTime;
             float percent = Mathf.Clamp01(currentTime / duration);
             percent = Mathf.Sin(percent * Mathf.PI * 0.5f);
 

@@ -54,7 +54,6 @@ public class BubbleDialogManager : MonoBehaviour
         {
             InputChannel?.RaiseEvent(InputEvent.LockInputAllEvent.Init(true));
         }
-        Time.timeScale = 0;
         _dialogCoroutine = StartCoroutine(DialogCoroutine(evt.DialogData, evt.Target));
     }
 
@@ -94,7 +93,7 @@ public class BubbleDialogManager : MonoBehaviour
                     break;
                 }
 
-                typingTime += Time.deltaTime;
+                typingTime += Time.unscaledDeltaTime;
                 if (TypingFallbackTimeout > 0f && typingTime >= TypingFallbackTimeout)
                 {
                     isTyping = false;
@@ -112,7 +111,7 @@ public class BubbleDialogManager : MonoBehaviour
                     break;
                 }
 
-                currentTime += Time.deltaTime;
+                currentTime += Time.unscaledDeltaTime;
                 yield return null;
             }
         }
@@ -139,7 +138,6 @@ public class BubbleDialogManager : MonoBehaviour
 
         CameraEventChannel?.RaiseEvent(CameraEvent.ReturnDefaultCameraTargetEvent);
         BubbleDialogEventChannel?.RaiseEvent(BubbleDialogEvent.EndBubbleDialogEvent);
-        Time.timeScale = 1;
         completed?.Invoke();
     }
 
@@ -167,7 +165,7 @@ public class BubbleDialogManager : MonoBehaviour
 
         while (predicate.Invoke() == false && currentTime < timeout)
         {
-            currentTime += Time.deltaTime;
+            currentTime += Time.unscaledDeltaTime;
             yield return null;
         }
     }

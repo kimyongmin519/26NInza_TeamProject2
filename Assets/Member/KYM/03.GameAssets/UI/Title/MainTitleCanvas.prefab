@@ -351,7 +351,8 @@ GameObject:
   - component: {fileID: 1745443209076604122}
   - component: {fileID: 5912032779077825495}
   - component: {fileID: 1258122114702038973}
-  - component: {fileID: 5689451190597490484}
+  - component: {fileID: 1773225952280473430}
+  - component: {fileID: 8822221910378009105}
   m_Layer: 5
   m_Name: ExitButton
   m_TagString: Untagged
@@ -461,8 +462,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5912032779077825495}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
---- !u!114 &5689451190597490484
+      m_Calls:
+      - m_Target: {fileID: 1773225952280473430}
+        m_TargetAssemblyTypeName: Member.KYM.Scripts.UI.ExitButton, Assembly-CSharp
+        m_MethodName: Exit
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1773225952280473430
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -471,11 +484,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 568691090047679921}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da54e73c2a5346caae955f6903f266fa, type: 3}
+  m_Script: {fileID: 11500000, guid: 1f449c096e874ae5a1c09208ba3bb01e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.UI.MainTitle.PlayButton
-  mainCam: {fileID: 0}
-  titleCam: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.UI.ExitButton
+--- !u!114 &8822221910378009105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568691090047679921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 003e95541da24c03ae6ef1318cbd8ebc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.UI.MainTitle.ChangeHoverToOutline
+  outline: {fileID: 7745392462488508350}
+  hoverOutlineColor: {r: 0.3137255, g: 0.3137255, b: 0.3137255, a: 1}
 --- !u!1 &1749395915217525314
 GameObject:
   m_ObjectHideFlags: 0

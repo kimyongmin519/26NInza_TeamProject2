@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Member.KYM.Scripts.Agents;
+using Member.KYM.Scripts.Players.Skills;
 using UnityEngine;
 
 namespace Member.KYM.Scripts.Players.RobotArm
@@ -110,6 +111,10 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 StopCoroutine(_controlReturnRoutine);
                 _controlReturnRoutine = null;
             }
+
+            // 대시 트윈이 살아 있으면 매달린 뒤에도 위치와 이동 제어를 덮어쓴다.
+            if (_player.SkillModule?.GetCurrentSkill() is PlayerDashSkill { IsUsing: true } dash)
+                dash.StopSkill();
 
             _currentAnchor = anchor;
             ConfigureJoint(point);
