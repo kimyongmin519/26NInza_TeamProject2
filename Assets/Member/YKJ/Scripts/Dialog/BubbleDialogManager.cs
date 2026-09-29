@@ -116,14 +116,15 @@ public class BubbleDialogManager : MonoBehaviour
             }
         }
 
-        EndDialog();
+        EndDialog(true);
     }
 
-    private void EndDialog()
+    private void EndDialog(bool completedNormally = false)
     {
         if (_activeRequest == null)
             return;
         System.Action completed = _completed;
+        _activeRequest.CompletedNormally = completedNormally;
         _completed = null;
         _activeRequest = null;
         if (_dialogCoroutine != null)
