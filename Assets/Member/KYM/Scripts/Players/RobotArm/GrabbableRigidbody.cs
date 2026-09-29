@@ -1,9 +1,11 @@
 using UnityEngine;
+using KimLIb.ModuleSystems;
+using Member.KYM.Scripts.CombatSystems.Projectiles;
 
 namespace Member.KYM.Scripts.Players.RobotArm
 {
     [RequireComponent(typeof(Rigidbody2D))]
-    public class GrabbableRigidbody : MonoBehaviour, IGrabbable
+    public class GrabbableRigidbody : MonoBehaviour, IGrabbable, IEnemyAttackGrabbable
     {
         [Header("잡기 설정")]
         [SerializeField] private bool canBeGrabbed = true;
@@ -15,6 +17,9 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
         protected Rigidbody2D Rigidbody { get; private set; }
         protected GameObject Grabber { get; private set; }
+        protected ModuleOwner ThrowOwner { get; private set; }
+
+        public virtual bool IsEnemyAttackFrom(ModuleOwner grabber) => true;
 
         private Collider2D[] _colliders;
         private bool[] _colliderEnabledStates;
@@ -31,6 +36,8 @@ namespace Member.KYM.Scripts.Players.RobotArm
             Rigidbody = GetComponent<Rigidbody2D>();
             _colliders = GetComponentsInChildren<Collider2D>(true);
             _colliderEnabledStates = new bool[_colliders.Length];
+            if (GetComponent<ProjectileGrabCue>() == null)
+                gameObject.AddComponent<ProjectileGrabCue>();
         }
 
         public virtual void Grab(Transform grabPoint, GameObject grabber)
@@ -40,6 +47,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
             _isHeld = true;
             Grabber = grabber;
+            ThrowOwner = null;
             _originalParent = transform.parent;
             _originalBodyType = Rigidbody.bodyType;
             _originalConstraints = Rigidbody.constraints;
@@ -67,6 +75,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 return;
 
             RestorePhysicsState();
+            ThrowOwner = null;
             OnReleased();
         }
 
@@ -76,6 +85,7 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 return;
 
             RestorePhysicsState();
+            ThrowOwner = throwData.Owner;
             Rigidbody.linearVelocity = throwData.Direction * throwData.ArmThrowSpeed;
 
             OnThrown(throwData);

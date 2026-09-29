@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Member.KYM.Scripts.Players.RobotArm;
+using Member.KYM.Scripts.CombatSystems.DamageSystems;
 using Member.ODK._01_Script;
 using Member.ODK.Scripts;
 using UnityEngine;
@@ -39,6 +40,7 @@ namespace Member.YKJ.Bosses
         private bool _retireWhenReleased;
         private float _remainingLifetime;
         private Vector2 _launchPosition;
+        private float _gravityBeforeGrab;
 
         public WeaponState State { get; private set; }
 
@@ -53,6 +55,7 @@ namespace Member.YKJ.Bosses
             _collider.excludeLayers |= playerMask;
             _collider.layerOverridePriority = Mathf.Max(1, _collider.layerOverridePriority);
             Rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            _gravityBeforeGrab = Rigidbody.gravityScale;
             _launchPosition = transform.position;
             SetRandomSprite();
             FitAppearance();
@@ -156,6 +159,14 @@ namespace Member.YKJ.Bosses
             return CalculateLaunchVelocity(origin, target, gravity, time);
         }
 
+        public override void Grab(Transform grabPoint, GameObject grabber)
+        {
+            if (CanBeGrabbed && State != WeaponState.PlayerThrown)
+                _gravityBeforeGrab = Rigidbody.gravityScale;
+
+            base.Grab(grabPoint, grabber);
+        }
+
         protected override void OnGrabbed()
         {
             bool caughtInFlight = State == WeaponState.BossFlight;
@@ -171,6 +182,7 @@ namespace Member.YKJ.Bosses
         {
             State = WeaponState.Grounded;
             _hurtsPlayer = false;
+            Rigidbody.gravityScale = _gravityBeforeGrab;
             RestoreIgnoredCollisions();
             IgnoreCollisionsWith(_boss != null ? _boss.Target : null);
             RefreshTrail();
@@ -182,6 +194,8 @@ namespace Member.YKJ.Bosses
         {
             State = WeaponState.PlayerThrown;
             _hurtsPlayer = false;
+            Rigidbody.gravityScale = 0f;
+            Rigidbody.linearDamping = 0f;
             _remainingLifetime = thrownLifetime;
             _throwOwner = throwData.Owner != null ? throwData.Owner.transform : null;
             RestoreIgnoredCollisions();
@@ -251,10 +265,15 @@ namespace Member.YKJ.Bosses
                     State = WeaponState.Spent;
                     _collider.enabled = false;
                     var damage = new DamageData(bossDamage, DamageType.Projectile);
+                    Vector2 hitPoint = other.ClosestPoint(transform.position);
                     if (receiver is MimicBoss mimic)
-                        mimic.TakeWeaponDamage(damage, other.ClosestPoint(transform.position));
+                    {
+                        float healthBefore = PlayerDamageFeedback.ReadHealth(mimic);
+                        mimic.TakeWeaponDamage(damage, hitPoint);
+                        PlayerDamageFeedback.Report(ThrowOwner, mimic, healthBefore, hitPoint);
+                    }
                     else
-                        receiver.TakeDamage(damage);
+                        PlayerDamageFeedback.Apply(ThrowOwner, receiver, damage, hitPoint);
                     Retire();
                 }
                 else if (!other.isTrigger)

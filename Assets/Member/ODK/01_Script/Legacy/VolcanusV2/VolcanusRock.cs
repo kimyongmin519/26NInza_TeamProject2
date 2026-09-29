@@ -1,5 +1,6 @@
 using GGMLib.ObjectPool.Runtime;
 using KimLIb.ObjectPool.Runtime;
+using Member.KYM.Scripts.CombatSystems.DamageSystems;
 using Member.KYM.Scripts.Players.RobotArm;
 using Member.ODK.Scripts.Enemys.Bosses;
 using System;
@@ -118,7 +119,12 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
             VolcanusPiece hitPiece = targetCollider.GetComponentInParent<VolcanusPiece>();
             if (hitPiece != null)
             {
+                Vector2 hitPoint = targetCollider.ClosestPoint(transform.position);
+                Volcanus boss = hitPiece.GetComponentInParent<Volcanus>();
+                float previousHealth = boss != null ? boss.CurrentHealth : 0f;
                 hitPiece.TakeDamage(new DamageData(damage, DamageType.Projectile));
+                if (boss != null)
+                    PlayerDamageFeedback.Report(ThrowOwner, previousHealth, boss.CurrentHealth, hitPoint);
                 Break();
                 return true;
             }
@@ -128,7 +134,8 @@ namespace Member.ODK.Scripts.Enemys.Volcanus.Legacy
             if (activeBoss == null)
                 return false;
 
-            activeBoss.TakeDamage(new DamageData(damage, DamageType.Projectile));
+            Vector2 bossHitPoint = targetCollider.ClosestPoint(transform.position);
+            PlayerDamageFeedback.Apply(ThrowOwner, activeBoss, new DamageData(damage, DamageType.Projectile), bossHitPoint);
             Break();
             return true;
         }

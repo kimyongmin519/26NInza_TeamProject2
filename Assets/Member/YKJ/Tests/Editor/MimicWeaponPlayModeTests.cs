@@ -99,10 +99,8 @@ namespace Member.YKJ.Tests
             Assert.That(weapon.State, Is.EqualTo(MimicWeapon.WeaponState.Grounded));
             Assert.That(weapon.gameObject.activeSelf, Is.True);
             weapon.Grab(hold, owner.gameObject);
-            weapon.GetComponent<Rigidbody2D>().gravityScale = 0f;
             weapon.Throw(new ThrowData(Vector2.right, owner, 20f));
-            // RestorePhysicsState restores the pre-grab gravity; disable gravity for this horizontal test.
-            weapon.GetComponent<Rigidbody2D>().gravityScale = 0f;
+            Assert.That(weapon.GetComponent<Rigidbody2D>().gravityScale, Is.Zero);
             float before = boss.HealthModule.CurrentHealth;
             Physics2D.SyncTransforms();
             for (int i = 0; i < 30; i++) Physics2D.Simulate(0.02f);
@@ -110,6 +108,30 @@ namespace Member.YKJ.Tests
             Assert.That(weapon.State, Is.EqualTo(MimicWeapon.WeaponState.Spent));
             Assert.That(weapon.gameObject.activeSelf, Is.False);
             boss.StopEncounter();
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator PlayerThrownWeaponFliesStraightAndReleasedWeaponFalls()
+        {
+            MimicWeapon weapon = CreateWeapon(new Vector2(0f, 3f));
+            Rigidbody2D body = weapon.GetComponent<Rigidbody2D>();
+            body.gravityScale = 1.5f;
+            var owner = Create("Throw Owner", new Vector2(-4f, 3f)).AddComponent<Agent>();
+            Transform hold = Create("Hand", new Vector2(0f, 3f)).transform;
+
+            weapon.Grab(hold, owner.gameObject);
+            weapon.Throw(new ThrowData(Vector2.right, owner, 12f));
+            Assert.That(body.gravityScale, Is.Zero);
+
+            Physics2D.SyncTransforms();
+            for (int i = 0; i < 15; i++) Physics2D.Simulate(0.02f);
+            Assert.That(body.position.x, Is.GreaterThan(3f));
+            Assert.That(body.position.y, Is.EqualTo(3f).Within(0.02f));
+
+            weapon.Grab(hold, owner.gameObject);
+            weapon.Release();
+            Assert.That(body.gravityScale, Is.EqualTo(1.5f));
             yield return null;
         }
 

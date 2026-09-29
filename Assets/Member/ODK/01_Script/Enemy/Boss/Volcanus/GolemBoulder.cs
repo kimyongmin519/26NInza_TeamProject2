@@ -1,4 +1,5 @@
 using Member.KYM.Scripts.Players.RobotArm;
+using Member.KYM.Scripts.CombatSystems.DamageSystems;
 using Member.ODK.Scripts.Enemys.Bosses;
 using Member.ODK.Scripts.Enemys.Combat;
 using UnityEngine;
@@ -98,7 +99,8 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             if (!thrown || owner == null) return false;
             Volcanus hitBoss = other.GetComponentInParent<Volcanus>();
             if (hitBoss == null || hitBoss != owner) return false;
-            hitBoss.TakeDamage(new DamageData(bossDamage, DamageType.Projectile));
+            PlayerDamageFeedback.Apply(ThrowOwner, hitBoss,
+                new DamageData(bossDamage, DamageType.Projectile), transform.position);
             Break();
             return true;
         }
