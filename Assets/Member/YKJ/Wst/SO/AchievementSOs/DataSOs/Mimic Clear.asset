@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0dc1063a9994a43a74966f60d09f6f7, type: 3}
+  m_Name: Mimic Clear
+  m_EditorClassIdentifier: Assembly-CSharp::Member.Wst.Scripts.Achievements.Datas.AchievementDataSO
+  <AchievementType>k__BackingField: 4
+  <AchievementRank>k__BackingField: 0
+  <AchievementIcon>k__BackingField: {fileID: 21300000, guid: fb39b0cbdce1e6347adc13d8ac1a2f13, type: 3}
+  <AchievementName>k__BackingField: "\uB358\uC804\uC18D \uC0C1\uC790"
+  <AchievementDescription>k__BackingField: "\uBBF8\uBBF9 \uBCF4\uC2A4\uB97C \uCC98\uCE58\uD558\uC138\uC694"
+  <TargetDegree>k__BackingField: 1
+  <Condition>k__BackingField: {fileID: 11400000, guid: d33f617b0fdb497c8daf4afb89d1bc6d, type: 2}

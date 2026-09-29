@@ -20,17 +20,47 @@ namespace Member.Wst.Scripts.Achievements
         private Dictionary<AchievementType, AchievementData> _achievementDatasDict;
         private readonly List<IAchievementCondition> _boundConditions = new();
         private JsonSaveService _jsonSaveService;
+        private bool _initialized;
 
         private void Awake()
         {
+            if (SaveFileName != null)
+                Initialize(Achievements, SaveFileName);
+        }
+
+        public void Initialize(List<AchievementData> achievements, SaveFileNameSO saveFileName)
+        {
+            if (_initialized)
+                return;
+            if (saveFileName == null)
+            {
+                Debug.LogError("Achievement save file is not assigned.", this);
+                return;
+            }
+
+            Achievements = achievements?.Where(data => data?.AchievementDataSO != null).ToList()
+                ?? new List<AchievementData>();
+            SaveFileName = saveFileName;
+            _achievementDatasDict = new Dictionary<AchievementType, AchievementData>();
+            foreach (AchievementData data in Achievements)
+            {
+                if (_achievementDatasDict.ContainsKey(data.AchievementDataSO.AchievementType))
+                {
+                    Debug.LogError("Each saved achievement must have a unique AchievementType.", this);
+                    return;
+                }
+                _achievementDatasDict.Add(data.AchievementDataSO.AchievementType, data);
+            }
             _jsonSaveService = new JsonSaveService(SaveFileName);
             InitSaveData();
-            _achievementDatasDict = Achievements.ToDictionary(data => data.AchievementDataSO.AchievementType);
             LoadSaveData();
+            _initialized = true;
         }
 
         private void Start()
         {
+            if (!_initialized)
+                return;
             foreach (AchievementData data in Achievements)
             {
                 AchievementConditionSO conditionSo = data?.AchievementDataSO?.Condition;
@@ -50,8 +80,9 @@ namespace Member.Wst.Scripts.Achievements
 
             _boundConditions.Clear();
 
-            foreach (AchievementData data in Achievements)
-                data.OnChanged -= HandleChanged;
+            if (Achievements != null)
+                foreach (AchievementData data in Achievements)
+                    data.OnChanged -= HandleChanged;
         }
 
         private void LoadSaveData()

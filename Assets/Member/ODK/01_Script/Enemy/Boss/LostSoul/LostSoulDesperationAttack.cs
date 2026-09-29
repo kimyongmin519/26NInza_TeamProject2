@@ -1,5 +1,6 @@
-using System.Collections;
 using DG.Tweening;
+using MoreMountains.Tools;
+using System.Collections;
 using UnityEngine;
 
 namespace Member.ODK.Scripts.Enemys.LostSoul
@@ -12,7 +13,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float slashReadyTime = 0.12f;
 
         [Header("Enrage Scream")]
-        [SerializeField] private float enrageShakePower = 3f;
+        [SerializeField] private float enrageShakePower = 1f;
         [SerializeField] private float enrageShakePulseInterval = 0.1f;
 
         [Header("Weak Soul Stream")]
@@ -119,7 +120,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             int directionCount = GetDirectionCount();
             bool rotating = Boss.HealthRatio <= rotatingSlashHealth;
             SpawnRadialSlashes(target.position, directionCount, rotating);
-
+            Boss.ShakeCameraFor(enrageShakePower * 2,0.1f);
             float waitDuration = Mathf.Lerp(
                 cycleIntervalAt10,
                 cycleIntervalAt25,

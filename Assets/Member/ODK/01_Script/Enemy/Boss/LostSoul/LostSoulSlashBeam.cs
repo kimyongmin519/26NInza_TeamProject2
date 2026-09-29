@@ -13,6 +13,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private LineRenderer line;
         [SerializeField] private DamageCaster caster;
         [SerializeField, Min(0.01f)] private float warningWidth = 0.07f;
+        [SerializeField, Range(0.05f, 1f)] private float hitWidthScale = 0.35f;
+        [SerializeField, Range(0.1f, 1f)] private float hitActiveRatio = 0.6f;
         [SerializeField] private Material warningMaterial;
         [SerializeField] private Material fireMaterial;
 
@@ -99,7 +101,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             line.enabled = true;
 
             float angle = Mathf.Atan2(normalized.y, normalized.x) * Mathf.Rad2Deg;
-            caster.ConfigureBox(new Vector2(length, activeWidth), owner.PlayerLayer);
+            caster.ConfigureBox(new Vector2(length, activeWidth * hitWidthScale), owner.PlayerLayer);
             caster.SetWorldPose(Vector3.Lerp(origin, end, 0.5f), angle);
             owner.PlayBeamWarningFeedback();
             StartPreFireRotation(preFireRotationDegrees, warningDuration);
@@ -162,8 +164,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             line.endColor = Color.white;
             line.widthMultiplier = width * 1.8f;
             float length = Vector3.Distance(line.GetPosition(0), line.GetPosition(1));
-            caster.SetSize(new Vector2(length, width * 1.8f));
-            caster.EnableCasting(new DamageData(damage, DamageType.Beam), activeDuration);
+            caster.SetSize(new Vector2(length, width * 1.8f * hitWidthScale));
+            caster.EnableCasting(new DamageData(damage, DamageType.Beam), activeDuration * hitActiveRatio);
             owner.AttackImpact(Vector3.Lerp(line.GetPosition(0), line.GetPosition(1), 0.5f));
 
             float currentWidth = line.widthMultiplier;
@@ -177,7 +179,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 {
                     currentWidth = value;
                     line.widthMultiplier = value;
-                    caster.SetSize(new Vector2(length, value));
+                    caster.SetSize(new Vector2(length, value * hitWidthScale));
                 },
                 0f,
                 Mathf.Max(0.02f, activeDuration - 0.05f)

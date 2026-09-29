@@ -264,6 +264,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 8999000000002010}
   - component: {fileID: 1620744365745938559}
   - component: {fileID: 6030149991951996428}
   - component: {fileID: 1356964150025301705}
@@ -1224,3 +1225,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
   m_PrefabInstance: {fileID: 8755155182963798083}
   m_PrefabAsset: {fileID: 0}
+
+--- !u!114 &8999000000002010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2770467818995740256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16d178b20dd94c5591a3c8d4c20b0571, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  bossName: 최스승
