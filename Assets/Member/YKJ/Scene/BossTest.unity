@@ -885,12 +885,12 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 6437688342667591773
-      type: {class: MMF_CameraShake, ns: MoreMountains.Feedbacks, asm: MoreMountains.Tools}
+      type: {class: MMF_CinemachineImpulse, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Tools}
       data:
         Active: 1
         UniqueID: 729420106
-        Label: Camera Shake
-        OriginalLabel: Camera Shake
+        Label: Cinemachine Impulse
+        OriginalLabel: Cinemachine Impulse
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
@@ -958,14 +958,49 @@ MonoBehaviour:
           ButtonText: Automatic Shaker Setup
         Owner: {fileID: 108594906}
         DebugActive: 0
-        RepeatUntilStopped: 0
-        CameraShakeProperties:
-          Duration: 0.1
-          Amplitude: 0.2
-          Frequency: 150
-          AmplitudeX: 0
-          AmplitudeY: 0.25
-          AmplitudeZ: 0
+        m_ImpulseDefinition:
+          ImpulseChannel: 1
+          ImpulseShape: 1
+          CustomImpulseShape:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          ImpulseDuration: 0.1
+          ImpulseType: 0
+          DissipationRate: 0.25
+          RawSignal: {fileID: 0}
+          AmplitudeGain: 1
+          FrequencyGain: 1
+          RepeatMode: 0
+          Randomize: 0
+          TimeEnvelope:
+            AttackShape:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            DecayShape:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            AttackTime: 0
+            SustainTime: 0.1
+            DecayTime: 0
+            ScaleWithImpact: 1
+            HoldForever: 0
+          ImpactRadius: 100
+          DirectionMode: 0
+          DissipationMode: 2
+          DissipationDistance: 100
+          PropagationSpeed: 343
+        Velocity: {x: 0, y: 0.25, z: 0}
+        ClearImpulseOnStop: 0
+        DrawGizmos: 0
     - rid: 6437688342667591796
       type: {class: MMF_MotionBlur_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Tools}
       data:
@@ -2410,12 +2445,12 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 6437688342667591773
-      type: {class: MMF_CameraShake, ns: MoreMountains.Feedbacks, asm: MoreMountains.Tools}
+      type: {class: MMF_CinemachineImpulse, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Tools}
       data:
         Active: 1
         UniqueID: 729420106
-        Label: Camera Shake
-        OriginalLabel: Camera Shake
+        Label: Cinemachine Impulse
+        OriginalLabel: Cinemachine Impulse
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
@@ -2483,14 +2518,49 @@ MonoBehaviour:
           ButtonText: Automatic Shaker Setup
         Owner: {fileID: 398309459}
         DebugActive: 0
-        RepeatUntilStopped: 0
-        CameraShakeProperties:
-          Duration: 0.25
-          Amplitude: 0.2
-          Frequency: 100
-          AmplitudeX: 0
-          AmplitudeY: 1
-          AmplitudeZ: 0
+        m_ImpulseDefinition:
+          ImpulseChannel: 1
+          ImpulseShape: 1
+          CustomImpulseShape:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          ImpulseDuration: 0.25
+          ImpulseType: 0
+          DissipationRate: 0.25
+          RawSignal: {fileID: 0}
+          AmplitudeGain: 1
+          FrequencyGain: 1
+          RepeatMode: 0
+          Randomize: 0
+          TimeEnvelope:
+            AttackShape:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            DecayShape:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            AttackTime: 0
+            SustainTime: 0.25
+            DecayTime: 0
+            ScaleWithImpact: 1
+            HoldForever: 0
+          ImpactRadius: 100
+          DirectionMode: 0
+          DissipationMode: 2
+          DissipationDistance: 100
+          PropagationSpeed: 343
+        Velocity: {x: 0, y: 1, z: 0}
+        ClearImpulseOnStop: 0
+        DrawGizmos: 0
     - rid: 6437688342667591796
       type: {class: MMF_MotionBlur_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Tools}
       data:
