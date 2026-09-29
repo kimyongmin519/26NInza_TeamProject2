@@ -25,6 +25,7 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
         [SerializeField] private EventChannelSO createChannel;
 
         public bool CanBeGrabbed => canBeGrabbed && !_isHeld && !_hasImpacted;
+        public bool CanEverBeGrabbed => canBeGrabbed;
         public Transform GrabTransform => transform;
         public bool IsEnemyAttackFrom(ModuleOwner grabber) => Owner != null && Owner != grabber;
 
@@ -48,6 +49,9 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
         protected override void Awake()
         {
             base.Awake();
+
+            if (GetComponent<ProjectileGrabCue>() == null)
+                gameObject.AddComponent<ProjectileGrabCue>();
 
             _collider = GetComponent<Collider2D>();
             _damageCaster = GetComponentInChildren<AbstractDamageCaster>();

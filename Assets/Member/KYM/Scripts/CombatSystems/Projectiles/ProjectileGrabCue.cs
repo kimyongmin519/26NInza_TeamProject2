@@ -12,16 +12,22 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
 
         [Header("잡기 표시")]
         [SerializeField, Range(0f, 1f)] private float maxOpacity = 0.5f;
+        [SerializeField] private Color grabbableColor = Color.green;
+        [SerializeField] private Color ungrabbableColor = Color.red;
 
         private IGrabbable _grabbable;
         private PlayerController _player;
+        private MaterialPropertyBlock _propertyBlock;
         private static Material _sharedCueMaterial;
+        private static readonly int OutlineColorId = Shader.PropertyToID("_OutlineColor");
 
         private void Awake()
         {
             _grabbable = GetComponent<IGrabbable>();
             if (sourceRenderer == null)
                 sourceRenderer = GetComponentInChildren<SpriteRenderer>(true);
+            if (cueRenderer == null)
+                cueRenderer = FindExistingCueRenderer();
             if (cueRenderer == null && sourceRenderer != null)
                 CreateCueRenderer();
             _player = FindFirstObjectByType<PlayerController>();
@@ -43,9 +49,23 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             cueRenderer.sharedMaterial = _sharedCueMaterial;
         }
 
+        private SpriteRenderer FindExistingCueRenderer()
+        {
+            foreach (SpriteRenderer renderer in GetComponentsInChildren<SpriteRenderer>(true))
+            {
+                if (renderer != sourceRenderer && renderer.gameObject.name == "GrabCue")
+                    return renderer;
+            }
+
+            return null;
+        }
+
         private void LateUpdate()
         {
-            if (_grabbable == null || !_grabbable.CanBeGrabbed ||
+            bool canEverBeGrabbed = _grabbable is GrabbableProjectile projectile
+                ? projectile.CanEverBeGrabbed
+                : _grabbable != null;
+            if (canEverBeGrabbed && !_grabbable.CanBeGrabbed ||
                 sourceRenderer == null || !sourceRenderer.enabled ||
                 sourceRenderer.sprite == null || cueRenderer == null)
             {
@@ -81,6 +101,10 @@ namespace Member.KYM.Scripts.CombatSystems.Projectiles
             cueRenderer.flipY = sourceRenderer.flipY;
             cueRenderer.sortingLayerID = sourceRenderer.sortingLayerID;
             cueRenderer.sortingOrder = sourceRenderer.sortingOrder + 1;
+            _propertyBlock ??= new MaterialPropertyBlock();
+            _propertyBlock.SetColor(OutlineColorId,
+                canEverBeGrabbed ? grabbableColor : ungrabbableColor);
+            cueRenderer.SetPropertyBlock(_propertyBlock);
             cueRenderer.color = new Color(1f, 1f, 1f,
                 Mathf.SmoothStep(0f, maxOpacity, proximity));
             cueRenderer.enabled = true;
