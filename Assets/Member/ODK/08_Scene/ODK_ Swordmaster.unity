@@ -19547,6 +19547,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &230057425
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 100000, guid: a3000000000000000000000000000002, type: 3}
+      propertyPath: m_Name
+      value: LostSoulWeakProjectile
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000002, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.1473538
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000002, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 16.722198
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000002, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000002, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000002, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000002, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000002, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000002, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000002, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000002, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a3000000000000000000000000000002, type: 3}
 --- !u!1001 &258169337
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19604,6 +19661,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 08a1bb9275db590438e9566ea28fb412, type: 3}
+--- !u!1001 &341106428
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 100000, guid: a3000000000000000000000000000001, type: 3}
+      propertyPath: m_Name
+      value: LostSoulProjectile
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000001, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.7695303
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000001, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 15.776182
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000001, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000001, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000001, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000001, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000001, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000001, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000001, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: a3000000000000000000000000000001, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a3000000000000000000000000000001, type: 3}
 --- !u!1 &372331966
 GameObject:
   m_ObjectHideFlags: 0
@@ -35042,3 +35156,5 @@ SceneRoots:
   - {fileID: 1285947188}
   - {fileID: 372331968}
   - {fileID: 590277583}
+  - {fileID: 230057425}
+  - {fileID: 341106428}

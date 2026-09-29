@@ -1059,7 +1059,7 @@ MonoBehaviour:
   animationStateName: cast
   startupDelay: 0.2
   recoveryDelay: 0.45
-  sideDistance: 5.2
+  sideDistance: 9
   waveCount: 3
   bulletsPerWave: 3
   bulletSpeed: 9
@@ -1150,10 +1150,10 @@ MonoBehaviour:
   startupDelay: 0.2
   recoveryDelay: 0.45
   castDistance: 8.5
-  bulletCount: 15
+  bulletCount: 12
   bulletSpeed: 8.5
-  shotInterval: 0.17
-  randomAngle: 24
+  shotInterval: 0.2
+  randomAngle: 32
   weakSoulEvery: 7
   portalHoldAfter: 0.2
 --- !u!114 &133003
@@ -1242,7 +1242,7 @@ MonoBehaviour:
   damage: 1
   beamColor: {r: 0.94, g: 0.9, b: 1, a: 1}
   castGap: 0.25
-  burstCountRange: {x: 12, y: 17}
+  burstCountRange: {x: 10, y: 15}
   burstSpeed: 11
   burstWeakSouls: 1
   weakSoulSpeedScale: 0.55
@@ -2160,7 +2160,7 @@ MonoBehaviour:
   arenaPadding: 1.25
   moveDuration: 0.2
   slashReadyTime: 0.2
-  enrageShakePower: 0.5
+  enrageShakePower: 0.3
   enrageShakePulseInterval: 0.1
   weakSoulInterval: 2
   weakSoulSpeed: 7
@@ -2178,7 +2178,7 @@ MonoBehaviour:
   minimumDirections: 2
   maximumDirections: 4
   enrageHealth: 0.12
-  enrageSlashInterval: 0.08
+  enrageSlashInterval: 0.12
   enrageWarningDuration: 0.9
-  enrageMinimumDistance: 7
+  enrageMinimumDistance: 4
   enrageMaximumDistance: 20
