@@ -870,8 +870,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
-  <MaxHealth>k__BackingField: 50
-  <CurrentHealth>k__BackingField: 50
+  <MaxHealth>k__BackingField: 45
+  <CurrentHealth>k__BackingField: 45
 --- !u!1 &130000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1154,7 +1154,7 @@ MonoBehaviour:
   bulletSpeed: 8.5
   shotInterval: 0.2
   randomAngle: 32
-  weakSoulEvery: 7
+  weakSoulEvery: 3
   portalHoldAfter: 0.2
 --- !u!114 &133003
 MonoBehaviour:
