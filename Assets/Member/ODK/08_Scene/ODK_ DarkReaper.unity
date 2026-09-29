@@ -7544,22 +7544,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 137002, guid: a3000000000000000000000000000003, type: 3}
-      propertyPath: moveDuration
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 137002, guid: a3000000000000000000000000000003, type: 3}
-      propertyPath: slashReadyTime
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 137002, guid: a3000000000000000000000000000003, type: 3}
-      propertyPath: slashWarningDuration
-      value: 1.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 137002, guid: a3000000000000000000000000000003, type: 3}
-      propertyPath: enrageMinimumDistance
-      value: 7
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

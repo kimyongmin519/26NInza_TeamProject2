@@ -102,6 +102,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         private float nextCameraShakeTime;
         private float lastCameraShakePower;
         private CinemachineImpulseSource shakeSource;
+        private EnemySkillModule fallbackSkillModule;
         private float lastShakeSign = 1f;
 
         protected override void Awake()
@@ -278,7 +279,14 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         private EnemySkillModule GetBossSkillModule()
         {
-            return SkillModule as EnemySkillModule;
+            if (SkillModule is EnemySkillModule module) return module;
+            if (fallbackSkillModule == null)
+            {
+                fallbackSkillModule = GetComponentInChildren<EnemySkillModule>(true);
+                if (fallbackSkillModule != null && fallbackSkillModule.GetAllSkill().Length == 0)
+                    fallbackSkillModule.Initialize(this);
+            }
+            return fallbackSkillModule;
         }
 
         private IEnumerator AttackLoop()
