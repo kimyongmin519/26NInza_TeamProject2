@@ -65,6 +65,9 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         [Header("Target")]
         [SerializeField] private PhasedBossController boss;
+        [SerializeField, Tooltip("ODK 이외 보스의 연출 대상. 전투 시작은 onIntroFinished에 연결합니다.")]
+        private Transform externalBossRoot;
+        private Transform BossRoot => boss != null ? boss.transform : externalBossRoot;
         [SerializeField] private Transform visualRoot;
         [SerializeField] private bool playOnStart = true;
         [SerializeField] private float startDelay = 0.2f;
@@ -114,7 +117,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             if (boss == null) boss = GetComponentInParent<PhasedBossController>();
             if (boss == null) boss = GetComponentInChildren<PhasedBossController>();
             if (boss != null && playOnStart) boss.SetAutoStart(false);
-            if (visualRoot == null && boss != null) visualRoot = boss.transform;
+            if (visualRoot == null) visualRoot = BossRoot;
         }
 
         private void Start()
@@ -131,7 +134,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [ContextMenu("Play Intro")]
         public void Play()
         {
-            if (IsPlaying || boss == null) return;
+            if (IsPlaying || BossRoot == null) return;
             if (steps == null || steps.Count == 0 || preset != Preset.Custom) steps = BuildPreset(ResolvePreset());
             StartCoroutine(PlayRoutine());
         }
@@ -150,7 +153,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         private IEnumerator PlayRoutine()
         {
             IsPlaying = true;
-            finalPosition = boss.transform.position;
+            finalPosition = BossRoot.position;
             finalScale = visualRoot.localScale;
             BossBgmPlayback bgmPlayback =
                 GetComponentInChildren<BossBgmPlayback>(true);
@@ -176,7 +179,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         private void Finish()
         {
             DOTween.Kill(this);
-            boss.transform.position = finalPosition;
+            BossRoot.position = finalPosition;
             visualRoot.localScale = finalScale;
             RestoreFade();
             ReleaseCamera();
@@ -186,7 +189,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             HasFinished = true;
             onIntroFinished?.Invoke();
             Finished?.Invoke();
-            if (AutoBeginBattle) boss.BeginBattle();
+            if (AutoBeginBattle && boss != null) boss.BeginBattle();
             if (overlayCanvas != null) Destroy(overlayCanvas.gameObject, 0.6f);
             overlayCanvas = null;
         }
@@ -197,7 +200,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             {
                 if (step == null) continue;
                 if (step.action == BossIntroAction.MoveFromOffset)
-                    boss.transform.position = finalPosition + (Vector3)step.vector;
+                    BossRoot.position = finalPosition + (Vector3)step.vector;
                 else if (step.action == BossIntroAction.FadeIn)
                     PrepareFade();
             }
@@ -222,7 +225,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                     ReleaseCamera();
                     break;
                 case BossIntroAction.MoveFromOffset:
-                    yield return boss.transform.DOMove(finalPosition, Mathf.Max(0.01f, step.duration))
+                    yield return BossRoot.DOMove(finalPosition, Mathf.Max(0.01f, step.duration))
                         .SetEase(step.ease).SetTarget(this).WaitForCompletion();
                     break;
                 case BossIntroAction.FadeIn:
@@ -232,7 +235,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                     visualRoot.DOPunchScale(finalScale * step.value, Mathf.Max(0.05f, step.duration), 6, 0.6f).SetTarget(this);
                     break;
                 case BossIntroAction.Shake:
-                    boss.ShakeCamera(step.value);
+                    if (boss != null) boss.ShakeCamera(step.value);
                     break;
                 case BossIntroAction.Title:
                     ShowTitle(
@@ -244,7 +247,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                     PlayBossAnimation(step.text);
                     break;
                 case BossIntroAction.Sound:
-                    ODKSoundPlayback.Play(step.sound, boss.transform.position);
+                    ODKSoundPlayback.Play(step.sound, BossRoot.position);
                     break;
             }
         }
@@ -252,6 +255,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         private Preset ResolvePreset()
         {
             if (preset != Preset.Auto && preset != Preset.Custom) return preset;
+            if (boss == null) return Preset.Custom;
             string typeName = boss.GetType().Name;
             if (typeName.Contains("Moon")) return Preset.Moon;
             if (typeName.Contains("LostSoul")) return Preset.LostSoul;
@@ -269,7 +273,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                 case Preset.LostSoul: return "어둠의 사신";
                 case Preset.Volcanus: return "VOLCANUS";
                 case Preset.Swordmaster: return "소드 마스터";
-                default: return boss.name.ToUpperInvariant();
+                default: return BossRoot.name.ToUpperInvariant();
             }
         }
 
@@ -413,7 +417,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         private void PlayBossAnimation(string state)
         {
-            if (string.IsNullOrEmpty(state)) return;
+            if (string.IsNullOrEmpty(state) || boss == null) return;
             foreach (MethodInfo method in boss.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public))
             {
                 if (method.Name != "PlayAnimation") continue;
