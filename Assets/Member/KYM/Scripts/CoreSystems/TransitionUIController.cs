@@ -22,6 +22,7 @@ namespace Member.KYM.Scripts.CoreSystems
         [SerializeField, Min(0f)] private float fadeInDuration = 0.75f;
 
         private static TransitionUIController _instance;
+        public static bool IsTransitioning => _instance != null && _instance._request != null;
         private static readonly int CircleSizeId = Shader.PropertyToID("_CircleSize");
         private Material _material;
         private Material _originalMaterial;

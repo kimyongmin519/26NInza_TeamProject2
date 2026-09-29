@@ -12,14 +12,6 @@ namespace Member.KYM.Scripts.CoreSystems
         [SerializeField] private EventChannelSO transitionChannel;
         public bool IsTransitioning { get; private set; }
 
-        protected override void Awake()
-        {
-            base.Awake();
-            if (!IsSingletonInstance) return;
-            transform.SetParent(null);
-            DontDestroyOnLoad(gameObject);
-        }
-
         public static bool TryLoadScene(string sceneName)
         {
             var manager = Instance;

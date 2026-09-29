@@ -54,7 +54,6 @@ public class BubbleDialogManager : MonoBehaviour
         {
             InputChannel?.RaiseEvent(InputEvent.LockInputAllEvent.Init(true));
         }
-        Time.timeScale = 0;
         _dialogCoroutine = StartCoroutine(DialogCoroutine(evt.DialogData, evt.Target));
     }
 
@@ -140,7 +139,6 @@ public class BubbleDialogManager : MonoBehaviour
 
         CameraEventChannel?.RaiseEvent(CameraEvent.ReturnDefaultCameraTargetEvent);
         BubbleDialogEventChannel?.RaiseEvent(BubbleDialogEvent.EndBubbleDialogEvent);
-        Time.timeScale = 1;
         completed?.Invoke();
     }
 

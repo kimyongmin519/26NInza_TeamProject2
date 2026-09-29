@@ -96,6 +96,7 @@ namespace Member.KYM.Scripts.CoreSystems
             _acquired = true;
             equipment.Equip();
             acquiredUI.SetActive(true);
+            SwitchToFullCamera();
             StartCoroutine(FinishAcquisition());
         }
 
@@ -103,14 +104,19 @@ namespace Member.KYM.Scripts.CoreSystems
         {
             yield return new WaitForSecondsRealtime(acquiredUIDuration);
             acquiredUI.SetActive(false);
-            ReturnToFullCamera();
+            _running = false;
         }
 
         private void ReturnToFullCamera()
         {
+            SwitchToFullCamera();
+            _running = false;
+        }
+
+        private void SwitchToFullCamera()
+        {
             dialogCamera.Priority = inactivePriority;
             fullCamera.Priority = activePriority;
-            _running = false;
         }
 
         private void MoveBossAway()
