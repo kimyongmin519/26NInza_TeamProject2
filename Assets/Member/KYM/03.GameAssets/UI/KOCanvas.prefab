@@ -258,3 +258,7 @@ MonoBehaviour:
   shakeDuration: 0.18
   shakeStrength: {x: 30, y: 30}
   shakeVibrato: 24
+  soundChannel: {fileID: 11400000, guid: 5be71dfc170f540418d04c067c452545, type: 2}
+  koSound: {fileID: 11400000, guid: 9b9056ab611380348861737711829045, type: 2}
+  additionalKoSound: {fileID: 11400000, guid: 84fed555daedfa24195553b868567e73, type: 2}
+  destinationScene: MapSceneCopy

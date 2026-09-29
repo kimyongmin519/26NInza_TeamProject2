@@ -11,6 +11,10 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float moveDuration = 0.24f;
         [SerializeField] private float slashReadyTime = 0.12f;
 
+        [Header("Enrage Scream")]
+        [SerializeField] private float enrageShakePower = 3f;
+        [SerializeField] private float enrageShakePulseInterval = 0.1f;
+
         [Header("Weak Soul Stream")]
         [SerializeField] private float weakSoulInterval = 0.34f;
         [SerializeField] private float weakSoulSpeed = 8.5f;
@@ -24,7 +28,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private Color slashColor = new Color(0.94f, 0.9f, 1f, 1f);
 
         [Header("Health Pressure")]
-        [SerializeField, Range(0f, 1f)] private float rotatingSlashHealth = 0.2f;
+        [SerializeField, Range(0f, 1f)] private float phaseStartHealth = 0.4f;
+        [SerializeField, Range(0f, 1f)] private float rotatingSlashHealth = 0.25f;
         [SerializeField] private float rotatingDegrees = 145f;
         [SerializeField] private float cycleIntervalAt25 = 0.72f;
         [SerializeField] private float cycleIntervalAt10 = 0.34f;
@@ -39,6 +44,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         [SerializeField] private float enrageMaximumDistance = 8.5f;
 
         private Coroutine weakSoulRoutine;
+        private bool enrageStarted;
+        private Coroutine enrageShakeRoutine;
         private bool running;
         private bool frenzyAnimationPlaying;
 
@@ -46,7 +53,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         {
             running = true;
             frenzyAnimationPlaying = false;
-            Boss.PlayDesperationScreamFeedback();
+            enrageStarted = false;
             weakSoulRoutine = StartCoroutine(WeakSoulStream(target.transform));
 
             while (running && Boss != null && Boss.IsPhaseTwo && !Boss.IsDead && target != null)
@@ -59,6 +66,38 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             }
 
             StopWeakSoulStream();
+        }
+
+        protected override void OnLostSoulInitialize()
+        {
+            Boss.PreloadDesperationScream();
+        }
+
+        private void StartEnrageScream()
+        {
+            if (enrageStarted) return;
+            enrageStarted = true;
+            Boss.PlayDesperationScreamFeedback();
+            StopEnrageShake();
+            enrageShakeRoutine = StartCoroutine(EnrageShake());
+        }
+
+        private IEnumerator EnrageShake()
+        {
+            float interval = Mathf.Max(0.03f, enrageShakePulseInterval);
+            while (running && Boss != null && !Boss.IsDead && !Boss.PlayerDefeated)
+            {
+                Boss.ShakeCameraFor(enrageShakePower, interval * 2.5f);
+                yield return new WaitForSeconds(interval);
+            }
+            enrageShakeRoutine = null;
+        }
+
+        private void StopEnrageShake()
+        {
+            if (enrageShakeRoutine == null) return;
+            StopCoroutine(enrageShakeRoutine);
+            enrageShakeRoutine = null;
         }
 
         private IEnumerator NormalCycle(Transform target)
@@ -84,7 +123,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             float waitDuration = Mathf.Lerp(
                 cycleIntervalAt10,
                 cycleIntervalAt25,
-                Mathf.InverseLerp(enrageHealth, 0.25f, Boss.HealthRatio)
+                Mathf.InverseLerp(enrageHealth, phaseStartHealth, Boss.HealthRatio)
             ) / DurationScale;
             waitDuration = Mathf.Max(waitDuration, warningTime + slashActiveDuration * 0.5f / DurationScale);
             yield return WaitCycle(target, waitDuration);
@@ -92,6 +131,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         private IEnumerator EnrageCycle(Transform target)
         {
+            StartEnrageScream();
             if (!frenzyAnimationPlaying)
             {
                 Boss.PlayAnimation("frenzy", 0.03f);
@@ -159,7 +199,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         private int GetDirectionCount()
         {
-            float pressure = Mathf.InverseLerp(0.25f, enrageHealth, Boss.HealthRatio);
+            float pressure = Mathf.InverseLerp(phaseStartHealth, enrageHealth, Boss.HealthRatio);
             float lowHealthBias = Mathf.Lerp(2.4f, 0.55f, pressure);
             float roll = Mathf.Pow(Random.value, lowHealthBias);
             int minimum = Mathf.Max(1, Mathf.Min(minimumDirections, maximumDirections));
@@ -215,6 +255,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         private void StopWeakSoulStream()
         {
             running = false;
+            StopEnrageShake();
             if (weakSoulRoutine == null) return;
             StopCoroutine(weakSoulRoutine);
             weakSoulRoutine = null;

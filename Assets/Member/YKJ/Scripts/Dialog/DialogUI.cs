@@ -95,7 +95,8 @@ public class DialogUI : MonoBehaviour
 
         _dialogTween = DialogUIRect
             .DOAnchorPos(ShowPosition, ShowDuration)
-            .SetEase(ShowEase);
+            .SetEase(ShowEase)
+            .SetUpdate(true);
 
         _dialogCoroutine = StartCoroutine(MoveDialogCoroutine(ShowPosition, ShowDuration, null));
 
@@ -110,6 +111,7 @@ public class DialogUI : MonoBehaviour
         _dialogTween = DialogUIRect
             .DOAnchorPos(HideEndPosition, HideDuration)
             .SetEase(HideEase)
+            .SetUpdate(true)
             .OnComplete(() =>
             {
                 DialogUIContainer.Clear();
@@ -164,7 +166,7 @@ public class DialogUI : MonoBehaviour
 
         while (currentTime < duration)
         {
-            currentTime += Time.deltaTime;
+            currentTime += Time.unscaledDeltaTime;
             float percent = Mathf.Clamp01(currentTime / duration);
             percent = Mathf.Sin(percent * Mathf.PI * 0.5f);
             DialogUIRect.anchoredPosition = Vector2.Lerp(startPosition, targetPosition, percent);

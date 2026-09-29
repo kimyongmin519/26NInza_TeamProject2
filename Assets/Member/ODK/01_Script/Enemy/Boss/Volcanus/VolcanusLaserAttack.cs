@@ -159,7 +159,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
         private bool TryHitPlayer(int beamCount)
         {
             Vector3 origin = Boss.HeadPosition;
-            float radius = laserWidth * 0.5f;
+            float radius = laserWidth * 0.5f * Mathf.Clamp(DamageCaster.PlayerHitScale, 0.05f, 1f);
             for (int i = 0; i < beamCount; i++)
             {
                 Vector2 direction = GetDirection(i, beamCount);

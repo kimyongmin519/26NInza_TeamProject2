@@ -1,3 +1,4 @@
+using System.Collections;
 using DG.Tweening;
 using KimLIb.SoundSystem;
 using UnityEngine;
@@ -21,6 +22,8 @@ namespace Member.KYM.Scripts.CoreSystems
         private AudioSource _activeSource;
         private AudioSource _standbySource;
         private Tween _transition;
+        private Coroutine _loadRoutine;
+        private SoundClipSO _pendingBgm;
 
         private void Awake()
         {
@@ -61,9 +64,43 @@ namespace Member.KYM.Scripts.CoreSystems
                 return;
             }
 
-            if (CurrentBgm == bgm && _activeSource.isPlaying)
+            if ((CurrentBgm == bgm && _activeSource.isPlaying) || _pendingBgm == bgm)
                 return;
 
+            CancelPendingLoad();
+            AudioClip clip = bgm.audioClip;
+            if (clip.loadState != AudioDataLoadState.Loaded)
+            {
+                if (clip.loadState == AudioDataLoadState.Unloaded)
+                    clip.LoadAudioData();
+
+                _pendingBgm = bgm;
+                _loadRoutine = StartCoroutine(PlayWhenLoaded(bgm, fadeDuration));
+                return;
+            }
+
+            BeginTransition(bgm, fadeDuration);
+        }
+
+        private IEnumerator PlayWhenLoaded(SoundClipSO bgm, float fadeDuration)
+        {
+            AudioClip clip = bgm.audioClip;
+            while (clip != null && clip.loadState == AudioDataLoadState.Loading)
+                yield return null;
+
+            _loadRoutine = null;
+            _pendingBgm = null;
+            if (clip == null || clip.loadState != AudioDataLoadState.Loaded)
+            {
+                Debug.LogWarning($"BGM '{bgm.name}'의 오디오 데이터를 불러오지 못했습니다.", this);
+                yield break;
+            }
+
+            BeginTransition(bgm, fadeDuration);
+        }
+
+        private void BeginTransition(SoundClipSO bgm, float fadeDuration)
+        {
             KillTransition();
 
             AudioSource outgoing = _activeSource;
@@ -108,6 +145,7 @@ namespace Member.KYM.Scripts.CoreSystems
 
         public void StopBgm(float fadeDuration)
         {
+            CancelPendingLoad();
             KillTransition();
             CurrentBgm = null;
 
@@ -167,11 +205,21 @@ namespace Member.KYM.Scripts.CoreSystems
             _transition = null;
         }
 
+        private void CancelPendingLoad()
+        {
+            if (_loadRoutine != null)
+                StopCoroutine(_loadRoutine);
+
+            _loadRoutine = null;
+            _pendingBgm = null;
+        }
+
         private void OnDestroy()
         {
             if (Instance != this)
                 return;
 
+            CancelPendingLoad();
             KillTransition();
             Instance = null;
         }

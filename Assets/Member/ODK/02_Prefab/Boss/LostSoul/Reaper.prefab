@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 1433768154}
   - component: {fileID: 7077340851209231311}
   m_Layer: 0
-  m_Name: LostSoul
+  m_Name: Reaper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72,10 +72,15 @@ MonoBehaviour:
   arena: {fileID: 0}
   groundRayHeight: 20
   groundRayDistance: 50
-  drawDebugGizmos: 1
+  drawDebugGizmos: 0
   cameraImpulseSource: {fileID: 100009}
   cameraShakeMinimumInterval: 0.07
   cameraChannel: {fileID: 0}
+  switchToBattleCamera: 1
+  battleCameraName: BattleCam
+  battleCameraPriority: 20
+  stopOnPlayerDeath: 1
+  playerUIChannel: {fileID: 0}
   cameraShakePowerScale: 1
   cameraShakeBaseDuration: 0.14
   cameraShakeDurationPerPower: 0.16
@@ -130,6 +135,8 @@ MonoBehaviour:
   animationSpeed: 0.82
   prefabFacesRight: 1
   bodySortingOrder: 45
+  bodySortingLayer: Vfx
+  teleportEdgeMargin: 1.2
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -138,9 +145,18 @@ MonoBehaviour:
   soulProjectilePrefab: {fileID: 100005, guid: a3000000000000000000000000000001, type: 3}
   weakSoulProjectilePrefab: {fileID: 100005, guid: a3000000000000000000000000000002, type: 3}
   slashBeamPrefab: {fileID: 100004, guid: a3000000000000000000000000000004, type: 3}
+  minimumSlashLength: 80
   projectileDamage: 1
   thrownSoulDamage: 1
-  phaseTwoHealthRatio: 0.25
+  portalHeight: 4.2
+  portalOpenDuration: 0.35
+  portalRepeatInterval: 0.4
+  portalEdgePadding: 1.2
+  passiveWeakSouls: 1
+  passiveWeakSoulInterval: {x: 1.6, y: 2.4}
+  passiveWeakSoulSpeed: 6.5
+  passiveWeakSoulMargin: 1.2
+  phaseTwoHealthRatio: 0.4
   idleState: ready
   hitState: hit
   deathState: dead
@@ -269,7 +285,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.LostSoul.LostSoulFeedback
   teleportEffect: {fileID: 11400000, guid: e7861c6c7b58d3f4396a9379852a4134, type: 2}
-  castEffect: {fileID: 11400000, guid: d26fdea012674bf449c88f8393e5df15, type: 2}
+  castEffect: {fileID: 0}
   portalEffect: {fileID: 11400000, guid: fd4c8e3222b84598b23ab7fca147c8d9, type: 2}
   eyeFlashEffect: {fileID: 11400000, guid: f3bea1d5d2caeaa46afa144d1b536c44, type: 2}
   purpleProjectileEffect: {fileID: 11400000, guid: 1f4da5349dc744e43a136ed2f3396c9d, type: 2}
@@ -291,6 +307,7 @@ MonoBehaviour:
   fadeSlash: {fileID: 11400000, guid: 2c2ec7dd8a1c7de4c915d8a1aa7cdb38, type: 2}
   directionCue: {fileID: 11400000, guid: 3698e1f5e73c5df459357923951b3b0e, type: 2}
   desperationScream: {fileID: 11400000, guid: 49b31e2468318364d9f1bbe73246316a, type: 2}
+  desperationScreamVolume: 2.5
   hit: {fileID: 11400000, guid: 3698e1f5e73c5df459357923951b3b0e, type: 2}
   death: {fileID: 11400000, guid: c6b798e74da0a994698260b3c6bd31c4, type: 2}
   projectileSoundInterval: 0.07
@@ -459,6 +476,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.Enemys.LostSoul.LostSoulVfxPool
   poolManager: {fileID: 11400000, guid: e904046ea45891d468d3b99bb617ab84, type: 2}
+  effectSortingLayer: Vfx
+  effectSortingOrder: 60
 --- !u!114 &1433768154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -477,10 +496,12 @@ MonoBehaviour:
   startDelay: 0.2
   preset: 0
   bossTitle: "\uC5B4\uB460\uC758 \uC0AC\uC2E0"
-  bossSubtitle: "\uC78A\uD78C \uC790\uB4E4\uC758 \uB9DD\uB839"
+  bossSubtitle: "\uC5B4\uB460\uC758 \uB2E4\uD06C\uB2C8\uC2A4\uB97C \uBD09\uC778\uD574\uB454
+    \uCE5C\uAD6C"
   titleColor: {r: 1, g: 1, b: 1, a: 1}
   subtitleColor: {r: 1, g: 1, b: 1, a: 0.7}
-  titleFont: {fileID: 11400000, guid: 83f461b325fe26e47b08a55076b63910, type: 2}
+  titleFont: {fileID: 11400000, guid: 414307599c7763f4e9e9d22e6c8bb368, type: 2}
+  fallbackFontKeyword: Hangul
   focusOffset: {x: 0, y: 1}
   focusPriority: 500
   steps: []
@@ -848,8 +869,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
-  <MaxHealth>k__BackingField: 80
-  <CurrentHealth>k__BackingField: 80
+  <MaxHealth>k__BackingField: 65
+  <CurrentHealth>k__BackingField: 65
 --- !u!1 &130000
 GameObject:
   m_ObjectHideFlags: 0
@@ -982,6 +1003,7 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
+  playerHitScale: 0.3
   castingMode: 1
   castingDuration: 0.12
   debugMode: 1
@@ -1041,7 +1063,10 @@ MonoBehaviour:
   bulletsPerWave: 3
   bulletSpeed: 9
   waveInterval: 0.55
-  laneSpacing: 0.46
+  fanAngle: 26
+  portalSideOffset: 1.6
+  portalHoldAfter: 0.2
+  weakSoulsPerWave: 2
 --- !u!114 &132003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1067,6 +1092,7 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
+  playerHitScale: 0.3
   castingMode: 0
   castingDuration: 0.2
   debugMode: 1
@@ -1126,6 +1152,8 @@ MonoBehaviour:
   bulletSpeed: 8.5
   shotInterval: 0.17
   randomAngle: 24
+  weakSoulEvery: 3
+  portalHoldAfter: 0.2
 --- !u!114 &133003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1151,6 +1179,7 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
+  playerHitScale: 0.3
   castingMode: 0
   castingDuration: 0.2
   debugMode: 1
@@ -1210,6 +1239,13 @@ MonoBehaviour:
   riftHeight: 0.65
   damage: 1
   beamColor: {r: 0.94, g: 0.9, b: 1, a: 1}
+  castGap: 0.25
+  burstCountRange: {x: 12, y: 17}
+  burstSpeed: 8
+  burstWeakSouls: 3
+  weakSoulSpeedScale: 0.55
+  burstShake: 0.35
+  portalHoldAfter: 0.3
 --- !u!1 &135000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1259,12 +1295,14 @@ MonoBehaviour:
   animationStateName: attack
   startupDelay: 0.3
   recoveryDelay: 0.45
-  warningDuration: 0.58
+  warningDuration: 0.7
   activeDuration: 0.16
   cutThickness: 0.62
   damage: 1
   betweenCuts: 0.3
   beamColor: {r: 0.94, g: 0.9, b: 1, a: 1}
+  followUpWarningScale: 0.85
+  followUpGap: 0.3
 --- !u!1 &136000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1342,10 +1380,12 @@ MonoBehaviour:
   responseTime: 0.2
   slashRevealDuration: 0.14
   betweenCuts: 0.18
-  cutCountRange: {x: 3, y: 6}
-  moveDistance: 1.35
-  jumpDistance: 0.85
-  crouchHeightRatio: 0.82
+  cutCountRange: {x: 3, y: 5}
+  moveDistance: 0.35
+  jumpDistance: 0.2
+  crouchHeightRatio: 0.95
+  jumpUpwardSpeed: 0.5
+  avoidGraceTime: 0.15
   damage: 1
   damageRadius: 1.35
 --- !u!114 &136003
@@ -1373,6 +1413,7 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
+  playerHitScale: 0.3
   castingMode: 0
   castingDuration: 0.2
   debugMode: 1
@@ -2115,22 +2156,25 @@ MonoBehaviour:
   startupDelay: 0.35
   recoveryDelay: 0
   arenaPadding: 1.25
-  moveDuration: 0.45
+  moveDuration: 0.55
   slashReadyTime: 0.5
-  weakSoulInterval: 0.5
+  weakSoulInterval: 2
   weakSoulSpeed: 7
   weakSoulSpawnMargin: 1.2
-  slashWarningDuration: 0.85
+  slashWarningDuration: 1
   slashActiveDuration: 0.16
   slashWidth: 0.52
   slashDamage: 1
   slashColor: {r: 0.94, g: 0.9, b: 1, a: 1}
-  rotatingSlashHealth: 0.2
+  phaseStartHealth: 0.4
+  rotatingSlashHealth: 0.25
   rotatingDegrees: 145
-  cycleIntervalAt25: 1.2
-  cycleIntervalAt10: 0.8
-  enrageHealth: 0.1
-  enrageSlashInterval: 0.16
-  enrageWarningDuration: 0.75
-  enrageMinimumDistance: 1
-  enrageMaximumDistance: 16
+  cycleIntervalAt25: 1.55
+  cycleIntervalAt10: 1.1
+  minimumDirections: 2
+  maximumDirections: 4
+  enrageHealth: 0.12
+  enrageSlashInterval: 0.08
+  enrageWarningDuration: 0.9
+  enrageMinimumDistance: 4.5
+  enrageMaximumDistance: 20

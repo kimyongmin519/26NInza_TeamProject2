@@ -611,10 +611,10 @@ MonoBehaviour:
   startDelay: 0.2
   preset: 0
   bossTitle: "\uC18C\uB4DC \uB9C8\uC2A4\uD130"
-  bossSubtitle: "\uB05D\uC5C6\uB294 \uD0D1\uC758 \uAC80\uAC1D"
+  bossSubtitle: "\uD0D1\uC758 \uAC80\uAC1D"
   titleColor: {r: 1, g: 1, b: 1, a: 1}
   subtitleColor: {r: 1, g: 1, b: 1, a: 0.7}
-  titleFont: {fileID: 11400000, guid: 83f461b325fe26e47b08a55076b63910, type: 2}
+  titleFont: {fileID: 11400000, guid: 414307599c7763f4e9e9d22e6c8bb368, type: 2}
   fallbackFontKeyword: Hangul
   focusOffset: {x: 0, y: 1}
   focusPriority: 500
@@ -837,7 +837,7 @@ MonoBehaviour:
   turnGap: 0.35
   wallSwordCount: 6
   wallDistance: 7
-  wallHalfSpan: 6
+  wallHalfSpan: 10
   rowHeight: 7
   rowSwordSpeed: 64
   wallFormDuration: 0.32
@@ -1011,8 +1011,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f98f989d2d5724094e069a5888fca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Member.ODK.Scripts.HealthModule
-  <MaxHealth>k__BackingField: 76
-  <CurrentHealth>k__BackingField: 76
+  <MaxHealth>k__BackingField: 60
+  <CurrentHealth>k__BackingField: 60
 --- !u!1 &130000
 GameObject:
   m_ObjectHideFlags: 0

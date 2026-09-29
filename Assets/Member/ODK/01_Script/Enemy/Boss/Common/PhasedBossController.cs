@@ -44,6 +44,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [SerializeField] private CinemachineImpulseSource cameraImpulseSource;
         [SerializeField, Min(0f)] private float cameraShakeMinimumInterval = 0.07f;
         [SerializeField] private EventChannelSO cameraChannel;
+        [SerializeField] private bool randomizeShakeDirection = true;
 
         [Header("Battle Camera")]
         [SerializeField] private bool switchToBattleCamera = true;
@@ -100,7 +101,8 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         private bool battleStarted;
         private float nextCameraShakeTime;
         private float lastCameraShakePower;
-        private readonly List<ICancellableBossSpawn> trackedSpawns = new List<ICancellableBossSpawn>();
+        private CinemachineImpulseSource shakeSource;
+        private float lastShakeSign = 1f;
 
         protected override void Awake()
         {
@@ -228,7 +230,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             PlayerDefeated = true;
             StopAllCoroutines();
             CancelAttacks();
-            CancelTrackedSpawns();
             if (TryGetComponent(out Rigidbody2D body))
             {
                 body.linearVelocity = Vector2.zero;
@@ -428,29 +429,19 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         public void RegisterSpawn(ICancellableBossSpawn spawn)
         {
-            if (spawn == null || trackedSpawns.Contains(spawn)) return;
-            trackedSpawns.Add(spawn);
         }
 
-        private void CancelTrackedSpawns()
+        public void CancelRegisteredSpawns()
         {
-            for (int i = trackedSpawns.Count - 1; i >= 0; i--)
-            {
-                ICancellableBossSpawn spawn = trackedSpawns[i];
-                if (spawn is UnityEngine.Object unityObject && unityObject == null) continue;
-                try
-                {
-                    spawn?.CancelBossSpawn();
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e, this);
-                }
-            }
-            trackedSpawns.Clear();
         }
 
-        public void CancelRegisteredSpawns() => CancelTrackedSpawns();
+        public void ShakeCameraFor(float power, float duration)
+        {
+            if (power <= 0f || duration <= 0f) return;
+            lastCameraShakePower = power;
+            nextCameraShakeTime = Time.time + cameraShakeMinimumInterval;
+            EmitShake(power, duration);
+        }
 
         public void ShakeCamera(float power)
         {
@@ -458,14 +449,53 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             if (Time.time < nextCameraShakeTime && power <= lastCameraShakePower) return;
             lastCameraShakePower = power;
             nextCameraShakeTime = Time.time + cameraShakeMinimumInterval;
+            EmitShake(power, cameraShakeBaseDuration + power * cameraShakeDurationPerPower);
+        }
+
+        private void EmitShake(float power, float duration)
+        {
+            if (randomizeShakeDirection && TryEmitDirectionalShake(power * cameraShakePowerScale, duration)) return;
             if (cameraChannel == null) ResolveCameraChannel();
             if (cameraChannel != null)
             {
-                float duration = cameraShakeBaseDuration + power * cameraShakeDurationPerPower;
                 cameraChannel.RaiseEvent(new CameraShakeEvent().InitData(power * cameraShakePowerScale, duration));
                 return;
             }
             if (cameraImpulseSource != null) cameraImpulseSource.GenerateImpulse(power);
+        }
+
+        private bool TryEmitDirectionalShake(float power, float duration)
+        {
+            if (power <= 0f || duration <= 0f) return false;
+            if (shakeSource == null)
+            {
+                CameraShakeManager manager = FindFirstObjectByType<CameraShakeManager>(FindObjectsInactive.Include);
+                if (manager != null) shakeSource = manager.GetComponent<CinemachineImpulseSource>();
+                if (shakeSource == null) shakeSource = cameraImpulseSource;
+            }
+            if (shakeSource == null || shakeSource.ImpulseDefinition == null) return false;
+
+            CinemachineImpulseDefinition source = shakeSource.ImpulseDefinition;
+            CinemachineImpulseDefinition impulse = new CinemachineImpulseDefinition
+            {
+                ImpulseChannel = source.ImpulseChannel,
+                ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Explosion,
+                ImpulseDuration = duration,
+                ImpulseType = CinemachineImpulseDefinition.ImpulseTypes.Uniform,
+                DissipationRate = source.DissipationRate,
+                ImpactRadius = source.ImpactRadius,
+                DirectionMode = source.DirectionMode,
+                DissipationMode = source.DissipationMode,
+                DissipationDistance = source.DissipationDistance,
+                PropagationSpeed = source.PropagationSpeed
+            };
+
+            float magnitude = shakeSource.DefaultVelocity.magnitude;
+            if (magnitude <= 0.0001f) magnitude = 1f;
+            lastShakeSign = -lastShakeSign;
+            Vector2 direction = new Vector2(lastShakeSign, UnityEngine.Random.Range(-0.3f, 0.3f)).normalized;
+            impulse.CreateAndReturnEvent(transform.position, (Vector3)direction * magnitude * power);
+            return true;
         }
 
         private void ResolveCameraChannel()
@@ -497,7 +527,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
             CinemachineImpulseDefinition definition = cameraImpulseSource.ImpulseDefinition;
             definition.ImpulseChannel = 1;
-            definition.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Bump;
+            definition.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Explosion;
             definition.ImpulseDuration = 0.2f;
             definition.ImpulseType = CinemachineImpulseDefinition.ImpulseTypes.Uniform;
             cameraImpulseSource.DefaultVelocity = Vector3.down;
@@ -630,7 +660,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             IsPhaseTwo = true;
             StopAllCoroutines();
             CancelAttacks();
-            CancelTrackedSpawns();
             SafeInvoke(OnPhaseTwoEntered);
             SafeInvoke(() => onPhaseTwo?.Invoke());
             StartCoroutine(PhaseTwoRestart());
@@ -686,7 +715,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             SafeInvoke(OnDefeated);
             StopAllCoroutines();
             CancelAttacks();
-            CancelTrackedSpawns();
             SafeInvoke(OnBossDeath);
             SafeInvoke(() => onDeath?.Invoke());
             if (deathPresentation != null)
@@ -737,7 +765,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             if (healthModule != null) healthModule.OnDeath -= HandleHealthDeath;
             deathPresentation?.Cancel();
             CancelAttacks();
-            CancelTrackedSpawns();
         }
     }
 }

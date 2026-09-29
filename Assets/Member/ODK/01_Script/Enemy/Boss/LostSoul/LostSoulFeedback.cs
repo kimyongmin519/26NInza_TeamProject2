@@ -39,6 +39,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
 
         [Header("Desperation")]
         [SerializeField] private SoundClipSO desperationScream;
+        [SerializeField, Min(0f)] private float desperationScreamVolume = 2.5f;
 
         [Header("Damage")]
         [SerializeField] private SoundClipSO hit;
@@ -111,7 +112,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         }
         public void PlayFadeOut() => Play(fadeOut);
         public void PlayFadeSlash() => Play(fadeSlash);
-        public void PlayDesperationScream() => Play(desperationScream);
+        public void PlayDesperationScream() => ODKSoundPlayback.PlayPriority(desperationScream, desperationScreamVolume);
+        public void PreloadDesperationScream() => ODKSoundPlayback.Preload(desperationScream);
         public void PlayDirectionCue() => Play(directionCue);
         public void PlayHit()
         {

@@ -74,6 +74,8 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
 
         private void OnCollisionEnter2D(Collision2D collision) => HandleHit(collision.collider);
         private void OnTriggerEnter2D(Collider2D other) => HandleHit(other);
+        private void OnTriggerStay2D(Collider2D other) => HandleHit(other);
+        private void OnCollisionStay2D(Collision2D collision) => HandleHit(collision.collider);
 
         private void HandleHit(Collider2D other)
         {
@@ -84,6 +86,7 @@ namespace Member.ODK.Scripts.Enemys.Volcanus
             bool hitGround = (groundLayer.value & mask) != 0;
             if (hitPlayer)
             {
+                if (!DamageCaster.IsWithinPlayerHitbox(GetComponent<Collider2D>(), other)) return;
                 DamageCaster.ApplyDamage(other.transform, new DamageData(playerDamage, DamageType.Projectile));
                 Break();
             }

@@ -174,10 +174,10 @@ MonoBehaviour:
   alignRotationWhileHeld: 1
   lifeTime: 9
   homingDegreesPerSecond: 75
-  thrownHomingDegreesPerSecond: 150
+  thrownHomingDegreesPerSecond: 2160
   visualAngleOffset: 180
   impactSound: {fileID: 11400000, guid: 3698e1f5e73c5df459357923951b3b0e, type: 2}
-  maximumThrownDistance: 18
+  maximumThrownDistance: 40
 --- !u!114 &6225733470898244259
 MonoBehaviour:
   m_ObjectHideFlags: 0

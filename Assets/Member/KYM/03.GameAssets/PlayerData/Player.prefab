@@ -248,6 +248,9 @@ MonoBehaviour:
   fireSound: {fileID: 11400000, guid: 8027ef976c125e44d9c1bd51c77a9280, type: 2}
   catchSound: {fileID: 11400000, guid: b7e28bb98735567449d4294c8a489e93, type: 2}
   additionalCatchSound: {fileID: 11400000, guid: 751b74a71d3939343ae2966661d69dd7, type: 2}
+  cameraChannel: {fileID: 11400000, guid: 3e2c1c838c76b164c8ee39994a58a50b, type: 2}
+  shakeDuration: 0.2
+  shakePower: 0.35
 --- !u!114 &8303114410518035434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -352,7 +355,7 @@ LineRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 100422575
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 6
   m_MaskInteraction: 0
   m_Positions:
@@ -486,6 +489,11 @@ MonoBehaviour:
   jumpSound: {fileID: 11400000, guid: 46aee0ff0b3415c499e724344f4345e7, type: 2}
   landingSound: {fileID: 11400000, guid: 162c512073521564ba298cfae8741e54, type: 2}
   hurtSound: {fileID: 11400000, guid: b055caa2c28f57b479233e41753519dc, type: 2}
+  projectileHitSounds:
+  - {fileID: 11400000, guid: e125a4a425a5e304a9b58aff82bfca51, type: 2}
+  cameraChannel: {fileID: 11400000, guid: 3e2c1c838c76b164c8ee39994a58a50b, type: 2}
+  enemyHitShakePower: 0.5
+  enemyHitShakeDuration: 0.2
   <PostProcessChannel>k__BackingField: {fileID: 11400000, guid: 8a23496a1fb64f4aa19a5c44512d5ad4, type: 2}
   hitInvincibilityDuration: 2
   blinkInterval: 0.1
@@ -5632,7 +5640,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 100422575
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 8882942138613151568, guid: 06832fe18755bdf43b0372a718747a0c, type: 3}
@@ -5759,7 +5767,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 100422575
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: 2592711584108128959, guid: f5bba75f13633aa448ac54105d5c4385, type: 3}

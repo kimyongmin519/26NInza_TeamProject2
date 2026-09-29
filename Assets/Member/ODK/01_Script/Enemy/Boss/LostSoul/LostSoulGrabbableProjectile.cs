@@ -13,10 +13,13 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
     {
         [SerializeField] private float lifeTime = 9f;
         [SerializeField] private float homingDegreesPerSecond = 75f;
-        [SerializeField] private float thrownHomingDegreesPerSecond = 150f;
+        [SerializeField] private float thrownHomingDegreesPerSecond = 2160f;
         [SerializeField] private float visualAngleOffset = 180f;
         [SerializeField] private SoundClipSO impactSound;
         [SerializeField, Min(1f)] private float maximumThrownDistance = 18f;
+        [SerializeField, Min(0f)] private float ownerHitPadding = 0.3f;
+        private Collider2D[] ownerColliders;
+        private LostSoul ownerCollidersOwner;
         private LostSoul owner;
         private float bossDamage;
         private Transform target;
@@ -84,6 +87,8 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 return;
             }
 
+            if (thrown && !IsHeld && !consumed && TryHitOwner()) return;
+
             if (Rigidbody == null || target == null || IsHeld || consumed || speed <= 0.01f) return;
             Vector2 current = Rigidbody.linearVelocity.sqrMagnitude > 0.01f
                 ? Rigidbody.linearVelocity.normalized
@@ -118,6 +123,33 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
             SetVisualDirection(throwData.Direction);
         }
 
+        private bool TryHitOwner()
+        {
+            if (owner == null || owner.IsDead || projectileCollider == null) return false;
+            if (ownerColliders == null || ownerCollidersOwner != owner)
+            {
+                ownerColliders = owner.GetComponents<Collider2D>();
+                ownerCollidersOwner = owner;
+            }
+            foreach (Collider2D bossCollider in ownerColliders)
+            {
+                if (bossCollider == null || !bossCollider.enabled) continue;
+                ColliderDistance2D distance = projectileCollider.Distance(bossCollider);
+                if (!distance.isValid || distance.distance > ownerHitPadding) continue;
+                HitOwner();
+                return true;
+            }
+            return false;
+        }
+
+        private void HitOwner()
+        {
+            owner.TakeDamage(new DamageData(bossDamage, DamageType.Projectile));
+            ODKSoundPlayback.Play(impactSound, transform.position);
+            owner.PlayWeakSoulImpactFeedback(transform.position);
+            Consume();
+        }
+
         private void SetVisualDirection(Vector2 direction)
         {
             if (direction.sqrMagnitude <= 0.001f) return;
@@ -133,10 +165,7 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
                 LostSoul boss = other.GetComponentInParent<LostSoul>();
                 if (boss != null && boss == owner)
                 {
-                    boss.TakeDamage(new DamageData(bossDamage, DamageType.Projectile));
-                    ODKSoundPlayback.Play(impactSound, transform.position);
-                    owner.PlayWeakSoulImpactFeedback(transform.position);
-                    Consume();
+                    HitOwner();
                     return;
                 }
             }
