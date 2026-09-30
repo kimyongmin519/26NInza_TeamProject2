@@ -43,6 +43,8 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private float swordLength = 2.6f;
         [SerializeField] private float swordThickness = 0.5f;
         [SerializeField, Min(0f)] private float grabAssistRadius = 1.6f;
+        [SerializeField, Min(0f)] private float minimumGrabTravelDistance = 10f;
+        [SerializeField, Min(0f)] private float minimumGrabDelay = 1.5f;
 
         [Header("Visual")]
         [SerializeField] private SpriteRenderer bladeRenderer;
@@ -58,7 +60,13 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private float pathWidth = 0.07f;
         [SerializeField, Min(2)] private int pathSegments = 24;
 
-        public bool CanBeGrabbed => state == SwordState.Dispelled || state == SwordState.MagicFlight;
+        public bool CanBeGrabbed => (state == SwordState.Dispelled || state == SwordState.MagicFlight) && HasTravelledForGrab;
+
+        private bool HasTravelledForGrab =>
+            Time.time - LaunchTime >= minimumGrabDelay ||
+            ((Vector2)(transform.position - launchPosition)).sqrMagnitude >= minimumGrabTravelDistance * minimumGrabTravelDistance;
+
+        private Vector3 launchPosition;
         public bool IsMagicFlying => state == SwordState.MagicFlight;
 
         public void Hover(Vector2 facing)
@@ -295,6 +303,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             transform.DOKill();
             state = SwordState.MagicFlight;
             LaunchTime = Time.time;
+            launchPosition = transform.position;
             ClearTrail();
             transform.SetParent(null, true);
             SetEnchanted(true);
@@ -313,6 +322,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             transform.DOKill();
             state = SwordState.Dispelled;
             LaunchTime = Time.time;
+            launchPosition = transform.position;
             ClearTrail();
             transform.SetParent(null, true);
             SetEnchanted(false);

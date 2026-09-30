@@ -55,11 +55,11 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             Boss.Cue(SwordmasterCue.CrossfireReady, Boss.transform.position);
             yield return Wait(readyDuration);
 
-            yield return FireSwordWall(true);
+            yield return FireSwordWall(true, true);
             yield return Wait(turnGap);
             if (Boss.IsDead) yield break;
 
-            yield return FireSwordWall(false);
+            yield return FireSwordWall(false, false);
             yield return Wait(turnGap);
             if (Boss.IsDead) yield break;
 
@@ -76,7 +76,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
 
         private WaitForSeconds Wait(float seconds) => new WaitForSeconds(Mathf.Max(0f, seconds) / DurationScale);
 
-        private IEnumerator FireSwordWall(bool verticalColumn)
+        private IEnumerator FireSwordWall(bool verticalColumn, bool showPaths)
         {
             List<EnchantedSword> swords = Boss.TakeSwords(wallSwordCount);
             if (swords.Count == 0) yield break;
@@ -112,6 +112,11 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
                     ? new Vector3(player.x + (fromNegative ? -wallDistance : wallDistance), along, z)
                     : new Vector3(along, player.y + rowHeight, z);
                 swords[i].MoveTo(formPoint, faceAngle, wallFormDuration / DurationScale);
+                if (showPaths)
+                {
+                    float pathLength = (verticalColumn ? wallDistance : rowHeight) * 2f;
+                    swords[i].ShowPathLine(formPoint, formPoint + (Vector3)direction * pathLength, (wallFormDuration + wallHoldDuration) / DurationScale);
+                }
             }
             yield return Wait(wallFormDuration + wallHoldDuration);
 
