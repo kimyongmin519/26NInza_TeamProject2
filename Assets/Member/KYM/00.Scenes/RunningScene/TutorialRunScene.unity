@@ -40387,7 +40387,7 @@ MonoBehaviour:
     DefaultMode: 2
   DefaultBlend:
     Style: 1
-    Time: 2
+    Time: 1.2
     CustomCurve:
       serializedVersion: 2
       m_Curve: []
@@ -42631,6 +42631,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1629327241
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1629327242}
+  m_Layer: 0
+  m_Name: EntryBubbleAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1629327242
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1629327241}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.19, y: -0.28, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1877358566}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1641705103
 GameObject:
   m_ObjectHideFlags: 0
@@ -44076,7 +44107,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 7847070380472739339, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1629327242}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3193289139636146138, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
       insertIndex: -1
@@ -45006,6 +45040,9 @@ MonoBehaviour:
   CameraEventChannel: {fileID: 0}
   CameraFocusTarget: {fileID: 0}
   dialogData: {fileID: 0}
+  onDialogCompleted:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1993805805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45020,10 +45057,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Member.KYM.Scripts.CoreSystems.TutorialSceneEntryMonologue
   bubbleDialogChannel: {fileID: 11400000, guid: b03dbe8eb5da45569f9288192a0387f3, type: 2}
   dialogData: {fileID: 11400000, guid: d85c9bb11a4e41cf8a88d4a68cb804b7, type: 2}
+  bubbleAnchor: {fileID: 1629327242}
   introCamera: {fileID: 1146922816}
   gameplayCamera: {fileID: 1312953344}
   activePriority: 20
   inactivePriority: 0
+  dialogueDelay: 1
 --- !u!1 &2020355227
 GameObject:
   m_ObjectHideFlags: 0

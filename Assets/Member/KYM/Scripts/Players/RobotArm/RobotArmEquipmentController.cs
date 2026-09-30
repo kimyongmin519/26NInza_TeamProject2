@@ -12,13 +12,38 @@ namespace Member.KYM.Scripts.Players.RobotArm
 
         [Header("시작 설정")]
         [SerializeField] private bool equippedOnStart;
+        [SerializeField] private bool keepActiveWhenUnequipped;
 
-        public bool IsEquipped => robotArm != null && robotArm.activeSelf;
+        private SpriteRenderer[] _armRenderers;
+        private Color[] _armColors;
+        private RobotArm _armController;
+        private RobotArmActionController _actionController;
+        private RobotArmTakeOutController _takeOutController;
+        private bool _isEquipped;
+
+        public bool IsEquipped => robotArm != null &&
+            (keepActiveWhenUnequipped ? _isEquipped : robotArm.activeSelf);
 
         private void Awake()
         {
             Initialize(GetComponent<PlayerController>());
+            if (keepActiveWhenUnequipped && robotArm != null)
+                PrepareActiveArm();
             SetEquipped(equippedOnStart);
+        }
+
+        private void PrepareActiveArm()
+        {
+            robotArm.SetActive(true);
+            _armRenderers = robotArm.GetComponentsInChildren<SpriteRenderer>(true);
+            _armColors = new Color[_armRenderers.Length];
+            for (int i = 0; i < _armRenderers.Length; i++)
+                _armColors[i] = _armRenderers[i].color;
+
+            _armController = robotArm.GetComponent<RobotArm>();
+            _actionController = robotArm.GetComponent<RobotArmActionController>();
+            _takeOutController = robotArm.GetComponentInChildren<RobotArmTakeOutController>(true);
+            _isEquipped = true;
         }
 
         public void Initialize(PlayerController player)
@@ -67,7 +92,28 @@ namespace Member.KYM.Scripts.Players.RobotArm
                 grabber?.Release();
             }
 
-            robotArm.SetActive(equipped);
+            if (!keepActiveWhenUnequipped)
+            {
+                robotArm.SetActive(equipped);
+                return;
+            }
+
+            for (int i = 0; i < _armRenderers.Length; i++)
+            {
+                Color color = _armColors[i];
+                if (!equipped)
+                    color.a = 0f;
+                _armRenderers[i].color = color;
+            }
+
+            if (_armController != null)
+                _armController.enabled = equipped;
+            if (_actionController != null)
+                _actionController.enabled = equipped;
+            if (_takeOutController != null)
+                _takeOutController.enabled = equipped;
+
+            _isEquipped = equipped;
         }
     }
 }
