@@ -152,6 +152,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             body.interpolation = RigidbodyInterpolation2D.Interpolate;
             body.freezeRotation = true;
+            body.excludeLayers |= playerLayer;
 
             CapsuleCollider2D hitbox = GetComponent<CapsuleCollider2D>();
             if (hitbox == null) hitbox = gameObject.AddComponent<CapsuleCollider2D>();
@@ -160,6 +161,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             hitbox.direction = CapsuleDirection2D.Vertical;
             hitbox.size = bodyHitboxSize;
             hitbox.offset = bodyHitboxOffset;
+            hitbox.excludeLayers |= playerLayer;
             if (bodyVisual != null) bodyVisualScale = bodyVisual.localScale;
         }
 
