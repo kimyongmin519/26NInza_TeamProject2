@@ -40387,7 +40387,7 @@ MonoBehaviour:
     DefaultMode: 2
   DefaultBlend:
     Style: 1
-    Time: 2
+    Time: 1.2
     CustomCurve:
       serializedVersion: 2
       m_Curve: []
@@ -45062,6 +45062,7 @@ MonoBehaviour:
   gameplayCamera: {fileID: 1312953344}
   activePriority: 20
   inactivePriority: 0
+  dialogueDelay: 1
 --- !u!1 &2020355227
 GameObject:
   m_ObjectHideFlags: 0
