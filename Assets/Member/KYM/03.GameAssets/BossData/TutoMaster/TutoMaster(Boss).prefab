@@ -82,7 +82,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 100422575
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 502713029638684448, guid: 5838a448dcaed9044bae908c69cfa1dc, type: 3}
@@ -221,7 +221,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1566733007
-  m_SortingLayer: 2
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3554579261956412206, guid: 8e3fd6eb8cf7381449b6991a4829c8e3, type: 3}
@@ -264,7 +264,6 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8999000000002010}
   - component: {fileID: 1620744365745938559}
   - component: {fileID: 6030149991951996428}
   - component: {fileID: 1356964150025301705}
@@ -1218,24 +1217,31 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6385670432325225292, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4694752822789023096}
   m_SourcePrefab: {fileID: 100100000, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
---- !u!4 &5490737496459100072 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+--- !u!1 &2386619921092049679 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6385670432325225292, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
   m_PrefabInstance: {fileID: 8755155182963798083}
   m_PrefabAsset: {fileID: 0}
-
---- !u!114 &8999000000002010
+--- !u!114 &4694752822789023096
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2770467818995740256}
+  m_GameObject: {fileID: 2386619921092049679}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 16d178b20dd94c5591a3c8d4c20b0571, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  bossName: 최스승
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Member.Wst.Scripts.Achievements.BossDefeatReporter
+  bossName: "\uCD5C\uC2A4\uC2B9"
+--- !u!4 &5490737496459100072 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3869590341554704363, guid: ea6edab857cc458489f25dae5fc0292a, type: 3}
+  m_PrefabInstance: {fileID: 8755155182963798083}
+  m_PrefabAsset: {fileID: 0}
