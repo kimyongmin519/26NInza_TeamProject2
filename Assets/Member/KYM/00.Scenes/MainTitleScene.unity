@@ -742,6 +742,10 @@ PrefabInstance:
       propertyPath: equippedOnStart
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9088893378534672122, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
+      propertyPath: keepActiveWhenUnequipped
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9090595490636206771, guid: a9f303d73e27d384a9d81e3e430a3182, type: 3}
       propertyPath: additionalCatchSound
       value: 
