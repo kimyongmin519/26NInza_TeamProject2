@@ -43,8 +43,8 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         [SerializeField] private float swordLength = 2.6f;
         [SerializeField] private float swordThickness = 0.5f;
         [SerializeField, Min(0f)] private float grabAssistRadius = 1.6f;
-        [SerializeField, Min(0f)] private float minimumGrabTravelDistance = 10f;
-        [SerializeField, Min(0f)] private float minimumGrabDelay = 1.5f;
+        [SerializeField, Min(0f)] private float minimumGrabTravelDistance = 7f;
+        [SerializeField, Min(0f)] private float fallbackGrabDelay = 1.5f;
 
         [Header("Visual")]
         [SerializeField] private SpriteRenderer bladeRenderer;
@@ -63,7 +63,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
         public bool CanBeGrabbed => (state == SwordState.Dispelled || state == SwordState.MagicFlight) && HasTravelledForGrab;
 
         private bool HasTravelledForGrab =>
-            Time.time - LaunchTime >= minimumGrabDelay ||
+            Time.time - LaunchTime >= fallbackGrabDelay ||
             ((Vector2)(transform.position - launchPosition)).sqrMagnitude >= minimumGrabTravelDistance * minimumGrabTravelDistance;
 
         private Vector3 launchPosition;

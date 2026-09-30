@@ -44,7 +44,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         [SerializeField] private CinemachineImpulseSource cameraImpulseSource;
         [SerializeField, Min(0f)] private float cameraShakeMinimumInterval = 0.07f;
         [SerializeField] private EventChannelSO cameraChannel;
-        [SerializeField] private bool randomizeShakeDirection = true;
 
         [Header("Battle Camera")]
         [SerializeField] private bool switchToBattleCamera = true;
@@ -97,14 +96,11 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         public bool IsDead { get; private set; }
         public bool PlayerDefeated { get; private set; }
         protected virtual bool HasPhaseTwo => true;
-        protected virtual bool VerticalCameraShake => false;
         protected virtual float PhaseTransitionDelay => 1.1f;
         private bool battleStarted;
         private float nextCameraShakeTime;
         private float lastCameraShakePower;
-        private CinemachineImpulseSource shakeSource;
         private EnemySkillModule fallbackSkillModule;
-        private float lastShakeSign = 1f;
 
         protected override void Awake()
         {
@@ -463,7 +459,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         private void EmitShake(float power, float duration)
         {
-            if (randomizeShakeDirection && TryEmitDirectionalShake(power * cameraShakePowerScale, duration)) return;
             if (cameraChannel == null) ResolveCameraChannel();
             if (cameraChannel != null)
             {
@@ -471,42 +466,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                 return;
             }
             if (cameraImpulseSource != null) cameraImpulseSource.GenerateImpulse(power);
-        }
-
-        private bool TryEmitDirectionalShake(float power, float duration)
-        {
-            if (power <= 0f || duration <= 0f) return false;
-            if (shakeSource == null)
-            {
-                CameraShakeManager manager = FindFirstObjectByType<CameraShakeManager>(FindObjectsInactive.Include);
-                if (manager != null) shakeSource = manager.GetComponent<CinemachineImpulseSource>();
-                if (shakeSource == null) shakeSource = cameraImpulseSource;
-            }
-            if (shakeSource == null || shakeSource.ImpulseDefinition == null) return false;
-
-            CinemachineImpulseDefinition source = shakeSource.ImpulseDefinition;
-            CinemachineImpulseDefinition impulse = new CinemachineImpulseDefinition
-            {
-                ImpulseChannel = source.ImpulseChannel,
-                ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Explosion,
-                ImpulseDuration = duration,
-                ImpulseType = CinemachineImpulseDefinition.ImpulseTypes.Uniform,
-                DissipationRate = source.DissipationRate,
-                ImpactRadius = source.ImpactRadius,
-                DirectionMode = source.DirectionMode,
-                DissipationMode = source.DissipationMode,
-                DissipationDistance = source.DissipationDistance,
-                PropagationSpeed = source.PropagationSpeed
-            };
-
-            float magnitude = shakeSource.DefaultVelocity.magnitude;
-            if (magnitude <= 0.0001f) magnitude = 1f;
-            lastShakeSign = -lastShakeSign;
-            Vector2 direction = VerticalCameraShake
-                ? new Vector2(UnityEngine.Random.Range(-0.15f, 0.15f), lastShakeSign).normalized
-                : new Vector2(lastShakeSign, UnityEngine.Random.Range(-0.3f, 0.3f)).normalized;
-            impulse.CreateAndReturnEvent(transform.position, (Vector3)direction * magnitude * power);
-            return true;
         }
 
         private void ResolveCameraChannel()

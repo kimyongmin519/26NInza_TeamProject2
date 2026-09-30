@@ -232,7 +232,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                     FadeIn(step.duration, step.ease);
                     break;
                 case BossIntroAction.ScalePunch:
-                    visualRoot.DOPunchScale(finalScale * step.value, Mathf.Max(0.05f, step.duration), 6, 0.6f).SetTarget(this);
                     break;
                 case BossIntroAction.Shake:
                     if (boss != null) boss.ShakeCamera(step.value);

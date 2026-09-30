@@ -557,14 +557,12 @@ namespace Member.ODK.Scripts.Enemys.LostSoul
         {
             if (darknessOverlay == null) yield break;
             darknessOverlay.DOKill();
-            Color reveal = new Color(0.8f, 0.9f, 1f, 0.035f);
-            darknessOverlay.color = reveal;
             Color darkness = new Color(0.015f, 0.008f, 0.03f, 1f);
+            Color dimmed = darkness;
+            dimmed.a = 0.6f;
+            darknessOverlay.color = dimmed;
             Sequence sequence = DOTween.Sequence().SetTarget(darknessOverlay);
-            sequence.AppendInterval(Mathf.Min(0.025f, duration * 0.16f));
-            sequence.Append(darknessOverlay.DOColor(new Color(1f, 0.94f, 1f, 0.32f),
-                Mathf.Min(0.025f, duration * 0.16f)).SetEase(Ease.OutFlash));
-            sequence.Append(darknessOverlay.DOColor(darkness, Mathf.Max(0.02f, duration - 0.05f))
+            sequence.Append(darknessOverlay.DOColor(darkness, Mathf.Max(0.02f, duration))
                 .SetEase(Ease.InQuad));
             yield return sequence.WaitForCompletion();
         }

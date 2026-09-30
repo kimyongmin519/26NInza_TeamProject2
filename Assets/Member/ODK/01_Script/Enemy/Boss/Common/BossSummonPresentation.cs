@@ -21,10 +21,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
 
         [Header("Motion")]
         [SerializeField] private Vector3 startLocalOffset = new Vector3(0f, 4f, 0f);
-        [SerializeField] private Vector3 startScale = new Vector3(0.65f, 0.65f, 1f);
         [SerializeField] private float startRotation = 18f;
-        [SerializeField] private float overshootScale = 1.12f;
-        [SerializeField] private Vector3 impactSquash = new Vector3(1.12f, 0.82f, 1f);
         [SerializeField] private Vector3 impactPunch = new Vector3(0f, 0.18f, 0f);
         [SerializeField, Min(0.02f)] private float impactDuration = 0.1f;
         [SerializeField] private Ease appearEase = Ease.OutCubic;
@@ -70,7 +67,6 @@ namespace Member.ODK.Scripts.Enemys.Bosses
             if (delay > 0f) sequence.AppendInterval(delay);
             sequence.AppendCallback(() => ODKSoundPlayback.Play(summonSound, transform.position));
             sequence.Append(visualRoot.DOLocalMove(originalLocalPosition, appearDuration).SetEase(appearEase));
-            sequence.Join(visualRoot.DOScale(originalLocalScale * overshootScale, appearDuration).SetEase(Ease.OutBack));
             sequence.Join(visualRoot.DOLocalRotateQuaternion(originalLocalRotation, appearDuration).SetEase(Ease.OutCubic));
 
             for (int i = 0; i < renderers.Length; i++)
@@ -87,16 +83,12 @@ namespace Member.ODK.Scripts.Enemys.Bosses
                 owner?.ShakeCamera(cameraShake);
                 onSummonImpact?.Invoke();
             });
-            sequence.Append(visualRoot.DOScale(
-                Vector3.Scale(originalLocalScale, impactSquash),
-                impactDuration).SetEase(Ease.OutQuad));
-            sequence.Join(visualRoot.DOPunchPosition(
+            sequence.Append(visualRoot.DOPunchPosition(
                 impactPunch,
                 impactDuration + settleDuration,
                 5,
                 0.45f,
                 false));
-            sequence.Append(visualRoot.DOScale(originalLocalScale, settleDuration).SetEase(Ease.OutElastic, 1f, 0.55f));
 
             for (int i = 0; i < renderers.Length; i++)
             {
@@ -141,7 +133,7 @@ namespace Member.ODK.Scripts.Enemys.Bosses
         private void PrepareStartState()
         {
             visualRoot.localPosition = originalLocalPosition + startLocalOffset;
-            visualRoot.localScale = Vector3.Scale(originalLocalScale, startScale);
+            visualRoot.localScale = originalLocalScale;
             visualRoot.localRotation = originalLocalRotation * Quaternion.Euler(0f, 0f, startRotation);
 
             for (int i = 0; i < renderers.Length; i++)

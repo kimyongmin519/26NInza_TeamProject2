@@ -59,7 +59,7 @@ namespace Member.ODK.Scripts.Enemys.Swordmaster
             yield return Wait(turnGap);
             if (Boss.IsDead) yield break;
 
-            yield return FireSwordWall(false, false);
+            yield return FireSwordWall(false, true);
             yield return Wait(turnGap);
             if (Boss.IsDead) yield break;
 
